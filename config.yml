@@ -5,13 +5,13 @@
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
-# https://dev.bukkit.org/projects/tablist/pages/configyml                #
+# https://dev.bukkit.org/projects/tab-list/pages/configyml               #
 #                                                                        #
 # [Placeholders]                                                         #
 # https://www.spigotmc.org/wiki/placeholderapi-placeholders/             #
 #                                                                        #
 # [Other placeholders]                                                   #
-# https://dev.bukkit.org/projects/tablist/pages/placeholders             #
+# https://dev.bukkit.org/projects/tab-list/pages/placeholders            #
 #                                                                        #
 # [Tips]                                                                 #
 # - Use color coding '&' character, on this page:                        #
@@ -54,7 +54,7 @@ tab-enable: true
 # Tablist. Header & footer.
 # Use %prefix%, \n, %staff_online%, %ping%, %servername%, %online+1%, %max_players%, %online_players% placeholders.
 # Use placeholders: https://www.spigotmc.org/wiki/placeholderapi-placeholders/
-# Use symbols: https://dev.bukkit.org/projects/tablist/pages/symbols
+# Use symbols: https://dev.bukkit.org/projects/tab-list/pages/symbols
 tablist:
   header: '&7<31>&b&l TabList&a created by:&6 montlikadani&7 <31>\n&7<75> &cWelcome&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms'
   footer: '&7<13>&e&l Players: &6%online_players%&7/&6%max_players%\n&c All players:&a %online+1%&7 <13>\n<28>&6 My&4 server: &6&k::&f&k::&8black&6_&2forest&f&k::&6&k::&7.us.to (&4Offline&7) <28>'
