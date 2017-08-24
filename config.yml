@@ -1,0 +1,111 @@
+#=================================OOO====================================#
+#                     TabList Configuration File                         #
+#=================================OOO====================================#
+# config.yml file. Plugin version: 1.0                                   #
+# Author, created by: montlikadani                                       #
+#=================================OOO====================================#
+# [Default configurations]                                               #
+# https://dev.bukkit.org/projects/tablist/pages/configyml                #
+#                                                                        #
+# [Placeholders]                                                         #
+# https://www.spigotmc.org/wiki/placeholderapi-placeholders/             #
+#                                                                        #
+# [Other placeholders]                                                   #
+# https://dev.bukkit.org/projects/tablist/pages/placeholders             #
+#                                                                        #
+# [Tips]                                                                 #
+# - Use color coding '&' character, on this page:                        #
+# http://minecraft.gamepedia.com/Formatting_codes                        #
+# - In case of an error, write here:                                     #
+# https://github.com/montlikadani/TabList/issues                         #
+#=================================OOO====================================#
+
+# If these number mark (#) are in the way, you can safely remove it.
+
+#=========================================#
+#                Settings                 #
+#=========================================#
+# PlaceholderAPI use for the plugin.
+# It is not worth disabling because the plugin will not be perfect.
+placeholderapi: true
+
+# The nickname is the maximum usable characters (including color codes and placeholder).
+nick-length: 30
+
+# Save nick names and original player name (who changed their nickname) and UUID?
+log-nicknames: true
+
+# Do you want to change your nickname on your tab [TAB]?
+change-tablist-name:
+  enable: true
+
+# Enable the default color. (If the player has not written a color code, this color will be given by default.)
+default-nick-color:
+  enable: true
+  default-color: '&a'
+
+# Update tablist. (In ticks!)
+# 20 tick - 1 second.
+update-ticks: 60
+
+# Enable the tab? (Header, footer)
+tab-enable: true
+
+# Tablist. Header & footer.
+# Use %prefix%, \n, %staff_online%, %ping%, %servername%, %online+1%, %max_players%, %online_players% placeholders.
+# Use placeholders: https://www.spigotmc.org/wiki/placeholderapi-placeholders/
+# Use symbols: https://dev.bukkit.org/projects/tablist/pages/symbols
+tablist:
+  header: '&7<31>&b&l TabList&a created by:&6 montlikadani&7 <31>\n&7<75> &cWelcome&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms'
+  footer: '&7<13>&e&l Players: &6%online_players%&7/&6%max_players%\n&c All players:&a %online+1%&7 <13>\n<28>&6 My&4 server: &6&k::&f&k::&8black&6_&2forest&f&k::&6&k::&7.us.to (&4Offline&7) <28>'
+
+#=========================================#
+#             Plugin Settings             #
+#=========================================#
+# The TabList plugin is disabled (false) or enabled (true).
+# As this function is set to false, the plugin will shut itself down and no commands (which the plugin will detect) will be detected.
+# To reload, write to true and refresh the server /reload.
+enabled: true
+
+# bStats Metrics.
+metrics: true
+
+# Auto plugin refresh.
+auto-refresh-enable: false
+# In minutes!
+auto-refresh-time: 10
+
+# Log in to the console with plugin messages.
+logconsole: true
+
+# Logging to file plugin messages.
+log-to-file: true
+
+# Plugin enable/disable messages in console.
+# Use %prefix%, %newline% placeholder.
+# >> NO supported the PlaceholderAPI! <<
+plugin-enable-message: true
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.0&a!'
+plugin-disable-message: true
+plugin-disable: '%prefix%&c The plugin successfully disabled!'
+
+# The default is allowed to see the plugin information.
+main-info-tlcommand-on-default: false
+
+# Command waiting period.
+# If you set it to 0 you will not have to wait.
+# Measured in seconds. 1 seconds - 20 ticks.
+# (This feature is known that there is no excessive lagg.)
+# Use %seconds% (This placeholder is valid only here), %newline%, %prefix% placeholder.
+# >> NO supported the PlaceholderAPI! <<
+command-wait-time: 3
+command-wait: '%prefix%&c Please wait&7 %seconds%&c seconds to use again!'
+
+# Unknown-command - If more than one word/letter you write to it.
+# Example: /tl reload something...
+# Use %newline%, %command%, %prefix% placeholder.
+# %command% - When you type the command (example: /tablist), it writes the command to it.
+# This feature is NOT enter into the unknown command Minecraft, it's just your own.
+# >> NO supported the PlaceholderAPI! <<
+unknown-command-enable: true
+unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'

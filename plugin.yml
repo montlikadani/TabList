@@ -1,0 +1,18 @@
+name: TabList
+main: hu.montlikadani.TabList.TabList
+version: 1.0
+author: montlikadani
+softdepend: [PlaceholderAPI]
+# DO NOT EDIT ANYTHING ABOVE THIS LINE!
+
+commands:
+    tablist:
+        aliases: [tl]
+        description: The main command for TabList.
+        usage: <command>
+    nick:
+        description: Change the nick name.
+        usage: <command>
+    unnick:
+        description: Unnick the nick name.
+        usage: <command>
