@@ -4,7 +4,7 @@
 # Default language: 'EN' - English.
 # That is the apostrophe ('') inside them you can feel free to edit.
 # >> These features are NOT supported by PlaceholderAPI! <<
-prefix: '&6&l[&5&lTab&c&lList&6&l]&7&l »'
+prefix: '&6&l[&5&lTab&c&lList&6&l]&7&l Â»'
 
 # Use %prefix%, %newline%, %perm% placeholder.
 no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
@@ -13,9 +13,20 @@ unnick-message: '&aYou have been unnicked.'
 
 # Use %command% placeholder.
 no-console: '%prefix%&c This command "&7/%command%&c" can only be performed within the player.'
+
+# Use %nick% placeholder.
 success-nick: '&aYou now appear as&e %nick%&a!'
+
+# Use %length% placeholder.
 max-length: '&cYou can use maximum length is&7 %length%&c.'
-nick-usage: '&cUse: "&7/nick <nickname>&c"&2 - You can use color coding and %space% placeholder.'
+nick-usage: '&cUse: "&7/nick [player] <nickname>&c"&2 - You can use color coding and %space% placeholder.'
+
+# Use %player% placeholder.
+unnick-player-message: '&aYou have successfully changed&6 %player%&a to the original.'
+player-no-online: '&cPlayer&8 %player%&c is currently offline.'
+
+# Use %target% placeholder.
+player-nick-changed: '&aSet&4 %target%&a nick to&6 %nick%&a.'
 
 # Use %subcmd% placeholder.
 unknown-sub-command: '%prefix%&c Unknown sub-command&7 %subcmd%&c.'
@@ -27,8 +38,8 @@ chat-messages:
 - '&8/&a%command% disable&4 -&6 Plugin disable.'
 - '&8/&a%command% help&4 -&6 Help commands.'
 - '&8/&a%command% reload (or rl)&4 -&6 Reload the config files.'
-- '&8/&anick <nickname>&4 -&6 Changing your nickname.'
-- '&8/&aunnick&4 -&6 Returns your nickname to your original name.'
+- '&8/&anick&7 [player] <nickname>&4 -&6 Changing your nickname.'
+- '&8/&aunnick&7 [player]&4 -&6 Returns your nickname to your original name.'
 - '&c&m-----------------------------------------------------'
 #You can add more paragraphs.
 warning-disablecommand: '%prefix%&4&l Warning!&c If you disable the plugin, you can only enable it when you refresh the server and enable "enabled: true" in the config.yml file.'
