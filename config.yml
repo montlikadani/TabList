@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 1.0                                   #
+# config.yml file. Plugin version: 1.1                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -29,19 +29,21 @@
 # It is not worth disabling because the plugin will not be perfect.
 placeholderapi: true
 
-# The nickname is the maximum usable characters (including color codes and placeholder).
+# The nickname is the maximum usable characters (including color codes and %space% placeholder).
 nick-length: 30
 
 # Save nick names and original player name (who changed their nickname) and UUID?
 log-nicknames: true
 
 # Do you want to change your nickname on your tab [TAB]?
-change-tablist-name:
-  enable: true
+change-tablist-name: true
+
+# Allow to change the user display name?
+change-displayname: true
 
 # Enable the default color. (If the player has not written a color code, this color will be given by default.)
 default-nick-color:
-  enable: true
+  enable: false
   default-color: '&a'
 
 # Update tablist. (In ticks!)
@@ -85,7 +87,7 @@ log-to-file: true
 # Use %prefix%, %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.0&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.1&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
