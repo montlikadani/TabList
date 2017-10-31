@@ -1,1 +1,30 @@
-
+## v1.2
+        Bug fixes.
+        Updated config files.
+        Added /unnick all command. - It resets all nicknames to the original.
+        Added enabled-worlds list. - Which worlds can use the tab.
+        Added new placeholders:
+        
+        %ip-address% - Ip address.
+        %mc-version% - Minecraft version.
+        %motd% - Server motd.
+        
+        Fixed update ticks int has not updated. - It did not update the update-ticks function when you typed /tl rl.
+        Added health tab boolean.
+        Fixed /unnick command. - Deleted all nicknames in the file.
+        Added +10 symbols. Symbols: https://github.com/montlikadani/TabList/wiki/Symbols
+        Added clear player nick on quit boolean. - If the player has left the server, it will delete the nick name.
+        Added new command /tl get [player] - Get player nick name.
+        Fixed plugin permissions & commands.
+        Added update checker - notify when an update is available. (In console)
+## v1.1
+        Bug fixes.
+        Updated config files.
+        Fixed default nick color - When it was false when it did not show the colors when it gave it color.
+        Added /nick & /unnick aliase: /nick [player] <nick name>, /unnick [player]. Thanks @XxpartythunderxX
+        Added change displayname - Enable to change player display name.
+        Fixed bug: 1.9 did not show the tab.
+        Fixed tab auto update - You have not updated the tab.
+        
+        Tested Minecraft versions: 1.8.x, 1.9.x, 1.10.x, 1.11.x, 1.12.x
+        Other bug fixes.
