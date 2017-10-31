@@ -1,23 +1,25 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 1.1                                   #
+# config.yml file. Plugin version: 1.2                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
-# https://dev.bukkit.org/projects/tab-list/pages/configyml               #
+# https://github.com/montlikadani/TabList/blob/master/config.yml         #
 #                                                                        #
 # [Placeholders]                                                         #
 # https://www.spigotmc.org/wiki/placeholderapi-placeholders/             #
 #                                                                        #
 # [Other placeholders]                                                   #
-# https://dev.bukkit.org/projects/tab-list/pages/placeholders            #
+# https://github.com/montlikadani/TabList/wiki/Placeholders              #
 #                                                                        #
 # [Tips]                                                                 #
 # - Use color coding '&' character, on this page:                        #
 # http://minecraft.gamepedia.com/Formatting_codes                        #
 # - In case of an error, write here:                                     #
 # https://github.com/montlikadani/TabList/issues                         #
+# - Use symbols in messages, on this page:                               #
+# https://github.com/montlikadani/TabList/wiki/Symbols                   #
 #=================================OOO====================================#
 
 # If these number mark (#) are in the way, you can safely remove it.
@@ -28,6 +30,13 @@
 # PlaceholderAPI use for the plugin.
 # It is not worth disabling because the plugin will not be perfect.
 placeholderapi: true
+
+# In what world do you use the tab?
+enabled-worlds:
+- world
+- world_the_end
+- lobby
+- hub
 
 # The nickname is the maximum usable characters (including color codes and %space% placeholder).
 nick-length: 30
@@ -41,10 +50,22 @@ change-tablist-name: true
 # Allow to change the user display name?
 change-displayname: true
 
+# When the player left the server, delete the nickname?
+clear-player-nick-on-quit: false
+
 # Enable the default color. (If the player has not written a color code, this color will be given by default.)
 default-nick-color:
   enable: false
   default-color: '&a'
+
+# Allow the tab to set the level of life (health)?
+# WARNING! This only appears in the server after reconnecting.
+health-tab:
+  enable: false
+  # Which worlds show your health tab?
+  enabled-worlds:
+  - world
+  - world_the_end
 
 # Update tablist. (In ticks!)
 # 20 tick - 1 second.
@@ -54,12 +75,12 @@ update-ticks: 60
 tab-enable: true
 
 # Tablist. Header & footer.
-# Use %prefix%, \n, %staff_online%, %ping%, %servername%, %online+1%, %max_players%, %online_players% placeholders.
+# Use %prefix%, \n, %staff-online%, %ip-address%, %mc-version%, %motd%, %ping%, %servername%, %online+1%, %max-players%, %online-players% placeholders.
 # Use placeholders: https://www.spigotmc.org/wiki/placeholderapi-placeholders/
-# Use symbols: https://dev.bukkit.org/projects/tab-list/pages/symbols
+# Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 tablist:
-  header: '&7<31>&b&l TabList&a created by:&6 montlikadani&7 <31>\n&7<75> &cWelcome&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms'
-  footer: '&7<13>&e&l Players: &6%online_players%&7/&6%max_players%\n&c All players:&a %online+1%&7 <13>\n<28>&6 My&4 server: &6&k::&f&k::&8black&6_&2forest&f&k::&6&k::&7.us.to (&4Offline&7) <28>'
+  header: '&7<31>&b&l TabList&a created by:&6 montlikadani&7 <31>\n&7<75> &cWelcome&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+  footer: '&5&m======================&7\n<13>&e&l Players: &6%online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&9 Website:&7 &nexample.com&7 <28>'
 
 #=========================================#
 #             Plugin Settings             #
@@ -71,6 +92,9 @@ enabled: true
 
 # bStats Metrics.
 metrics: true
+
+# Check for updates.
+check-update: true
 
 # Auto plugin refresh.
 auto-refresh-enable: false
@@ -87,7 +111,7 @@ log-to-file: true
 # Use %prefix%, %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.1&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.2&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
