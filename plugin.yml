@@ -1,19 +1,57 @@
 name: TabList
 main: hu.montlikadani.TabList.TabList
-version: 1.1
+version: 1.2
 author: montlikadani
 description: Tab prefix.
 softdepend: [PlaceholderAPI]
 # DO NOT EDIT ANYTHING ABOVE THIS LINE!
 
 commands:
-    tablist:
-        aliases: [tl]
-        description: The main command for TabList.
-        usage: <command>
-    nick:
-        description: Change the nick name.
-        usage: <command>
-    unnick:
-        description: Unnick the nick name.
-        usage: <command>
+  tablist:
+    description: The main command for TabList.
+    usage: <command>
+    aliases: [tl]
+  nick:
+    description: Change the nick name.
+    usage: <command>
+  unnick:
+    description: Unnick the nick name.
+    usage: <command>
+
+permissions:
+  tablist.nick:
+    description: Change the nick name permission.
+    default: false
+  tablist.unnick:
+    description: Unnick the nick name permission.
+    default: false
+  tablist.nick.other:
+    description: Change the player nick name permission.
+    default: false
+  tablist.unnick.other:
+    description: Unnick the player nick name permission.
+    default: false
+  tablist.help:
+    description: Help commands for TabList.
+    default: false
+  tablist.cmd.nocooldown:
+    description: Command wait time permission.
+    default: false
+  tablist.reload:
+    description: Reload the config files.
+    default: op
+  tablist.plugindisable:
+    description: Disable the plugin.
+    default: op
+  tablist.cmd.tabcomplete:
+    description: You can use [TAB] in commands.
+    default: false
+  tablist.get:
+    description: Get your nick name permission.
+    default: false
+  tablist.get.other:
+    description: Get other player nick name permission.
+    default: false
+  tablist.unnick.all:
+    description: Unnick all players permission.
+    default: false
