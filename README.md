@@ -6,4 +6,4 @@ Website: https://www.spigotmc.org/resources/tablist.46229/
 
 Wiki: https://github.com/montlikadani/TabList/wiki
 
-Changelog:
+Changelog: https://github.com/montlikadani/TabList/blob/master/Changelog.txt
