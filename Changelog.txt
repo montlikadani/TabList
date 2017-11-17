@@ -6,7 +6,7 @@
         Fixed unregistering health tab.
         Fixed updating tab. - It does not update the tab.
     Changed:
-        Changed enabled-worlds to disabled-words.
+        Changed enabled-worlds to disabled-worlds.
         Changed main-info-tlcommand-on-default to default-can-see-plugin-information boolean.
     Removed:
         Removed enabled-worlds stringlist.
