@@ -3,7 +3,7 @@ package hu.montlikadani.TabList;
 import org.bukkit.permissions.Permission;
 
 public class Permissions {
-	
+
 	public Permission perm = new Permission("tablist.cmd.nocooldown");
 	public Permission perm1 = new Permission("tablist.plugininfo");
 	public Permission perm2 = new Permission("tablist.help");
