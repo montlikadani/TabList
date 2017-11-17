@@ -1,3 +1,17 @@
+## v1.3
+     Added:
+        Added blacklist-nicknames stringlist. - Here's a blacklist of nicknames.
+        Added enable-color-code chat & tablist boolean. - The color codes can be used for nicknames (chat and tab).
+    Fixes:
+        Fixed unregistering health tab.
+        Fixed updating tab. - It does not update the tab.
+    Changed:
+        Changed enabled-worlds to disabled-words.
+        Changed main-info-tlcommand-on-default to default-can-see-plugin-information boolean.
+    Removed:
+        Removed enabled-worlds stringlist.
+        Removed auto refresh. - It was unnecessary.
+        Removed some spaces & code.
 ## v1.2
         Bug fixes.
         Updated config files.
