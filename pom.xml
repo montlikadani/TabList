@@ -1,64 +1,57 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+name: TabList
+main: hu.montlikadani.TabList.TabList
+version: 1.3
+author: montlikadani
+description: Tab prefix.
+softdepend: [PlaceholderAPI]
+# DO NOT EDIT ANYTHING ABOVE THIS LINE!
 
-    <groupId>hu.montlikadani</groupId>
-    <artifactId>TabList</artifactId>
-    <packaging>pom</packaging>
-    <version>1.2</version>
+commands:
+  tablist:
+    description: The main command for TabList.
+    usage: <command>
+    aliases: [tl]
+  nick:
+    description: Change the nick name.
+    usage: <command>
+  unnick:
+    description: Unnick the nick name.
+    usage: <command>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
-
-    <modules>
-        <module>bstats-bukkit</module>
-    </modules>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-deploy-plugin</artifactId>
-                <version>2.8.1</version>
-                <configuration>
-                    <skip>true</skip>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.5.1</version>
-                <executions>
-                    <execution>
-                        <id>default-deploy</id>
-                        <phase>deploy</phase>
-                        <goals>
-                            <goal>deploy</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <serverId>nexus</serverId>
-                    <nexusUrl>https://repo.bstats.org/</nexusUrl>
-                    <skipStaging>true</skipStaging>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
-
-    <distributionManagement>
-        <repository>
-            <id>bstats-releases</id>
-            <url>https://repo.bstats.org/content/repositories/releases/</url>
-        </repository>
-        <snapshotRepository>
-            <id>bstats-snapshots</id>
-            <url>https://repo.bstats.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-</project>
+permissions:
+  tablist.nick:
+    description: Change the nick name permission.
+    default: false
+  tablist.unnick:
+    description: Unnick the nick name permission.
+    default: false
+  tablist.nick.other:
+    description: Change the player nick name permission.
+    default: false
+  tablist.unnick.other:
+    description: Unnick the player nick name permission.
+    default: false
+  tablist.help:
+    description: Help commands for TabList.
+    default: false
+  tablist.cmd.nocooldown:
+    description: Command wait time permission.
+    default: false
+  tablist.reload:
+    description: Reload the config files.
+    default: op
+  tablist.plugindisable:
+    description: Disable the plugin.
+    default: op
+  tablist.cmd.tabcomplete:
+    description: You can use [TAB] in commands.
+    default: false
+  tablist.get:
+    description: Get your nick name permission.
+    default: false
+  tablist.get.other:
+    description: Get other player nick name permission.
+    default: false
+  tablist.unnick.all:
+    description: Unnick all players permission.
+    default: false
