@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.TabList
-version: 1.2
+version: 1.3
 author: montlikadani
 description: Tab prefix.
 softdepend: [PlaceholderAPI]
