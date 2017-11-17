@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 1.2                                   #
+# config.yml file. Plugin version: 1.3                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -32,9 +32,8 @@
 placeholderapi: true
 
 # In what world do you use the tab?
-enabled-worlds:
-- world
-- world_the_end
+# If you do not want to disable any of the worlds, then write it as follows: disabled-worlds: []
+disabled-worlds:
 - lobby
 - hub
 
@@ -43,6 +42,13 @@ nick-length: 30
 
 # Save nick names and original player name (who changed their nickname) and UUID?
 log-nicknames: true
+
+# Which nicknames can not be used?
+# If all the words are used, set it as follows: blacklist-nicknames: []
+# WARNING! Color codes are NOT considered.
+blacklist-nicknames:
+- help
+- nickname
 
 # Do you want to change your nickname on your tab [TAB]?
 change-tablist-name: true
@@ -58,12 +64,19 @@ default-nick-color:
   enable: false
   default-color: '&a'
 
+# Allow color or code to be used on chat or on a tab.
+# That is color tab or chat.
+enable-color-code:
+  chat: true
+  tablist: true
+
 # Allow the tab to set the level of life (health)?
 # WARNING! This only appears in the server after reconnecting.
 health-tab:
   enable: false
   # Which worlds show your health tab?
-  enabled-worlds:
+  # If you do not want to disable any of the worlds, then write it as follows: disabled-worlds: []
+  disabled-worlds:
   - world
   - world_the_end
 
@@ -96,11 +109,6 @@ metrics: true
 # Check for updates.
 check-update: true
 
-# Auto plugin refresh.
-auto-refresh-enable: false
-# In minutes!
-auto-refresh-time: 10
-
 # Log in to the console with plugin messages.
 logconsole: true
 
@@ -111,12 +119,13 @@ log-to-file: true
 # Use %prefix%, %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.2&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.3&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
 # The default is allowed to see the plugin information.
-main-info-tlcommand-on-default: false
+# Permission: tablist.plugininfo
+default-can-see-plugin-information: false
 
 # Command waiting period.
 # If you set it to 0 you will not have to wait.
