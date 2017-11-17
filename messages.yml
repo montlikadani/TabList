@@ -22,6 +22,7 @@ get-cmd-no-console: '%prefix%&c You are not a player! Please use "&7/%command% %
 # Use %nick% placeholder.
 success-nick: '&aYou now appear as&e %nick%&a!'
 get-your-nickname: '&aYour nick name: %nick%'
+nickname-not-supported: '&cThis nickname is not allowed!&7 %nick%'
 
 # Use %sender% placeholder.
 all-unnick: '&2Name everyone by returning to their original name by&e %sender%&2!'
@@ -40,17 +41,23 @@ player-not-found: '%prefix%&c Player not found:&7 %player%&c!'
 player-nick-changed: '&aSet&4 %target%&a nick to&6 %nick%&a.'
 target-no-unnick: '&7%target%&c has no nickname.'
 no-unnick: '&cThere is no set nickname either.'
+get-nick-name: '&e%target%&a Nick name:&c %nick%'
 
 # This feature lists all the chat panel help.
 chat-messages:
-- '&c&m---------&b> &e[&5Tab&cList&2 Help&e]&b <&c&m----------'
-- '&8/&a%command% [TAB]&4 -&6 Main plugin info.'
-- '&8/&a%command% disable&4 -&6 Disable the plugin.'
-- '&8/&a%command% help&4 -&6 Help commands.'
-- '&8/&a%command% reload (or rl)&4 -&6 Reload the config files.'
-- '&8/&anick&7 [player] <nickname>&4 -&6 Changing your nickname.'
-- '&8/&aunnick&7 [player;all]&4 -&6 Returns your nickname to your original name.'
-- '&8/&a%command% get&7 [player]&4 -&6 Get player nick name.'
-- '&c&m-----------------------------------------------------'
-#You can add more paragraphs.
+- '&e&m---------&b> &e[&5Tab&cList&2 Help&e]&b <&e&m----------'
+- ''
+- '&7-&9 []&7 -&9 optional arguments'
+- '&7-&c <>&7 -&c required arguments'
+- '&7-&3 ()&7 -&3 command abbreviations'
+- ''
+- '&8/&a%command%&b [+TAB]&5 -&6 Main plugin info.'
+- '&8/&a%command% disable&5 -&6 Disable the plugin.'
+- '&8/&a%command% help&5 -&6 Help commands.'
+- '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the config files.'
+- '&8/&anick&9 [player]&c <nickname>&5 -&6 Changing your nickname.'
+- '&8/&aunnick&9 [player;all]&5 -&6 Returns your nickname to your original name.'
+- '&8/&a%command% get&9 [player]&5 -&6 Get player nick name.'
+- '&e&m-----------------------------------------------------'
+
 warning-disable-command: '%prefix%&4&l Warning!&c If you disable the plugin, you can only enable it when you refresh the server and enable "enabled: true" in the config.yml file.'
