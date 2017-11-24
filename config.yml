@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 1.3                                   #
+# config.yml file. Plugin version: 1.4                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -70,6 +70,12 @@ enable-color-code:
   chat: true
   tablist: true
 
+# Allows the op player to change the player's nickname.
+other-player-changed-nickname-enable: false
+
+# Use %sender%, %nick% placeholder.
+other-player-changed-nick-message: '&2%sender%&6 changed your nickname to:&7 %nick%'
+
 # Allow the tab to set the level of life (health)?
 # WARNING! This only appears in the server after reconnecting.
 health-tab:
@@ -80,20 +86,41 @@ health-tab:
   - world
   - world_the_end
 
-# Update tablist. (In ticks!)
-# 20 tick - 1 second.
-update-ticks: 60
-
 # Enable the tab? (Header, footer)
 tab-enable: true
 
-# Tablist. Header & footer.
+# Tablist. Header & footer with animation.
 # Use %prefix%, \n, %staff-online%, %ip-address%, %mc-version%, %motd%, %ping%, %servername%, %online+1%, %max-players%, %online-players% placeholders.
 # Use placeholders: https://www.spigotmc.org/wiki/placeholderapi-placeholders/
 # Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 tablist:
-  header: '&7<31>&b&l TabList&a created by:&6 montlikadani&7 <31>\n&7<75> &cWelcome&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-  footer: '&5&m======================&7\n<13>&e&l Players: &6%online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&9 Website:&7 &nexample.com&7 <28>'
+  # Tab update time interval.
+  interval: 5
+  header:
+    - '&b&lTabList\n&7    <75>&c W&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&6&lTabList\n&7    <75>&c We&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&4&lTabList\n&7    <75>&c Wel&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&9&lTabList\n&7    <75>&c Welc&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&a&lTabList\n&7    <75>&c Welco&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&e&lTabList\n&7    <75>&c Welcom&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&5&lTabList\n&7    <75>&c Welcome&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&b&lTabList\n&7    <75>&6 Welcome&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&6&lTabList\n&7    <75>&7 Welcome&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&4&lTabList\n&7    <75>&4 Welcome&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&9&lTabList\n&7    <75>&a Welcome&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&a&lTabList\n&7    <75>&b Welcome&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&e&lTabList\n&7    <75>&9 Welcome&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&5&lTabList\n&7    <75>&f Welcome&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&b&lTabList\n&7    <75>&f Welcom&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&6&lTabList\n&7    <75>&f Welco&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&4&lTabList\n&7    <75>&f Welc&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&9&lTabList\n&7    <75>&f Wel&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&a&lTabList\n&7    <75>&f We&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&e&lTabList\n&7    <75>&f W&5 %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&5&lTabList\n&7    <75>&f&5  %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&b&lTabList\n&7    <75>&f&5  %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+  footer:
+    - '&5&m======================&7\n<13>&e&l Players: &6%online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&9 Website:&7 &nexample.com&7 <28>'
 
 #=========================================#
 #             Plugin Settings             #
@@ -119,7 +146,7 @@ log-to-file: true
 # Use %prefix%, %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.3&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.4&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
