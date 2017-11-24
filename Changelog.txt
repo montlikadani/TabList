@@ -1,3 +1,12 @@
+## v1.4
+     Added:
+        Added animated tab.
+        Added support for console commands. (/nick, /unnick)
+        Added other-player-changed-nickname-enable boolean & other-player-changed-nick-message string.
+    Fixes:
+        Fixed the tab-enable was false, it did not disable it.
+        Fixed /tl get command nick not found and send error. - No nickname found and sends a bug to the console.
+        Fixed disabled-worlds not disabled. - It did not disable the worlds that were given.
 ## v1.3
      Added:
         Added blacklist-nicknames stringlist. - Here's a blacklist of nicknames.
