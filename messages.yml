@@ -14,14 +14,15 @@ reload-config: '%prefix%&a The plugin successfully reloaded!'
 unknown-sub-command: '%prefix%&c Unknown sub-command&7 %subcmd%&c.'
 
 # Use %command% placeholder.
-no-console: '%prefix%&c This command "&7/%command%&c" can only be performed within the player.'
+console-nickcmd-use: '%prefix%&c You are not a player! Please use "&7/%command% <player> <nickname>&c".'
+unnick-cmd-no-console: '%prefix%&c You are not a player! Please use "&7/%command% <player;all>&c".'
 
 # Use %args% placeholder.
 get-cmd-no-console: '%prefix%&c You are not a player! Please use "&7/%command% %args% <player>&c".'
 
 # Use %nick% placeholder.
 success-nick: '&aYou now appear as&e %nick%&a!'
-get-your-nickname: '&aYour nick name: %nick%'
+get-your-nickname: '&2Your nick name: %nick%&2.'
 nickname-not-supported: '&cThis nickname is not allowed!&7 %nick%'
 
 # Use %sender% placeholder.
@@ -34,8 +35,10 @@ nick-usage: '&cUse: "&7/nick [player] <nickname>&c"&2 - You can use color coding
 # Use %player% placeholder.
 unnick-player-message: '&aYou have successfully changed&6 %player%&a to the original.'
 player-no-online: '&cPlayer&8 %player%&c is currently offline.'
+player-not-found: '%prefix%&c The player&7 %player%&c not online!'
+player-nickname-not-found: '%prefix%&c This player&7 %player%&c does not have a set nickname either!'
 unnick-message: '&aYou have been unnicked.'
-player-not-found: '%prefix%&c Player not found:&7 %player%&c!'
+no-nickname: '%prefix%&c You do not have a set nickname either!'
 
 # Use %target% placeholder.
 player-nick-changed: '&aSet&4 %target%&a nick to&6 %nick%&a.'
