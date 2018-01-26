@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.TabList
-version: 1.4
+version: 1.5
 author: montlikadani
 description: Animated tab prefix.
 softdepend: [PlaceholderAPI]
@@ -33,9 +33,6 @@ permissions:
     default: false
   tablist.help:
     description: Help commands for TabList.
-    default: false
-  tablist.cmd.nocooldown:
-    description: Command wait time permission.
     default: false
   tablist.reload:
     description: Reload the config files.
