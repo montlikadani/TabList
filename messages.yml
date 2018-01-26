@@ -6,18 +6,23 @@
 # >> These features are NOT supported by PlaceholderAPI! <<
 prefix: '&6&l[&5&lTab&c&lList&6&l]&7&l »'
 
-# Use %prefix%, %newline%, %perm% placeholder.
-no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
+# Use %prefix%, %newline% placeholder.
 reload-config: '%prefix%&a The plugin successfully reloaded!'
+unnick-cmd-no-console: '%prefix%&c You are not a player! Please use "&7/unnick <player;all>&c".'
+nick-usage: '&cPlease use: "&7/nick [player] <nickname>&c"&2 - You can use color coding and&6 %space%&2 placeholder.'
+console-nick-usage: '&cPlease use: "&7/nick <player> <nickname>&c"&2 - You can use color coding and&6 %space%&2 placeholder.'
+unnick-message: '&aYou have been unnicked.'
+no-nickname: '%prefix%&c You do not have a set nickname either!'
+no-unnick: '&cThere is no set nickname either.'
+warning-disable-command: '%prefix%&4&l Warning!&c If you disable the plugin, you can only enable it when you refresh the server and enable "enabled: true" in the config.yml file.'
+
+# Use %perm% placeholder.
+no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
 
 # Use %subcmd% placeholder.
 unknown-sub-command: '%prefix%&c Unknown sub-command&7 %subcmd%&c.'
 
-# Use %command% placeholder.
-console-nickcmd-use: '%prefix%&c You are not a player! Please use "&7/%command% <player> <nickname>&c".'
-unnick-cmd-no-console: '%prefix%&c You are not a player! Please use "&7/%command% <player;all>&c".'
-
-# Use %args% placeholder.
+# Use %command%, %args% placeholder.
 get-cmd-no-console: '%prefix%&c You are not a player! Please use "&7/%command% %args% <player>&c".'
 
 # Use %nick% placeholder.
@@ -30,20 +35,17 @@ all-unnick: '&2Name everyone by returning to their original name by&e %sender%&2
 
 # Use %length% placeholder.
 max-length: '&cYou can use maximum length is&7 %length%&c.'
-nick-usage: '&cUse: "&7/nick [player] <nickname>&c"&2 - You can use color coding and&6 %space%&2 placeholder.'
 
 # Use %player% placeholder.
 unnick-player-message: '&aYou have successfully changed&6 %player%&a to the original.'
 player-no-online: '&cPlayer&8 %player%&c is currently offline.'
 player-not-found: '%prefix%&c The player&7 %player%&c not online!'
 player-nickname-not-found: '%prefix%&c This player&7 %player%&c does not have a set nickname either!'
-unnick-message: '&aYou have been unnicked.'
-no-nickname: '%prefix%&c You do not have a set nickname either!'
+console-nick-usage2: '&cPlease use: "&7/nick %player% <nickname>&c"&2 - You can use color coding and&6 %space%&2 placeholder.'
 
 # Use %target% placeholder.
 player-nick-changed: '&aSet&4 %target%&a nick to&6 %nick%&a.'
 target-no-unnick: '&7%target%&c has no nickname.'
-no-unnick: '&cThere is no set nickname either.'
 get-nick-name: '&e%target%&a Nick name:&c %nick%'
 
 # This feature lists all the chat panel help.
@@ -53,14 +55,13 @@ chat-messages:
 - '&7-&9 []&7 -&9 optional arguments'
 - '&7-&c <>&7 -&c required arguments'
 - '&7-&3 ()&7 -&3 command abbreviations'
+- '&7-&2 ;&7 -&2 writes more to one place'
 - ''
 - '&8/&a%command%&b [+TAB]&5 -&6 Main plugin info.'
 - '&8/&a%command% disable&5 -&6 Disable the plugin.'
 - '&8/&a%command% help&5 -&6 Help commands.'
 - '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the config files.'
 - '&8/&anick&9 [player]&c <nickname>&5 -&6 Changing your nickname.'
-- '&8/&aunnick&9 [player;all]&5 -&6 Returns your nickname to your original name.'
+- '&8/&aunnick&9 [player&2;&9all]&5 -&6 Returns your nickname to your original name.'
 - '&8/&a%command% get&9 [player]&5 -&6 Get player nick name.'
 - '&e&m-----------------------------------------------------'
-
-warning-disable-command: '%prefix%&4&l Warning!&c If you disable the plugin, you can only enable it when you refresh the server and enable "enabled: true" in the config.yml file.'
