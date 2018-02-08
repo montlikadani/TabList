@@ -16,5 +16,6 @@ public class Permissions {
 	public Permission perm10 = new Permission("tablist.unnick.all");
 	public Permission perm11 = new Permission("tablist.get");
 	public Permission perm12 = new Permission("tablist.get.other");
+	public Permission perm13 = new Permission("tablist.seetab");
 
 }
