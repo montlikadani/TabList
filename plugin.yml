@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.TabList
-version: 1.5
+version: 1.6
 author: montlikadani
 description: Animated tab prefix.
 softdepend: [PlaceholderAPI]
@@ -19,6 +19,9 @@ commands:
     usage: <command>
 
 permissions:
+  tablist.seetab:
+    description: Allow to player to see the tab.
+    default: true
   tablist.nick:
     description: Change the nick name permission.
     default: false
