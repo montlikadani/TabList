@@ -1,3 +1,11 @@
+## vv1.6
+Added:
+    Added player ping in tab. - The ping indication next to the player's name.
+    Added permission to have the tab visible to the player. (tablist.seetab)
+High fixes:
+    High fix when more than 2 players joined the server increased the server's slowdown and resulted in server drowning. Reported by: @HazyCraft
+Fixes:
+    Fixed when the server and plugin started, but there was no player on the server, the tab was still visible, so a small server lag.
 ## v1.5
 Added:
     Added displayname & tablist default color.
