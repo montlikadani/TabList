@@ -15,6 +15,7 @@ unnick-message: '&aYou have been unnicked.'
 no-nickname: '%prefix%&c You do not have a set nickname either!'
 no-unnick: '&cThere is no set nickname either.'
 warning-disable-command: '%prefix%&4&l Warning!&c If you disable the plugin, you can only enable it when you refresh the server and enable "enabled: true" in the config.yml file.'
+no-players: '%prefix%&c No players to restore other nick name.'
 
 # Use %perm% placeholder.
 no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
