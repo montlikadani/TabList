@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 1.5                                   #
+# config.yml file. Plugin version: 1.6                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -35,15 +35,18 @@ placeholderapi: true
 # ATTENTION! This is currently under repair and testing...
 remove-npc-name-from-tab: false
 
-# In what world do you use the tab?
-# If you do not want to disable any of the worlds, then write it as follows: disabled-worlds: []
-disabled-worlds:
-- lobby
-- hub
+# This indicates the ping for the player's name.
+# WARNING! First, you must disable the "health-tab" because it merges and causes a bug.
+ping-tab:
+  enable: false
+  # Ping update time interval.
+  interval: 3
+  # Which worlds do not show up in ping (world names)? If you do not want to disable any of them, use this: disabled-worlds: []
+  disabled-worlds: []
 
 # Allow nickname change.
 # Warning if this is false, the command will not be registered either. Requires server restart!
-nick-enable: true
+nick-enable: false
 
 # The nickname is the maximum usable characters (including color codes and %space% placeholder).
 nick-length: 30
@@ -91,21 +94,26 @@ other-player-changed-nick-message: '&2%sender%&6 changed your nickname to:&7 %ni
 
 # Allow the tab to set the level of life (health)?
 # WARNING! This only appears in the server after reconnecting.
+# WARNING! First, you must disable the "ping-tab" because it merges and causes a bug.
 health-tab:
   enable: false
-  # Which worlds show your health tab?
+  # Which worlds show your health in tab?
   # If you do not want to disable any of the worlds, then write it as follows: disabled-worlds: []
   disabled-worlds:
   - world_the_end
 
-# Enable the tab? (Header, footer)
-tab-enable: true
-
 # Tablist. Header & footer with animation.
-# Use %prefix%, \n, %staff-online%, %ip-address%, %mc-version%, %motd%, %ping%, %servername%, %online+1%, %max-players%, %online-players% placeholders.
+# Use %prefix%, \n, %staff-online%, %ip-address%, %level%, %xp%, %mc-version%, %motd%, %ping%, %servername%, %online+1%, %max-players%, %online-players% placeholders.
 # Use placeholders: https://www.spigotmc.org/wiki/placeholderapi-placeholders/
 # Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 tablist:
+  # Enable the tab? (Header, footer)
+  enable: true
+  # In what world do you use the tab?
+  # If you do not want to disable any of the worlds, then write it as follows: disabled-worlds: []
+  disabled-worlds:
+  - lobby
+  - hub
   # Tab update time interval.
   # Set 0 to disable.
   interval: 4
@@ -170,7 +178,7 @@ log-to-file: true
 # Use %prefix%, %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.5&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.6&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
