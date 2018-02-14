@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.TabList
-version: 1.6
+version: 1.7
 author: montlikadani
 description: Animated tab prefix.
 softdepend: [PlaceholderAPI]
