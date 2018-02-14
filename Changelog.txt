@@ -1,4 +1,7 @@
-## vv1.6
+# v1.7
+Fixes:
+  Fixed the tab did not show when the player joined and made a mistake to the console.
+# v1.6
 Added:
     Added player ping in tab. - The ping indication next to the player's name.
     Added permission to have the tab visible to the player. (tablist.seetab)
@@ -6,7 +9,7 @@ High fixes:
     High fix when more than 2 players joined the server increased the server's slowdown and resulted in server drowning. Reported by: @HazyCraft
 Fixes:
     Fixed when the server and plugin started, but there was no player on the server, the tab was still visible, so a small server lag.
-## v1.5
+# v1.5
 Added:
     Added displayname & tablist default color.
     Added 30+ symbols.
@@ -23,7 +26,7 @@ Changed:
     Changed default-color to displayname & tablist.
 Removed:
     Removed command wait time.
-## v1.4
+# v1.4
      Added:
         Added animated tab.
         Added support for console commands. (/nick, /unnick)
@@ -34,7 +37,7 @@ Removed:
         Fixed disabled-worlds not disabled. - It did not disable the worlds that were given.
     Removed:
         Removed update-ticks interval.
-## v1.3
+# v1.3
      Added:
         Added blacklist-nicknames stringlist. - Here's a blacklist of nicknames.
         Added enable-color-code chat & tablist boolean. - The color codes can be used for nicknames (chat and tab).
@@ -48,7 +51,7 @@ Removed:
         Removed enabled-worlds stringlist.
         Removed auto refresh. - It was unnecessary.
         Removed some spaces & code.
-## v1.2
+# v1.2
         Bug fixes.
         Updated config files.
         Added /unnick all command. - It resets all nicknames to the original.
@@ -67,7 +70,7 @@ Removed:
         Added new command /tl get [player] - Get player nick name.
         Fixed plugin permissions & commands.
         Added update checker - notify when an update is available. (In console)
-## v1.1
+# v1.1
         Bug fixes.
         Updated config files.
         Fixed default nick color - When it was false when it did not show the colors when it gave it color.
