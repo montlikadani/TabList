@@ -8,9 +8,9 @@ prefix: '&6&l[&5&lTab&c&lList&6&l]&7&l »'
 
 # Use %prefix%, %newline% placeholder.
 reload-config: '%prefix%&a The plugin successfully reloaded!'
-unnick-cmd-no-console: '%prefix%&c You are not a player! Please use "&7/unnick <player;all>&c".'
-nick-usage: '&cPlease use: "&7/nick [player] <nickname>&c"&2 - You can use color coding and&6 %space%&2 placeholder.'
-console-nick-usage: '&cPlease use: "&7/nick <player> <nickname>&c"&2 - You can use color coding and&6 %space%&2 placeholder.'
+unnick-cmd-no-console: '%prefix%&c You are not a player! Use "&7/unnick <player;all>&c".'
+nick-usage: '&cUse: "&7/nick [player] <nickname>&c"&2 - You can use color coding and&6 %space%&2 placeholder.'
+console-nick-usage: '&cUse: "&7/nick <player> <nickname>&c"&2 - You can use color coding and&6 %space%&2 placeholder.'
 unnick-message: '&aYou have been unnicked.'
 no-nickname: '%prefix%&c You do not have a set nickname either!'
 no-unnick: '&cThere is no set nickname either.'
@@ -24,7 +24,7 @@ no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
 unknown-sub-command: '%prefix%&c Unknown sub-command&7 %subcmd%&c.'
 
 # Use %command%, %args% placeholder.
-get-cmd-no-console: '%prefix%&c You are not a player! Please use "&7/%command% %args% <player>&c".'
+get-cmd-no-console: '%prefix%&c You are not a player! Use "&7/%command% %args% <player>&c".'
 
 # Use %nick% placeholder.
 success-nick: '&aYou now appear as&e %nick%&a!'
@@ -42,7 +42,7 @@ unnick-player-message: '&aYou have successfully changed&6 %player%&a to the orig
 player-no-online: '&cPlayer&8 %player%&c is currently offline.'
 player-not-found: '%prefix%&c The player&7 %player%&c not online!'
 player-nickname-not-found: '%prefix%&c This player&7 %player%&c does not have a set nickname either!'
-console-nick-usage2: '&cPlease use: "&7/nick %player% <nickname>&c"&2 - You can use color coding and&6 %space%&2 placeholder.'
+console-nick-usage2: '&cUse: "&7/nick %player% <nickname>&c"&2 - You can use color coding and&6 %space%&2 placeholder.'
 
 # Use %target% placeholder.
 player-nick-changed: '&aSet&4 %target%&a nick to&6 %nick%&a.'
