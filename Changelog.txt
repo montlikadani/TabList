@@ -1,3 +1,8 @@
+# v1.8
+Fixes:
+    Fixed the prefix does not show on the tab in the player's name.
+Other:
+    Updated PlaceholderAPI to the latest version.
 # v1.7
 Fixes:
   Fixed the tab did not show when the player joined and made a mistake to the console.
