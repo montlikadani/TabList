@@ -1,36 +1,36 @@
 # v1.8
-Fixes:
-    Fixed the prefix does not show on the tab in the player's name.
-Other:
-    Updated PlaceholderAPI to the latest version.
+     Fixes:
+        Fixed the prefix does not show on the tab in the player's name.
+     Other:
+        Updated PlaceholderAPI to the latest version.
 # v1.7
-Fixes:
-  Fixed the tab did not show when the player joined and made a mistake to the console.
+     Fixes:
+        Fixed the tab did not show when the player joined and made a mistake to the console.
 # v1.6
-Added:
-    Added player ping in tab. - The ping indication next to the player's name.
-    Added permission to have the tab visible to the player. (tablist.seetab)
-High fixes:
-    High fix when more than 2 players joined the server increased the server's slowdown and resulted in server drowning. Reported by: @HazyCraft
-Fixes:
-    Fixed when the server and plugin started, but there was no player on the server, the tab was still visible, so a small server lag.
+     Added:
+        Added player ping in tab. - The ping indication next to the player's name.
+        Added permission to have the tab visible to the player. (tablist.seetab)
+     High fixes:
+        High fix when more than 2 players joined the server increased the server's slowdown and resulted in server drowning. Reported by: @HazyCraft
+     Fixes:
+        Fixed when the server and plugin started, but there was no player on the server, the tab was still visible, so a small server lag.
 # v1.5
-Added:
-    Added displayname & tablist default color.
-    Added 30+ symbols.
-    Added remove npc name from tab boolean.
-    Added nick enable boolean.
-Fixes:
-    Fixed nick continues to spread. - The color in the nickname continues to spread.
-    Fixed the player left the server and rejoined, twice as many updated the tab.
-    Fixed when rewrote the update speed of the tab animation, reloaded the plugin, but did not do anything with the tab.
-    Fixed NPC names in tab. - You can now disable and enable the NPC name on the tab. Thanks @jake1579
-    Fixed all tasks stopped. - It has stopped all tasks that run on the server only.
-    Fixed time interval 0 not disable the tab. - When it was set to 0 on the timer, it did not disable the tab.
-Changed:
-    Changed default-color to displayname & tablist.
-Removed:
-    Removed command wait time.
+     Added:
+        Added displayname & tablist default color.
+        Added 30+ symbols.
+        Added remove npc name from tab boolean.
+        Added nick enable boolean.
+     Fixes:
+        Fixed nick continues to spread. - The color in the nickname continues to spread.
+        Fixed the player left the server and rejoined, twice as many updated the tab.
+        Fixed when rewrote the update speed of the tab animation, reloaded the plugin, but did not do anything with the tab.
+        Fixed NPC names in tab. - You can now disable and enable the NPC name on the tab. Thanks @jake1579
+        Fixed all tasks stopped. - It has stopped all tasks that run on the server only.
+        Fixed time interval 0 not disable the tab. - When it was set to 0 on the timer, it did not disable the tab.
+     Changed:
+        Changed default-color to displayname & tablist.
+     Removed:
+        Removed command wait time.
 # v1.4
      Added:
         Added animated tab.
