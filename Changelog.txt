@@ -1,3 +1,13 @@
+# v1.9
+     Added:
+        Added new command: /tl toggle <on;off> - Toggle the tab.
+        Added new placeholders:
+          %server-time% + time format
+          %server-ram-free%
+          %server-ram-max%
+          %server-ram-used%
+     Fixes:
+        Fixed when the server started and joined a player to the server but did not display the tab.
 # v1.8
      Fixes:
         Fixed the prefix does not show on the tab in the player's name.
