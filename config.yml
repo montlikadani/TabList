@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 1.8                                   #
+# config.yml file. Plugin version: 1.9                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -34,6 +34,10 @@ placeholderapi: true
 # Remove the NPC name from the tab?
 # ATTENTION! This is currently under repair and testing...
 remove-npc-name-from-tab: false
+
+# Time format.
+# Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
+time-format: 'yyyy.MM.dd - HH:mm:ss'
 
 # This indicates the ping for the player's name.
 # WARNING! First, you must disable the "health-tab" because it merges and causes a bug.
@@ -90,6 +94,7 @@ enable-color-code:
 # Allows the op player to change the player's nickname message.
 other-player-changed-nickname-message-enable: false
 # Use %sender%, %nick% placeholder.
+# >> NO supported the PlaceholderAPI! <<
 other-player-changed-nick-message: '&2%sender%&6 changed your nickname to:&7 %nick%'
 
 # Allow the tab to set the level of life (health)?
@@ -103,7 +108,8 @@ health-tab:
   - world_the_end
 
 # Tablist. Header & footer with animation.
-# Use %prefix%, \n, %staff-online%, %ip-address%, %level%, %xp%, %mc-version%, %motd%, %ping%, %servername%, %online+1%, %max-players%, %online-players% placeholders.
+# Use %prefix%, \n, %staff-online%, %ip-address%, %level%, %xp%, %mc-version%, %motd%, %ping%, %servername%, %online+1%,
+# %max-players%, %online-players%, %server-time%, %server-ram-free%, %server-ram-max%, %server-ram-used% placeholders.
 # Use placeholders: https://www.spigotmc.org/wiki/placeholderapi-placeholders/
 # Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 tablist:
@@ -178,7 +184,7 @@ log-to-file: true
 # Use %prefix%, %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.8&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.9&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
