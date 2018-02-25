@@ -17,5 +17,8 @@ public class Permissions {
 	public Permission perm11 = new Permission("tablist.get");
 	public Permission perm12 = new Permission("tablist.get.other");
 	public Permission perm13 = new Permission("tablist.seetab");
+	public Permission perm14 = new Permission("tablist.toggle");
+	public Permission perm15 = new Permission("tablist.toggle.off");
+	public Permission perm16 = new Permission("tablist.toggle.on");
 
 }
