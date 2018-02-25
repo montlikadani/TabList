@@ -25,6 +25,13 @@ unknown-sub-command: '%prefix%&c Unknown sub-command&7 %subcmd%&c.'
 
 # Use %command%, %args% placeholder.
 get-cmd-no-console: '%prefix%&c You are not a player! Use "&7/%command% %args% <player>&c".'
+toggle:
+  usage: '%prefix%&c Use "&7/%command% toggle <on;off>"&c.'
+  already-enabled: '&cThe tab is already enabled.'
+  already-disabled: '&cThe tab is already disabled.'
+  enabled: '&aThe tab is successfully turned on!'
+  disabled: '&cThe tab is successfully turned off!'
+  no-player: '%prefix%&c There is no player available on the server.'
 
 # Use %nick% placeholder.
 success-nick: '&aYou now appear as&e %nick%&a!'
@@ -62,6 +69,7 @@ chat-messages:
 - '&8/&a%command% disable&5 -&6 Disable the plugin.'
 - '&8/&a%command% help&5 -&6 Help commands.'
 - '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the config files.'
+- '&8/&a%command% toggle&c <on&2;&coff>&5 -&6 Toggle the tab.'
 - '&8/&anick&9 [player]&c <nickname>&5 -&6 Changing your nickname.'
 - '&8/&aunnick&9 [player&2;&9all]&5 -&6 Returns your nickname to your original name.'
 - '&8/&a%command% get&9 [player]&5 -&6 Get player nick name.'
