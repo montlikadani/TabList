@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.TabList
-version: 1.8
+version: 1.9
 author: montlikadani
 description: Animated tab prefix.
 softdepend: [PlaceholderAPI]
@@ -54,4 +54,13 @@ permissions:
     default: false
   tablist.unnick.all:
     description: Unnick all players permission.
+    default: false
+  tablist.toggle:
+    description: You can use the /tl toggle command.
+    default: false
+  tablist.toggle.on:
+    description: You can use the /tl toggle on command.
+    default: false
+  tablist.toggle.off:
+    description: You can use the /tl toggle off command.
     default: false
