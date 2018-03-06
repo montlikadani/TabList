@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 1.9                                   #
+# config.yml file. Plugin version: 2.0                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -93,7 +93,7 @@ enable-color-code:
 
 # Allows the op player to change the player's nickname message.
 other-player-changed-nickname-message-enable: false
-# Use %sender%, %nick% placeholder.
+# Use %newline%, %prefix%, %sender%, %nick% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 other-player-changed-nick-message: '&2%sender%&6 changed your nickname to:&7 %nick%'
 
@@ -108,7 +108,7 @@ health-tab:
   - world_the_end
 
 # Tablist. Header & footer with animation.
-# Use %prefix%, \n, %staff-online%, %ip-address%, %level%, %xp%, %mc-version%, %motd%, %ping%, %servername%, %online+1%,
+# Use \n, %staff-online%, %ip-address%, %level%, %xp%, %mc-version%, %motd%, %ping%, %servername%, %online+1%,
 # %max-players%, %online-players%, %server-time%, %server-ram-free%, %server-ram-max%, %server-ram-used% placeholders.
 # Use placeholders: https://www.spigotmc.org/wiki/placeholderapi-placeholders/
 # Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
@@ -174,17 +174,17 @@ metrics: true
 # Check for updates.
 check-update: true
 
-# Log in to the console with plugin messages.
+# Log plugin messages into console.
 logconsole: true
 
 # Logging to file plugin messages.
 log-to-file: true
 
 # Plugin enable/disable messages in console.
-# Use %prefix%, %newline% placeholder.
+# Use %newline%, %prefix% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v1.9&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v2.0&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
@@ -194,8 +194,7 @@ default-can-see-plugin-information: false
 
 # Unknown-command - If more than one word/letter you write to it.
 # Example: /tl reload something...
-# Use %newline%, %command%, %prefix% placeholder.
-# %command% - When you type the command (example: /tablist), it writes the command to it.
+# Use %command% placeholder.
 # This feature is NOT enter into the unknown command Minecraft, it's just your own.
 # >> NO supported the PlaceholderAPI! <<
 unknown-command-enable: true
