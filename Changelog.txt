@@ -1,3 +1,13 @@
+# v2.0
+Added:
+    Added %tps% placeholder.
+Fixes:
+    Fixed PaperSpigot lag error.
+    Fixed did not load the tab interval when execute /tl reload command.
+    Fixed write a long error in the console when the player joined the server.
+Other:
+    Updated PlaceholderAPI to the latest version.
+
 # v1.9
      Added:
         Added new command: /tl toggle <on;off> - Toggle the tab.
