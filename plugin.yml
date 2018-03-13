@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.TabList
-version: 2.0
+version: 2.1
 author: montlikadani
 description: Animated tab prefix.
 softdepend: [PlaceholderAPI]
@@ -11,29 +11,15 @@ commands:
     description: The main command for TabList.
     usage: <command>
     aliases: [tl]
-  nick:
-    description: Change the nick name.
+  tabname:
+    description: Set the player name for the tab.
     usage: <command>
-  unnick:
-    description: Unnick the nick name.
-    usage: <command>
+    aliases: [tname]
 
 permissions:
   tablist.seetab:
     description: Allow to player to see the tab.
     default: true
-  tablist.nick:
-    description: Change the nick name permission.
-    default: false
-  tablist.unnick:
-    description: Unnick the nick name permission.
-    default: false
-  tablist.nick.other:
-    description: Change the player nick name permission.
-    default: false
-  tablist.unnick.other:
-    description: Unnick the player nick name permission.
-    default: false
   tablist.help:
     description: Help commands for TabList.
     default: false
@@ -41,19 +27,16 @@ permissions:
     description: Reload the config files.
     default: op
   tablist.plugindisable:
-    description: Disable the plugin.
+    description: Allow to player to disable plugin.
     default: op
   tablist.cmd.tabcomplete:
     description: You can use [TAB] in commands.
     default: false
   tablist.get:
-    description: Get your nick name permission.
+    description: Get tab name permission.
     default: false
   tablist.get.other:
-    description: Get other player nick name permission.
-    default: false
-  tablist.unnick.all:
-    description: Unnick all players permission.
+    description: Get other player tab name permission.
     default: false
   tablist.toggle:
     description: You can use the /tl toggle command.
@@ -63,4 +46,16 @@ permissions:
     default: false
   tablist.toggle.off:
     description: You can use the /tl toggle off command.
+    default: false
+  tablist.tabname:
+    description: You can use the /tabname command.
+    default: false
+  tablist.tabname.other:
+    description: You can use the /tabname <player> <name> command.
+    default: false
+  tablist.reset:
+    description: You can use the /tabname reset command.
+    default: false
+  tablist.reset.other:
+    description: You can use the /tabname reset <player> command.
     default: false
