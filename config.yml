@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 2.0                                   #
+# config.yml file. Plugin version: 2.1                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -28,7 +28,6 @@
 #                Settings                 #
 #=========================================#
 # PlaceholderAPI use for the plugin.
-# It is not worth disabling because the plugin will not be perfect.
 placeholderapi: true
 
 # Remove the NPC name from the tab?
@@ -48,54 +47,31 @@ ping-tab:
   # Which worlds do not show up in ping (world names)? If you do not want to disable any of them, use this: disabled-worlds: []
   disabled-worlds: []
 
-# Allow nickname change.
-# Warning if this is false, the command will not be registered either. Requires server restart!
-nick-enable: false
-
-# The nickname is the maximum usable characters (including color codes and %space% placeholder).
-nick-length: 30
-
-# Save nick names and original player name (who changed their nickname) and UUID?
-log-nicknames: true
-
-# Which nicknames can not be used?
-# If all the words are used, set it as follows: blacklist-nicknames: []
-# WARNING! Color codes are NOT considered.
-blacklist-nicknames:
-- help
-- nickname
-
-# Do you want to change your nickname on your tab [TAB]?
-change-tablist-name: true
-
-# Allow to change the user display name?
-change-displayname: true
-
-# When the player left the server, delete the nickname?
-clear-player-nick-on-quit: false
-
-# Enable the default color. (If the player has not written a color code, this color will be given by default.)
-default-nick-color:
-  # The player's display name is a default color if no color code is specified.
-  displayname:
+# Player tab name.
+tabname:
+  # Allow change player tab name.
+  # Warning if this is false, the command will not be registered either. Requires server restart!
+  enable: true
+  # How many letters should be allowed?
+  max-name-length: 200
+  # When the player left the server, delete the tab name?
+  clear-player-tabname-on-quit: false
+  # Enables color coding for tab names. ("&")
+  enable-color-code: true
+  # Enable the default color. (If the player has not written a color code, this color will be given by default.)
+  default-color:
     enable: false
-    default-color: '&a'
-  # The player's name in the tab is the default color if no color code is written.
-  tablist:
-    enable: false
-    default-color: '&c'
-
-# Allow color or code to be used on chat or on a tab.
-# That is color tab or chat.
-enable-color-code:
-  chat: true
-  tablist: true
-
-# Allows the op player to change the player's nickname message.
-other-player-changed-nickname-message-enable: false
-# Use %newline%, %prefix%, %sender%, %nick% placeholder.
-# >> NO supported the PlaceholderAPI! <<
-other-player-changed-nick-message: '&2%sender%&6 changed your nickname to:&7 %nick%'
+    color: '&6'
+  # Which worlds can not change a tab name?
+  # If you do not want to disable it, use it as follows: disabled-worlds: []
+  disabled-worlds: []
+  # Which names can not be used?
+  # If all the words are used, set it as follows: blacklist-names: []
+  # WARNING! Color codes are NOT considered.
+  blacklist-names:
+  - tabname
+  enable-other-changed-name-message: false
+  other-changed-name-message: '&3Your name is changed to&r %name%&3 by&e %sender%&3.'
 
 # Allow the tab to set the level of life (health)?
 # WARNING! This only appears in the server after reconnecting.
@@ -184,7 +160,7 @@ log-to-file: true
 # Use %newline%, %prefix% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v2.0&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v2.1&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
