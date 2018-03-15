@@ -1,3 +1,10 @@
+# v2.2
+Added:
+    Added new animation type. - The old one has thrown a lot of mistakes.
+    Added custom variables section. - Create custom message variable.
+Fixes:
+    Fixed the tab did not show when the player joined the server.
+
 # v2.1
 Added:
     Added /tabname command.
