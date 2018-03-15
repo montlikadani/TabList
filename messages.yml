@@ -34,7 +34,6 @@ tabname:
   other-name-change-success: '&aYou successfully changed&6 %target%&a name to&r %name%&a.'
   name-reseted: '&aYour name has been successfully reseted.'
   other-name-reseted: '&aYou have been reseted&7 %target%&a name.'
-  # Use %name% placeholder.
   get-tab-name: '&2%target%&9 name:&r %name%'
   get-your-tab-name: '&aYour name:&r %name%'
   # Use %max% placeholder.
