@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 2.1                                   #
+# config.yml file. Plugin version: 2.2                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -38,6 +38,14 @@ remove-npc-name-from-tab: false
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
 time-format: 'yyyy.MM.dd - HH:mm:ss'
 
+# Custom variables.
+# Use: <something>: '&6Message...'
+custom-variables:
+  <website>: 'example.com'
+  <name>: '&r%player_name%'
+  <pluginauthor>: '&amontlikadani'
+  <rightarrow>: '-->'
+
 # This indicates the ping for the player's name.
 # WARNING! First, you must disable the "health-tab" because it merges and causes a bug.
 ping-tab:
@@ -71,6 +79,8 @@ tabname:
   blacklist-names:
   - tabname
   enable-other-changed-name-message: false
+  # Use %name%, %sender%, %newline%, %prefix% placeholder.
+  # >> NO supported the PlaceholderAPI! <<
   other-changed-name-message: '&3Your name is changed to&r %name%&3 by&e %sender%&3.'
 
 # Allow the tab to set the level of life (health)?
@@ -145,10 +155,10 @@ tablist:
 enabled: true
 
 # bStats Metrics.
-metrics: true
+metrics: false
 
 # Check for updates.
-check-update: true
+check-update: false
 
 # Log plugin messages into console.
 logconsole: true
@@ -160,7 +170,7 @@ log-to-file: true
 # Use %newline%, %prefix% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v2.1&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v2.2&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
