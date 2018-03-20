@@ -1,3 +1,7 @@
+# v2.3
+Fixes:
+    Fixed not find the task, so it will mistake.
+    Fixed did not show the tab when the player joined the server in 1.8.x versions.
 # v2.2
 Added:
     Added new animation type. - The old one has thrown a lot of mistakes.
