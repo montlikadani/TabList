@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 2.2                                   #
+# config.yml file. Plugin version: 2.3                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -155,10 +155,10 @@ tablist:
 enabled: true
 
 # bStats Metrics.
-metrics: false
+metrics: true
 
 # Check for updates.
-check-update: false
+check-update: true
 
 # Log plugin messages into console.
 logconsole: true
@@ -170,7 +170,7 @@ log-to-file: true
 # Use %newline%, %prefix% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v2.2&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v2.3&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
