@@ -1,3 +1,11 @@
+# v2.4
+Added:
+    Added group prefixes and suffixes. - You wanted that, I did it. :)
+Fixes:
+    Fixed always check the tablist.staff permission to see if it is in the configuration.
+Other:
+    Updated PlaceholderAPI to the latest version.
+
 # v2.3
 Fixes:
     Fixed not find the task, so it will mistake.
