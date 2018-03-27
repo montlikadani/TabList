@@ -1,3 +1,6 @@
+# v2.4.1
+Fixes:
+    Fixed the plugin did not start and sent a bug to the console.
 # v2.4
 Added:
     Added group prefixes and suffixes. - You wanted that, I did it. :)
