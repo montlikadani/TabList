@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 2.3                                   #
+# config.yml file. Plugin version: 2.4                                   #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -46,6 +46,27 @@ custom-variables:
   <pluginauthor>: '&amontlikadani'
   <rightarrow>: '-->'
 
+# Group prefixes and suffixes. (Requires a permission system.)
+# WARNING! Max character is 16 in prefix and suffix!
+# Unlimited group.
+groups:
+  staff:
+    position: 1
+    prefix: '&a[&bStaff&a]&7 '
+    suffix: ''
+    # This permission must be in the permission system (e.g. PermissionsEx).
+    # ATTENTION! To replace %group% when the permission system always writes the name of the group that is here (e.g. tablist.owner).
+    # Use %group% placeholder.
+    permission: 'tablist.%group%'
+  default:
+    position: 2
+    prefix: '&7'
+    suffix: ''
+    # This permission must be in the permission system (e.g. PermissionsEx).
+    # ATTENTION! To replace %group% when the permission system always writes the name of the group that is here (e.g. tablist.owner).
+    # Use %group% placeholder.
+    permission: 'tablist.%group%'
+
 # This indicates the ping for the player's name.
 # WARNING! First, you must disable the "health-tab" because it merges and causes a bug.
 ping-tab:
@@ -59,7 +80,7 @@ ping-tab:
 tabname:
   # Allow change player tab name.
   # Warning if this is false, the command will not be registered either. Requires server restart!
-  enable: true
+  enable: false
   # How many letters should be allowed?
   max-name-length: 200
   # When the player left the server, delete the tab name?
@@ -170,7 +191,7 @@ log-to-file: true
 # Use %newline%, %prefix% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v2.3&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v2.4&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
