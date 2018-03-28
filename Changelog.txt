@@ -1,6 +1,7 @@
 # v2.4.1
 Fixes:
     Fixed the plugin did not start and sent a bug to the console.
+
 # v2.4
 Added:
     Added group prefixes and suffixes. - You wanted that, I did it. :)
@@ -49,14 +50,17 @@ Other:
           %server-ram-used%
      Fixes:
         Fixed when the server started and joined a player to the server but did not display the tab.
+
 # v1.8
      Fixes:
         Fixed the prefix does not show on the tab in the player's name.
      Other:
         Updated PlaceholderAPI to the latest version.
+
 # v1.7
      Fixes:
         Fixed the tab did not show when the player joined and made a mistake to the console.
+
 # v1.6
      Added:
         Added player ping in tab. - The ping indication next to the player's name.
@@ -65,6 +69,7 @@ Other:
         High fix when more than 2 players joined the server increased the server's slowdown and resulted in server drowning. Reported by: @HazyCraft
      Fixes:
         Fixed when the server and plugin started, but there was no player on the server, the tab was still visible, so a small server lag.
+
 # v1.5
      Added:
         Added displayname & tablist default color.
@@ -82,6 +87,7 @@ Other:
         Changed default-color to displayname & tablist.
      Removed:
         Removed command wait time.
+
 # v1.4
      Added:
         Added animated tab.
@@ -93,6 +99,7 @@ Other:
         Fixed disabled-worlds not disabled. - It did not disable the worlds that were given.
     Removed:
         Removed update-ticks interval.
+
 # v1.3
      Added:
         Added blacklist-nicknames stringlist. - Here's a blacklist of nicknames.
@@ -107,6 +114,7 @@ Other:
         Removed enabled-worlds stringlist.
         Removed auto refresh. - It was unnecessary.
         Removed some spaces & code.
+
 # v1.2
         Bug fixes.
         Updated config files.
@@ -126,6 +134,7 @@ Other:
         Added new command /tl get [player] - Get player nick name.
         Fixed plugin permissions & commands.
         Added update checker - notify when an update is available. (In console)
+
 # v1.1
         Bug fixes.
         Updated config files.
