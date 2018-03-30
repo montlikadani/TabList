@@ -7,3 +7,6 @@ Website: https://www.spigotmc.org/resources/tablist.46229/
 Wiki: https://github.com/montlikadani/TabList/wiki
 
 Changelog: https://github.com/montlikadani/TabList/blob/master/Changelog.txt
+
+# Download
+https://github.com/montlikadani/TabList/releases
