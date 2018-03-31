@@ -1,3 +1,8 @@
+# v2.4.2
+Fixes:
+    Fixed doesn't show the scoreboard when using the group prefix and suffix.
+    Fixed did not delete from the tablist the group's prefix and suffix when the player left.
+
 # v2.4.1
 Fixes:
     Fixed the plugin did not start and sent a bug to the console.
