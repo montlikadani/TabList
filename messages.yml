@@ -39,7 +39,7 @@ tabname:
   # Use %max% placeholder.
   name-too-long: '&cName too long! Only&6 %max%&c characters.'
   # Use %world% placeholder.
-  world-disabled: '&cThis world&7 %world%&c is disabled in this world.'
+  world-disabled: '&cThis command is disabled in this world&7 %world%&c.'
 toggle:
   usage: '%prefix%&c Use: "&7/%command% toggle <on;off>"&c.'
   already-enabled: '%prefix%&c The tab is already enabled.'
