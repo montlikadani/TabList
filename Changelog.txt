@@ -1,3 +1,21 @@
+# v2.4.3
+Added:
+    Added enable/disable boolean to change prefix & suffix in tablist.
+    Added groups refresh interval to configuration.
+    Added per world player list.
+Fixes:
+    Fixed prefix & suffix not showing when the health tab is enabled.
+    Fixed tablist has frozen when the player left.
+    Fixed the permissions always check whether there is a player.
+    Fixed can not set group to change prefix & suffix in tablist.
+    Fixed does not removed the tablist when the plugin is disabled.
+Removed:
+    Removed %group% placeholder.
+Other:
+    Updated PlaceholderAPI to the latest version.
+    Minor changes for PAPI registering.
+    Moved groups to groups.yml file.
+
 # v2.4.2
 Fixes:
     Fixed doesn't show the scoreboard when using the group prefix and suffix.
