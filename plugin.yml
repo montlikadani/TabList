@@ -1,8 +1,8 @@
 name: TabList
 main: hu.montlikadani.TabList.TabList
-version: 2.4.2
+version: 2.4.3
 author: montlikadani
-description: Animated tab prefix.
+description: Ultimate animated tablist.
 softdepend: [PlaceholderAPI]
 # DO NOT EDIT ANYTHING ABOVE THIS LINE!
 
@@ -20,18 +20,6 @@ permissions:
   tablist.seetab:
     description: Allow to player to see the tab.
     default: true
-  tablist.help:
-    description: Help commands for TabList.
-    default: false
-  tablist.reload:
-    description: Reload the config files.
-    default: op
-  tablist.plugindisable:
-    description: Allow to player to disable plugin.
-    default: op
-  tablist.cmd.tabcomplete:
-    description: You can use [TAB] in commands.
-    default: false
   tablist.get:
     description: Get tab name permission.
     default: false
@@ -58,4 +46,16 @@ permissions:
     default: false
   tablist.reset.other:
     description: You can use the /tabname reset <player> command.
+    default: false
+  tablist.help:
+    description: Help commands for TabList.
+    default: false
+  tablist.reload:
+    description: Reload the config files.
+    default: op
+  tablist.plugindisable:
+    description: Allow to player to disable plugin.
+    default: op
+  tablist.cmd.tabcomplete:
+    description: You can use [TAB] in commands.
     default: false
