@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 2.4.2                                 #
+# config.yml file. Plugin version: 2.4.3                                 #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -30,6 +30,9 @@
 # PlaceholderAPI use for the plugin.
 placeholderapi: true
 
+# Different playerlist in different world.
+per-world-player-list: false
+
 # Remove the NPC name from the tab?
 # ATTENTION! This is currently under repair and testing...
 remove-npc-name-from-tab: false
@@ -39,6 +42,7 @@ remove-npc-name-from-tab: false
 time-format: 'yyyy.MM.dd - HH:mm:ss'
 
 # Custom variables.
+# Unlimited variables.
 # Use: <something>: '&6Message...'
 custom-variables:
   <website>: 'example.com'
@@ -46,24 +50,11 @@ custom-variables:
   <pluginauthor>: '&amontlikadani'
   <rightarrow>: '-->'
 
-# Group prefixes and suffixes. (Requires a permission system.)
-# WARNING! Max character is 16 in prefix and suffix!
-# Unlimited group.
-groups:
-  staff:
-    prefix: '&a[&bStaff&a]&7 '
-    suffix: ''
-    # This permission must be in the permission system (e.g. PermissionsEx).
-    # ATTENTION! To replace %group% when the permission system always writes the name of the group that is here (e.g. tablist.owner).
-    # Use %group% placeholder.
-    permission: 'tablist.%group%'
-  default:
-    prefix: '&7'
-    suffix: ''
-    # This permission must be in the permission system (e.g. PermissionsEx).
-    # ATTENTION! To replace %group% when the permission system always writes the name of the group that is here (e.g. tablist.owner).
-    # Use %group% placeholder.
-    permission: 'tablist.%group%'
+# Enables to change prefix & suffix in player tablist.
+change-prefix-suffix-in-tablist: true
+
+# Groups refresh interval. (In ticks!)
+groups-refresh-interval: 200
 
 # This indicates the ping for the player's name.
 # WARNING! First, you must disable the "health-tab" because it merges and causes a bug.
@@ -189,7 +180,7 @@ log-to-file: true
 # Use %newline%, %prefix% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v2.4.2&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v2.4.3&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
