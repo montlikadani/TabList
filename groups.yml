@@ -1,9 +1,14 @@
 # Group prefixes and suffixes. (Requires a permission system.)
 # WARNING! Max character is 16 in prefix and suffix!
-# WARNING! Only one group can be set. I do not know what the problem is...
+# Unlimited group.
 groups:
-  staff:
+  '1':
     prefix: '&a[&cStaff&a]&6 '
     suffix: ''
     # This permission must be in the permission system (e.g. PermissionsEx).
-    permission: 'tablist.staff'
+    permission: tablist.staff
+  '2':
+    prefix: '&7'
+    suffix: ''
+    # This permission must be in the permission system (e.g. GroupManager).
+    permission: tablist.default
