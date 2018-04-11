@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.TabList
-version: 2.4.3
+version: 2.4.4
 author: montlikadani
 description: Ultimate animated tablist.
 softdepend: [PlaceholderAPI]
@@ -47,6 +47,9 @@ permissions:
   tablist.reset.other:
     description: You can use the /tabname reset <player> command.
     default: false
+  tablist.onlinestaff:
+    description: Online staffs permission.
+    default: op
   tablist.help:
     description: Help commands for TabList.
     default: false
