@@ -1,3 +1,11 @@
+# v2.4.4
+Added:
+    Added tablist.onlinestaff permission to plugin.yml file.
+Fixes:
+    Fixed can not set more group.
+Changed:
+    Changed tablist.staff permission to tablist.onelinestaff.
+
 # v2.4.3
 Added:
     Added enable/disable boolean to change prefix & suffix in tablist.
