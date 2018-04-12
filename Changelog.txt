@@ -1,3 +1,10 @@
+# v2.4.5
+Added:
+    Added disable-for-ops boolean to groups.yml file. To disable prefix & suffix in op players.
+Fixes:
+    Fixed the prefix & suffix did not appear outside the staff for the default group.
+    Fixed everyone saw their own prefix but the other players did not see it.
+
 # v2.4.4
 Added:
     Added tablist.onlinestaff permission to plugin.yml file.
