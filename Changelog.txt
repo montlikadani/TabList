@@ -1,3 +1,7 @@
+# v2.4.6
+Fixes:
+    Fixed everyone saw their own prefix but the other players did not see it. (again)
+
 # v2.4.5
 Added:
     Added disable-for-ops boolean to groups.yml file. To disable prefix & suffix in op players.
