@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.TabList
-version: 2.4.6
+version: 2.4.7
 author: montlikadani
 description: Ultimate animated tablist.
 softdepend: [PlaceholderAPI]
@@ -17,9 +17,23 @@ commands:
     aliases: [tname]
 
 permissions:
-  tablist.seetab:
-    description: Allow to player to see the tab.
-    default: true
+  tablist.*:
+     description: Gives access to all TabList permissions.
+     children:
+       tablist.get: true
+       tablist.get.other: true
+       tablist.toggle: true
+       tablist.toggle.on: true
+       tablist.toggle.off: true
+       tablist.tabname: true
+       tablist.tabname.other: true
+       tablist.reset: true
+       tablist.reset.other: true
+       tablist.onlinestaff: true
+       tablist.reload: true
+       tablist.plugindisable: true
+       tablist.help: true
+       tablist.cmd.tabcomplete: true
   tablist.get:
     description: Get tab name permission.
     default: false
