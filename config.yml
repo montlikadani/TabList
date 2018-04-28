@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: 2.4.6                                 #
+# config.yml file. Plugin version: 2.4.7                                 #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configurations]                                               #
@@ -111,7 +111,7 @@ health-tab:
 tablist:
   # Enable the tab? (Header, footer)
   enable: true
-  # In what world do you use the tab?
+  # What world does not display the tab?
   # If you do not want to disable any of the worlds, then write it as follows: disabled-worlds: []
   disabled-worlds:
   - lobby
@@ -157,6 +157,23 @@ tablist:
     - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Webs&6&oi&f&ote&7:&2 &nexample.com&7 <28>'
     - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Websi&6&ot&f&oe&7:&2 &nexample.com&7 <28>'
     - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Websit&6&oe&7:&2 &nexample.com&7 <28>'
+  # Per world tablist.
+  # Unlimited world.
+  per-world:
+    enable: false
+    world_nether:
+      header:
+        - '&3This is a per world plugin&6 Tab&aList&3.'
+      footer:
+        - '&6World:&7 %player_world%'
+    world:
+      header:
+        - '&cThis is a per world plugin&6 TabList'
+        - '&6This is a per world plugin&3 TabList'
+        - '&3This is a per world plugin&a TabList'
+        - '&aThis is a per world plugin&7 TabList'
+      footer:
+        - '&6World:&7 %player_world%'
 
 #=========================================#
 #             Plugin Settings             #
@@ -180,7 +197,7 @@ log-to-file: true
 # Use %newline%, %prefix% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v2.4.6&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v2.4.7&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
