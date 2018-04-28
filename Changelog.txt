@@ -1,3 +1,13 @@
+# v2.4.7
+Added:
+    Added support for tablist.* permission. - To access for all permissions.
+    Added per world tablist.
+Fixes:
+    Fixed not show dot in fps, but with a comma.
+    Fixed some config loading problems.
+Removed:
+    Removed tablist.seetab permission. - It was unnecessary and not show the tablist when reload the server.
+
 # v2.4.6
 Fixes:
     Fixed everyone saw their own prefix but the other players did not see it. (again)
