@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.TabList
-version: ${version}
+version: 2.4.7
 author: montlikadani
 description: Ultimate animated tablist.
 softdepend: [PlaceholderAPI]
