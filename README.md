@@ -2,7 +2,7 @@
 
 If you find a bug, please write here: https://github.com/montlikadani/TabList/issues
 
-__Pull Request can be anybody with any function. (Except source code) PR[https://github.com/montlikadani/TabList/pulls]
+__Pull Request can be anybody with any function. (Except source code) [PR]<https://github.com/montlikadani/TabList/pulls>
 
 Website: https://www.spigotmc.org/resources/tablist.46229/
 
