@@ -47,6 +47,14 @@ toggle:
   enabled: '%prefix%&a The tab is successfully turned on!'
   disabled: '%prefix%&c The tab is successfully turned off!'
   no-player: '%prefix%&c There is no player available on the server.'
+fake-player:
+  no-console: '%prefix%&c This command "&7/%command%&c" can only be in-game.'
+  usage: '%prefix%&c Use: "&7/%command% %args% <add;remove> <name>&c".'
+  added: '%prefix%&a The fake player&7 %name%&a successfully added!'
+  removed: '%prefix%&c The fake player&7 %name%&c successfully removed!%newline%Please leave the server and reconnect to remove from the tab!'
+  already-added: '%prefix%&c The fake player&7 %name%&c already added.'
+  already-removed: '%prefix%&c The fake player&7 %name%&c already removed.'
+  disabled: '%prefix%&c The fake player is disabled. Please enable in config.yml file.'
 
 # This feature lists all the chat panel help.
 chat-messages:
@@ -62,6 +70,7 @@ chat-messages:
 - '&8/&a%command% help&5 -&6 Help commands.'
 - '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the config files.'
 - '&8/&a%command% toggle&c <on&2;&coff>&5 -&6 Toggle the tab.'
+- '&8/&a%command% fakeplayers&3 (or fp)&c <add&2;&cremove&3 (or rem)&c> <name>&5 -&6 Create/remove fake player.'
 - '&8/&atabname&9 &c<&9[player]&2;&cname>&2;&9[reset]&c <player&2;&cname>&5 -&6 Change your or other player tab name.'
 - '&8/&a%command% get&9 [player]&5 -&6 Get your or other player tab name.'
 - '&e&m---------------------------------------------------------'
