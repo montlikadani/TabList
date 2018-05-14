@@ -22,8 +22,6 @@
 # https://github.com/montlikadani/TabList/wiki/Symbols                   #
 #=================================OOO====================================#
 
-# If these number mark (#) are in the way, you can safely remove it.
-
 #=========================================#
 #                Settings                 #
 #=========================================#
@@ -36,6 +34,9 @@ per-world-player-list: false
 # Remove the NPC name from the tab?
 # ATTENTION! This is currently under repair and testing...
 remove-npc-name-from-tab: false
+
+# Fake players that are on the tab.
+enable-fake-players: false
 
 # Time format.
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
@@ -62,7 +63,8 @@ ping-tab:
   enable: false
   # Ping update time interval.
   interval: 3
-  # Which worlds do not show up in ping (world names)? If you do not want to disable any of them, use this: disabled-worlds: []
+  # Which worlds do not show up in ping (world names)?
+  # If you do not want to disable it, use it as follows: disabled-worlds: []
   disabled-worlds: []
 
 # Player tab name.
@@ -85,7 +87,7 @@ tabname:
   disabled-worlds: []
   # Which names can not be used?
   # If all the words are used, set it as follows: blacklist-names: []
-  # WARNING! Color codes are NOT considered.
+  # WARNING! Color codes are NOT considered in command.
   blacklist-names:
   - tabname
   enable-other-changed-name-message: false
@@ -99,9 +101,14 @@ tabname:
 health-tab:
   enable: false
   # Which worlds show your health in tab?
-  # If you do not want to disable any of the worlds, then write it as follows: disabled-worlds: []
+  # If you do not want to disable it, use it as follows: disabled-worlds: []
   disabled-worlds:
   - world_the_end
+  # Blacklisted players who do not show the icon beside the player's name in the tab.
+  # If you do not want to disable anyone, use this: blacklisted-players: []
+  blacklisted-players:
+  - exampleplayer
+  - players
 
 # Tablist. Header & footer with animation.
 # Use \n, %staff-online%, %ip-address%, %level%, %xp%, %mc-version%, %motd%, %ping%, %servername%, %online+1%,
@@ -116,8 +123,8 @@ tablist:
   disabled-worlds:
   - lobby
   - hub
-  # Tab update time interval.
-  # Set 0 to disable.
+  # Tab update time interval. (In ticks!)
+  # Set 0 to disable the tab refresh.
   interval: 4
   header:
     - '&b&lTabList\n&7    <75>&c W&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
