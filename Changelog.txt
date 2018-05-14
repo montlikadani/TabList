@@ -1,3 +1,17 @@
+# v2.4.8
+Added:
+    Added fake players functions. - Fake players in tablist.
+    Added blacklisted players string list to health tab. - To don't show the player health in tab for the player.
+Fixes:
+    Fixed when the tablist interval is set to 0 has disabled the tab, but should not have.
+    Fixed when the tablist is disabled set the empty text in tab.
+    Fixed the tps always show 0.0, so it not working.
+    Fixed when the plugin is disabled, groups have not been deleted from the tab.
+    Fixed when the plugin was reloaded, the tabname is enabled and there were names in the file but they were not displayed on the tab.
+Other:
+    Updated PlaceholderAPI to the latest version.
+    Now the configurations successfully creating it when reload the plugin.
+
 # v2.4.7
 Added:
     Added support for tablist.* permission. - To access for all permissions.
