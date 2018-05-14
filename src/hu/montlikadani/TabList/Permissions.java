@@ -18,5 +18,8 @@ public class Permissions {
 	public static final Permission TABNAMEOTHER = new Permission("tablist.tabname.other");
 	public static final Permission RESET = new Permission("tablist.reset");
 	public static final Permission RESETOTHERTAB = new Permission("tablist.reset.other");
+	public static final Permission FAKEPLAYERS = new Permission("tablist.fakeplayers");
+	public static final Permission ADDFAKEPLAYER = new Permission("tablist.fakeplayers.add");
+	public static final Permission REMOVEFAKEPLAYER = new Permission("tablist.fakeplayers.remove");
 
 }
