@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.TabList
-version: 2.4.7
+version: 2.4.8
 author: montlikadani
 description: Ultimate animated tablist.
 softdepend: [PlaceholderAPI]
@@ -29,6 +29,9 @@ permissions:
        tablist.tabname.other: true
        tablist.reset: true
        tablist.reset.other: true
+       tablist.fakeplayers: true
+       tablist.fakeplayers.add: true
+       tablist.fakeplayers.remove: true
        tablist.onlinestaff: true
        tablist.reload: true
        tablist.plugindisable: true
@@ -60,6 +63,15 @@ permissions:
     default: false
   tablist.reset.other:
     description: You can use the /tabname reset <player> command.
+    default: false
+  tablist.fakeplayers:
+    description: You can use the /tl fp command.
+    default: false
+  tablist.fakeplayers.add:
+    description: You can use the /tl fp add command.
+    default: false
+  tablist.fakeplayers.remove:
+    description: You can use the /tl fp remove command.
     default: false
   tablist.onlinestaff:
     description: Online staffs permission.
