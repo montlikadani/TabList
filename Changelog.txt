@@ -1,3 +1,13 @@
+# v2.4.9
+Added:
+    Added version checker to configurations. - If the version number abandoned.
+Fixes:
+    Fixed the remove npc from tab if was enabled has removed the fake player from tab.
+    Fixed when the change groups is set to true and not found the file, has send a long error to the console.
+    Fixed when the header and the footer were only 1 row, throw a lot of mistakes into the console.
+Other:
+    Now that the header is empty but the footer is not empty then display the tab (or vice versa).
+
 # v2.4.8
 Added:
     Added fake players functions. - Fake players in tablist.
