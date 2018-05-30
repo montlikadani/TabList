@@ -32,7 +32,6 @@ placeholderapi: true
 per-world-player-list: false
 
 # Remove the NPC name from the tab?
-# ATTENTION! This is currently under repair and testing...
 remove-npc-name-from-tab: false
 
 # Fake players that are on the tab.
@@ -40,7 +39,7 @@ enable-fake-players: false
 
 # Time format.
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
-time-format: 'yyyy.MM.dd - HH:mm:ss'
+time-format: 'dd/MM/yyyy'
 
 # Custom variables.
 # Unlimited variables.
@@ -219,3 +218,6 @@ default-can-see-plugin-information: false
 # >> NO supported the PlaceholderAPI! <<
 unknown-command-enable: true
 unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'
+
+# DO NOT CHANGE THIS!
+config-version: 1
