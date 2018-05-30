@@ -1,3 +1,6 @@
+# DO NOT CHANGE THIS!
+config-version: 1
+
 # Group prefixes and suffixes. (Requires a permission system.)
 # WARNING! Max character is 16 in prefix and suffix!
 # Unlimited group.
