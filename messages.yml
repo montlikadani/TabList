@@ -74,3 +74,6 @@ chat-messages:
 - '&8/&atabname&9 &c<&9[player]&2;&cname>&2;&9[reset]&c <player&2;&cname>&5 -&6 Change your or other player tab name.'
 - '&8/&a%command% get&9 [player]&5 -&6 Get your or other player tab name.'
 - '&e&m---------------------------------------------------------'
+
+# DO NOT CHANGE THIS!
+config-version: 1
