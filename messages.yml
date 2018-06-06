@@ -68,7 +68,7 @@ chat-messages:
 - '&8/&a%command%&b [+TAB]&5 -&6 Main plugin info.'
 - '&8/&a%command% disable&5 -&6 Disable the plugin.'
 - '&8/&a%command% help&5 -&6 Help commands.'
-- '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the config files.'
+- '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the plugin.'
 - '&8/&a%command% toggle&c <on&2;&coff>&5 -&6 Toggle the tab.'
 - '&8/&a%command% fakeplayers&3 (or fp)&c <add&2;&cremove&3 (or rem)&c> <name>&5 -&6 Create/remove fake player.'
 - '&8/&atabname&9 &c<&9[player]&2;&cname>&2;&9[reset]&c <player&2;&cname>&5 -&6 Change your or other player tab name.'
