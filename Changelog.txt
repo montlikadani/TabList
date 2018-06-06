@@ -1,3 +1,9 @@
+# v2.5
+Fixes:
+    Fixed does not show the tablist to other players for just one player. Thank you everyone!
+    Fixed when the header and the footer (in the per world) were only 1 row, throw a lot of mistakes into the console.
+    Fixed the tps always show 0.0, so it not working. (again)
+
 # v2.4.9
 Added:
     Added version checker to configurations. - If the version number abandoned.
