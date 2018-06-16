@@ -51,10 +51,22 @@ custom-variables:
   <rightarrow>: '-->'
 
 # Enables to change prefix & suffix in player tablist.
-change-prefix-suffix-in-tablist: true
-
-# Groups refresh interval. (In ticks!)
-groups-refresh-interval: 200
+change-prefix-suffix-in-tablist:
+  enable: true
+  # Groups refresh interval. (In ticks!)
+  groups-refresh-interval: 200
+  # Changing type.
+  # Types: scoreboard, namer
+  # Usage:
+  # scoreboard - Max. character is 16 in prefix & suffix.
+  # namer - Max. character unlimited. (WARNING! Overwrites the tabname function.)
+  changing-type: scoreboard
+  # Player name type that will be changed on the tab.
+  # Types: name, displayname
+  # Usage:
+  # name - Player name.
+  # displayname - Player display name.
+  player-name-type: name
 
 # This indicates the ping for the player's name.
 # WARNING! First, you must disable the "health-tab" because it merges and causes a bug.
@@ -220,4 +232,4 @@ unknown-command-enable: true
 unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'
 
 # DO NOT CHANGE THIS!
-config-version: 1
+config-version: 2

@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.TabList
-version: 2.5
+version: 2.6
 author: montlikadani
 description: Ultimate animated tablist.
 softdepend: [PlaceholderAPI]
@@ -80,7 +80,7 @@ permissions:
     description: Help commands for TabList.
     default: false
   tablist.reload:
-    description: Reload the config files.
+    description: Reload the plugin.
     default: op
   tablist.plugindisable:
     description: Allow to player to disable plugin.

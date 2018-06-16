@@ -1,3 +1,16 @@
+# v2.6
+Added:
+    Added +10 symbols.
+    Added changing-type string to change-prefix-suffix-in-tablist. - If scoreboard, max. character is 16, if namer, then unlimited character.
+    Added player-name-type to change-prefix-suffix-in-tablist. - Modifies the player name or display name on the tab.
+    Added symbols to groups.
+Fixes:
+    Fixed could not remove the prefix & suffix from the tab when reload the plugin and the change-prefix-suffix-in-tablist boolean was enabled.
+    Fixed when the ping-tab was false and the plugin reloaded, not cancel the update task and re-showed.
+    Fixed when the change groups is set to true and not found the file, has send a long error to the console.
+Other:
+    Updated PlaceholderAPI to the latest version.
+
 # v2.5
 Fixes:
     Fixed does not show the tablist to other players for just one player. Thank you everyone!

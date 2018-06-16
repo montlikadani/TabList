@@ -2,12 +2,12 @@
 config-version: 1
 
 # Group prefixes and suffixes. (Requires a permission system.)
-# WARNING! Max character is 16 in prefix and suffix!
 # Unlimited group.
+# Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 groups:
   '1':
     prefix: '&a[&cStaff&a]&6 '
-    suffix: ''
+    suffix: '&7 <12>'
     # This permission must be in the permission system (e.g. PermissionsEx).
     permission: tablist.staff
     # If this is true then op players will not display the group prefix and suffix in tablist.

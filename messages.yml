@@ -8,7 +8,6 @@ prefix: '&6&l[&5&lTab&c&lList&6&l]&7&l >'
 
 # Use %prefix%, %newline% placeholder.
 reload-config: '%prefix%&a The plugin successfully reloaded!'
-warning-disable-command: '%prefix%&4&l Warning!&c If you disable the plugin, you can only enable it when you refresh the server and enable "enabled: true" in the config.yml file.'
 
 # Use %perm% placeholder.
 no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
