@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: ${version}                            #
+# config.yml file. Plugin version: ${project.version}                    #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configuration]                                                #
@@ -215,7 +215,7 @@ log-to-file: true
 # Use %newline%, %prefix% placeholder.
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable-message: true
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${version}&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${project.version}&a!'
 plugin-disable-message: true
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
