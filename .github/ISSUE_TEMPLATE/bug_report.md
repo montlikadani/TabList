@@ -4,35 +4,28 @@ about: Create a report to help us improve
 
 ---
 
-- **`*`** - required
-- **`-`** - optional
-
-**`*`**
-### Describe the bug
+### Describe the bug (required)
 Understand what the problem is with the plugin.
 
-**`*`**
-### Plugin version
+### Plugin version (required)
 Describe the plugin version you are using now.
 
-**`*`**
-### Console error
+### Console error (required)
 > 
 > Send the console error if you have it.
 >
 
 ### Config.yml or other file
 Send the config.yml or other file.
-**`*`**
+(required)
 ```
 config.yml
 ```
 
-**`-`**
+(optional)
 ```
 other file
 ```
 
-**`-`**
-### Screenshots
+### Screenshots (optional)
 Send a few pictures of the problem if you can.
