@@ -1,3 +1,9 @@
+# v2.7
+Added:
+    Added BungeeCord support.
+Fixes:
+    Fixed could not save/load the names.yml file.
+
 # v2.6
 Added:
     Added +10 symbols.

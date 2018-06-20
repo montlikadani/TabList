@@ -75,7 +75,6 @@ ping-tab:
   # Ping update time interval.
   interval: 3
   # Which worlds do not show up in ping (world names)?
-  # If you do not want to disable it, use it as follows: disabled-worlds: []
   disabled-worlds: []
 
 # Player tab name.
@@ -94,10 +93,8 @@ tabname:
     enable: false
     color: '&6'
   # Which worlds can not change a tab name?
-  # If you do not want to disable it, use it as follows: disabled-worlds: []
   disabled-worlds: []
   # Which names can not be used?
-  # If all the words are used, set it as follows: blacklist-names: []
   # WARNING! Color codes are NOT considered in command.
   blacklist-names:
   - tabname
@@ -112,11 +109,9 @@ tabname:
 health-tab:
   enable: false
   # Which worlds show your health in tab?
-  # If you do not want to disable it, use it as follows: disabled-worlds: []
   disabled-worlds:
   - world_the_end
   # Blacklisted players who do not show the icon beside the player's name in the tab.
-  # If you do not want to disable anyone, use this: blacklisted-players: []
   blacklisted-players:
   - exampleplayer
   - players
@@ -130,7 +125,6 @@ tablist:
   # Enable the tab? (Header, footer)
   enable: true
   # What world does not display the tab?
-  # If you do not want to disable any of the worlds, then write it as follows: disabled-worlds: []
   disabled-worlds:
   - lobby
   - hub

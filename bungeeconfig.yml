@@ -1,0 +1,66 @@
+# Used for %time% placeholder.
+# Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
+time-format: 'dd/MM/yyyy'
+
+# TabList. Header & footer with animation.
+# Use %max-players%, %ping%, %player-name%, %display-name%, %ip%, %time%, %server%, %server-online%, 
+# %memory-used%, %memory-max% placeholder.
+# Use %animated-object:name% variable. - name, what you specified in the animations.yml file.
+tablist:
+  # Enable tablist header & footer?
+  enable: true
+  # How often to refresh the tablist (in milliseconds).
+  refresh-interval: 50
+  header:
+    - '%animated-object:TabList%'
+    - ''
+    - '  &7&l>> %animated-object:welcome%&3 &l%player-name%&7&l! &7&l<<'
+    - '&7<9>&6 Players:&e %server-online%&8/&e%max-players%&7 <10>'
+    - ''
+    - '%animated-object:playeranim%'
+  footer:
+    - '%animated-object:playeranim%'
+    - ''
+    - '%animated-object:web%&2 example.com'
+  # Per users tablist.
+  users:
+    player:
+      header:
+        - '%animated-object:TabList%'
+        - '%animated-object:welcome%&a %player-name%&6!'
+        - ''
+        - '%animated-object:playeranim%'
+      footer:
+        - '%animated-object:playeranim%'
+  # Per server tablist.
+  per-server:
+    paintball:
+      header:
+        - '%animated-object:welcome%&6 to&7 P&aa&ei&8n&3t&4B&9a&2l&1l'
+      footer:
+        - '&aGood luck for the game!'
+    lobby:
+      header:
+        - '%animated-object:welcome%&6 to our network!'
+      footer:
+        - '&7<28>&a Choose a minigame or server and start playing!&7 <28>'
+      users:
+        exampleplayer:
+          header:
+            - ''
+          footer:
+            - '%animated-object:web%&7: example.org'
+
+# Plugin messages.
+messages:
+  reload-config: '&aThe plugin successfully reloaded!'
+  no-permission: '&cYou don''t have permission for this!'
+  plugin-disabled: '&cThe plugin successfully disabled!'
+  chat-messages:
+  - '&8&l-----------'
+  - '§7/§atablist reload&7 (or rl)§e -§6 Reloads the plugin and config.'
+  - '§7/§atablist disable§e -§6 Disable the plugin.'
+  - '&8&l-----------'
+
+# DO NOT CHANGE THIS!
+config-version: 1
