@@ -1,3 +1,18 @@
+# v2.8
+Added (Bungee):
+    Added /tablist toggle command. - To toggle on/off the tab.
+    Added %player-language% placeholder.
+Fixes:
+    Fixed when the %prefix% placeholder not find in the messages throw a long bug into the console.
+    Fixed some exception error.
+    Fixed when the turned off the tab and reloaded the plugin has removed the toggle task.
+Removed:
+    Removed message-enable booleans. If the message is empty not send the message.
+Changed:
+    Changed ping-tab & health-tab to tablist-object-type. - Simplified version of the ping & the health tab.
+Other:
+    Now you can only use the /tl toggle command to not have it on/off but just type it.
+
 # v2.7
 Added:
     Added BungeeCord support.

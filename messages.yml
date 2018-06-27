@@ -40,9 +40,6 @@ tabname:
   # Use %world% placeholder.
   world-disabled: '&cThis command is disabled in this world&7 %world%&c.'
 toggle:
-  usage: '%prefix%&c Use: "&7/%command% toggle <on;off>"&c.'
-  already-enabled: '%prefix%&c The tab is already enabled.'
-  already-disabled: '%prefix%&c The tab is already disabled.'
   enabled: '%prefix%&a The tab is successfully turned on!'
   disabled: '%prefix%&c The tab is successfully turned off!'
   no-player: '%prefix%&c There is no player available on the server.'
@@ -68,11 +65,12 @@ chat-messages:
 - '&8/&a%command% disable&5 -&6 Disable the plugin.'
 - '&8/&a%command% help&5 -&6 Help commands.'
 - '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the plugin.'
-- '&8/&a%command% toggle&c <on&2;&coff>&5 -&6 Toggle the tab.'
+- '&8/&a%command% toggle&5 -&6 Toggle on/off the tab.'
 - '&8/&a%command% fakeplayers&3 (or fp)&c <add&2;&cremove&3 (or rem)&c> <name>&5 -&6 Create/remove fake player.'
-- '&8/&atabname&9 &c<&9[player]&2;&cname>&2;&9[reset]&c <player&2;&cname>&5 -&6 Change your or other player tab name.'
-- '&8/&a%command% get&9 [player]&5 -&6 Get your or other player tab name.'
-- '&e&m---------------------------------------------------------'
+- '&8/&atabname&3 (or tname)&c <&9[player]&2;&cname>&c <name>&5 -&6 Change player tab name.'
+- '&8/&atname reset&c <player>&5 -&6 Reset player tab name.'
+- '&8/&a%command% get&9 [player]&5 -&6 Get player tab name.'
+- '&e&m---------------------------------------------------'
 
 # DO NOT CHANGE THIS!
 config-version: 1

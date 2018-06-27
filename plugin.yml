@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.bukkit.TabList
-version: 2.7
+version: 2.8
 author: montlikadani
 description: Ultimate animated tablist.
 softdepend: [PlaceholderAPI]
@@ -23,8 +23,6 @@ permissions:
        tablist.get: true
        tablist.get.other: true
        tablist.toggle: true
-       tablist.toggle.on: true
-       tablist.toggle.off: true
        tablist.tabname: true
        tablist.tabname.other: true
        tablist.reset: true
@@ -45,12 +43,6 @@ permissions:
     default: false
   tablist.toggle:
     description: You can use the /tl toggle command.
-    default: false
-  tablist.toggle.on:
-    description: You can use the /tl toggle on command.
-    default: false
-  tablist.toggle.off:
-    description: You can use the /tl toggle off command.
     default: false
   tablist.tabname:
     description: You can use the /tabname command.

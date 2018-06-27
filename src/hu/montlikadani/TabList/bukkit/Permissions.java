@@ -1,4 +1,4 @@
-package hu.montlikadani.TabList;
+package hu.montlikadani.TabList.bukkit;
 
 import org.bukkit.permissions.Permission;
 
@@ -12,8 +12,6 @@ public class Permissions {
 	public static final Permission GET = new Permission("tablist.get");
 	public static final Permission GETO = new Permission("tablist.get.other");
 	public static final Permission TOGGLE = new Permission("tablist.toggle");
-	public static final Permission TOGGLEOFF = new Permission("tablist.toggle.off");
-	public static final Permission TOGGLEON = new Permission("tablist.toggle.on");
 	public static final Permission TABNAME = new Permission("tablist.tabname");
 	public static final Permission TABNAMEOTHER = new Permission("tablist.tabname.other");
 	public static final Permission RESET = new Permission("tablist.reset");
