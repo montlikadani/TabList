@@ -65,10 +65,10 @@ chat-messages:
 - '&8/&a%command% disable&5 -&6 Disable the plugin.'
 - '&8/&a%command% help&5 -&6 Help commands.'
 - '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the plugin.'
-- '&8/&a%command% toggle&5 -&6 Toggle on/off the tab.'
+- '&8/&a%command% toggle&5 -&6 Toggle on/off tab.'
 - '&8/&a%command% fakeplayers&3 (or fp)&c <add&2;&cremove&3 (or rem)&c> <name>&5 -&6 Create/remove fake player.'
 - '&8/&atabname&3 (or tname)&c <&9[player]&2;&cname>&c <name>&5 -&6 Change player tab name.'
-- '&8/&atname reset&c <player>&5 -&6 Reset player tab name.'
+- '&8/&atname reset&9 [player]&5 -&6 Reset player tab name.'
 - '&8/&a%command% get&9 [player]&5 -&6 Get player tab name.'
 - '&e&m---------------------------------------------------'
 

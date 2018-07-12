@@ -1,7 +1,7 @@
 #=================================OOO====================================#
 #                     TabList Configuration File                         #
 #=================================OOO====================================#
-# config.yml file. Plugin version: ${project.version}                    #
+# config.yml file. Plugin version: ${version}                            #
 # Author, created by: montlikadani                                       #
 #=================================OOO====================================#
 # [Default configuration]                                                #
@@ -38,7 +38,7 @@ remove-npc-name-from-tab: false
 # Fake players that are on the tab.
 enable-fake-players: false
 
-# Time format.
+# Used for %time% placeholder.
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
 time-format: 'dd/MM/yyyy'
 
@@ -46,16 +46,14 @@ time-format: 'dd/MM/yyyy'
 # Unlimited variables.
 # Use: <something>: '&6Message...'
 custom-variables:
-  <website>: 'example.com'
-  <name>: '&r%player_name%'
-  <pluginauthor>: '&amontlikadani'
-  <rightarrow>: '-->'
+  <name>: '&5&o%player_name%'
+  <lines>: '&5&m======================'
 
 # Enables to change prefix & suffix in player tablist.
 change-prefix-suffix-in-tablist:
-  enable: true
-  # Groups refresh interval. (In ticks!)
-  groups-refresh-interval: 200
+  enable: false
+  # Refresh interval. (In ticks!)
+  refresh-interval: 200
   # Changing type.
   # Types:
   # scoreboard - Max. character is 16 in prefix & suffix.
@@ -123,53 +121,55 @@ tabname:
 # Use placeholders: https://www.spigotmc.org/wiki/placeholderapi-placeholders/
 # Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 tablist:
-  # Enable the tab? (Header, footer)
+  # Enable the tab? (Header & footer)
   enable: true
   # What world does not display the tab?
   disabled-worlds:
   - lobby
   - hub
+  # Blacklisted players, where the player not see the tab.
+  blacklisted-players: []
   # Tab update time interval. (In ticks!)
   # Set 0 to disable the tab refresh.
   interval: 4
   header:
-    - '&b&lTabList\n&7    <75>&c W&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&6&lTabList\n&7    <75>&c We&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&4&lTabList\n&7    <75>&c Wel&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&9&lTabList\n&7    <75>&c Welc&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&a&lTabList\n&7    <75>&c Welco&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&e&lTabList\n&7    <75>&c Welcom&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&5&lTabList\n&7    <75>&c Welcome&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&b&lTabList\n&7    <75>&6 Welcome&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&6&lTabList\n&7    <75>&7 Welcome&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&4&lTabList\n&7    <75>&4 Welcome&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&9&lTabList\n&7    <75>&a Welcome&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&a&lTabList\n&7    <75>&b Welcome&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&e&lTabList\n&7    <75>&9 Welcome&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&5&lTabList\n&7    <75>&f Welcome&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&b&lTabList\n&7    <75>&f Welcom&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&6&lTabList\n&7    <75>&f Welco&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&4&lTabList\n&7    <75>&f Welc&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&9&lTabList\n&7    <75>&f Wel&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&a&lTabList\n&7    <75>&f We&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&e&lTabList\n&7    <75>&f W&5&o %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&5&lTabList\n&7    <75>&f&5&o  %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
-    - '&b&lTabList\n&7    <75>&f&5&o  %player_name%&c!&7 <74>\n&6Ping:&a %ping%&7ms\n&5&m======================'
+    - '&b&lTabList\n&7    <75>&c W <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&6&lTabList\n&7    <75>&c We <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&4&lTabList\n&7    <75>&c Wel <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&9&lTabList\n&7    <75>&c Welc <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&a&lTabList\n&7    <75>&c Welco <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&e&lTabList\n&7    <75>&c Welcom <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&5&lTabList\n&7    <75>&c Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&b&lTabList\n&7    <75>&6 Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&6&lTabList\n&7    <75>&7 Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&4&lTabList\n&7    <75>&4 Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&9&lTabList\n&7    <75>&a Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&a&lTabList\n&7    <75>&b Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&e&lTabList\n&7    <75>&9 Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&5&lTabList\n&7    <75>&f Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&b&lTabList\n&7    <75>&f Welcom <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&6&lTabList\n&7    <75>&f Welco <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&4&lTabList\n&7    <75>&f Welc <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&9&lTabList\n&7    <75>&f Wel <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&a&lTabList\n&7    <75>&f We <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&e&lTabList\n&7    <75>&f W <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&5&lTabList\n&7    <75>&f  <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&b&lTabList\n&7    <75>&f  <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
   footer:
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&6&o W&f&oebsite&7:&2 &nexample.com&7 <28>'
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o W&6&oe&f&obsite&7:&2 &nexample.com&7 <28>'
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o We&6&ob&f&osite&7:&2 &nexample.com&7 <28>'
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Web&6&os&f&oite&7:&2 &nexample.com&7 <28>'
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Webs&6&oi&f&ote&7:&2 &nexample.com&7 <28>'
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Websi&6&ot&f&oe&7:&2 &nexample.com&7 <28>'
-    - '&5&m======================&7\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Websit&6&oe&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&6&o W&f&oebsite&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o W&6&oe&f&obsite&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o We&6&ob&f&osite&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Web&6&os&f&oite&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Webs&6&oi&f&ote&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Websi&6&ot&f&oe&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Websit&6&oe&7:&2 &nexample.com&7 <28>'
   # Per world tablist.
   # Unlimited world.
   per-world:
@@ -209,7 +209,7 @@ log-to-file: true
 # Plugin enable/disable messages in console.
 # Use %newline%, %prefix% placeholder.
 # >> NO supported the PlaceholderAPI! <<
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${project.version}&a!'
+plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${version}&a!'
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
 # The default is allowed to see the plugin information.
@@ -225,4 +225,4 @@ unknown-command-enable: true
 unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'
 
 # DO NOT CHANGE THIS!
-config-version: 3
+config-version: 4

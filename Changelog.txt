@@ -1,3 +1,16 @@
+# v2.9
+Added:
+    Added blacklisted-players string list to configuration. - To disable the tab from the player.
+Fixes:
+    Fixed if the header or footer is empty, throw a long bug into the console when used PaperSpigot version.
+Added (Bungee):
+    Added disabled-servers string list. - To disable tab in the specified server.
+	Added blacklisted-players string list. - To disable the tab from the player.
+    Added %ram-used%, %ram-max%, %ram-free% placeholders.
+Fixes (Bungee):
+    Fixed when the turned off the tab and reloaded the plugin has removed the toggle task.
+    Fixed not loaded the options in animations.yml file when used /tablist rl command.
+
 # v2.8
 Added (Bungee):
     Added /tablist toggle command. - To toggle on/off the tab.

@@ -1,7 +1,8 @@
+# Unlimited text animations.
+# Update interval in milliseconds.
 animations:
   welcome:
-    # Change interval in milliseconds.
-    change-interval: 200
+    update-interval: 200
     texts:
       - '&6Welcome'
       - '&aWelcome'
@@ -13,10 +14,9 @@ animations:
       - '&1Welcome'
       - '&0Welcome'
       - '&5Welcome'
-      - '&gWelcome'
+      - '&eWelcome'
   playeranim:
-    # Change interval in milliseconds.
-    change-interval: 120
+    update-interval: 120
     texts:
       - '&a-&3--------------'
       - '&3-&a-&3-------------'
@@ -48,8 +48,7 @@ animations:
       - '&3-&a-&3-------------'
       - '&a-&3--------------'
   TabList:
-    # Change interval in milliseconds.
-    change-interval: 120
+    update-interval: 120
     texts:
       - '&b&lTabList'
       - '&6&lTabList'
@@ -74,8 +73,7 @@ animations:
       - '&5&lTabList'
       - '&b&lTabList'
   web:
-    # Change interval in milliseconds.
-    change-interval: 260
+    update-interval: 260
     texts:
       - '&7Website'
       - '&7&6W&febsite'

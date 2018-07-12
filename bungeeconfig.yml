@@ -1,55 +1,71 @@
+#=========================================#
+#                Settings                 #
+#=========================================#
 # Used for %time% placeholder.
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
 time-format: 'dd/MM/yyyy'
 
 # TabList. Header & footer with animation.
 # Use %max-players%, %ping%, %player-name%, %display-name%, %ip%, %time%, %server%, %server-online%, 
-# %memory-used%, %memory-max%, %player-language% placeholder.
-# Use %animated-object:name% variable. - name, what you specified in the animations.yml file.
+# %ram-used%, %ram-max%, %ram-free%, %player-language% placeholder.
+# Use %animated-text:name% variable. - name, what you specified in the animations.yml file.
 tablist:
   # Enable tablist header & footer?
   enable: true
+  # Disabled servers, where you can not see the tab.
+  disabled-servers:
+  - someserver
+  - servername
+  # Blacklisted players, where the player not see the tab.
+  blacklisted-players: []
   # How often to refresh the tablist (in milliseconds).
   refresh-interval: 50
   header:
-    - '%animated-object:TabList%'
+    - '%animated-text:TabList%'
     - ''
-    - '  &7&l>> %animated-object:welcome%&3 &l%player-name%&7&l! &7&l<<'
+    - '  &7&l>> %animated-text:welcome%&3 &l%player-name%&7&l! &7&l<<'
     - '&7<9>&6 Players:&e %server-online%&8/&e%max-players%&7 <10>'
     - ''
-    - '%animated-object:playeranim%'
+    - '%animated-text:playeranim%'
   footer:
-    - '%animated-object:playeranim%'
+    - '%animated-text:playeranim%'
     - ''
-    - '%animated-object:web%&2 example.com'
-  # Per users tablist.
-  users:
-    player:
+    - '%animated-text:web%&2 example.com'
+  # Per player tablist.
+  per-player:
+    playername:
       header:
-        - '%animated-object:TabList%'
-        - '%animated-object:welcome%&a %player-name%&6!'
+        - '%animated-text:TabList%'
+        - '%animated-text:welcome%&a %player-name%&6!'
         - ''
-        - '%animated-object:playeranim%'
+        - '%animated-text:playeranim%'
       footer:
-        - '%animated-object:playeranim%'
+        - '%animated-text:playeranim%'
+    someone:
+      header:
+        - '%animated-text:welcome%&a %player-name%&6!'
+        - ''
+        - '%animated-text:playeranim%'
+      footer:
+        - '%animated-text:playeranim%'
   # Per server tablist.
   per-server:
-    paintball:
+    pvp:
       header:
-        - '%animated-object:welcome%&6 to&7 P&aa&ei&8n&3t&4B&9a&2l&1l'
+        - '%animated-text:welcome%&6 to&4 M&ay&3 Kit&4PvP&9 S&6e&2r&8v&5e&1r&6!'
       footer:
-        - '&aGood luck for the game!'
+        - '&aGo to the PvP server!'
     lobby:
       header:
-        - '%animated-object:welcome%&6 to our network!'
+        - '%animated-text:welcome%&6 to&4 M&ay&9 S&6e&2r&8v&5e&1r&6!'
       footer:
         - '&7<28>&a Choose a minigame or server and start playing!&7 <28>'
-      users:
+      per-player:
         exampleplayer:
           header:
             - ''
           footer:
-            - '%animated-object:web%&7: example.org'
+            - '%animated-text:web%&7: example.org'
 
 # Plugin messages.
 messages:
@@ -67,4 +83,4 @@ messages:
   - '&8&l-----------'
 
 # DO NOT CHANGE THIS!
-config-version: 2
+config-version: 3
