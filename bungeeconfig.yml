@@ -1,14 +1,10 @@
-#=========================================#
-#                Settings                 #
-#=========================================#
 # Used for %time% placeholder.
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
 time-format: 'dd/MM/yyyy'
 
-# TabList. Header & footer with animation.
-# Use %max-players%, %ping%, %player-name%, %display-name%, %ip%, %time%, %server%, %server-online%, 
-# %ram-used%, %ram-max%, %ram-free%, %player-language% placeholder.
-# Use %animated-text:name% variable. - name, what you specified in the animations.yml file.
+# TabList. Header & footer.
+# Use %ping%, %player-name%, %display-name%, %ip%, %time%, %server%, %server-online%, %ram-used%,
+# %ram-max%, %ram-free%, %player-language% placeholder.
 tablist:
   # Enable tablist header & footer?
   enable: true
@@ -21,43 +17,40 @@ tablist:
   # How often to refresh the tablist (in milliseconds).
   refresh-interval: 50
   header:
-    - '%animated-text:TabList%'
-    - ''
-    - '  &7&l>> %animated-text:welcome%&3 &l%player-name%&7&l! &7&l<<'
+    - '&2Tab&6List'
+    - '&7<93>&3 Welcome&e &l%player-name%&7! <91>'
     - '&7<9>&6 Players:&e %server-online%&8/&e%max-players%&7 <10>'
-    - ''
-    - '%animated-text:playeranim%'
+    - '&5&l&m================='
   footer:
-    - '%animated-text:playeranim%'
-    - ''
-    - '%animated-text:web%&2 example.com'
+    - '&5&l&m================='
+    - '&7Website:&2 example.com'
   # Per player tablist.
   per-player:
     playername:
       header:
-        - '%animated-text:TabList%'
-        - '%animated-text:welcome%&a %player-name%&6!'
+        - '&2Tab&6List'
+        - '&7<93>&3 Welcome&e &l%player-name%&7! <91>'
         - ''
-        - '%animated-text:playeranim%'
+        - '&5&l&m================='
       footer:
-        - '%animated-text:playeranim%'
+        - '&5&l&m================='
     someone:
       header:
-        - '%animated-text:welcome%&a %player-name%&6!'
+        - '&7<93>&3 Welcome&e &l%player-name%&7! <91>'
         - ''
-        - '%animated-text:playeranim%'
+        - '&5&l&m================='
       footer:
-        - '%animated-text:playeranim%'
+        - '&5&l&m================='
   # Per server tablist.
   per-server:
     pvp:
       header:
-        - '%animated-text:welcome%&6 to&4 M&ay&3 Kit&4PvP&9 S&6e&2r&8v&5e&1r&6!'
+        - '&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&3 Kit&4PvP&9 S&6e&2r&8v&5e&1r&6!'
       footer:
         - '&aGo to the PvP server!'
     lobby:
       header:
-        - '%animated-text:welcome%&6 to&4 M&ay&9 S&6e&2r&8v&5e&1r&6!'
+        - '&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&9 S&6e&2r&8v&5e&1r&6!'
       footer:
         - '&7<28>&a Choose a minigame or server and start playing!&7 <28>'
       per-player:
@@ -65,7 +58,7 @@ tablist:
           header:
             - ''
           footer:
-            - '%animated-text:web%&7: example.org'
+            - '&7Website&7: example.org'
 
 # Plugin messages.
 messages:
