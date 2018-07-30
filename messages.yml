@@ -33,8 +33,8 @@ tabname:
   other-name-change-success: '&aYou successfully changed&6 %target%&a name to&r %name%&a.'
   name-reseted: '&aYour name has been successfully reseted.'
   other-name-reseted: '&aYou have been reseted&7 %target%&a name.'
-  get-tab-name: '&2%target%&9 name:&r %name%'
-  get-your-tab-name: '&aYour name:&r %name%'
+  get-tab-name: '&2%target%&9 tab name:&r %name%'
+  get-your-tab-name: '&aYour tab name:&r %name%'
   # Use %max% placeholder.
   name-too-long: '&cName too long! Only&6 %max%&c characters.'
   # Use %world% placeholder.

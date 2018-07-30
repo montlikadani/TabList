@@ -1,3 +1,20 @@
+# v3.0
+Added:
+    Added name tag visibility function to change-prefix-suffix-in-tablist.
+    Added per-player prefix & suffix.
+    Added per-player tablist.
+    Added custom value tablist object type to configuration.
+    Added use-external-scoreboard boolean to change-prefix-suffix. (This was because many people did not function properly in group prefix & suffix settings.)
+Fixes:
+    Fixed when the plugin has disabled, then has not removed the group from the player.
+    Fixed when turned off the tab and reloaded the plugin it has not update other functions.
+Removed:
+    Removed player uuid from names.yml file. - It was unnecessary.
+Other:
+    Updated to Bukkit/Spigot 1.13 version.
+    Now the groups refresh interval in seconds.
+    Now, the prefix & suffix in version 1.13 can have 32 characters.
+
 # v1.3 (Bungee)
 Removed (Bungee):
     Removed text animations. (New animations will be added later.)

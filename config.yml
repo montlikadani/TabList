@@ -16,7 +16,7 @@
 # [Tips]                                                                 #
 # - Use color coding '&' character, on this page:                        #
 # http://minecraft.gamepedia.com/Formatting_codes                        #
-# - In case of an error, write here:                                     #
+# - If you find a bug, send here:                                        #
 # https://github.com/montlikadani/TabList/issues                         #
 # - Use symbols in messages, on this page:                               #
 # https://github.com/montlikadani/TabList/wiki/Symbols                   #
@@ -50,14 +50,21 @@ custom-variables:
   <lines>: '&5&m======================'
 
 # Enables to change prefix & suffix in player tablist.
+# WARNING! Overwrites the tabname function.
 change-prefix-suffix-in-tablist:
   enable: false
-  # Refresh interval. (In ticks!)
-  refresh-interval: 200
+  # Refresh interval in seconds.
+  refresh-interval: 30
+  # Hide name tag visibility of the player.
+  # This only works if the changing-type scoreboard.
+  # Types: always, hide_for_other_teams, hide_for_own_team, never
+  name-tag-visibility: always
+  # WARNING! You can only change it to false if you experience a problem by changing the group prefix and suffix.
+  use-external-scoreboard: true
   # Changing type.
   # Types:
-  # scoreboard - Max. character is 16 in prefix & suffix.
-  # namer - Max. character unlimited. (WARNING! Overwrites the tabname function.)
+  # scoreboard - Max. character is 16 (if use 1.13 version max. 32) in prefix & suffix.
+  # namer - Max. character unlimited.
   changing-type: scoreboard
   # Player name type that will be changed on the tab.
   # Types:
@@ -71,6 +78,7 @@ tablist-object-type:
   # Types:
   # ping - ping of player
   # health - health of player
+  # custom - custom value
   type: ping
   # Objective settings.
   object-settings:
@@ -89,10 +97,17 @@ tablist-object-type:
       blacklisted-players:
       - exampleplayer
       - players
+    # Any placeholder can be used, for example, the player level.
+    custom:
+      custom-value: "%player_level%"
+      # Refresh interval.
+      refresh-interval: 3
+      # Which worlds do not show the custom value setting (world names)?
+      disabled-worlds: []
 
 # Player tab name.
 tabname:
-  # Allow change player tab name.
+  # Allow to change player tab name.
   # Warning if this is false, the command will not be registered either. Requires server restart!
   enable: false
   # How many letters should be allowed?
@@ -105,7 +120,7 @@ tabname:
   default-color:
     enable: false
     color: '&6'
-  # Which worlds can not change a tab name?
+  # Which worlds can not be change the tab name?
   disabled-worlds: []
   # Which names can not be used?
   # WARNING! Color codes are NOT considered in command.
@@ -187,6 +202,22 @@ tablist:
         - '&aThis is a per world plugin&7 TabList'
       footer:
         - '&6World:&7 %player_world%'
+  # Per player tablist.
+  # Unlimited players.
+  per-player:
+    enable: false
+    testplayer:
+      header:
+        - '&aWelcome&6 %player_name%\n<lines>'
+        - '&aWelcome&7 %player_name%\n<lines>'
+        - '&aWelcome&c %player_name%\n<lines>'
+        - '&aWelcome&f %player_name%\n<lines>'
+        - '&aWelcome&e %player_name%\n<lines>'
+        - '&aWelcome&a %player_name%\n<lines>'
+        - '&aWelcome&5 %player_name%\n<lines>'
+        - '&aWelcome&b %player_name%\n<lines>'
+      footer:
+        - '<lines>'
 
 #=========================================#
 #             Plugin Settings             #
@@ -225,4 +256,4 @@ unknown-command-enable: true
 unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'
 
 # DO NOT CHANGE THIS!
-config-version: 4
+config-version: 5

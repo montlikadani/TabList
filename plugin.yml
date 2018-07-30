@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.bukkit.TabList
-version: 2.9
+version: 3.0
 author: montlikadani
 description: Ultimate animated tablist.
 softdepend: [PlaceholderAPI]
@@ -48,13 +48,13 @@ permissions:
     description: You can use the /tabname command.
     default: false
   tablist.tabname.other:
-    description: You can use the /tabname <player> <name> command.
+    description: You can use the /tname <player> <name> command.
     default: false
   tablist.reset:
-    description: You can use the /tabname reset command.
+    description: You can use the /tname reset command.
     default: false
   tablist.reset.other:
-    description: You can use the /tabname reset <player> command.
+    description: You can use the /tname reset <player> command.
     default: false
   tablist.fakeplayers:
     description: You can use the /tl fp command.
