@@ -42,6 +42,18 @@ enable-fake-players: false
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
 time-format: 'dd/MM/yyyy'
 
+# Ping color format for %ping% placeholder.
+ping-placeholder-format:
+  enable: true
+  # Use color coding "&" for color.
+  good-ping:
+    color: '&a'
+    amount: 200
+  medium-ping:
+    color: '&6'
+    amount: 500
+  bad-ping: '&c'
+
 # Custom variables.
 # Unlimited variables.
 # Use: <something>: '&6Message...'
@@ -55,6 +67,12 @@ change-prefix-suffix-in-tablist:
   enable: false
   # Refresh interval in seconds.
   refresh-interval: 30
+  # Hide player group in tablist when the player is vanished?
+  # Required Essentials plugin!
+  hide-group-when-player-vanished: false
+  # Hide player group in tablist when the player is afk?
+  # Required Essentials plugin!
+  hide-group-when-player-afk: false
   # Hide name tag visibility of the player.
   # This only works if the changing-type scoreboard.
   # Types: always, hide_for_other_teams, hide_for_own_team, never
@@ -66,11 +84,6 @@ change-prefix-suffix-in-tablist:
   # scoreboard - Max. character is 16 (if use 1.13 version max. 32) in prefix & suffix.
   # namer - Max. character unlimited.
   changing-type: scoreboard
-  # Player name type that will be changed on the tab.
-  # Types:
-  # name - Player name.
-  # displayname - Player display name.
-  player-name-type: name
 
 # Tablist objective type.
 tablist-object-type:
@@ -84,23 +97,23 @@ tablist-object-type:
   object-settings:
     # The ping side next to the player's name indicates the right side.
     ping:
-      # Ping update time interval.
+      # Ping update time interval in seconds.
       update-interval: 3
       # Which worlds do not show up in ping (world names)?
       disabled-worlds: []
     # The player health (life) the player's name indicates the right side.
     health:
-      # Which worlds show your health in tab?
+      # Which worlds do not show the players health in tab?
       disabled-worlds:
       - world_the_end
-      # Blacklisted players who do not show the icon beside the player's name in the tab.
+      # Blacklisted players who do not show the health in tab.
       blacklisted-players:
       - exampleplayer
       - players
-    # Any placeholder can be used, for example, the player level.
+    # It only accepts number-ending placeholders, such as player levels.
     custom:
       custom-value: "%player_level%"
-      # Refresh interval.
+      # Refresh interval in seconds.
       refresh-interval: 3
       # Which worlds do not show the custom value setting (world names)?
       disabled-worlds: []
@@ -131,8 +144,8 @@ tabname:
   other-changed-name-message: '&3Your name is changed to&r %name%&3 by&e %sender%&3.'
 
 # Tablist. Header & footer with animation.
-# Use \n, %staff-online%, %ip-address%, %level%, %xp%, %mc-version%, %motd%, %ping%, %servername%, %online+1%,
-# %max-players%, %online-players%, %server-time%, %server-ram-free%, %server-ram-max%, %server-ram-used% placeholders.
+# Use \n, %staff-online%, %ip-address%, %level%, %xp%, %mc-version%, %motd%, %ping%, %servername%, %max-players%,
+# %online-players%, %server-time%, %server-ram-free%, %server-ram-max%, %server-ram-used% placeholders.
 # Use placeholders: https://www.spigotmc.org/wiki/placeholderapi-placeholders/
 # Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 tablist:
@@ -148,43 +161,43 @@ tablist:
   # Set 0 to disable the tab refresh.
   interval: 4
   header:
-    - '&b&lTabList\n&7    <75>&c W <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&6&lTabList\n&7    <75>&c We <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&4&lTabList\n&7    <75>&c Wel <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&9&lTabList\n&7    <75>&c Welc <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&a&lTabList\n&7    <75>&c Welco <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&e&lTabList\n&7    <75>&c Welcom <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&5&lTabList\n&7    <75>&c Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&b&lTabList\n&7    <75>&6 Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&6&lTabList\n&7    <75>&7 Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&4&lTabList\n&7    <75>&4 Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&9&lTabList\n&7    <75>&a Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&a&lTabList\n&7    <75>&b Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&e&lTabList\n&7    <75>&9 Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&5&lTabList\n&7    <75>&f Welcome <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&b&lTabList\n&7    <75>&f Welcom <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&6&lTabList\n&7    <75>&f Welco <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&4&lTabList\n&7    <75>&f Welc <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&9&lTabList\n&7    <75>&f Wel <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&a&lTabList\n&7    <75>&f We <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&e&lTabList\n&7    <75>&f W <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&5&lTabList\n&7    <75>&f  <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
-    - '&b&lTabList\n&7    <75>&f  <name>&c!&7 <74>\n&6Ping:&a %ping%&7ms\n<lines>'
+    - '&b&lTabList\n&7    <75>&c W <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&6&lTabList\n&7    <75>&c We <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&4&lTabList\n&7    <75>&c Wel <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&9&lTabList\n&7    <75>&c Welc <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&a&lTabList\n&7    <75>&c Welco <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&e&lTabList\n&7    <75>&c Welcom <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&5&lTabList\n&7    <75>&c Welcome <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&b&lTabList\n&7    <75>&6 Welcome <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&6&lTabList\n&7    <75>&7 Welcome <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&4&lTabList\n&7    <75>&4 Welcome <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&9&lTabList\n&7    <75>&a Welcome <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&a&lTabList\n&7    <75>&b Welcome <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&e&lTabList\n&7    <75>&9 Welcome <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&5&lTabList\n&7    <75>&f Welcome <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&b&lTabList\n&7    <75>&f Welcom <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&6&lTabList\n&7    <75>&f Welco <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&4&lTabList\n&7    <75>&f Welc <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&9&lTabList\n&7    <75>&f Wel <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&a&lTabList\n&7    <75>&f We <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&e&lTabList\n&7    <75>&f W <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&5&lTabList\n&7    <75>&f  <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&b&lTabList\n&7    <75>&f  <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
   footer:
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&6&o W&f&oebsite&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o W&6&oe&f&obsite&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o We&6&ob&f&osite&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Web&6&os&f&oite&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Webs&6&oi&f&ote&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Websi&6&ot&f&oe&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online+1%&7 <13>\n<28>&f&o Websit&6&oe&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&6&o W&f&oebsite&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o W&6&oe&f&obsite&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o We&6&ob&f&osite&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Web&6&os&f&oite&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Webs&6&oi&f&ote&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Websi&6&ot&f&oe&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Websit&6&oe&7:&2 &nexample.com&7 <28>'
   # Per world tablist.
   # Unlimited world.
   per-world:
@@ -247,13 +260,5 @@ plugin-disable: '%prefix%&c The plugin successfully disabled!'
 # Permission: tablist.plugininfo
 default-can-see-plugin-information: false
 
-# Unknown-command - If more than one word/letter you write to it.
-# Example: /tl reload something...
-# Use %command% placeholder.
-# This feature is NOT enter into the unknown command Minecraft, it's just your own.
-# >> NO supported the PlaceholderAPI! <<
-unknown-command-enable: true
-unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'
-
 # DO NOT CHANGE THIS!
-config-version: 5
+config-version: 6

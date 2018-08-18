@@ -1,5 +1,5 @@
 # DO NOT CHANGE THIS!
-config-version: 2
+config-version: 3
 
 # Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 
@@ -9,9 +9,11 @@ players:
   testplayer:
     prefix: '&f[&5Bot&f]&6 '
     suffix: ''
+    sort-priority: 2
   yourname:
     prefix: '&6[&cOwner&6]&a '
     suffix: ''
+    sort-priority: 1
 
 # Group prefixes and suffixes. (Requires a permission system.)
 # Unlimited group.

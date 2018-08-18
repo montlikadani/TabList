@@ -16,6 +16,7 @@ no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
 unknown-sub-command: '%prefix%&c Unknown sub-command&7 %subcmd%&c.'
 
 # Use %command% placeholder.
+unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'
 tabname:
   usage: '&cUse: "&7/%command% [player];<name>;[reset] [<player;name>]&c".'
   console-usage: '&cUse: "&7/%command% <player>;[reset] [player];<name>&c".'
@@ -44,13 +45,20 @@ toggle:
   disabled: '%prefix%&c The tab is successfully turned off!'
   no-player: '%prefix%&c There is no player available on the server.'
 fake-player:
-  no-console: '%prefix%&c This command "&7/%command%&c" can only be in-game.'
-  usage: '%prefix%&c Use: "&7/%command% %args% <add;remove> <name>&c".'
+  # Use %args% placeholder.
+  no-console: '%prefix%&c This command "&7/%command% %args%&c" can only be in-game.'
+  usage: '%prefix%&c Use: "&7/%command% %args% <add;remove;list> [<name>]&c".'
+  # Use %name% placeholder.
   added: '%prefix%&a The fake player&7 %name%&a successfully added!'
   removed: '%prefix%&c The fake player&7 %name%&c successfully removed!%newline%Please leave the server and reconnect to remove from the tab!'
   already-added: '%prefix%&c The fake player&7 %name%&c already added.'
   already-removed: '%prefix%&c The fake player&7 %name%&c already removed.'
+  no-fake-player: '%prefix%&c There is no fake player either.'
   disabled: '%prefix%&c The fake player is disabled. Please enable in config.yml file.'
+  # Use %fake-players%, %amount% placeholder.
+  list:
+  - '&cFake players&7 (&e%amount%&7):'
+  - '&r%fake-players%'
 
 # This feature lists all the chat panel help.
 chat-messages:
@@ -66,11 +74,12 @@ chat-messages:
 - '&8/&a%command% help&5 -&6 Help commands.'
 - '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the plugin.'
 - '&8/&a%command% toggle&5 -&6 Toggle on/off tab.'
-- '&8/&a%command% fakeplayers&3 (or fp)&c <add&2;&cremove&3 (or rem)&c> <name>&5 -&6 Create/remove fake player.'
+- '&8/&a%command% fakeplayers&3 (or fp)&a add&2;&aremove&3 (or rem)&c <name>&5 -&6 Create/remove fake player.'
+- '&8/&a%command% fp list&5 -&6 Lists all fake player.'
 - '&8/&atabname&3 (or tname)&c <&9[player]&2;&cname>&c <name>&5 -&6 Change player tab name.'
 - '&8/&atname reset&9 [player]&5 -&6 Reset player tab name.'
 - '&8/&a%command% get&9 [player]&5 -&6 Get player tab name.'
 - '&e&m---------------------------------------------------'
 
 # DO NOT CHANGE THIS!
-config-version: 1
+config-version: 2

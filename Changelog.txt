@@ -1,3 +1,26 @@
+# v3.1
+Added:
+    Added ping-placeholder-format function. - To change the ping placeholder color in the tablist. (good, medium, bad)
+    Added sort priority to per-player group. - To sort the player.
+    Added /tl fakeplayers list command. - To list the fake players.
+    Added hide-group-when-player-afk boolean to change-prefix-suffix-in-tablist. - If a player afk the group hide from tab. (Requires Essentials or EssX)
+    Added hide-group-when-player-vanished boolean to change-prefix-suffix-in-tablist. - If a player vanished the group hide from tab. (Requires Essentials or EssX)
+Fixes:
+    Improved tabname check, when the player joined the server.
+    Fixed the group timer did not count seconds but minutes.
+    Fixed custom value unregistering when the plugin has disabled.
+    Fixed NullPointerException problems.
+    Fixed IndexOutOfBoundsException in tablist when set the tab line to 1.
+    Fixed the permissions were checked at all times.
+Fixes (Bungee):
+    Fixed NullPointerException problems.
+Removed:
+    Removed plugin update permission.
+    Removed %online+1% placeholder. - It was unnecessary, because it already exists.
+    Removed player-name-type string in change-prefix-suffix. - It was unnecessary.
+Other:
+    Now, the prefix & suffix in version 1.13 can have 64 characters.
+
 # v3.0
 Added:
     Added name tag visibility function to change-prefix-suffix-in-tablist.

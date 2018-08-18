@@ -71,8 +71,9 @@ messages:
     no-player: '&cThere is no player available on the server.'
   chat-messages:
   - '&8&l-----------'
-  - '§7/§atablist reload&7 (or rl)§e -§6 Reloads the plugin and config.'
-  - '§7/§atablist disable§e -§6 Disable the plugin.'
+  - 'Â§7/Â§atablist reload&7 (or rl)Â§e -Â§6 Reloads the plugin and config.'
+  - 'Â§7/Â§atablist toggleÂ§e -Â§6 Toggle the tablist.'
+  - 'Â§7/Â§atablist disableÂ§e -Â§6 Disable the plugin.'
   - '&8&l-----------'
 
 # DO NOT CHANGE THIS!
