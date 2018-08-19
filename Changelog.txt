@@ -1,3 +1,10 @@
+# v3.2
+Added:
+    Added hide-tab-when-player-vanished boolean to tablist. - To hide the tab when the player vanished. (Requires Essentials or EssX)
+Fixes:
+    Fixed NullPointerException of unregistering groups.
+    Fixed ArrayIndexOutOfBoundsException of unregistering tab.
+
 # v3.1
 Added:
     Added ping-placeholder-format function. - To change the ping placeholder color in the tablist. (good, medium, bad)

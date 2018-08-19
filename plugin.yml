@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.bukkit.TabList
-version: 3.1
+version: 3.2
 author: montlikadani
 description: Ultimate animated tablist.
 softdepend: [PlaceholderAPI, Essentials]

@@ -151,6 +151,9 @@ tabname:
 tablist:
   # Enable the tab? (Header & footer)
   enable: true
+  # Hide tab when the player is vanished?
+  # Required Essentials plugin!
+  hide-tab-when-player-vanished: false
   # What world does not display the tab?
   disabled-worlds:
   - lobby
