@@ -7,7 +7,7 @@ about: Create a report to help us improve
 ### Describe the bug (required)
 Understand what the problem is with the plugin.
 
-### Plugin version (required)
+### Plugin & software (Bukkit/Spigot) version (required)
 Describe the plugin version you are using now.
 
 ### Console error (required)
