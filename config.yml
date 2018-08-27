@@ -201,8 +201,7 @@ tablist:
     - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Webs&6&oi&f&ote&7:&2 &nexample.com&7 <28>'
     - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Websi&6&ot&f&oe&7:&2 &nexample.com&7 <28>'
     - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Websit&6&oe&7:&2 &nexample.com&7 <28>'
-  # Per world tablist.
-  # Unlimited world.
+  # Per world tablist
   per-world:
     enable: false
     world_nether:
@@ -218,8 +217,7 @@ tablist:
         - '&aThis is a per world plugin&7 TabList'
       footer:
         - '&6World:&7 %player_world%'
-  # Per player tablist.
-  # Unlimited players.
+  # Per player tablist
   per-player:
     enable: false
     testplayer:

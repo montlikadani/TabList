@@ -1,3 +1,12 @@
+# v3.3
+Fixes:
+    Fixed if the tablist refresh interval set to 0 and the hide-tab-when-player-vanished was enabled, then not hided the tab.
+Other:
+    Updated PlaceholderAPI to the latest version.
+    Updated to Bukkit/Spigot 1.13.1 version.
+    Now the ping working on CraftBukkit & Spigot versions.
+    Now the tablist works on CraftBukkit versions.
+
 # v3.2
 Added:
     Added hide-tab-when-player-vanished boolean to tablist. - To hide the tab when the player vanished. (Requires Essentials or EssX)
