@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.TabList.bukkit.TabList
-version: 3.3
+version: 3.4
 author: montlikadani
 description: Ultimate animated tablist.
 softdepend: [PlaceholderAPI, Essentials]
@@ -31,6 +31,7 @@ permissions:
        tablist.fakeplayers.add: true
        tablist.fakeplayers.remove: true
        tablist.fakeplayers.list: true
+       tablist.hideme: true
        tablist.onlinestaff: true
        tablist.reload: true
        tablist.plugindisable: true
@@ -68,6 +69,9 @@ permissions:
     default: false
   tablist.fakeplayers.list:
     description: You can use the /tl fp list command.
+    default: false
+  tablist.hideme:
+    description: You can use the /tl hideme command.
     default: false
   tablist.onlinestaff:
     description: Online staffs permission.

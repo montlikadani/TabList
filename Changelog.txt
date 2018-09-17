@@ -1,3 +1,21 @@
+# v3.4
+Added:
+    Added %exp-to-level% placeholder.
+    Added API for developers.
+    Added boolean to see the default tab if the player, world & group names not specified.
+    Added /tl hideme command. - To hide yourself from the other players.
+    Added per-group tablist.
+Added (Bungee):
+    Added new placeholders: %bungee-online%, %bungee-motd%, %player-country%.
+Fixes:
+    Fixed IndexOutOfBoundsException problem.
+    Fixed some issues with per-world tab.
+Removed:
+    Removed disable-for-ops boolean. - It has been very annoyed by the users.
+Other:
+    Now if the groups refresh interval 0 does not refresh the groups.
+    Now if the player vanish, the player will not be seen in %online-players% placeholder.
+
 # v3.3
 Fixes:
     Fixed if the tablist refresh interval set to 0 and the hide-tab-when-player-vanished was enabled, then not hided the tab.

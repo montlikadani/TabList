@@ -8,6 +8,8 @@ prefix: '&6&l[&5&lTab&c&lList&6&l]&7&l >'
 
 # Use %prefix%, %newline% placeholder.
 reload-config: '%prefix%&a The plugin successfully reloaded!'
+hided-yourself: '&cYou''ve hidden yourself from other players.'
+unhided-yourself: '&aNow you can see it for everyone.'
 
 # Use %perm% placeholder.
 no-permission: '&cYou don''t have permission for that!&7 (%perm%)'
@@ -17,6 +19,7 @@ unknown-sub-command: '%prefix%&c Unknown sub-command&7 %subcmd%&c.'
 
 # Use %command% placeholder.
 unknown-command: '%prefix%&c Unknown command.&7 Type "&f/%command% help&7" for help.'
+hideme-no-console: '%prefix%&c This command&7 /%command% hideme&c only in-game.'
 tabname:
   usage: '&cUse: "&7/%command% [player];<name>;[reset] [<player;name>]&c".'
   console-usage: '&cUse: "&7/%command% <player>;[reset] [player];<name>&c".'
@@ -62,24 +65,30 @@ fake-player:
 
 # This feature lists all the chat panel help.
 chat-messages:
-- '&e&m---------&b> &e[&5Tab&cList&2 Help&e]&b <&e&m----------'
-- ''
-- '&7-&9 []&7 -&9 optional arguments'
-- '&7-&c <>&7 -&c required arguments'
-- '&7-&3 ()&7 -&3 command abbreviations'
-- '&7-&2 ;&7 -&2 writes more to one place'
-- ''
-- '&8/&a%command%&b [+TAB]&5 -&6 Main plugin info.'
-- '&8/&a%command% disable&5 -&6 Disable the plugin.'
-- '&8/&a%command% help&5 -&6 Help commands.'
-- '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the plugin.'
-- '&8/&a%command% toggle&5 -&6 Toggle on/off tab.'
-- '&8/&a%command% fakeplayers&3 (or fp)&a add&2;&aremove&3 (or rem)&c <name>&5 -&6 Create/remove fake player.'
-- '&8/&a%command% fp list&5 -&6 Lists all fake player.'
-- '&8/&atabname&3 (or tname)&c <&9[player]&2;&cname>&c <name>&5 -&6 Change player tab name.'
-- '&8/&atname reset&9 [player]&5 -&6 Reset player tab name.'
-- '&8/&a%command% get&9 [player]&5 -&6 Get player tab name.'
-- '&e&m---------------------------------------------------'
+  1:
+  - '&e&m---------&b> &e[&5Tab&cList&2 Help&e]&b <&e&m----------'
+  - ''
+  - '&7-&9 []&7 -&9 optional arguments'
+  - '&7-&c <>&7 -&c required arguments'
+  - '&7-&3 ()&7 -&3 command abbreviations'
+  - '&7-&2 ;&7 -&2 writes more to one place'
+  - ''
+  - '&8/&a%command%&b [+TAB]&5 -&6 Main plugin info.'
+  - '&8/&a%command% disable&5 -&6 Disable the plugin.'
+  - '&8/&a%command% help&9 [2]&5 -&6 Help commands.'
+  - '&8/&a%command% reload&3 (or rl)&5 -&6 Reload the plugin.'
+  - '&8/&a%command% toggle&5 -&6 Toggle on/off tab.'
+  - '&8/&a%command% fakeplayers&3 (or fp)&a add&2;&aremove&3 (or rem)&c <name>&5 -&6 Create/remove fake player.'
+  - '&e&m---------------------------------------------------'
+  2:
+  - '&e&m---------&b> &e[&5Tab&cList&2 Help&c 2&e]&b <&e&m----------'
+  - ''
+  - '&8/&a%command% fp list&5 -&6 Lists all fake player.'
+  - '&8/&atabname&3 (or tname)&c <&9[player]&2;&cname>&c <name>&5 -&6 Change player tab name.'
+  - '&8/&atname reset&9 [player]&5 -&6 Reset player tab name.'
+  - '&8/&a%command% get&9 [player]&5 -&6 Get player tab name.'
+  - '&8/&a%command% hideme&5 -&6 Hide yourself from other players.'
+  - '&e&m---------------------------------------------------'
 
 # DO NOT CHANGE THIS!
-config-version: 2
+config-version: 3

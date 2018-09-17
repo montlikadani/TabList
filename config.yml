@@ -38,7 +38,7 @@ remove-npc-name-from-tab: false
 # Fake players that are on the tab.
 enable-fake-players: false
 
-# Used for %time% placeholder.
+# Used for %server-time% placeholder.
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
 time-format: 'dd/MM/yyyy'
 
@@ -66,6 +66,8 @@ custom-variables:
 change-prefix-suffix-in-tablist:
   enable: false
   # Refresh interval in seconds.
+  # Set to 0 if you don't want to wait refresh the groups.
+  # If 0 you will required to execute the /tl rl command, to reload the groups.
   refresh-interval: 30
   # Hide player group in tablist when the player is vanished?
   # Required Essentials plugin!
@@ -81,7 +83,7 @@ change-prefix-suffix-in-tablist:
   use-external-scoreboard: true
   # Changing type.
   # Types:
-  # scoreboard - Max. character is 16 (if use 1.13 version max. 32) in prefix & suffix.
+  # scoreboard - Max. character is 16 (if use 1.13 version max. 64) in prefix & suffix.
   # namer - Max. character unlimited.
   changing-type: scoreboard
 
@@ -144,8 +146,8 @@ tabname:
   other-changed-name-message: '&3Your name is changed to&r %name%&3 by&e %sender%&3.'
 
 # Tablist. Header & footer with animation.
-# Use \n, %staff-online%, %ip-address%, %level%, %xp%, %mc-version%, %motd%, %ping%, %servername%, %max-players%,
-# %online-players%, %server-time%, %server-ram-free%, %server-ram-max%, %server-ram-used% placeholders.
+# Use \n, %staff-online%, %ip-address%, %level%, %xp%, %exp-to-level%, %mc-version%, %motd%, %ping%, %servername%,
+# %max-players%, %online-players%, %server-time%, %server-ram-free%, %server-ram-max%, %server-ram-used% placeholders.
 # Use placeholders: https://www.spigotmc.org/wiki/placeholderapi-placeholders/
 # Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 tablist:
@@ -187,23 +189,25 @@ tablist:
     - '&5&lTabList\n&7    <75>&f  <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
     - '&b&lTabList\n&7    <75>&f  <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms\n<lines>'
   footer:
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Website&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&6&o W&f&oebsite&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o W&6&oe&f&obsite&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o We&6&ob&f&osite&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Web&6&os&f&oite&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Webs&6&oi&f&ote&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Websi&6&ot&f&oe&7:&2 &nexample.com&7 <28>'
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&c All players:&a %online-players%&7 <13>\n<28>&f&o Websit&6&oe&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&f&o Website&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&6&o W&f&oebsite&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&f&o W&6&oe&f&obsite&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&f&o We&6&ob&f&osite&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&f&o Web&6&os&f&oite&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&f&o Webs&6&oi&f&ote&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&f&o Websi&6&ot&f&oe&7:&2 &nexample.com&7 <28>'
+    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%\n&7<28>&f&o Websit&6&oe&7:&2 &nexample.com&7 <28>'
   # Per world tablist
   per-world:
     enable: false
+    # If the world name is not specified, will see the default tab.
+    enable-default-tab-if-world-not-specified: true
     world_nether:
       header:
         - '&3This is a per world plugin&6 Tab&aList&3.'
@@ -220,6 +224,8 @@ tablist:
   # Per player tablist
   per-player:
     enable: false
+    # If the player name is not specified, will see the default tab.
+    enable-default-tab-if-player-not-specified: false
     testplayer:
       header:
         - '&aWelcome&6 %player_name%\n<lines>'
@@ -232,6 +238,28 @@ tablist:
         - '&aWelcome&b %player_name%\n<lines>'
       footer:
         - '<lines>'
+  # Per group tablist
+  # Requires Vault plugin!
+  per-group:
+    enable: false
+    # If the group name is not specified, will see the default tab.
+    enable-default-tab-if-group-not-specified: true
+    default:
+      header:
+        - '&aWelcome&6 %player_name%'
+        - '&aWelcome&7 %player_name%'
+        - '&aWelcome&c %player_name%'
+        - '&aWelcome&f %player_name%'
+        - '&aWelcome&e %player_name%'
+        - '&aWelcome&a %player_name%'
+        - '&aWelcome&5 %player_name%'
+        - '&aWelcome&b %player_name%'
+      footer:
+        - '&cYour rank: %vault_rank%'
+        - '&6Your rank: %vault_rank%'
+        - '&7Your rank: %vault_rank%'
+        - '&5Your rank: %vault_rank%'
+        - '&eYour rank: %vault_rank%'
 
 #=========================================#
 #             Plugin Settings             #
@@ -262,4 +290,4 @@ plugin-disable: '%prefix%&c The plugin successfully disabled!'
 default-can-see-plugin-information: false
 
 # DO NOT CHANGE THIS!
-config-version: 6
+config-version: 7

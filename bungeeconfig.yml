@@ -2,9 +2,10 @@
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
 time-format: 'dd/MM/yyyy'
 
-# TabList. Header & footer.
+# TabList, header & footer
 # Use %ping%, %player-name%, %display-name%, %ip%, %time%, %server%, %server-online%, %ram-used%,
-# %ram-max%, %ram-free%, %player-language% placeholder.
+# %ram-max%, %ram-free%, %player-language%, %bungee-online%, %bungee-motd%, %player-country%,
+# %bungee-motd%, %bungee-online% placeholder.
 tablist:
   # Enable tablist header & footer?
   enable: true
@@ -24,7 +25,7 @@ tablist:
   footer:
     - '&5&l&m================='
     - '&7Website:&2 example.com'
-  # Per player tablist.
+  # Per player tablist
   per-player:
     playername:
       header:
@@ -41,7 +42,7 @@ tablist:
         - '&5&l&m================='
       footer:
         - '&5&l&m================='
-  # Per server tablist.
+  # Per server tablist
   per-server:
     pvp:
       header:
@@ -60,7 +61,7 @@ tablist:
           footer:
             - '&7Website&7: example.org'
 
-# Plugin messages.
+# Plugin messages
 messages:
   reload-config: '&aThe plugin successfully reloaded!'
   no-permission: '&cYou don''t have permission for this!'
@@ -71,9 +72,9 @@ messages:
     no-player: '&cThere is no player available on the server.'
   chat-messages:
   - '&8&l-----------'
-  - '§7/§atablist reload&7 (or rl)§e -§6 Reloads the plugin and config.'
-  - '§7/§atablist toggle§e -§6 Toggle the tablist.'
-  - '§7/§atablist disable§e -§6 Disable the plugin.'
+  - '&7/&atablist reload&7 (or rl)&e -&6 Reloads the plugin and config.'
+  - '&7/&atablist toggle&e -&6 Toggle the tablist.'
+  - '&7/&atablist disable&e -&6 Disable the plugin.'
   - '&8&l-----------'
 
 # DO NOT CHANGE THIS!

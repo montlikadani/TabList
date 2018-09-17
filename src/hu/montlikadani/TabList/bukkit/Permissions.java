@@ -20,5 +20,6 @@ public class Permissions {
 	public static final Permission ADDFAKEPLAYER = new Permission("tablist.fakeplayers.add");
 	public static final Permission REMOVEFAKEPLAYER = new Permission("tablist.fakeplayers.remove");
 	public static final Permission LISTFAKEPLAYERS = new Permission("tablist.fakeplayers.list");
+	public static final Permission HIDEME = new Permission("tablist.hideme");
 
 }
