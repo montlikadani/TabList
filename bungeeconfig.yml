@@ -2,6 +2,13 @@
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
 time-format: 'dd/MM/yyyy'
 
+# Custom variables.
+# Unlimited variables.
+# Use: <something>: '&6Message...'
+custom-variables:
+  <name>: '&7&o%player-name%'
+  <lines>: '&5&m======================'
+
 # TabList, header & footer
 # Use %ping%, %player-name%, %display-name%, %ip%, %time%, %server%, %server-online%, %ram-used%,
 # %ram-max%, %ram-free%, %player-language%, %bungee-online%, %bungee-motd%, %player-country%,
@@ -16,32 +23,50 @@ tablist:
   # Blacklisted players, where the player not see the tab.
   blacklisted-players: []
   # How often to refresh the tablist (in milliseconds).
-  refresh-interval: 50
+  refresh-interval: 180
   header:
-    - '&2Tab&6List'
-    - '&7<93>&3 Welcome&e &l%player-name%&7! <91>'
-    - '&7<9>&6 Players:&e %server-online%&8/&e%max-players%&7 <10>'
-    - '&5&l&m================='
+    - '&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - '&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
   footer:
-    - '&5&l&m================='
-    - '&7Website:&2 example.com'
+    - '<lines>\n&7Website:&2 example.com'
   # Per player tablist
   per-player:
     playername:
       header:
-        - '&2Tab&6List'
-        - '&7<93>&3 Welcome&e &l%player-name%&7! <91>'
-        - ''
-        - '&5&l&m================='
+        - '&2Tab&6List\n&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================='
       footer:
         - '&5&l&m================='
+        - '&a&l&m================='
+        - '&b&l&m================='
+        - '&f&l&m================='
+        - '&7&l&m================='
+        - '&4&l&m================='
+        - '&6&l&m================='
     someone:
       header:
-        - '&7<93>&3 Welcome&e &l%player-name%&7! <91>'
-        - ''
-        - '&5&l&m================='
+        - '&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================='
       footer:
-        - '&5&l&m================='
+        - '<lines>'
   # Per server tablist
   per-server:
     pvp:
@@ -78,4 +103,4 @@ messages:
   - '&8&l-----------'
 
 # DO NOT CHANGE THIS!
-config-version: 3
+config-version: 4

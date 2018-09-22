@@ -1,3 +1,14 @@
+# v3.5
+Added (Bungee):
+    Added new animation to tablist.
+    Added custom variables section. - Create custom message variable.
+Fixes:
+    Fixed FileNotFoundException when the update-checker boolean is enabled.
+    Fixed Vault softdepend error.
+    Fixed not changed the groups for player, so it not working.
+Removed:
+    Removed unnecessary API code.
+
 # v3.4
 Added:
     Added %exp-to-level% placeholder.

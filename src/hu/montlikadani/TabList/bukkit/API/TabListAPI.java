@@ -20,10 +20,12 @@ public class TabListAPI {
 	}
 
 	/**
-	 * Sending the tab header and footer to player
+	 * Sending the tab header and footer to player if the boolean false
 	 */
 	public static void sendTabList(Player p, String header, String footer) {
-		TabTitle.sendTabTitle(p, header, footer);
+		if (!TabList.getInstance().getConfig().getBoolean("tablist.enable")) {
+			TabTitle.sendTabTitle(p, header, footer);
+		}
 	}
 
 	/**
@@ -31,13 +33,6 @@ public class TabListAPI {
 	 */
 	public static void clearTabList(Player p) {
 		TabTitle.sendEmptyTabTitle(p);
-	}
-
-	/**
-	 * Gets the TabListAPI current version
-	 */
-	public static String getPluginVersion() {
-		return TabList.getInstance().getDescription().getVersion();
 	}
 
 	/**
