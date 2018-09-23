@@ -7,8 +7,8 @@ about: Create a report to help us improve
 ### Describe the bug (required)
 Understand what the problem is with the plugin.
 
-### Plugin & software (Bukkit/Spigot) version (required)
-Describe the plugin version you are using now.
+### Software (Bukkit/Spigot) version (required)
+Describe the software version you are using now.
 
 ### Console error (required)
 > 
@@ -17,6 +17,7 @@ Describe the plugin version you are using now.
 
 ### Config.yml or other file
 Send the config.yml or other file.
+You can send (if you want) files link e.g. pastebin.com or paste a code block.
 (required)
 ```
 config.yml
