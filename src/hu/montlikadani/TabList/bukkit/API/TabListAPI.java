@@ -21,17 +21,37 @@ public class TabListAPI {
 
 	/**
 	 * Sending the tab header and footer to player if the boolean false
+	 * @param player Player
 	 */
 	public static void sendTabList(Player p, String header, String footer) {
-		if (!TabList.getInstance().getConfig().getBoolean("tablist.enable")) {
+		if (p == null) {
+			throw new IllegalArgumentException("player is null");
+		}
+		if (header == null || header == "") {
+			TabTitle.sendTabTitle(p, "", footer);
+			return;
+		}
+		if (footer == null || footer == "") {
+			TabTitle.sendTabTitle(p, header, "");
+			return;
+		}
+		if (TabList.getInstance().getConfig() != null) {
+			if (!TabList.getInstance().getConfig().getBoolean("tablist.enable")) {
+				TabTitle.sendTabTitle(p, header, footer);
+			}
+		} else {
 			TabTitle.sendTabTitle(p, header, footer);
 		}
 	}
 
 	/**
 	 * Clear the tab header and footer from player
+	 * @param player Player
 	 */
 	public static void clearTabList(Player p) {
+		if (p == null) {
+			throw new IllegalArgumentException("player is null");
+		}
 		TabTitle.sendEmptyTabTitle(p);
 	}
 
@@ -39,9 +59,13 @@ public class TabListAPI {
 	 * Gets the current ping of player
 	 * 
 	 * @throws Exception
+	 * @param player Player
 	 * @return Ping integer
 	 */
 	public static int getPing(Player p) throws Exception {
+		if (p == null) {
+			throw new IllegalArgumentException("player is null");
+		}
 		int pingInt = 0;
 		Object nmsPlayer = getNMSPlayer(p);
 		try {

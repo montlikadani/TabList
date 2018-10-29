@@ -1,0 +1,107 @@
+# Animations with unlimited names & texts.
+animations:
+  tablist:
+    # Text changing interval in milliseconds (ticks).
+    interval: 60
+    texts:
+    - '&b&lTabList'
+    - '&6&lTabList'
+    - '&4&lTabList'
+    - '&9&lTabList'
+    - '&a&lTabList'
+    - '&e&lTabList'
+    - '&5&lTabList'
+    - '&b&lTabList'
+    - '&6&lTabList'
+    - '&4&lTabList'
+    - '&9&lTabList'
+    - '&a&lTabList'
+    - '&e&lTabList'
+    - '&5&lTabList'
+    - '&b&lTabList'
+    - '&6&lTabList'
+    - '&4&lTabList'
+    - '&9&lTabList'
+    - '&a&lTabList'
+    - '&e&lTabList'
+    - '&5&lTabList'
+    - '&b&lTabList'
+  welcome:
+    interval: 200
+    texts:
+    - '&cW'
+    - '&cWe'
+    - '&cWel'
+    - '&cWelc'
+    - '&cWelco'
+    - '&cWelcom'
+    - '&cWelcome'
+    - '&6Welcome'
+    - '&7Welcome'
+    - '&4Welcome'
+    - '&aWelcome'
+    - '&bWelcome'
+    - '&9Welcome'
+    - '&fWelcome'
+    - '&fWelcom'
+    - '&fWelco'
+    - '&fWelc'
+    - '&fWel'
+    - '&fWe'
+    - '&fW'
+    - '&f '
+    - '&f'
+  website:
+    interval: 200
+    texts:
+    - '&f&o Website'
+    - '&f&o Website'
+    - '&f&o Website'
+    - '&f&o Website'
+    - '&f&o Website'
+    - '&f&o Website'
+    - '&f&o Website'
+    - '&6&o W&f&oebsite'
+    - '&f&o W&6&oe&f&obsite'
+    - '&f&o We&6&ob&f&osite'
+    - '&f&o Web&6&os&f&oite'
+    - '&f&o Webs&6&oi&f&ote'
+    - '&f&o Websi&6&ot&f&oe'
+    - '&f&o Websit&6&oe'
+  perWorld:
+    interval: 300
+    texts:
+    - '&cThis is a per world plugin&6 TabList'
+    - '&6This is a per world plugin&3 TabList'
+    - '&3This is a per world plugin&a TabList'
+    - '&aThis is a per world plugin&7 TabList'
+  perPlayer:
+    interval: 250
+    texts:
+    - '&aWelcome&6 %player_name%\n<lines>'
+    - '&aWelcome&7 %player_name%\n<lines>'
+    - '&aWelcome&c %player_name%\n<lines>'
+    - '&aWelcome&f %player_name%\n<lines>'
+    - '&aWelcome&e %player_name%\n<lines>'
+    - '&aWelcome&a %player_name%\n<lines>'
+    - '&aWelcome&5 %player_name%\n<lines>'
+    - '&aWelcome&b %player_name%\n<lines>'
+  perGroupHead:
+    interval: 200
+    texts:
+    - '&aWelcome&6 %player_name%'
+    - '&aWelcome&7 %player_name%'
+    - '&aWelcome&c %player_name%'
+    - '&aWelcome&f %player_name%'
+    - '&aWelcome&e %player_name%'
+    - '&aWelcome&a %player_name%'
+    - '&aWelcome&5 %player_name%'
+    - '&aWelcome&b %player_name%'
+  perGroupFoot:
+    interval: 160
+    texts:
+    - '&cYour rank: %vault_rank%'
+    - '&6Your rank: %vault_rank%'
+    - '&7Your rank: %vault_rank%'
+    - '&5Your rank: %vault_rank%'
+    - '&eYour rank: %vault_rank%'

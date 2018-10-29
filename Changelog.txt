@@ -1,3 +1,14 @@
+# v3.6
+Added:
+    Added use-essentials-nickname boolean to tabname & groups. - To change player tablist name to essentials nickname.
+Fixes:
+    Fixed the operator player doesn't get the group, so it not working for op players.
+    Fixed some bugs in API code.
+    Fixed file creation problems when the user executed something tablist command.
+Other:
+    Now animations can be created more easily in a separate file. (You can use %anim:animationName% placeholder for animation.)
+    Lower lag reduction. (I changed the older scheduler, which does not lag on Spigot versions, only Paper.)
+
 # v3.5
 Added (Bungee):
     Added new animation to tablist.
