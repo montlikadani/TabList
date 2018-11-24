@@ -1,10 +1,9 @@
 # DO NOT CHANGE THIS!
-config-version: 3
+config-version: 4
 
 # Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 
-# Player custom prefixes and suffixes.
-# Unlimited players.
+# Player custom prefixes and suffixes with unlimited players.
 players:
   testplayer:
     prefix: '&f[&5Bot&f]&6 '
@@ -15,16 +14,18 @@ players:
     suffix: ''
     sort-priority: 1
 
-# Group prefixes and suffixes. (Requires a permission system.)
-# Unlimited group.
+# Group prefixes and suffixes with unlimited group. (Requires a permission system.)
 groups:
+  # Group name, you can write anything in here.
   '1':
     prefix: '&a[&cStaff&a]&6 '
     suffix: '&7 <12>'
     # This permission must be in the permission system.
     permission: tablist.staff
-  '2':
+    # Sorting priority to sort the groups in the tab. (Under testing...)
+    sort-priority: 1
+  default:
     prefix: '&7'
     suffix: ''
-    # This permission must be in the permission system.
     permission: tablist.default
+    sort-priority: 2

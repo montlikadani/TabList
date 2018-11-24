@@ -35,6 +35,8 @@ tabname:
   name-change-success: '&aYour name has been changed to&r %name%&a.'
   # Use %target% placeholder.
   other-name-change-success: '&aYou successfully changed&6 %target%&a name to&r %name%&a.'
+  # Use %sender% placeholder.
+  other-changed-name-message: '&3Your name is changed to&r %name%&3 by&e %sender%&3.'
   name-reseted: '&aYour name has been successfully reseted.'
   other-name-reseted: '&aYou have been reseted&7 %target%&a name.'
   get-tab-name: '&2%target%&9 tab name:&r %name%'
@@ -91,4 +93,4 @@ chat-messages:
   - '&e&m---------------------------------------------------'
 
 # DO NOT CHANGE THIS!
-config-version: 3
+config-version: 4

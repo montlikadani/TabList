@@ -1,3 +1,14 @@
+# v3.7
+Added:
+    Added some methods to API.
+    Added group sort priority. - To sort the groups on the tab. (Under testing...)
+    Ok, added PlaceholderAPI placeholders to groups. (If you wanted this, do not ask me why 16 and 64 characters are max. Because the Spigot gave so much and can not do more.)
+Other:
+    Now checking the color codes in /tabname command to disable the specified word.
+    Now ignoring the remove-npc-names-from-tab boolean, when the Citizens plugin has installed.
+    Now the fake player name support for colors.
+    Now if any string is empty or not found, it will not send a blank message.
+
 # v3.6
 Added:
     Added use-essentials-nickname boolean to tabname & groups. - To change player tablist name to essentials nickname.

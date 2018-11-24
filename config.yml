@@ -33,6 +33,8 @@ placeholderapi: true
 per-world-player-list: false
 
 # Remove the NPC name from the tab?
+# If the Citizens plugin has installed then this ignoring, because the Citizens has a feature
+# to disable the npcs from tab.
 remove-npc-name-from-tab: false
 
 # Fake players that are on the tab.
@@ -54,8 +56,7 @@ ping-placeholder-format:
     amount: 500
   bad-ping: '&c'
 
-# Custom variables.
-# Unlimited variables.
+# Custom variables with unlimited variables.
 # Use: <something>: '&6Message...'
 custom-variables:
   <name>: '&5&o%player_name%'
@@ -142,12 +143,8 @@ tabname:
   # Which worlds can not be change the tab name?
   disabled-worlds: []
   # Which names can not be used?
-  # WARNING! Color codes are NOT considered in command.
   blacklist-names:
   - tabname
-  # Use %name%, %sender%, %newline%, %prefix% placeholder.
-  # >> NO supported the PlaceholderAPI! <<
-  other-changed-name-message: '&3Your name is changed to&r %name%&3 by&e %sender%&3.'
 
 # Tablist, header & footer with animation.
 # Use \n, %staff-online%, %ip-address%, %level%, %xp%, %exp-to-level%, %mc-version%, %motd%, %ping%, %servername%,
@@ -237,10 +234,6 @@ log-to-file: true
 # >> NO supported the PlaceholderAPI! <<
 plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${version}&a!'
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
-
-# The default is allowed to see the plugin information.
-# Permission: tablist.plugininfo
-default-can-see-plugin-information: false
 
 # DO NOT CHANGE THIS!
 config-version: 8
