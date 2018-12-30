@@ -1,13 +1,15 @@
-# Used for %time% placeholder.
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
-time-format: 'dd/MM/yyyy'
+# Used for %time% placeholder.
+time-format: "mm:HH"
+# Used for %date% placeholder.
+date-format: "dd/MM/yyyy"
 
 # Custom variables.
 # Unlimited variables.
-# Use: <something>: '&6Message...'
+# Use: <something>: "&6Message...'
 custom-variables:
-  <name>: '&7&o%player-name%'
-  <lines>: '&5&m======================'
+  <name>: "&7&o%player-name%"
+  <lines>: "&5&m======================"
 
 # TabList, header & footer
 # Use %ping%, %player-name%, %display-name%, %ip%, %time%, %server%, %server-online%, %ram-used%,
@@ -25,82 +27,82 @@ tablist:
   # How often to refresh the tablist (in milliseconds).
   refresh-interval: 180
   header:
-    - '&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
-    - '&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>'
+    - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+    - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
   footer:
-    - '<lines>\n&7Website:&2 example.com'
+    - "<lines>\n&7Website:&2 example.com"
   # Per player tablist
   per-player:
     playername:
       header:
-        - '&2Tab&6List\n&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================='
+        - "&2Tab&6List\n&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================="
       footer:
-        - '&5&l&m================='
-        - '&a&l&m================='
-        - '&b&l&m================='
-        - '&f&l&m================='
-        - '&7&l&m================='
-        - '&4&l&m================='
-        - '&6&l&m================='
+        - "&5&l&m================="
+        - "&a&l&m================="
+        - "&b&l&m================="
+        - "&f&l&m================="
+        - "&7&l&m================="
+        - "&4&l&m================="
+        - "&6&l&m================="
     someone:
       header:
-        - '&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================='
+        - "&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================="
       footer:
-        - '<lines>'
+        - "<lines>"
   # Per server tablist
   per-server:
     pvp:
       header:
-        - '&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&3 Kit&4PvP&9 S&6e&2r&8v&5e&1r&6!'
+        - "&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&3 Kit&4PvP&9 S&6e&2r&8v&5e&1r&6!"
       footer:
-        - '&aGo to the PvP server!'
+        - "&aGo to the PvP server!"
     lobby:
       header:
-        - '&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&9 S&6e&2r&8v&5e&1r&6!'
+        - "&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&9 S&6e&2r&8v&5e&1r&6!"
       footer:
-        - '&7<28>&a Choose a minigame or server and start playing!&7 <28>'
+        - "&7<28>&a Choose a minigame or server and start playing!&7 <28>"
       per-player:
         exampleplayer:
           header:
-            - ''
+            - ""
           footer:
-            - '&7Website&7: example.org'
+            - "&7Website&7: example.org"
 
 # Plugin messages
 messages:
-  reload-config: '&aThe plugin successfully reloaded!'
-  no-permission: '&cYou don''t have permission for this!'
-  plugin-disabled: '&cThe plugin successfully disabled!'
+  reload-config: "&aThe plugin successfully reloaded!"
+  no-permission: "&cYou don't have permission for this!"
+  plugin-disabled: "&cThe plugin successfully disabled!"
   toggle:
-    enabled: '&aThe tab is successfully turned on!'
-    disabled: '&cThe tab is successfully turned off!'
-    no-player: '&cThere is no player available on the server.'
+    enabled: "&aThe tab is successfully turned on!"
+    disabled: "&cThe tab is successfully turned off!"
+    no-player: "&cThere is no player available on the server."
   chat-messages:
-  - '&8&l-----------'
-  - '&7/&atablist reload&7 (or rl)&e -&6 Reloads the plugin and config.'
-  - '&7/&atablist toggle&e -&6 Toggle the tablist.'
-  - '&7/&atablist disable&e -&6 Disable the plugin.'
-  - '&8&l-----------'
+  - "&8&l-----------"
+  - "&7/&atablist reload&7 (or rl)&e -&6 Reloads the plugin and config."
+  - "&7/&atablist toggle&e -&6 Toggle the tablist."
+  - "&7/&atablist disable&e -&6 Disable the plugin."
+  - "&8&l-----------"
 
 # DO NOT CHANGE THIS!
-config-version: 4
+config-version: 5

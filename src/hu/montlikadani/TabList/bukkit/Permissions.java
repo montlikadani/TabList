@@ -1,4 +1,4 @@
-package hu.montlikadani.TabList.bukkit;
+package hu.montlikadani.tablist;
 
 import org.bukkit.permissions.Permission;
 
@@ -7,8 +7,7 @@ public class Permissions {
 	public static final Permission PINFO = new Permission("tablist.plugininfo");
 	public static final Permission HELP = new Permission("tablist.help");
 	public static final Permission RELOAD = new Permission("tablist.reload");
-	public static final Permission PDISABLE = new Permission("tablist.plugindisable");
-	public static final Permission TABCOMP = new Permission("tablist.cmd.tabcomplete");
+	public static final Permission PDISABLE = new Permission("tablist.disable");
 	public static final Permission GET = new Permission("tablist.get");
 	public static final Permission GETO = new Permission("tablist.get.other");
 	public static final Permission TOGGLE = new Permission("tablist.toggle");

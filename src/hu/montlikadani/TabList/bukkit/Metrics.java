@@ -1,4 +1,4 @@
-package hu.montlikadani.TabList.bukkit;
+package hu.montlikadani.tablist;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;

@@ -1,4 +1,4 @@
-package hu.montlikadani.TabList.bukkit.API;
+package hu.montlikadani.tablist.API;
 
 import java.lang.reflect.Field;
 
@@ -12,9 +12,9 @@ import hu.montlikadani.FakePlayer.FakePlayer_1_13_R1;
 import hu.montlikadani.FakePlayer.FakePlayer_1_13_R2;
 import hu.montlikadani.FakePlayer.FakePlayer_1_8_R3;
 import hu.montlikadani.FakePlayer.FakePlayer_1_9_R2;
-import hu.montlikadani.TabList.bukkit.FakePlayer;
-import hu.montlikadani.TabList.bukkit.TabList;
-import hu.montlikadani.TabList.bukkit.TabTitle;
+import hu.montlikadani.tablist.FakePlayer;
+import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.TabTitle;
 
 public class TabListAPI {
 
@@ -33,6 +33,8 @@ public class TabListAPI {
 	/**
 	 * Sending the tab header and footer to player
 	 * @param player Player
+	 * @param string Header
+	 * @param string Footer
 	 */
 	public static void sendTabList(Player p, String header, String footer) {
 		if (p == null) {
@@ -130,19 +132,10 @@ public class TabListAPI {
 			throw new IllegalArgumentException("player is null");
 		}
 		int pingInt = 0;
-		Object nmsPlayer = getNMSPlayer(p);
+		Object nmsPlayer = TabTitle.getNMSPlayer(p);
 		Field ping = nmsPlayer.getClass().getField("ping");
 		ping.setAccessible(true);
 		pingInt = ping.getInt(nmsPlayer);
 		return pingInt;
-	}
-
-	private static Object getNMSPlayer(Player p) {
-		try {
-			return p.getClass().getMethod("getHandle", new Class[0]).invoke(p, new Object[0]);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 }

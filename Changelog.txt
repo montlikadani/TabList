@@ -1,3 +1,20 @@
+# v3.8
+Added:
+    Added per-player to per-world tablist. - To use per player tablist in per world.
+    Added %date% placeholder + customizable in configuration.
+Added (Bungee):
+    Added %date% placeholder + customizable in configuration.
+Fixes:
+    Fixed the health-tab not working correctly.
+    Fixed the default-color when enabled and reloaded the plugin, then the player does not get the color, so it not work.
+    Fixed when you used 1.13 versions and change prefix-suffix, then your name does not change to the specified color, so it not work properly.
+    Fixed tab-complete not work correctly.
+Other:
+    Now work the tab-complete for gets the fake player when you type /tl fp remove command.
+    Plugin now on Maven project. (the old was incorrect and could not fix)
+Removed:
+    Removed custom-object type, not work properly. (Soon it will be added again.)
+
 # v3.7
 Added:
     Added some methods to API.

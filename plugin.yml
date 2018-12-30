@@ -1,6 +1,6 @@
 name: TabList
-main: hu.montlikadani.TabList.bukkit.TabList
-version: 3.7
+main: hu.montlikadani.tablist.TabList
+version: 3.8
 author: montlikadani
 description: Ultimate animated tablist.
 softdepend: [PlaceholderAPI, Essentials, Vault]
@@ -34,9 +34,8 @@ permissions:
        tablist.hideme: true
        tablist.onlinestaff: true
        tablist.reload: true
-       tablist.plugindisable: true
+       tablist.disable: true
        tablist.help: true
-       tablist.cmd.tabcomplete: true
   tablist.get:
     description: Get tab name permission.
     default: false
@@ -81,10 +80,7 @@ permissions:
     default: false
   tablist.reload:
     description: Reload the plugin.
-    default: op
-  tablist.plugindisable:
+    default: false
+  tablist.disable:
     description: Allow to player to disable plugin.
     default: op
-  tablist.cmd.tabcomplete:
-    description: You can use [TAB] in commands.
-    default: false

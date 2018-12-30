@@ -23,9 +23,6 @@
 # - If the string is empty does not send the message.                    #
 #=================================OOO====================================#
 
-#=========================================#
-#                Settings                 #
-#=========================================#
 # PlaceholderAPI use for the plugin.
 placeholderapi: true
 
@@ -40,34 +37,36 @@ remove-npc-name-from-tab: false
 # Fake players that are on the tab.
 enable-fake-players: false
 
-# Used for %server-time% placeholder.
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
-time-format: 'dd/MM/yyyy'
+# Used for %server-time% placeholder.
+time-format: "mm:HH"
+# Used for %date% placeholder.
+date-format: "dd/MM/yyyy"
 
 # Ping color format for %ping% placeholder.
 ping-placeholder-format:
   enable: true
   # Use color coding "&" for color.
   good-ping:
-    color: '&a'
+    color: "&a"
     amount: 200
   medium-ping:
-    color: '&6'
+    color: "&6"
     amount: 500
-  bad-ping: '&c'
+  bad-ping: "&c"
 
 # Custom variables with unlimited variables.
-# Use: <something>: '&6Message...'
+# Use: <something>: "&6Message..."
 custom-variables:
-  <name>: '&5&o%player_name%'
-  <lines>: '&5&m======================'
+  <name>: "&5&o%player_name%"
+  <lines>: "&5&m======================"
 
 # Enables to change prefix & suffix in player tablist.
 # WARNING! Overwrites the tabname function.
 change-prefix-suffix-in-tablist:
   enable: false
   # Refresh interval in seconds.
-  # Set to 0 if you don't want to wait refresh the groups.
+  # Set to 0 if you don't want to refresh the groups.
   # If 0 you will required to execute the /tl rl command, to reload the groups.
   refresh-interval: 30
   # Hide player group in tablist when the player is vanished?
@@ -84,13 +83,14 @@ change-prefix-suffix-in-tablist:
   name-tag-visibility: always
   # WARNING! You can only change it to false if you experience a problem by changing the group prefix and suffix.
   use-external-scoreboard: true
-  # Changing type.
-  # Types:
+  # Scoreboard changing types (if you experience some problems by changing group).
   # scoreboard - Max. character is 16 (if use 1.13 version max. 64) in prefix & suffix.
-  # namer - Max. character unlimited.
+  # namer - Max. character is unlimited.
   changing-type: scoreboard
 
-# Tablist objective type.
+# Tablist objective types
+# Shows your current health (with life indicator), shows your current ping or a custom placeholder
+# that shows number.
 tablist-object-type:
   enable: false
   # Types:
@@ -98,7 +98,7 @@ tablist-object-type:
   # health - health of player
   # custom - custom value
   type: ping
-  # Objective settings.
+  # Objective settings
   object-settings:
     # The ping side next to the player's name indicates the right side.
     ping:
@@ -115,13 +115,6 @@ tablist-object-type:
       blacklisted-players:
       - exampleplayer
       - players
-    # It only accepts number-ending placeholders, such as player levels.
-    custom:
-      custom-value: "%player_level%"
-      # Refresh interval in seconds.
-      refresh-interval: 3
-      # Which worlds do not show the custom value setting (world names)?
-      disabled-worlds: []
 
 # Changing player tablist name with unlimited characters.
 tabname:
@@ -139,7 +132,7 @@ tabname:
   # Enable the default color. (If the player has not written a color code, this color will be given by default.)
   default-color:
     enable: false
-    color: '&6'
+    color: "&6"
   # Which worlds can not be change the tab name?
   disabled-worlds: []
   # Which names can not be used?
@@ -160,20 +153,20 @@ tablist:
   hide-tab-when-player-vanished: false
   # What world does not display the tab?
   disabled-worlds:
-  - lobby
-  - hub
+  - "world1"
+  - "worldTest"
   # Blacklisted players, where the player not see the tab.
   blacklisted-players: []
   # Tab update time interval. (In ticks!)
   # Set 0 to disable the tab refresh.
   interval: 4
   header:
-    - '%anim:tablist%'
-    - '&7<75> %anim:welcome% <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms'
-    - '<lines>'
+    - "%anim:tablist%"
+    - "&7<75> %anim:welcome% <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms"
+    - "<lines>"
   footer:
-    - '<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%'
-    - '&7<28> %anim:website%&7:&2 &nexample.com&7 <28>'
+    - "<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%"
+    - "&7<28> %anim:website%&7:&2 &nexample.com&7 <28>"
   # Per world tablist
   per-world:
     enable: false
@@ -181,14 +174,25 @@ tablist:
     enable-default-tab-if-world-not-specified: true
     world_nether:
       header:
-        - '&3This is a per world plugin %anim:tablist%&3.'
+        - "&3This is a per world plugin %anim:tablist%&3."
       footer:
-        - '&6World:&7 %player_world%'
+        - "&6World:&7 %player_world%"
     world:
       header:
-        - '%anim:perWorld%'
+        - "%anim:perWorld%"
       footer:
-        - '&6World:&7 %player_world%'
+        - "&6World:&7 %player_world%"
+      # Per player in per world tablist
+      per-player:
+        enable: false
+        # If the player name is not specified, will see the default tab.
+        enable-default-tab-if-player-not-specified: true
+        playerName:
+          header:
+            - "&3This is a per player plugin %anim:tablist%&3."
+          footer:
+            - "&6World:&7 %player_world%"
+            - "&aPlayer:&8 %player_name%"
   # Per player tablist
   per-player:
     enable: false
@@ -196,9 +200,9 @@ tablist:
     enable-default-tab-if-player-not-specified: false
     testplayer:
       header:
-        - '%anim:perPlayer%'
+        - "%anim:perPlayer%"
       footer:
-        - '<lines>'
+        - "<lines>"
   # Per group tablist
   # Requires Vault plugin!
   per-group:
@@ -207,9 +211,9 @@ tablist:
     enable-default-tab-if-group-not-specified: true
     default:
       header:
-        - '%anim:perGroupHead%'
+        - "%anim:perGroupHead%"
       footer:
-        - '%anim:perGroupFoot%'
+        - "%anim:perGroupFoot%"
 
 #=========================================#
 #             Plugin Settings             #
