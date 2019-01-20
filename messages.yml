@@ -15,6 +15,27 @@ unknown-sub-command: "%prefix%&c Unknown sub-command&7 %subcmd%&c."
 # Use %command% placeholder.
 unknown-command: "%prefix%&c Unknown command.&7 Type '&f/%command% help&7' for help."
 hideme-no-console: "%prefix%&c This command&7 /%command% hideme&c only in-game."
+set-prefix-suffix:
+  prefix:
+    usage: "&cUse: '&7/%command% setprefix <player> <prefix>&c'."
+    could-not-be-empty: "&cThe prefix text could not be empty!"
+    # Use %target% placeholder.
+    player-not-found: "&cThis player&7 %target%&c not found."
+    # Use %tag% placeholder.
+    successfully-set: "&aYou have successfully set prefix for&e %target%&a, with this prefix:&r %tag%"
+  suffix:
+    usage: "&cUse: '&7/%command% setsuffix <player> <suffix>&c'."
+    could-not-be-empty: "&cThe suffix text could not be empty!"
+    # Use %target% placeholder.
+    player-not-found: "&cThis player&7 %target%&c not found."
+    # Use %tag% placeholder.
+    successfully-set: "&aYou have successfully set suffix for&e %target%&a, with this suffix:&r %tag%"
+  remove-player:
+    usage: "&cUse: '&7/%command% removeplayer <player>&c'."
+    # Use %target% placeholder.
+    player-not-found: "&cThis player&7 %target%&c not found."
+    player-not-found-in-database: "&cThis player&7 %target%&c not found in the database."
+    successfully-removed: "&cYou have successfully removed&7 %target%&c group."
 tabname:
   usage: "&cUse: '&7/%command% [player]/<name>/[reset] [<player/name>]&c'."
   console-usage: "&cUse: '&7/%command% <player>/[reset] [player]/<name>&c'."
@@ -71,7 +92,7 @@ chat-messages:
   - ""
   - "&8/&a%command%&b [+TAB]&5 -&6 Main plugin info."
   - "&8/&a%command% disable&5 -&6 Disable the plugin."
-  - "&8/&a%command% help&9 [2]&5 -&6 Help commands."
+  - "&8/&a%command% help&9 [2/3]&5 -&6 Help commands."
   - "&8/&a%command% reload&3 (or rl)&5 -&6 Reload the plugin."
   - "&8/&a%command% toggle&5 -&6 Toggle on/off tab."
   - "&8/&a%command% fakeplayers&3 (or fp)&a add&2/&aremove&3 (or rem)&c <name>&5 -&6 Create/remove fake player."
@@ -84,7 +105,14 @@ chat-messages:
   - "&8/&atname reset&9 [player]&5 -&6 Reset player tab name."
   - "&8/&a%command% get&9 [player]&5 -&6 Get player tab name."
   - "&8/&a%command% hideme&5 -&6 Hide yourself from other players."
+  - "&8/&a%command% setprefix&c <player> <prefix>&5 -&6 Sets the specified player prefix."
+  - "&e&m---------------------------------------------------"
+  3:
+  - "&e&m---------&b> &e[&5Tab&cList&2 Help&c 3&e]&b <&e&m----------"
+  - ""
+  - "&8/&a%command% setsuffix&c <player> <suffix>&5 -&6 Sets the specified player suffix."
+  - "&8/&a%command% removeplayer&c <player>&5 -&6 Removing the specified player prefix/suffix."
   - "&e&m---------------------------------------------------"
 
 # DO NOT CHANGE THIS!
-config-version: 4
+config-version: 5

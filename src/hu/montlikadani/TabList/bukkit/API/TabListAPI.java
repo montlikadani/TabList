@@ -32,6 +32,7 @@ public class TabListAPI {
 
 	/**
 	 * Sending the tab header and footer to player
+	 * 
 	 * @param player Player
 	 * @param string Header
 	 * @param string Footer
@@ -53,6 +54,7 @@ public class TabListAPI {
 
 	/**
 	 * Clear the tab header and footer from player
+	 * 
 	 * @param player Player
 	 */
 	public static void clearTabList(Player p) {
@@ -64,6 +66,7 @@ public class TabListAPI {
 
 	/**
 	 * Creates a fake player
+	 * 
 	 * @param name Fake player name
 	 */
 	public static void createFakePlayer(String name) {
@@ -93,6 +96,7 @@ public class TabListAPI {
 
 	/**
 	 * Removes the exists fake player
+	 * 
 	 * @param name Fake player name
 	 */
 	public static void removeFakePlayer(String name) {
@@ -123,11 +127,11 @@ public class TabListAPI {
 	/**
 	 * Gets the current ping of player
 	 * 
-	 * @throws Exception
+	 * @throws Throwable
 	 * @param player Player
 	 * @return Ping integer
 	 */
-	public static int getPing(Player p) throws Exception {
+	public static int getPing(Player p) throws Throwable {
 		if (p == null) {
 			throw new IllegalArgumentException("player is null");
 		}

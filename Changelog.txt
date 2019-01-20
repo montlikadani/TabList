@@ -1,3 +1,20 @@
+# v3.9
+Added:
+    Re-added the custom objective. (doubled numbers "2.1" do NOT work)
+    Added %vanished-players% placeholder to list all vanished players. Requires Essentials
+    Added commands to set prefix for player: /tl setprefix/setsuffix <player> <prefix/suffix>
+    Added a command to remove player prefix/suffix: /tl removeplayer <player>
+Fixes:
+    Fixed all players who were online in the server, got one of the groups so it wasn't right.
+    Fix when a player changed nickname and tablist groups is enabled then modified the group prefix/suffix to essentials nickname.
+    Fixed when you used the %online-players% placeholder and Essentials is installed, then not count the vanished players.
+Other:
+    Now don't need the "_" in /tabname command to make a space, because it can be without it.
+    Now tabname supports PlaceholderAPI placeholders & symbols.
+    Other tablist fixes for freezing. - When a player joined the server, the tablist freezed so stopped the task and started it again.
+Removed:
+    Removed log-to-file function. - It didn't help much to solve the problem.
+
 # v3.8
 Added:
     Added per-player to per-world tablist. - To use per player tablist in per world.

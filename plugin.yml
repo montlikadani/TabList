@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.tablist.TabList
-version: 3.8
+version: 3.9
 author: montlikadani
 description: Ultimate animated tablist.
 softdepend: [PlaceholderAPI, Essentials, Vault]
@@ -32,45 +32,57 @@ permissions:
        tablist.fakeplayers.remove: true
        tablist.fakeplayers.list: true
        tablist.hideme: true
+       tablist.setprefix: true
+       tablist.setsuffix: true
+       tablist.removeplayer: true
        tablist.onlinestaff: true
        tablist.reload: true
        tablist.disable: true
        tablist.help: true
   tablist.get:
-    description: Get tab name permission.
+    description: Gives access to use /tl get command.
     default: false
   tablist.get.other:
-    description: Get other player tab name permission.
+    description: Gives access to use /tl get <player> command.
     default: false
   tablist.toggle:
-    description: You can use the /tl toggle command.
+    description: Gives access to use /tl toggle command.
     default: false
   tablist.tabname:
-    description: You can use the /tabname command.
+    description: Gives access to use /tabname command.
     default: false
   tablist.tabname.other:
-    description: You can use the /tname <player> <name> command.
+    description: Gives access to use /tname <player> <name> command.
     default: false
   tablist.reset:
-    description: You can use the /tname reset command.
+    description: Gives access to use /tname reset command.
     default: false
   tablist.reset.other:
-    description: You can use the /tname reset <player> command.
+    description: Gives access to use /tname reset <player> command.
     default: false
   tablist.fakeplayers:
-    description: You can use the /tl fp command.
+    description: Gives access to use /tl fp command.
     default: false
   tablist.fakeplayers.add:
-    description: You can use the /tl fp add command.
+    description: Gives access to use /tl fp add command.
     default: false
   tablist.fakeplayers.remove:
-    description: You can use the /tl fp remove command.
+    description: Gives access to use /tl fp remove command.
     default: false
   tablist.fakeplayers.list:
-    description: You can use the /tl fp list command.
+    description: Gives access to use /tl fp list command.
     default: false
   tablist.hideme:
-    description: You can use the /tl hideme command.
+    description: Gives access to use /tl hideme command.
+    default: false
+  tablist.setprefix:
+    description: Gives access to use /tl setprefix command.
+    default: false
+  tablist.setsuffix:
+    description: Gives access to use /tl setsuffix command.
+    default: false
+  tablist.removeplayer:
+    description: Gives access to use /tl removeplayer command.
     default: false
   tablist.onlinestaff:
     description: Online staffs permission.
@@ -79,8 +91,8 @@ permissions:
     description: Help commands for TabList.
     default: false
   tablist.reload:
-    description: Reload the plugin.
+    description: Gives access to use /tl reload command.
     default: false
   tablist.disable:
-    description: Allow to player to disable plugin.
+    description: Gives access to use /tl disable command.
     default: op

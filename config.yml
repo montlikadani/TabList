@@ -115,6 +115,13 @@ tablist-object-type:
       blacklisted-players:
       - exampleplayer
       - players
+    # It only accepts number-ending placeholders, such as player levels (doubled numbers "2.1" do NOT work).
+    custom:
+      custom-value: "%player_level%"
+      # Refresh interval in seconds.
+      refresh-interval: 3
+      # Which worlds do not show the custom value setting (world names)?
+      disabled-worlds: []
 
 # Changing player tablist name with unlimited characters.
 tabname:
@@ -128,6 +135,7 @@ tabname:
   # When the player left the server, delete the tab name?
   clear-player-tabname-on-quit: false
   # Enables color coding for tab names. ("&")
+  # false - disables all placeholders, symbols, and color codes.
   enable-color-code: true
   # Enable the default color. (If the player has not written a color code, this color will be given by default.)
   default-color:
@@ -140,8 +148,7 @@ tabname:
   - tabname
 
 # Tablist, header & footer with animation.
-# Use \n, %staff-online%, %ip-address%, %level%, %xp%, %exp-to-level%, %mc-version%, %motd%, %ping%, %servername%,
-# %max-players%, %online-players%, %server-time%, %server-ram-free%, %server-ram-max%, %server-ram-used% placeholders.
+# Current plugin placeholders: https://github.com/montlikadani/TabList/wiki/Placeholders
 # Use placeholders: https://www.spigotmc.org/wiki/placeholderapi-placeholders/
 # Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 # Use %anim:animationName% placeholder to make an animation.
@@ -230,9 +237,6 @@ check-update: true
 # Log plugin messages into console.
 logconsole: true
 
-# Logging to file plugin messages.
-log-to-file: true
-
 # Plugin enable/disable messages in console.
 # Use %newline%, %prefix% placeholder.
 # >> NO supported the PlaceholderAPI! <<
@@ -240,4 +244,4 @@ plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${version}&a!'
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
 # DO NOT CHANGE THIS!
-config-version: 8
+config-version: 9
