@@ -37,6 +37,17 @@ remove-npc-name-from-tab: false
 # Fake players that are on the tab.
 enable-fake-players: false
 
+# Ignoring vanished players in %online-players% placeholder.
+# true - does not count the vanished players to placeholder.
+# Required Essentials plugin!
+ignore-vanished-players-in-online-players: false
+
+# Hides player from tab when afk status.
+# Requires Essentials plugin!
+# Warning!! Re-add player to tablist not work. So when a player afk
+# status and want to online status then not add back the player to tab.
+hide-player-from-tab-when-afk: false
+
 # Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
 # Used for %server-time% placeholder.
 time-format: "mm:HH"
@@ -200,6 +211,19 @@ tablist:
           footer:
             - "&6World:&7 %player_world%"
             - "&aPlayer:&8 %player_name%"
+    testWorld:
+      # Per group in per world tablist
+      # Requires Vault plugin!
+      per-group:
+        enable: false
+        # If the group name is not specified, will see the default tab.
+        enable-default-tab-if-group-not-specified: true
+        groupName:
+          header:
+            - "&3This is a per group plugin %anim:tablist%&3."
+          footer:
+            - "&6World:&7 %player_world%"
+            - "&aGroup:&8 %vault_rank%"
   # Per player tablist
   per-player:
     enable: false
@@ -244,4 +268,4 @@ plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${version}&a!'
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
 # DO NOT CHANGE THIS!
-config-version: 9
+config-version: 10

@@ -13,6 +13,7 @@ import hu.montlikadani.FakePlayer.FakePlayer_1_13_R2;
 import hu.montlikadani.FakePlayer.FakePlayer_1_8_R3;
 import hu.montlikadani.FakePlayer.FakePlayer_1_9_R2;
 import hu.montlikadani.tablist.FakePlayer;
+import hu.montlikadani.tablist.Packets;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.TabTitle;
 
@@ -41,27 +42,15 @@ public class TabListAPI {
 		if (p == null) {
 			throw new IllegalArgumentException("player is null");
 		}
-		if (header == null || header == "") {
+		if (header == null) {
 			TabTitle.sendTabTitle(p, "", footer);
 			return;
 		}
-		if (footer == null || footer == "") {
+		if (footer == null) {
 			TabTitle.sendTabTitle(p, header, "");
 			return;
 		}
 		TabTitle.sendTabTitle(p, header, footer);
-	}
-
-	/**
-	 * Clear the tab header and footer from player
-	 * 
-	 * @param player Player
-	 */
-	public static void clearTabList(Player p) {
-		if (p == null) {
-			throw new IllegalArgumentException("player is null");
-		}
-		TabTitle.sendEmptyTabTitle(p);
 	}
 
 	/**
@@ -136,7 +125,7 @@ public class TabListAPI {
 			throw new IllegalArgumentException("player is null");
 		}
 		int pingInt = 0;
-		Object nmsPlayer = TabTitle.getNMSPlayer(p);
+		Object nmsPlayer = Packets.getNMSPlayer(p);
 		Field ping = nmsPlayer.getClass().getField("ping");
 		ping.setAccessible(true);
 		pingInt = ping.getInt(nmsPlayer);

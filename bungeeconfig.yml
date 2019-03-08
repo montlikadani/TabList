@@ -4,17 +4,15 @@ time-format: "mm:HH"
 # Used for %date% placeholder.
 date-format: "dd/MM/yyyy"
 
-# Custom variables.
-# Unlimited variables.
+# Custom variables with unlimited variables.
 # Use: <something>: "&6Message...'
 custom-variables:
   <name>: "&7&o%player-name%"
   <lines>: "&5&m======================"
 
 # TabList, header & footer
-# Use %ping%, %player-name%, %display-name%, %ip%, %time%, %server%, %server-online%, %ram-used%,
-# %ram-max%, %ram-free%, %player-language%, %bungee-online%, %bungee-motd%, %player-country%,
-# %bungee-motd%, %bungee-online% placeholder.
+# Current plugin placeholders: https://github.com/montlikadani/TabList/wiki/Placeholders#bungee
+# Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 tablist:
   # Enable tablist header & footer?
   enable: true

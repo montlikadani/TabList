@@ -1,3 +1,21 @@
+﻿# v4.0
+Added:
+    Added option to configuration to ignore vanished players when using %online-players% placeholder.
+    Added option to config to hide player from tab when afk status is true.
+    Added per-group to per-world tablist. - To use per group tablist in per world.
+Added (Bungee/Bukkit):
+    Added +20 symbols.
+Added (Bungee):
+    Added %max-players% placeholder.
+Fixes (Bungee):
+    Fix when a player joined to the server it does not show the tab.
+Fixes:
+    Fixed IllegalArgumentException when used the ping-tab objective and the groups.
+    Fix for set the ping-tab for player when list name not found, but if player list name is disabled, throws an error.
+    Some fixes with player hiding from tab, when used old versions e.g 1.8 then not hide the player so throws error.
+    Fixed when the plugin checked the version, for some reason the scanner was not recognized by any version of Java so it caused a problem.
+    Fix NPE when a string not found in the messages file.
+
 # v3.9
 Added:
     Re-added the custom objective. (doubled numbers "2.1" do NOT work)
