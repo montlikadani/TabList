@@ -30,6 +30,13 @@ set-prefix-suffix:
     player-not-found: "&cThis player&7 %target%&c not found."
     # Use %tag% placeholder.
     successfully-set: "&aYou have successfully set suffix for&e %target%&a, with this suffix:&r %tag%"
+  set-priority:
+    usage: "&cUse: '&7/%command% setpriority <player> <number>&c'."
+    priority-must-be-number: "&cThe priority must be a number!"
+    # Use %target% placeholder.
+    player-not-found: "&cThis player&7 %target%&c not found."
+    # Use %number% placeholder.
+    successfully-set: "&aYou have successfully set priority for&e %target%&a, with priority&r %number%"
   remove-player:
     usage: "&cUse: '&7/%command% removeplayer <player>&c'."
     # Use %target% placeholder.
@@ -115,4 +122,4 @@ chat-messages:
   - "&e&m---------------------------------------------------"
 
 # DO NOT CHANGE THIS!
-config-version: 5
+config-version: 6

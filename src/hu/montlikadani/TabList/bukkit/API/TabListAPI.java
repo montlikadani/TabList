@@ -42,14 +42,6 @@ public class TabListAPI {
 		if (p == null) {
 			throw new IllegalArgumentException("player is null");
 		}
-		if (header == null) {
-			TabTitle.sendTabTitle(p, "", footer);
-			return;
-		}
-		if (footer == null) {
-			TabTitle.sendTabTitle(p, header, "");
-			return;
-		}
 		TabTitle.sendTabTitle(p, header, footer);
 	}
 

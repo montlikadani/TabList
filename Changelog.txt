@@ -1,4 +1,21 @@
-﻿# v4.0
+﻿# v4.1
+Added:
+  Added /tl setpriority command to sort the prefixed players in tablist.
+Fixes (Bungee/Bukkit):
+  Improved %server-time% and %date% placeholders when used the deprecated version, then throws an error, so it not work.
+Fixes:
+  Fixed a problem when executed /tl rl command it does not loaded the animations.
+  Fixed NoClassDefFoundError when PlaceholderAPI not found.
+  Fixed issue when changed the name of the world/group or other in config, and wants to reload the plugin, then the player is still get the last tablist.
+  Fixed problem with changing the tablist, when the player was teleported to other world.
+  Improved the Bukkit server name placeholder when used, because the plugin used the deprecated version, but this outdated.
+  Fixed NPE when groups section not found and throws an error.
+Removed:
+  Removed remove-npc-names-from-tab option. - It didn't remove the NPC names from the tablist, but the player names, so it was buggy for Citizens.
+Other:
+  Now the tablist can be use such as string or string list.
+
+# v4.0
 Added:
     Added option to configuration to ignore vanished players when using %online-players% placeholder.
     Added option to config to hide player from tab when afk status is true.

@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.tablist.TabList
-version: 4.0
+version: 4.1
 author: montlikadani
 description: Ultimate animated tablist.
 softdepend: [PlaceholderAPI, Essentials, Vault]
@@ -34,6 +34,7 @@ permissions:
        tablist.hideme: true
        tablist.setprefix: true
        tablist.setsuffix: true
+       tablist.setpriority: true
        tablist.removeplayer: true
        tablist.onlinestaff: true
        tablist.reload: true
@@ -80,6 +81,9 @@ permissions:
     default: false
   tablist.setsuffix:
     description: Gives access to use /tl setsuffix command.
+    default: false
+  tablist.setpriority:
+    description: Gives access to use /tl setpriority command.
     default: false
   tablist.removeplayer:
     description: Gives access to use /tl removeplayer command.

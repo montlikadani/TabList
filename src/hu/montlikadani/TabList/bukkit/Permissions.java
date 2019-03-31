@@ -17,6 +17,7 @@ public class Permissions {
 		RESET("tablist.reset"),
 		RESETOTHERTAB("tablist.reset.other"),
 		SETPREFIX("tablist.setprefix"),
+		SETPRIORITY("tablist.setpriority"),
 		SETSUFFIX("tablist.setsuffix"),
 		REMOVEPLAYER("tablist.removeplayer"),
 		TABNAME("tablist.tabname"),

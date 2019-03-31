@@ -2,7 +2,6 @@
 
 [![bStats](https://img.shields.io/badge/bStats-1.4-brightgreen.svg)](https://bstats.org/plugin/bukkit/TabList)
 
-Use the player list tab!
 ***
 
 A fully configurable plugin that allows all online players that are one the server to get an animated tablist, which is configurable in the config.
