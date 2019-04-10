@@ -51,6 +51,27 @@ animations:
     - "&fW"
     - "&f "
     - "&f"
+  Admin:
+    interval: 200
+    texts:
+    - "&a[&cAdmin&a]&6 "
+    - "&a"
+    - "&a["
+    - "&a[&cA"
+    - "&a[&cAd"
+    - "&a[&cAdm"
+    - "&a[&cAdmi"
+    - "&a[&cAdmin"
+    - "&a[&cAdmin&a"
+    - "&a[&cAdmin&a]"
+    - "&a[&cAdmin&a]&6 "
+    - "&a[&cAdmin&a]&6 "
+    - "&a[&cAdmin&a]&a "
+    - "&a[&cAdmin&a]&e "
+    - "&a[&cAdmin&a]&f "
+    - "&a[&cAdmin&a]&c "
+    - "&a[&cAdmin&a]&b "
+    - "&a[&cAdmin&a]&9 "
   website:
     interval: 200
     texts:

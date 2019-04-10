@@ -1,4 +1,11 @@
-﻿# v4.1
+﻿# v4.2
+Added:
+  Added option to groups file, when the player is operator of that server, then gets that group when the boolean false. - This fixes a randomly choosing group.
+  Added animation to groups + can be enable in configuration file. (Animations can be configured in animCreator.yml file)
+Other:
+  Now the health objective shows the health symbol and not the level.
+
+# v4.1
 Added:
   Added /tl setpriority command to sort the prefixed players in tablist.
 Fixes (Bungee/Bukkit):

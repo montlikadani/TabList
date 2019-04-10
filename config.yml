@@ -71,10 +71,15 @@ custom-variables:
 # WARNING! Overwrites the tabname function.
 change-prefix-suffix-in-tablist:
   enable: false
-  # Refresh interval in seconds.
+  # Refresh interval in seconds, if using animation then counts in ticks.
   # Set to 0 if you don't want to refresh the groups.
   # If 0 you will required to execute the /tl rl command, to reload the groups.
   refresh-interval: 30
+  # Do you want to use animation in groups?
+  # This creates a new task scheduler when this enabled.
+  # If this true, then you need to change the refresh interval such as 4, because counting in ticks.
+  # If this false, then back to seconds interval.
+  enable-animation: false
   # Hide player group in tablist when the player is vanished?
   # Required Essentials plugin!
   hide-group-when-player-vanished: false
@@ -254,4 +259,4 @@ plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${version}&a!'
 plugin-disable: '%prefix%&c The plugin successfully disabled!'
 
 # DO NOT CHANGE THIS!
-config-version: 10
+config-version: 11

@@ -166,5 +166,5 @@
 			<systemPath>${project.basedir}/libs/PermissionsEx-1.23.4.jar</systemPath>
 		</dependency>
 	</dependencies>
-	<version>4.1</version>
+	<version>4.2</version>
 </project>

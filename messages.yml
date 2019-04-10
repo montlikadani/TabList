@@ -118,6 +118,7 @@ chat-messages:
   - "&e&m---------&b> &e[&5Tab&cList&2 Help&c 3&e]&b <&e&m----------"
   - ""
   - "&8/&a%command% setsuffix&c <player> <suffix>&5 -&6 Sets the specified player suffix."
+  - "&8/&a%command% setpriority&c <player> <priority>&5 -&6 Sets the specified player sorting priority."
   - "&8/&a%command% removeplayer&c <player>&5 -&6 Removing the specified player prefix/suffix."
   - "&e&m---------------------------------------------------"
 
