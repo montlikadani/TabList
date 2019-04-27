@@ -10,6 +10,7 @@ import hu.montlikadani.FakePlayer.FakePlayer_1_11_R1;
 import hu.montlikadani.FakePlayer.FakePlayer_1_12_R1;
 import hu.montlikadani.FakePlayer.FakePlayer_1_13_R1;
 import hu.montlikadani.FakePlayer.FakePlayer_1_13_R2;
+import hu.montlikadani.FakePlayer.FakePlayer_1_14_R1;
 import hu.montlikadani.FakePlayer.FakePlayer_1_8_R3;
 import hu.montlikadani.FakePlayer.FakePlayer_1_9_R2;
 import hu.montlikadani.tablist.FakePlayer;
@@ -32,7 +33,7 @@ public class TabListAPI {
 	}
 
 	/**
-	 * Sending the tab header and footer to player
+	 * Sends the tab header and footer to player
 	 * 
 	 * @param player Player
 	 * @param string Header
@@ -71,6 +72,8 @@ public class TabListAPI {
 			fp = new FakePlayer_1_13_R1();
 		} else if (version.equals("v1_13_R2")) {
 			fp = new FakePlayer_1_13_R2();
+		} else if (version.equals("v1_14_R1")) {
+			fp = new FakePlayer_1_14_R1();
 		}
 		fp.create(TabList.getInstance().colorMsg(name));
 	}
@@ -101,6 +104,8 @@ public class TabListAPI {
 			fp = new FakePlayer_1_13_R1();
 		} else if (version.equals("v1_13_R2")) {
 			fp = new FakePlayer_1_13_R2();
+		} else if (version.equals("v1_14_R1")) {
+			fp = new FakePlayer_1_14_R1();
 		}
 		fp.remove(name);
 	}

@@ -8,14 +8,11 @@
 # https://github.com/montlikadani/TabList/blob/master/config.yml         #
 #                                                                        #
 # [Placeholders]                                                         #
-# https://www.spigotmc.org/wiki/placeholderapi-placeholders/             #
-#                                                                        #
-# [Other placeholders]                                                   #
 # https://github.com/montlikadani/TabList/wiki/Placeholders              #
 #                                                                        #
 # [Tips]                                                                 #
 # - Use color coding '&' character, on this page:                        #
-# http://minecraft.gamepedia.com/Formatting_codes                        #
+# https://minecraft.gamepedia.com/Formatting_codes                       #
 # - If you find a bug, send here:                                        #
 # https://github.com/montlikadani/TabList/issues                         #
 # - Use symbols in messages, on this page:                               #
@@ -95,7 +92,7 @@ change-prefix-suffix-in-tablist:
   # WARNING! You can only change it to false if you experience a problem by changing the group prefix and suffix.
   use-external-scoreboard: true
   # Scoreboard changing types (if you experience some problems by changing group).
-  # scoreboard - Max. character is 16 (if use 1.13 version max. 64) in prefix & suffix.
+  # scoreboard - Maximum character is 16 (if use 1.13+ version max. 64) in prefix & suffix.
   # namer - Max. character is unlimited.
   changing-type: scoreboard
 
@@ -160,7 +157,7 @@ tabname:
 
 # Tablist, header & footer with animation.
 # Current plugin placeholders: https://github.com/montlikadani/TabList/wiki/Placeholders
-# Use placeholders: https://www.spigotmc.org/wiki/placeholderapi-placeholders/
+# Use placeholders: https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders
 # Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 # Use %anim:animationName% placeholder to make an animation.
 # How do I use this tab section? Usage: https://github.com/montlikadani/TabList/wiki/TabList-Usage

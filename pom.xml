@@ -36,14 +36,26 @@
 			<id>bstats-repo</id>
 			<url>https://repo.codemc.org/repository/maven-public</url>
 		</repository>
+		<repository>
+			<id>bungeecord-repo</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
 	</repositories>
 	<dependencies>
 		<!-- Spigot APIs -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.13.2-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
+			<version>1.14-R0.1-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/spigot-latest.jar</systemPath>
+		</dependency>
+		<dependency>
+			<groupId>1.13.2_R1</groupId>
+			<artifactId>spigot_1_13_R1</artifactId>
+			<version>1.13.2</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/spigot-1.13.2.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>1.13_R1</groupId>
@@ -89,6 +101,12 @@
 		</dependency>
 		<!-- CraftBukkit API -->
 		<dependency>
+			<groupId>org.bukkit</groupId>
+			<artifactId>bukkit</artifactId>
+			<version>1.14-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>1.13_R2</groupId>
 			<artifactId>craftbukkit_1_13_R2</artifactId>
 			<version>1.13.2</version>
@@ -96,32 +114,29 @@
 			<systemPath>${project.basedir}/libs/craftbukkit-1.13.2.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>1.8_R4</groupId>
-			<artifactId>craftbukkit_1_8_R4</artifactId>
-			<version>1.8.8</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/craftbukkit-1.8.8-R0.1-SNAPSHOT.jar</systemPath>
+			<groupId>org.bukkit</groupId>
+			<artifactId>bukkit</artifactId>
+			<version>1.8.8-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>1.8_R1</groupId>
-			<artifactId>craftbukkit_1_8_R1</artifactId>
-			<version>1.8</version>
+			<groupId>org.bukkit</groupId>
+			<artifactId>bukkit</artifactId>
+			<version>1.8-R0.1-SNAPSHOT</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/craftbukkit-1.8-R0.1-SNAPSHOT.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>1.8</groupId>
-			<artifactId>bungeecord_1_8</artifactId>
-			<version>1.8</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/BungeeCord_1_8.jar</systemPath>
+			<groupId>net.md-5</groupId>
+			<artifactId>bungeecord-api</artifactId>
+			<version>1.8-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>1.13</groupId>
-			<artifactId>bungeecord_1_13</artifactId>
-			<version>1.13</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/BungeeCord.jar</systemPath>
+			<groupId>net.md-5</groupId>
+			<artifactId>bungeecord-api</artifactId>
+			<version>1.14-SNAPSHOT</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.bstats</groupId>
@@ -166,5 +181,5 @@
 			<systemPath>${project.basedir}/libs/PermissionsEx-1.23.4.jar</systemPath>
 		</dependency>
 	</dependencies>
-	<version>4.2</version>
+	<version>4.3</version>
 </project>

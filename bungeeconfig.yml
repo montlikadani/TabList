@@ -25,66 +25,66 @@ tablist:
   # How often to refresh the tablist (in milliseconds).
   refresh-interval: 180
   header:
-    - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
-    - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
   footer:
-    - "<lines>\n&7Website:&2 example.com"
+  - "<lines>\n&7Website:&2 example.com"
   # Per player tablist
   per-player:
     playername:
       header:
-        - "&2Tab&6List\n&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================="
+      - "&2Tab&6List\n&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================="
       footer:
-        - "&5&l&m================="
-        - "&a&l&m================="
-        - "&b&l&m================="
-        - "&f&l&m================="
-        - "&7&l&m================="
-        - "&4&l&m================="
-        - "&6&l&m================="
+      - "&5&l&m================="
+      - "&a&l&m================="
+      - "&b&l&m================="
+      - "&f&l&m================="
+      - "&7&l&m================="
+      - "&4&l&m================="
+      - "&6&l&m================="
     someone:
       header:
-        - "&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================="
+      - "&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================="
       footer:
-        - "<lines>"
+      - "<lines>"
   # Per server tablist
   per-server:
     pvp:
       header:
-        - "&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&3 Kit&4PvP&9 S&6e&2r&8v&5e&1r&6!"
+      - "&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&3 Kit&4PvP&9 S&6e&2r&8v&5e&1r&6!"
       footer:
-        - "&aGo to the PvP server!"
+      - "&aGo to the PvP server!"
     lobby:
       header:
-        - "&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&9 S&6e&2r&8v&5e&1r&6!"
+      - "&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&9 S&6e&2r&8v&5e&1r&6!"
       footer:
-        - "&7<28>&a Choose a minigame or server and start playing!&7 <28>"
+      - "&7<28>&a Choose a minigame or server and start playing!&7 <28>"
       per-player:
         exampleplayer:
           header:
-            - ""
+          - ""
           footer:
-            - "&7Website&7: example.org"
+          - "&7Website&7: example.org"
 
 # Plugin messages
 messages:

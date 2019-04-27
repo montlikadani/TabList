@@ -1,3 +1,5 @@
 eclipse.preferences.version=1
-encoding//src/main/java/hu/montlikadani/tablist/Placeholders.java=UTF-8
+encoding//src/main/java=UTF-8
+encoding//src/main/java/hu/montlikadani/tablist/Variables.java=UTF-8
 encoding//src/main/java/hu/montlikadani/tablist/bungee/TabList.java=UTF-8
+encoding/<project>=UTF-8

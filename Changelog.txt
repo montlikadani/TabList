@@ -1,4 +1,19 @@
-﻿# v4.2
+﻿# v4.3
+Fixes:
+  Fixed IndexOutOfBoundsException when a name is disabled in tabname.
+  Fixed NPE when registering a new class but not find.
+  Fixed issue with ping-object when a player has nickname, then the objects has not updated anymore.
+  Fixed error when finding the Essentials plugin, but not find and tried to register the event, but not success.
+  Fixed issue when the prefix/suffix is still was stay in the tab when disabled the plugin.
+Fixes (Bungee):
+  Some improvements with schedulers and NPE problems.
+Other (Bungee):
+  Now if any string is empty or not found, it will not send a blank message.
+Other:
+  Changed 17 symbols, because these symbols are not in UTF-8, so was not work. New symbols:
+  Plugin updated to 1.14. (WARNING! CraftBukkit is not tested!)
+
+# v4.2
 Added:
   Added option to groups file, when the player is operator of that server, then gets that group when the boolean false. - This fixes a randomly choosing group.
   Added animation to groups + can be enable in configuration file. (Animations can be configured in animCreator.yml file)
