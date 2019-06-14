@@ -1,4 +1,18 @@
-﻿# v4.3
+﻿# v4.4
+Added:
+  Added option to configuration to use vault group names in groups file to ignore permission checking when using vault.
+  Added softdepend SuperVanish to do not count the vanished players in online-players placeholder.
+Fixes:
+  Fixed issue when a player hide from tab and unhide itself then can not add back the player to tab.
+  Fixed issue with fake players are not able to remove from tab when the player is in the game.
+Removed:
+  Removed sort-priority value from groups file. The reason is not work correctly and have a lot of problems with it. (Soon will be added again), sort priorities available only in the players group.
+Other:
+  Now the /tl fp list command can not format other name in the list.
+  Some improvements for tab sending to player.
+  In the API the fake player are not be able to create or remove, just use FakePlayer.
+
+# v4.3
 Fixes:
   Fixed IndexOutOfBoundsException when a name is disabled in tabname.
   Fixed NPE when registering a new class but not find.
