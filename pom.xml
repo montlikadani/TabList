@@ -7,10 +7,8 @@
 	<artifactId>tablist</artifactId>
 	<packaging>jar</packaging>
 	<name>tablist</name>
+	<version>4.4</version>
 	<url>http://maven.apache.org</url>
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
 	<repositories>
 		<repository>
 			<id>spigot-repo</id>
@@ -33,22 +31,23 @@
 			<url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
 		</repository>
 		<repository>
-			<id>bstats-repo</id>
-			<url>https://repo.codemc.org/repository/maven-public</url>
-		</repository>
-		<repository>
 			<id>bungeecord-repo</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
+		<repository>
+			<id>cubekrowd-repo</id>
+			<url>https://mavenrepo.cubekrowd.net/artifactory/repo/</url>
+		</repository>
 	</repositories>
+
 	<dependencies>
 		<!-- Spigot APIs -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.14-R0.1-SNAPSHOT</version>
+			<version>1.14.2-R0.1-SNAPSHOT</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/spigot-latest.jar</systemPath>
+			<systemPath>${project.basedir}/libs/spigot-1.14.2.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>1.13.2_R1</groupId>
@@ -139,12 +138,6 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>org.bstats</groupId>
-			<artifactId>bstats-bukkit</artifactId>
-			<version>1.4</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
 			<groupId>net.ess3</groupId>
 			<artifactId>EssentialsX</artifactId>
 			<version>2.16.1.80</version>
@@ -153,8 +146,8 @@
 		</dependency>
 		<dependency>
 			<groupId>me.clip</groupId>
-			<artifactId>PlaceholderAPI</artifactId>
-			<version>2.9.2</version>
+			<artifactId>placeholderapi</artifactId>
+			<version>2.10.2</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -174,6 +167,12 @@
 			</exclusions>
 		</dependency>
 		<dependency>
+			<groupId>de.myzelyam</groupId>
+			<artifactId>SuperVanish</artifactId>
+			<version>6.1.2</version>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>ru.tehkode</groupId>
 			<artifactId>PermissionsEx</artifactId>
 			<version>1.23.4</version>
@@ -181,5 +180,4 @@
 			<systemPath>${project.basedir}/libs/PermissionsEx-1.23.4.jar</systemPath>
 		</dependency>
 	</dependencies>
-	<version>4.3</version>
 </project>

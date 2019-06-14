@@ -16,14 +16,18 @@ custom-variables:
 tablist:
   # Enable tablist header & footer?
   enable: true
+
   # Disabled servers, where you can not see the tab.
   disabled-servers:
   - someserver
   - servername
+
   # Blacklisted players, where the player not see the tab.
   blacklisted-players: []
+
   # How often to refresh the tablist (in milliseconds).
   refresh-interval: 180
+
   header:
   - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
   - "&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"

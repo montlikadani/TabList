@@ -78,7 +78,7 @@ fake-player:
   usage: "%prefix%&c Use: '&7/%command% %args% <add/remove/list> [<name>]&c'."
   # Use %name% placeholder.
   added: "%prefix%&a The fake player&7 %name%&a successfully added!"
-  removed: "%prefix%&c The fake player&7 %name%&c successfully removed!%newline%Please leave the server and reconnect to remove from the tab!"
+  removed: "%prefix%&c The fake player&7 %name%&c successfully removed!"
   already-added: "%prefix%&c The fake player&7 %name%&c already added."
   already-removed: "%prefix%&c The fake player&7 %name%&c already removed."
   no-fake-player: "%prefix%&c There is no fake player either."

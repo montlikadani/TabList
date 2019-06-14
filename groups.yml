@@ -22,8 +22,6 @@ groups:
     suffix: "&7 <12>"
     # This permission must be in the permission system.
     permission: tablist.staff
-    # Sorting priority to sort the groups in the tab.
-    sort-priority: 1
     # If false, then if a player an operator on that server, then gets this group.
     # If true, then if a player an operator on that server, then gets other group what the boolean disabled.
     bypass-operator: false
@@ -31,7 +29,6 @@ groups:
     prefix: "&7"
     suffix: ""
     permission: tablist.default
-    sort-priority: 2
     bypass-operator: true
   Admin:
     prefix: "&7<62>&r %anim:Admin%"

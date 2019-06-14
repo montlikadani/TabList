@@ -15,12 +15,11 @@ Understand what the problem is with the plugin.
 
 (!) Plugin version:
 
-Java version:
-
 ### Console error (!)
-> 
-> Send the console error if you have it.
->
+```
+Send the console error if you have it.
+```
+
 
 ### Config.yml (!)
 Send the config.yml or other file.
