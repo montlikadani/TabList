@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.tablist.TabList
-version: 4.4
+version: 4.5
 author: montlikadani
 description: An ultimate animated tablist.
 softdepend: [PlaceholderAPI, Essentials, Vault, SuperVanish]
@@ -24,6 +24,7 @@ permissions:
        tablist.get: true
        tablist.get.other: true
        tablist.toggle: true
+       tablist.toggle.all: true
        tablist.tabname: true
        tablist.tabname.other: true
        tablist.reset: true
@@ -32,14 +33,12 @@ permissions:
        tablist.fakeplayers.add: true
        tablist.fakeplayers.remove: true
        tablist.fakeplayers.list: true
-       tablist.hideme: true
        tablist.setprefix: true
        tablist.setsuffix: true
        tablist.setpriority: true
        tablist.removeplayer: true
        tablist.onlinestaff: true
        tablist.reload: true
-       tablist.disable: true
        tablist.help: true
   tablist.get:
     description: Gives access to use /tl get command.
@@ -49,6 +48,9 @@ permissions:
     default: false
   tablist.toggle:
     description: Gives access to use /tl toggle command.
+    default: false
+  tablist.toggle.all:
+    description: Gives access to use /tl toggle all command.
     default: false
   tablist.tabname:
     description: Gives access to use /tabname command.
@@ -74,9 +76,6 @@ permissions:
   tablist.fakeplayers.list:
     description: Gives access to use /tl fp list command.
     default: false
-  tablist.hideme:
-    description: Gives access to use /tl hideme command.
-    default: false
   tablist.setprefix:
     description: Gives access to use /tl setprefix command.
     default: false
@@ -98,6 +97,3 @@ permissions:
   tablist.reload:
     description: Gives access to use /tl reload command.
     default: false
-  tablist.disable:
-    description: Gives access to use /tl disable command.
-    default: op
