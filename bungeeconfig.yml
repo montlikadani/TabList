@@ -10,6 +10,41 @@ custom-variables:
   <name>: "&7&o%player-name%"
   <lines>: "&5&m======================"
 
+# Should enable the tablist groups?
+tablist-groups:
+  enabled: false
+
+  # Group refreshing time in milliseconds.
+  # If you want animation just decrease the value.
+  refresh-time: 160
+
+# Group list
+groups:
+  admin:
+    name:
+    - "&a[&cAdmin&a]&6 %player-name%"
+    - "&a"
+    - "&a["
+    - "&a[&cA"
+    - "&a[&cAd"
+    - "&a[&cAdm"
+    - "&a[&cAdmi"
+    - "&a[&cAdmin"
+    - "&a[&cAdmin&a"
+    - "&a[&cAdmin&a]"
+    - "&a[&cAdmin&a]&6 %player-name%"
+    - "&a[&cAdmin&a]&6 %player-name%"
+    - "&a[&cAdmin&a]&a %player-name%"
+    - "&a[&cAdmin&a]&e %player-name%"
+    - "&a[&cAdmin&a]&f %player-name%"
+    - "&a[&cAdmin&a]&c %player-name%"
+    - "&a[&cAdmin&a]&b %player-name%"
+    - "&a[&cAdmin&a]&9 %player-name%"
+    permission: groups.admin # any permission name are accepted
+  default:
+    name: "&7 %player-name%"
+    permission: tablist.default
+
 # TabList, header & footer
 # Current plugin placeholders: https://github.com/montlikadani/TabList/wiki/Placeholders#bungee
 # Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
@@ -94,7 +129,6 @@ tablist:
 messages:
   reload-config: "&aThe plugin successfully reloaded!"
   no-permission: "&cYou don't have permission for this!"
-  plugin-disabled: "&cThe plugin successfully disabled!"
   toggle:
     enabled: "&aThe tab is successfully turned on!"
     disabled: "&cThe tab is successfully turned off!"
@@ -103,8 +137,7 @@ messages:
   - "&8&l-----------"
   - "&7/&atablist reload&7 (or rl)&e -&6 Reloads the plugin and config."
   - "&7/&atablist toggle&e -&6 Toggle the tablist."
-  - "&7/&atablist disable&e -&6 Disable the plugin."
   - "&8&l-----------"
 
 # DO NOT CHANGE THIS!
-config-version: 5
+config-version: 6

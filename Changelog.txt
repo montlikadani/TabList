@@ -1,4 +1,38 @@
-﻿# v4.4
+﻿# v4.5
+Added:
+  Added support for my RageMode minigame plugin, to cancel updating tablist.
+  Added tps placeholder format - to format the %tps% placeholder, when the amount is lower than 20 or other.
+  Added argument for /tl toggle all to toggle the tablist for all online players.
+  Added option to display the afk status in player list when a player is afk.
+Added (bungee):
+  Added tablist groups with animations. This is not Bukkit handled groups this is the Bungeecord componentBuilder, that can makes the tablist more useful.
+Fixes (bungee):
+  Some fixes related to tablist updating.
+Fixes:
+  Fixed NPE when the PEX is installed and try to get the user, but not find.
+  Fixed NPE when a player not found in the list and throws error.
+  Some fixes related to updating all features when a player connected.
+  Fixed issue when some users using 1.8.5 and below versions the metrics changed some objects and causing the problem. (1.8.5 and below versions the metrics are disabled)
+  Fixed issue when tried to change the color in tabname, does not included.
+  Fixed issue when disabled all related to prefixes/suffixes options in config, but if reloaded the plugin then reseted the player name in tablist.
+  Fix NPE when the players section are null.
+  Fixed minor issue when reloaded the plugin and tabname is enabled, it changed the player list name to the original.
+  Fixed NoSuchMethodError when the isCancelled() method are not found in 1.11 and below versions.
+  Fixed IllegalStateException when the player team already unregistered.
+Removed:
+  Removed /tl disable command - It will broke the plugin when disabled
+  Removed hideme sub-command, it was unnecessary because it can be hided from tab when player vanished.
+Other:
+  Toggled tablist are now saved (when plugin disabled) in a file to remain the toggles.
+  Now if the name-tag-visibility is empty in configuration then the nameTag does not changed.
+  Some changes related to per-world-playerlist to work correctly.
+  Renamed %servername% placeholder to %servertype%
+  Fully recoded the groups option. (Some options such as name-tag-visibility will not work)
+  Now the chat are not formatted by this plugin, because the bukkit scoreboard overwrites it.
+  Tabname command will register if the plugin starts, without if the option disabled.
+  API methods have been expanded to make coding easier.
+
+# v4.4
 Added:
   Added option to configuration to use vault group names in groups file to ignore permission checking when using vault.
   Added softdepend SuperVanish to do not count the vanished players in online-players placeholder.

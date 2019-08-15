@@ -1,32 +1,26 @@
 ---
 name: Bug report
-about: Create a report to help us improve
+about: Create a bug report to help us improve
 
 ---
 
-**!** required
-
-**If ! mark is not specified then not need to write.**
-
-### Describe the bug (!)
+### Describe your problem to what is
 Understand what the problem is with the plugin.
 
-(!) Software (Bukkit/Spigot/Paper) name & version:
+### Details
+Plugin version: 
+Software (Spigot/Bukkit etc.. `/version`) version: 
 
-(!) Plugin version:
-
-### Console error (!)
+### Console error
 ```
 Send the console error if you have it.
 ```
 
-
-### Config.yml (!)
-Send the config.yml or other file.
-You can send files link e.g. [pastebin.com](https://pastebin.com/) or paste a code block.
+### Configuration file(s)
+Send the configuration file(s).
 ```
-config.yml
+configuration file
 ```
 
-### Screenshots
-Send a few pictures of the problem if you can.
+### Screenshots (optional)
+Send a few pictures about the problem if you can.

@@ -1,20 +1,14 @@
-prefix: "&6&l[&5&lTab&c&lList&6&l]&7&l >"
-
-# Use %prefix%, %newline% placeholder.
-reload-config: "%prefix%&a The plugin successfully reloaded!"
-hided-yourself: "&cYou've hidden yourself from other players."
-unhided-yourself: "&aNow you can see it for everyone."
-need-some-players-to-hide: "&cNeed two or more players to hide yourself!"
+# Use %newline% placeholder.
+reload-config: "&aThe plugin successfully reloaded!"
 
 # Use %perm% placeholder.
 no-permission: "&cYou don't have permission for that!&7 (%perm%)"
 
 # Use %subcmd% placeholder.
-unknown-sub-command: "%prefix%&c Unknown sub-command&7 %subcmd%&c."
+unknown-sub-command: "&cUnknown sub-command&7 %subcmd%&c."
 
 # Use %command% placeholder.
-unknown-command: "%prefix%&c Unknown command.&7 Type '&f/%command% help&7' for help."
-hideme-no-console: "%prefix%&c This command&7 /%command% hideme&c only in-game."
+unknown-command: "&cUnknown command.&7 Type '&f/%command% help&7' for help."
 set-prefix-suffix:
   prefix:
     usage: "&cUse: '&7/%command% setprefix <player> <prefix>&c'."
@@ -44,10 +38,10 @@ set-prefix-suffix:
     player-not-found-in-database: "&cThis player&7 %target%&c not found in the database."
     successfully-removed: "&cYou have successfully removed&7 %target%&c group."
 tabname:
-  usage: "&cUse: '&7/%command% [player]/<name>/[reset] [<player/name>]&c'."
-  console-usage: "&cUse: '&7/%command% <player>/[reset] [player]/<name>&c'."
+  usage: "&cUse: '&7/%command% <name>&c'."
+  console-usage: "&cUse: '&7/%command% <player> <name>&c'."
   console-reset-usage: "&cUse: '&7/%command% reset <player>&c'."
-  get-cmd-no-console: "%prefix%&c You are not a player! Use: '&7/%command% get <player>&c'."
+  get-cmd-no-console: "&c You are not a player! Use: '&7/%command% get <player>&c'."
   no-reset: "&cCould not reset your tab name."
   # Use %player% placeholder.
   player-not-online: "&cThis player&7 %player%&c not online."
@@ -69,20 +63,22 @@ tabname:
   # Use %world% placeholder.
   world-disabled: "&cThis command is disabled in this world&7 %world%&c."
 toggle:
-  enabled: "%prefix%&a The tab is successfully turned on!"
-  disabled: "%prefix%&c The tab is successfully turned off!"
-  no-player: "%prefix%&c There is no player available on the server."
+  console-usage: "&cUse: &7/%command% toggle <player/all>"
+  enabled: "&aThe tab is successfully turned on!"
+  disabled: "&cThe tab is successfully turned off!"
+  no-player: "&cThere is no player available on the server."
+  player-not-found: "&cThis player&7 %player%&c not found!"
 fake-player:
   # Use %args% placeholder.
-  no-console: "%prefix%&c This command '&7/%command% %args%&c' can only be in-game."
-  usage: "%prefix%&c Use: '&7/%command% %args% <add/remove/list> [<name>]&c'."
+  no-console: "&cThis command '&7/%command% %args%&c' can only be in-game."
+  usage: "&cUse: '&7/%command% %args% <add/remove/list> [<name>]&c'."
   # Use %name% placeholder.
-  added: "%prefix%&a The fake player&7 %name%&a successfully added!"
-  removed: "%prefix%&c The fake player&7 %name%&c successfully removed!"
-  already-added: "%prefix%&c The fake player&7 %name%&c already added."
-  already-removed: "%prefix%&c The fake player&7 %name%&c already removed."
-  no-fake-player: "%prefix%&c There is no fake player either."
-  disabled: "%prefix%&c The fake player is disabled. Please enable in config.yml file."
+  added: "&aThe fake player&7 %name%&a successfully added!"
+  removed: "&cThe fake player&7 %name%&c successfully removed!"
+  already-added: "&cThe fake player&7 %name%&c already added."
+  already-removed: "&cThe fake player&7 %name%&c already removed."
+  no-fake-player: "&cThere is no fake player either."
+  disabled: "&cThe fake player is disabled. Please enable in config.yml file."
   # Use %fake-players%, %amount% placeholder.
   list:
   - "&cFake players&7 (&e%amount%&7):"
@@ -98,29 +94,21 @@ chat-messages:
   - "&7-&3 ()&7 -&3 command abbreviations"
   - ""
   - "&8/&a%command%&b [+TAB]&5 -&6 Main plugin info."
-  - "&8/&a%command% disable&5 -&6 Disable the plugin."
   - "&8/&a%command% help&9 [2/3]&5 -&6 Help commands."
   - "&8/&a%command% reload&3 (or rl)&5 -&6 Reload the plugin."
-  - "&8/&a%command% toggle&5 -&6 Toggle on/off tab."
+  - "&8/&a%command% toggle&9 [player/all]&5 -&6 Toggle on/off tab."
   - "&8/&a%command% fakeplayers&3 (or fp)&a add&2/&aremove&3 (or rem)&c <name>&5 -&6 Create/remove fake player."
-  - "&e&m---------------------------------------------------"
-  2:
-  - "&e&m---------&b> &e[&5Tab&cList&2 Help&c 2&e]&b <&e&m----------"
-  - ""
   - "&8/&a%command% fp list&5 -&6 Lists all fake player."
+  2:
   - "&8/&atabname&3 (or tname)&c <&9[player]&2/&cname>&c <name>&5 -&6 Change player tab name."
-  - "&8/&atname reset&9 [player]&5 -&6 Reset player tab name."
+  - "&8/&atname reset&9 [player]&5 -&6 Reset the specified player tab name."
   - "&8/&a%command% get&9 [player]&5 -&6 Get player tab name."
-  - "&8/&a%command% hideme&5 -&6 Hide yourself from other players."
   - "&8/&a%command% setprefix&c <player> <prefix>&5 -&6 Sets the specified player prefix."
-  - "&e&m---------------------------------------------------"
+  - "&8/&a%command% removeplayer&c <player>&5 -&6 Removing the specified player prefix/suffix."
   3:
-  - "&e&m---------&b> &e[&5Tab&cList&2 Help&c 3&e]&b <&e&m----------"
-  - ""
   - "&8/&a%command% setsuffix&c <player> <suffix>&5 -&6 Sets the specified player suffix."
   - "&8/&a%command% setpriority&c <player> <priority>&5 -&6 Sets the specified player sorting priority."
-  - "&8/&a%command% removeplayer&c <player>&5 -&6 Removing the specified player prefix/suffix."
   - "&e&m---------------------------------------------------"
 
 # DO NOT CHANGE THIS!
-config-version: 6
+config-version: 7

@@ -8,10 +8,7 @@ public class Permissions {
 		GET("tablist.get"),
 		GETO("tablist.get.other"),
 		HELP("tablist.help"),
-		HIDEME("tablist.hideme"),
 		LISTFAKEPLAYERS("tablist.fakeplayers.list"),
-		PDISABLE("tablist.disable"),
-		PINFO("tablist.plugininfo"),
 		RELOAD("tablist.reload"),
 		REMOVEFAKEPLAYER("tablist.fakeplayers.remove"),
 		RESET("tablist.reset"),
@@ -22,7 +19,8 @@ public class Permissions {
 		REMOVEPLAYER("tablist.removeplayer"),
 		TABNAME("tablist.tabname"),
 		TABNAMEOTHER("tablist.tabname.other"),
-		TOGGLE("tablist.toggle");
+		TOGGLE("tablist.toggle"),
+		TOGGLEALL("tablist.toggle.all");
 
 		private String perm;
 

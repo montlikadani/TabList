@@ -23,6 +23,13 @@
 # PlaceholderAPI use for the plugin.
 placeholderapi: true
 
+# Hook plugins
+hook:
+  # Hooking to my RageMode plugin. (https://www.spigotmc.org/resources/69169/)
+  # If true, will disable the tablist, groups and the tablist objects, while
+  # running a game.
+  RageMode: false
+
 # Different playerlist in different world.
 per-world-player-list: false
 
@@ -38,23 +45,53 @@ ignore-vanished-players-in-online-players: false
 # Requires Essentials plugin!
 hide-player-from-tab-when-afk: false
 
-# Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
-# Used for %server-time% placeholder.
-time-format: "mm:HH"
-# Used for %date% placeholder.
-date-format: "dd/MM/yyyy"
+# Placeholder formatting
+placeholder-format:
+  # When the player changes the afk status, changes the tablist name format.
+  afk-status:
+    enable: false
 
-# Ping color format for %ping% placeholder.
-ping-placeholder-format:
-  enable: true
-  # Use color coding "&" for color.
-  good-ping:
-    color: "&a"
-    amount: 200
-  medium-ping:
-    color: "&6"
-    amount: 500
-  bad-ping: "&c"
+    # Should show the afk format in right or left side?
+    # true - displays in right side
+    # false - displays in left side
+    show-in-right-or-left-side: true
+
+    format-yes: "&7 [AFK]&r "
+    format-no: ""
+
+  # Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
+  # Used for %server-time% placeholder.
+  time-format:
+    format: "mm:HH"
+  # Used for %date% placeholder.
+  date-format:
+    format: "dd/MM/yyyy"
+
+  # Ping color format for %ping% placeholder.
+  ping:
+    enable: true
+
+    # Use color coding "&" for color.
+    good-ping:
+      color: "&a"
+      amount: 200
+    medium-ping:
+      color: "&6"
+      amount: 500
+    bad-ping: "&c"
+
+  # TPS color format for %tps% placeholder.
+  tps:
+    enable: true
+
+    # Use color coding "&" for color.
+    good-tps:
+      color: "&a"
+      amount: 18.0
+    medium-tps:
+      color: "&6"
+      amount: 16.0
+    bad-tps: "&c"
 
 # Custom variables with unlimited variables.
 # Use: <something>: "&6Message..."
@@ -80,7 +117,7 @@ change-prefix-suffix-in-tablist:
 
   # By enabling this, you will be able to specify the correct Vault group name in groups file
   # and if correct, then it will grant the group to player.
-  use-vault-group-names: true
+  use-vault-group-names: false
 
   # Hide player group in tablist when the player is vanished?
   # Required Essentials plugin!
@@ -93,13 +130,15 @@ change-prefix-suffix-in-tablist:
   # Use the Essentials nickname instead of groups?
   use-essentials-nickname: false
 
+  # Use the player displayname instead of groups?
+  # This supports the player "prefix playerName suffix" format like on chat.
+  # If the player has no any format on chat then display the player name.
+  use-displayname: false
+
   # Hide name tag visibility of the player.
   # This only works if the changing-type scoreboard.
-  # Types: always, hide_for_other_teams, hide_for_own_team, never
-  name-tag-visibility: always
-
-  # WARNING! You can only change it to false if you experience a problem by changing the group prefix and suffix.
-  use-external-scoreboard: true
+  # Types: always, hide_for_other_teams, hide_for_own_team, never or ""
+  name-tag-visibility: ""
 
   # Scoreboard changing types (if you experience some problems by changing group).
   # scoreboard - Maximum character is 16 (if use 1.13+ version max. 64) in prefix & suffix.
@@ -126,7 +165,8 @@ tablist-object-type:
       update-interval: 3
 
       # Which worlds do not show up in ping (world names)?
-      disabled-worlds: []
+      disabled-worlds:
+      #- testingWorld
 
     # The player health (life) the player's name indicates the right side.
     health:
@@ -147,12 +187,12 @@ tablist-object-type:
       refresh-interval: 3
 
       # Which worlds do not show the custom value setting (world names)?
-      disabled-worlds: []
+      disabled-worlds:
+      #- worlds
 
 # Changing player tablist name with unlimited characters.
 tabname:
   # Allow to change player tab name.
-  # Warning if this is false, the command will not be registered either. Requires server restart!
   enable: false
 
   # Use the Essentials nickname instead of tab name?
@@ -174,7 +214,8 @@ tabname:
     color: "&6"
 
   # Which worlds can not be change the tab name?
-  disabled-worlds: []
+  disabled-worlds:
+  #- myworld
 
   # Which names can not be used?
   blacklist-names:
@@ -200,7 +241,8 @@ tablist:
   - "worldTest"
 
   # Blacklisted players, where the player not see the tab.
-  blacklisted-players: []
+  blacklisted-players:
+  #- myname
 
   # Tab update time interval. (In ticks!)
   # Set 0 to disable the tab refresh.
@@ -210,15 +252,17 @@ tablist:
   - "%anim:tablist%"
   - "&7<75> %anim:welcome% <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms"
   - "<lines>"
+
   footer:
   - "<lines>\n<13>&e&l Players:&6 %online-players%&7/&6%max-players%"
   - "&7<28> %anim:website%&7:&2 &nexample.com&7 <28>"
+
   # Per world tablist
   per-world:
     enable: false
 
     # If the world name is not specified, will see the default tab.
-    enable-default-tab-if-world-not-specified: true
+    use-default-tab-if-world-not-specified: true
 
     world_nether:
       header: "&3This is a per world plugin %anim:tablist%&3."
@@ -226,12 +270,13 @@ tablist:
     world:
       header: "%anim:perWorld%"
       footer: "&6World:&7 %player_world%"
+
       # Per player in per world tablist
       per-player:
         enable: false
 
         # If the player name is not specified, will see the default tab.
-        enable-default-tab-if-player-not-specified: true
+        use-default-tab-if-player-not-specified: true
 
         playerName:
           header: "&3This is a per player plugin %anim:tablist%&3."
@@ -245,30 +290,32 @@ tablist:
         enable: false
 
         # If the group name is not specified, will see the default tab.
-        enable-default-tab-if-group-not-specified: true
+        use-default-tab-if-group-not-specified: true
 
         groupName:
           header: "&3This is a per group plugin %anim:tablist%&3."
           footer:
           - "&6World:&7 %player_world%"
           - "&aGroup:&8 %vault_rank%"
+
   # Per player tablist
   per-player:
     enable: false
 
     # If the player name is not specified, will see the default tab.
-    enable-default-tab-if-player-not-specified: false
+    use-default-tab-if-player-not-specified: false
 
     testplayer:
       header: "%anim:perPlayer%"
       footer: "<lines>"
+
   # Per group tablist
   # Requires Vault plugin!
   per-group:
     enable: false
 
     # If the group name is not specified, will see the default tab.
-    enable-default-tab-if-group-not-specified: true
+    use-default-tab-if-group-not-specified: true
 
     default:
       header: "%anim:perGroupHead%"
@@ -277,9 +324,6 @@ tablist:
 #=========================================#
 #             Plugin Settings             #
 #=========================================#
-# The TabList plugin is disabled (false) or enabled (true).
-enabled: true
-
 # bStats Metrics
 metrics: true
 
@@ -290,10 +334,10 @@ check-update: true
 logconsole: true
 
 # Plugin enable/disable messages in console.
-# Use %newline%, %prefix% placeholder.
+# Use %newline% placeholder.
 # >> NO supported the PlaceholderAPI! <<
-plugin-enable: '%prefix%&a The plugin successfully enabled&6 v${version}&a!'
-plugin-disable: '%prefix%&c The plugin successfully disabled!'
+plugin-enable: '&6&l[&5&lTab&c&lList&6&l]&7&l >&a The plugin successfully enabled&6 v${version}&a!'
+plugin-disable: '&6&l[&5&lTab&c&lList&6&l]&7&l >&c The plugin successfully disabled!'
 
 # DO NOT CHANGE THIS!
-config-version: 12
+config-version: 13
