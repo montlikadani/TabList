@@ -1,9 +1,9 @@
 name: TabList
 main: hu.montlikadani.tablist.TabList
-version: 4.5
+version: 4.6
 author: montlikadani
 description: An ultimate animated tablist.
-softdepend: [PlaceholderAPI, Essentials, Vault, SuperVanish]
+softdepend: [PlaceholderAPI, Essentials, Vault, SuperVanish, RageMode]
 api-version: 1.13
 # DO NOT EDIT ANYTHING ABOVE THIS LINE!
 

@@ -14,24 +14,24 @@ players:
     suffix: ""
     sort-priority: 1
 
-# Group prefixes and suffixes with unlimited group. (Requires a permission system.)
+# Group prefixes and suffixes with unlimited group.
 groups:
   # Group name, you can write anything in here.
-  '1':
+  # This will be ignored by default.
+  exampleGroup:
     prefix: "&a[&cStaff&a]&6 "
     suffix: "&7 <12>"
+    # (Optional)
     # This permission must be in the permission system.
-    permission: tablist.staff
-    # If false, then if a player an operator on that server, then gets this group.
-    # If true, then if a player an operator on that server, then gets other group what the boolean disabled.
-    bypass-operator: false
-  default:
+    #permission: tablist.staff
+    # (Optional)
+    # If false, if a player operator on your server, will gets this group.
+    # If true, if a player operator on your server, will gets other group where this boolean is disabled.
+    #bypass-operator: false
+
+  Default:
     prefix: "&7"
     suffix: ""
-    permission: tablist.default
-    bypass-operator: true
   Admin:
     prefix: "&7<62>&r %anim:Admin%"
     suffix: "&7 <62>"
-    permission: tablist.admin
-    bypass-operator: true

@@ -1,4 +1,4 @@
-# Formats/examples: https://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html
+# Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
 # Used for %time% placeholder.
 time-format: "mm:HH"
 # Used for %date% placeholder.

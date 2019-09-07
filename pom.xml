@@ -7,7 +7,7 @@
 	<artifactId>tablist</artifactId>
 	<packaging>jar</packaging>
 	<name>tablist</name>
-	<version>4.5</version>
+	<version>4.6</version>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -160,7 +160,7 @@
 		<dependency>
 			<groupId>hu.montlikadani.ragemode</groupId>
 			<artifactId>RageMode</artifactId>
-			<version>1.2.0.000</version>
+			<version>1.3.0.000</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/RageMode.jar</systemPath>
 		</dependency>

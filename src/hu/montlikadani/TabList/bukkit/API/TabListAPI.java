@@ -3,6 +3,7 @@ package hu.montlikadani.tablist.API;
 import java.lang.reflect.Field;
 import java.util.UUID;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -57,9 +58,7 @@ public class TabListAPI {
 	 * @param string Footer
 	 */
 	public static void sendTabList(Player p, String header, String footer) {
-		if (p == null) {
-			throw new IllegalArgumentException("player is null");
-		}
+		Validate.notNull(p, "Player can't be null!");
 
 		TabTitle.sendTabTitle(p, header, footer);
 	}
@@ -80,9 +79,7 @@ public class TabListAPI {
 	 * @return Ping integer
 	 */
 	public static int getPing(Player p) throws Throwable {
-		if (p == null) {
-			throw new IllegalArgumentException("player is null");
-		}
+		Validate.notNull(p, "Player can't be null!");
 
 		int pingInt = 0;
 		Object nmsPlayer = ReflectionUtils.getNMSPlayer(p);

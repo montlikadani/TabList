@@ -1,90 +1,77 @@
-# Use %newline% placeholder.
 reload-config: "&aThe plugin successfully reloaded!"
-
-# Use %perm% placeholder.
 no-permission: "&cYou don't have permission for that!&7 (%perm%)"
-
-# Use %subcmd% placeholder.
 unknown-sub-command: "&cUnknown sub-command&7 %subcmd%&c."
-
-# Use %command% placeholder.
 unknown-command: "&cUnknown command.&7 Type '&f/%command% help&7' for help."
+
 set-prefix-suffix:
   prefix:
     usage: "&cUse: '&7/%command% setprefix <player> <prefix>&c'."
     could-not-be-empty: "&cThe prefix text could not be empty!"
-    # Use %target% placeholder.
     player-not-found: "&cThis player&7 %target%&c not found."
-    # Use %tag% placeholder.
     successfully-set: "&aYou have successfully set prefix for&e %target%&a, with this prefix:&r %tag%"
   suffix:
     usage: "&cUse: '&7/%command% setsuffix <player> <suffix>&c'."
     could-not-be-empty: "&cThe suffix text could not be empty!"
-    # Use %target% placeholder.
     player-not-found: "&cThis player&7 %target%&c not found."
-    # Use %tag% placeholder.
     successfully-set: "&aYou have successfully set suffix for&e %target%&a, with this suffix:&r %tag%"
   set-priority:
     usage: "&cUse: '&7/%command% setpriority <player> <number>&c'."
     priority-must-be-number: "&cThe priority must be a number!"
-    # Use %target% placeholder.
     player-not-found: "&cThis player&7 %target%&c not found."
-    # Use %number% placeholder.
     successfully-set: "&aYou have successfully set priority for&e %target%&a, with priority&r %number%"
   remove-player:
     usage: "&cUse: '&7/%command% removeplayer <player>&c'."
-    # Use %target% placeholder.
     player-not-found: "&cThis player&7 %target%&c not found."
     player-not-found-in-database: "&cThis player&7 %target%&c not found in the database."
     successfully-removed: "&cYou have successfully removed&7 %target%&c group."
+
 tabname:
   usage: "&cUse: '&7/%command% <name>&c'."
   console-usage: "&cUse: '&7/%command% <player> <name>&c'."
-  console-reset-usage: "&cUse: '&7/%command% reset <player>&c'."
-  get-cmd-no-console: "&c You are not a player! Use: '&7/%command% get <player>&c'."
-  no-reset: "&cCould not reset your tab name."
-  # Use %player% placeholder.
+
   player-not-online: "&cThis player&7 %player%&c not online."
-  no-reset-other: "&cCould not reset&7 %player%&c tab name."
   no-tab-name: "&7%player%&c has no name set for this player."
-  # Use %name% placeholder.
   name-disabled: "&cThis name&7 %name%&c is disabled."
   name-change-success: "&aYour name has been changed to&r %name%&a."
-  # Use %target% placeholder.
-  other-name-change-success: "&aYou successfully changed&6 %target%&a name to&r %name%&a."
-  # Use %sender% placeholder.
-  other-changed-name-message: "&3Your name is changed to&r %name%&3 by&e %sender%&3."
-  name-reseted: "&aYour name has been successfully reseted."
-  other-name-reseted: "&aYou have been reseted&7 %target%&a name."
-  get-tab-name: "&2%target%&9 tab name:&r %name%"
-  get-your-tab-name: "&aYour tab name:&r %name%"
-  # Use %max% placeholder.
+  target-name-change-success: "&aYou successfully changed&6 %target%&a name to&r %name%&a."
+  target-changed-name-message: "&3Your name is changed to&r %name%&3 by&e %sender%&3."
   name-too-long: "&cName too long! Only&6 %max%&c characters."
-  # Use %world% placeholder.
   world-disabled: "&cThis command is disabled in this world&7 %world%&c."
+
+  reset:
+    console-usage: "&cUse: '&7/%command% reset <player>&c'."
+    no-reset: "&cCould not reset your tab name."
+    no-reset-target: "&cCould not reset&7 %player%&c tab name."
+    name-reseted: "&aYour name has been successfully reseted."
+    target-name-reseted: "&aYou have been reseted&7 %target%&a name."
+
+  get-name:
+    no-console: "&c You are not a player! Use: '&7/%command% get <player>&c'."
+    result: "&2%target%&9 tab name:&r %name%"
+    target-result: "&aYour tab name:&r %name%"
+
 toggle:
   console-usage: "&cUse: &7/%command% toggle <player/all>"
   enabled: "&aThe tab is successfully turned on!"
   disabled: "&cThe tab is successfully turned off!"
   no-player: "&cThere is no player available on the server."
   player-not-found: "&cThis player&7 %player%&c not found!"
+
 fake-player:
-  # Use %args% placeholder.
   no-console: "&cThis command '&7/%command% %args%&c' can only be in-game."
   usage: "&cUse: '&7/%command% %args% <add/remove/list> [<name>]&c'."
-  # Use %name% placeholder.
+
   added: "&aThe fake player&7 %name%&a successfully added!"
   removed: "&cThe fake player&7 %name%&c successfully removed!"
   already-added: "&cThe fake player&7 %name%&c already added."
   already-removed: "&cThe fake player&7 %name%&c already removed."
   no-fake-player: "&cThere is no fake player either."
   disabled: "&cThe fake player is disabled. Please enable in config.yml file."
-  # Use %fake-players%, %amount% placeholder.
+
   list:
   - "&cFake players&7 (&e%amount%&7):"
   - "&r%fake-players%"
 
-# This feature lists all the chat panel help.
 chat-messages:
   1:
   - "&e&m---------&b> &e[&5Tab&cList&2 Help&e]&b <&e&m----------"

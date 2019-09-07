@@ -1,4 +1,20 @@
-﻿# v4.5
+﻿# v4.6
+Added:
+  Added option to set the time zone for time and date placeholders.
+Fixes:
+  Fixed UnsupportedOperationException when tried to toggle the tablist.
+  Fixed tablist objects are flickering when a player joined.
+  Fixed issue when the players group does not supported the placeholderapi placeholders.
+  Should fixed issue when the groups are not removed from tablist when reloaded or stopped the server.
+  Some tab-complete fixes, when does not included the player names to list.
+Removed:
+  Fully removed the name-tag-visibility option. (Reason: This is not tablist related option. For name tag editing use NameTagVisibility)
+Other:
+  Tablist/groups and objects tasks will stop updating if there are no players available on the server, to prevent tps loss.
+  Optimized the tablist ping & custom objects, to prevent memory leak issue.
+  Simplified the groups creating in file due to users don't know what is op.
+
+# v4.5
 Added:
   Added support for my RageMode minigame plugin, to cancel updating tablist.
   Added tps placeholder format - to format the %tps% placeholder, when the amount is lower than 20 or other.
