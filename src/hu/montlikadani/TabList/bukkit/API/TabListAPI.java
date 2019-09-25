@@ -21,10 +21,6 @@ public class TabListAPI {
 	 * @return Plugin
 	 */
 	public static Plugin getPlugin() {
-		if (JavaPlugin.getPlugin(TabList.class) == null) {
-			throw new NullPointerException("plugin is null");
-		}
-
 		return JavaPlugin.getPlugin(TabList.class);
 	}
 

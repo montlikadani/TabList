@@ -1,0 +1,102 @@
+# Tablist, header & footer with animation.
+
+# Current plugin placeholders: https://github.com/montlikadani/TabList/wiki/Placeholders
+# Use placeholders: https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders
+# Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
+
+# Use %anim:animationName% placeholder to make an animation.
+
+# How do I use this tab section? Usage: https://github.com/montlikadani/TabList/wiki/TabList-Usage
+
+# Enable the tab? (Header & footer)
+enabled: true
+
+# Hide tab when the player is vanished?
+# Required Essentials plugin!
+hide-tab-when-player-vanished: false
+
+# What world does not display the tab?
+disabled-worlds:
+- "world1"
+- "worldTest"
+
+# Blacklisted players, where the player not see the tab.
+blacklisted-players:
+#- myname
+
+# Tab update time interval. (In ticks!)
+# Set 0 to disable the tab refresh.
+interval: 4
+
+header:
+- "<lines>"
+- "%anim:tablist%"
+- "&7<75> %anim:welcome% <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms"
+
+footer:
+- "<13>&e&l Players:&6 %online-players%&7/&6%max-players%"
+- "&7<28> %anim:website%&7:&2 &nexample.com&7 <28>\n<lines>"
+
+# Per world tablist
+per-world:
+  enable: false
+
+  # If the world name is not specified, will see the default tab.
+  use-default-tab-if-world-not-specified: true
+
+  world_nether:
+    header: "&3This is a per world plugin %anim:tablist%&3."
+    footer: "&6World:&7 %player_world%"
+  world:
+    header: "%anim:perWorld%"
+    footer: "&6World:&7 %player_world%"
+
+    # Per player in per world tablist
+    per-player:
+      enable: false
+
+      # If the player name is not specified, will see the default tab.
+      use-default-tab-if-player-not-specified: true
+
+      playerName:
+        header: "&3This is a per player plugin %anim:tablist%&3."
+        footer:
+        - "&6World:&7 %player_world%"
+        - "&aPlayer:&8 %player_name%"
+  testWorld:
+    # Per group in per world tablist
+    # Requires Vault plugin!
+    per-group:
+      enable: false
+
+      # If the group name is not specified, will see the default tab.
+      use-default-tab-if-group-not-specified: true
+
+      groupName:
+        header: "&3This is a per group plugin %anim:tablist%&3."
+        footer:
+        - "&6World:&7 %player_world%"
+        - "&aGroup:&8 %vault_rank%"
+
+# Per player tablist
+per-player:
+  enable: false
+
+  # If the player name is not specified, will see the default tab.
+  use-default-tab-if-player-not-specified: false
+
+  testplayer:
+    header: "%anim:perPlayer%"
+    footer: "<lines>"
+
+# Per group tablist
+# Requires Vault plugin!
+per-group:
+  enable: false
+
+  # If the group name is not specified, will see the default tab.
+  use-default-tab-if-group-not-specified: true
+
+  default:
+    header: "%anim:perGroupHead%"
+    footer: "%anim:perGroupFoot%"

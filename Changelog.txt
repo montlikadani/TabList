@@ -1,4 +1,20 @@
-﻿# v4.6
+﻿# v4.7
+Added:
+  Added option to disable groups in the specified worlds.
+  Added option to use the essentials nickname with the set of groups. (Required namer changing-type)
+Fixes:
+  Fixed console spam, when the essentials plugin not found, but the option is disabled in config.
+  Fixed tablist animation started double sending & flickering, when a new player joined.
+  Fixed issue when the groups are not removed from players.
+  Fixed issue when the namer changing-type is not work for groups, so caused issues with scoreboard plugins.
+  Fixed NPE when tried to save the fake players to a file.
+Fixes (Bungee):
+  Fixed issue when a player joined to the server, tablist showed, but if other player joined, the tablist will not display anymore.
+Other:
+  All tablist options have been moved to tablist.yml, will still be available in config.yml, but will be deprecated and will not be updated.
+  Set prefix/suffix sub-commands now works again.
+
+# v4.6
 Added:
   Added option to set the time zone for time and date placeholders.
 Fixes:

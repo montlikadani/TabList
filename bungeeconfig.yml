@@ -54,11 +54,11 @@ tablist:
 
   # Disabled servers, where you can not see the tab.
   disabled-servers:
-  - someserver
-  - servername
+  #- serverName
 
   # Blacklisted players, where the player not see the tab.
-  blacklisted-players: []
+  blacklisted-players:
+  #- playerName
 
   # How often to refresh the tablist (in milliseconds).
   refresh-interval: 180
@@ -86,8 +86,10 @@ tablist:
   - "&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
   - "&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
   - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+
   footer:
   - "<lines>\n&7Website:&2 example.com"
+
   # Per player tablist
   per-player:
     playername:
@@ -101,6 +103,7 @@ tablist:
       - "&7&l&m================="
       - "&4&l&m================="
       - "&6&l&m================="
+
     someone:
       header:
       - "&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================="
@@ -113,11 +116,13 @@ tablist:
       - "&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&3 Kit&4PvP&9 S&6e&2r&8v&5e&1r&6!"
       footer:
       - "&aGo to the PvP server!"
+
     lobby:
       header:
       - "&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&9 S&6e&2r&8v&5e&1r&6!"
       footer:
       - "&7<28>&a Choose a minigame or server and start playing!&7 <28>"
+
       per-player:
         exampleplayer:
           header:
