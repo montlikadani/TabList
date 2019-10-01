@@ -6,7 +6,7 @@
 	<artifactId>tablist</artifactId>
 	<packaging>jar</packaging>
 	<name>tablist</name>
-	<version>4.7</version>
+	<version>4.8</version>
 	<url>http://maven.apache.org</url>
 
 	<properties>

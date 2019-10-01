@@ -140,12 +140,10 @@ change-prefix-suffix-in-tablist:
   # Required Essentials plugin!
   hide-group-when-player-afk: false
 
-  # Does this option overwrites fully the groups prefix/suffix, or just use
-  # "prefix nickname suffix" format?
-  use-essentials-nickname:
-    # If true - the player will gets the full nickname and the group prefix/suffix will not show.
-    # If false - the player will gets the group prefixes & suffixes with the set of nickname.
-    use-full-name: false
+  # Use the essentials nickname instead of player original name?
+  # true - Using this format: "prefix playerNickName suffix"
+  # false - Using this format: "prefix playerOriginalName suffix"
+  use-essentials-nickname: false
 
   # Use the player displayname instead of groups?
   # This supports the player "prefix playerName suffix" format like on chat.
