@@ -13,9 +13,6 @@
 # https://minecraft.gamepedia.com/Formatting_codes                       #
 # - If you find a bug, send here:                                        #
 # https://github.com/montlikadani/TabList/issues                         #
-# - Use symbols in messages, on this page:                               #
-# https://github.com/montlikadani/TabList/wiki/Symbols                   #
-# - If the string is empty does not send the message.                    #
 #=================================OOO====================================#
 
 # PlaceholderAPI use for the plugin.
@@ -54,7 +51,12 @@ placeholder-format:
     # false - displays in left side
     show-in-right-or-left-side: true
 
+    # Show the player group if the player afk?
+    show-player-group: true
+
+    # When the player is afk
     format-yes: "&7 [AFK]&r "
+    # When the player is not afk
     format-no: ""
 
   time:
@@ -95,8 +97,9 @@ placeholder-format:
       amount: 16.0
     bad-tps: "&c"
 
-# Custom variables with unlimited variables.
-# Use: <something>: "&6Message..."
+# Custom variables that will be replaced in tablist.
+# This useful when we are creating a lot of lines with the same name.
+# Usage: <nameOfPlaceholder>: "&6Text..."
 custom-variables:
   <name>: "&5&o%player_name%"
   <lines>: "&5&m======================"
@@ -143,6 +146,7 @@ change-prefix-suffix-in-tablist:
   # Use the essentials nickname instead of player original name?
   # true - Using this format: "prefix playerNickName suffix"
   # false - Using this format: "prefix playerOriginalName suffix"
+  # This will only works if the "changing-type" is "namer".
   use-essentials-nickname: false
 
   # Use the player displayname instead of groups?
@@ -246,4 +250,4 @@ plugin-enable: '&6&l[&5&lTab&c&lList&6&l]&7&l >&a The plugin successfully enable
 plugin-disable: '&6&l[&5&lTab&c&lList&6&l]&7&l >&c The plugin successfully disabled!'
 
 # DO NOT CHANGE THIS!
-config-version: 14
+config-version: 15

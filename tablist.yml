@@ -28,6 +28,10 @@ blacklisted-players:
 # Set 0 to disable the tab refresh.
 interval: 4
 
+# Define if the header & footer should be randomized.
+# Animation placeholders won't be affected.
+random: false
+
 header:
 - "<lines>"
 - "%anim:tablist%"
@@ -39,24 +43,22 @@ footer:
 
 # Per world tablist
 per-world:
-  enable: false
+  # (Optional)
+  # If the world name is not given, will see the default tab.
+  #use-default-tab-if-world-not-given: true
 
-  # If the world name is not specified, will see the default tab.
-  use-default-tab-if-world-not-specified: true
-
-  world_nether:
+  my_nether:
     header: "&3This is a per world plugin %anim:tablist%&3."
     footer: "&6World:&7 %player_world%"
-  world:
+  justWorld:
     header: "%anim:perWorld%"
     footer: "&6World:&7 %player_world%"
 
     # Per player in per world tablist
     per-player:
-      enable: false
-
-      # If the player name is not specified, will see the default tab.
-      use-default-tab-if-player-not-specified: true
+      # (Optional)
+      # If the player name is not given, will see the default tab.
+      #use-default-tab-if-player-not-given: true
 
       playerName:
         header: "&3This is a per player plugin %anim:tablist%&3."
@@ -67,10 +69,9 @@ per-world:
     # Per group in per world tablist
     # Requires Vault plugin!
     per-group:
-      enable: false
-
-      # If the group name is not specified, will see the default tab.
-      use-default-tab-if-group-not-specified: true
+      # (Optional)
+      # If the group name is not given, will see the default tab.
+      #use-default-tab-if-group-not-given: true
 
       groupName:
         header: "&3This is a per group plugin %anim:tablist%&3."
@@ -80,10 +81,9 @@ per-world:
 
 # Per player tablist
 per-player:
-  enable: false
-
-  # If the player name is not specified, will see the default tab.
-  use-default-tab-if-player-not-specified: false
+  # (Optional)
+  # If the player name is not given, will see the default tab.
+  #use-default-tab-if-player-not-given: false
 
   testplayer:
     header: "%anim:perPlayer%"
@@ -92,11 +92,10 @@ per-player:
 # Per group tablist
 # Requires Vault plugin!
 per-group:
-  enable: false
+  # (Optional)
+  # If the group name is not given, will see the default tab.
+  #use-default-tab-if-group-not-given: true
 
-  # If the group name is not specified, will see the default tab.
-  use-default-tab-if-group-not-specified: true
-
-  default:
+  vaultGroup:
     header: "%anim:perGroupHead%"
     footer: "%anim:perGroupFoot%"

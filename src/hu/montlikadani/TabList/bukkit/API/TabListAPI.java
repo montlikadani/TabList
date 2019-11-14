@@ -48,8 +48,8 @@ public class TabListAPI {
 	}
 
 	/**
-	 * Sends the tab header and footer to the specified player
-	 * @param player Player
+	 * Sends the tab header and footer to the given player
+	 * @param p Player
 	 * @param string Header
 	 * @param string Footer
 	 */

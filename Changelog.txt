@@ -1,4 +1,25 @@
-﻿# v4.7
+﻿# v4.9
+Added:
+  Added option to show/hide the group if a player afk for afk-status.
+  Added option to randomize the header & footer texts in tablist.
+Fixes:
+  Important fixes for groups not show for other players when the task scheduler has started.
+  Fixed issue for 1.8 servers when the tablist not showing and throwing errors.
+  Fixed issue when the per world playerlist not work correctly.
+  Fixed issue when reloading the plugin it does not reloaded the animations so it not replaced.
+  Fixed duplicating fake players in player list when another player joined.
+Other:
+  The tablist loading is now even faster when scanning the software.
+  Fully recoded the fake players handling, so the file size was reduced.
+
+# v4.8
+Fixes:
+  Fixed NPE when generating new config files on server startup.
+  Fixed issue when the groups are not work correctly when setting up.
+Other:
+  Optimized tablist refreshing.
+
+# v4.7
 Added:
   Added option to disable groups in the specified worlds.
   Added option to use the essentials nickname with the set of groups. (Required namer changing-type)

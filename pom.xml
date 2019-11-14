@@ -11,7 +11,20 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.release>8</maven.compiler.release>
 	</properties>
+
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.8.1</version>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
 
 	<repositories>
 		<repository>
@@ -51,63 +64,13 @@
 			<artifactId>spigot-api</artifactId>
 			<version>1.14.4-R0.1-SNAPSHOT</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/spigot-1.14.4.jar</systemPath>
+			<systemPath>${project.basedir}/lib/spigot-1.14.4.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.destroystokyo.paper</groupId>
 			<artifactId>paper-api</artifactId>
 			<version>1.13.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>1.13_R1</groupId>
-			<artifactId>spigot_1_13_R1</artifactId>
-			<version>1.13.1</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/spigot-1.13-R0.1-SNAPSHOT-b1851.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>1.12_R1</groupId>
-			<artifactId>spigot_1_12_R1</artifactId>
-			<version>1.12.2</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/spigot-1.12.2.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>1.11_R1</groupId>
-			<artifactId>spigot_1_11_R1</artifactId>
-			<version>1.11.2</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/spigot-1.11.2-R0.1-SNAPSHOT.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>1.10_R1</groupId>
-			<artifactId>spigot_1_10_R1</artifactId>
-			<version>1.10.2</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/spigot-1.10.2-R0.1-SNAPSHOT.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>1.9_R1</groupId>
-			<artifactId>spigot_1_9_R1</artifactId>
-			<version>1.9.4</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/spigot-1.9.4-R0.1-SNAPSHOT.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>1.8_R4</groupId>
-			<artifactId>spigot_1_8_R4</artifactId>
-			<version>1.8.8</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/spigot-1.8.8-R0.1-SNAPSHOT.jar</systemPath>
-		</dependency>
-		<!-- CraftBukkit API -->
-		<dependency>
-			<groupId>1.13_R2</groupId>
-			<artifactId>craftbukkit_1_13_R2</artifactId>
-			<version>1.13.2</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/craftbukkit-1.13.2.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>net.md-5</groupId>
@@ -154,14 +117,14 @@
 			<artifactId>PermissionsEx</artifactId>
 			<version>1.23.4</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/PermissionsEx-1.23.4.jar</systemPath>
+			<systemPath>${project.basedir}/lib/PermissionsEx-1.23.4.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>hu.montlikadani.ragemode</groupId>
 			<artifactId>RageMode</artifactId>
 			<version>1.4.0.000</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/RageMode.jar</systemPath>
+			<systemPath>${project.basedir}/lib/RageMode.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>
