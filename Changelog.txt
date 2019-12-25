@@ -1,4 +1,16 @@
-﻿# v4.9
+﻿# v5.0
+Added:
+  Added sort-priorities to the groups. (Now it works)
+  Added option to randomize the animations.
+  Added %light-level% placeholder to show the light level in the player location.
+  Added option to remember and save to a file or remove the toggled tablists at server restart.
+  Added option to set world names in the per-world section, to display the same tab for the set of worlds.
+Fixes:
+  Fixed tabname blacklisted issue, when only checked the last text from the list.
+Fixes (Bungee/Bukkit):
+  Fixed some issues with time & date, so it not shows the current time.
+
+# v4.9
 Added:
   Added option to show/hide the group if a player afk for afk-status.
   Added option to randomize the header & footer texts in tablist.
