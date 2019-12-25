@@ -34,17 +34,26 @@ public class TabListAPI {
 
 	/**
 	 * Checks whatever the tablist toggled for the specified player uuid.
-	 * <p>This will returns false if the map null or the player does not exist in the list.
-	 * 
+	 * This is much slower to respond because it converts the string to uuid.
 	 * @param uuid Player UUID
 	 * @return true if toggled
 	 */
 	public static boolean isTabListToggledForPlayer(String uuid) {
-		if (Commands.enabled != null && Commands.enabled.containsKey(UUID.fromString(uuid))
-				&& Commands.enabled.get(UUID.fromString(uuid)))
-			return true;
+		Validate.notNull(uuid, "Player UUID can't be null!");
+		Validate.notEmpty(uuid, "Player UUID can't be empty!");
 
-		return false;
+		return isTabListToggledForPlayer(UUID.fromString(uuid));
+	}
+
+	/**
+	 * Checks whatever the tablist toggled for the specified player uuid.
+	 * @param uuid Player UUID
+	 * @return true if toggled
+	 */
+	public static boolean isTabListToggledForPlayer(UUID uuid) {
+		Validate.notNull(uuid, "Player UUID can't be null!");
+
+		return Commands.enabled != null && Commands.enabled.containsKey(uuid) && Commands.enabled.get(uuid);
 	}
 
 	/**

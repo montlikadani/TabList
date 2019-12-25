@@ -1,25 +1,8 @@
-#=================================OOO====================================#
-#                     TabList Configuration File                         #
-#                  Author, created by: montlikadani                      #
-#=================================OOO====================================#
-# [Default configuration]                                                #
-# https://github.com/montlikadani/TabList/blob/master/config.yml         #
-#                                                                        #
-# [Placeholders]                                                         #
-# https://github.com/montlikadani/TabList/wiki/Placeholders              #
-#                                                                        #
-# [Tips]                                                                 #
-# - Use color coding '&' character, on this page:                        #
-# https://minecraft.gamepedia.com/Formatting_codes                       #
-# - If you find a bug, send here:                                        #
-# https://github.com/montlikadani/TabList/issues                         #
-#=================================OOO====================================#
-
-# PlaceholderAPI use for the plugin.
-placeholderapi: true
-
 # Hook plugins
 hook:
+  # Hooks into PlaceholderAPI to use custom placeholders.
+  placeholderapi: false
+
   # Hooking to my RageMode plugin. (https://www.spigotmc.org/resources/69169/)
   # If true, will disable the tablist, groups and the tablist objects, while
   # running a game.
@@ -61,6 +44,7 @@ placeholder-format:
 
   time:
     # Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/
+    # Or google it: "what is my time zone"
     time-zone: "GMT0"
 
     # Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
@@ -101,7 +85,7 @@ placeholder-format:
 # This useful when we are creating a lot of lines with the same name.
 # Usage: <nameOfPlaceholder>: "&6Text..."
 custom-variables:
-  <name>: "&5&o%player_name%"
+  <name>: "&5&o%player%"
   <lines>: "&5&m======================"
 
 # Enables to change prefix & suffix in player tablist.
@@ -245,7 +229,6 @@ check-update: true
 logconsole: true
 
 # Plugin enable/disable messages in console.
-# Use %newline% placeholder.
 plugin-enable: '&6&l[&5&lTab&c&lList&6&l]&7&l >&a The plugin successfully enabled&6 v${version}&a!'
 plugin-disable: '&6&l[&5&lTab&c&lList&6&l]&7&l >&c The plugin successfully disabled!'
 

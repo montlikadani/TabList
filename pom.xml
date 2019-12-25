@@ -6,7 +6,7 @@
 	<artifactId>tablist</artifactId>
 	<packaging>jar</packaging>
 	<name>tablist</name>
-	<version>4.8</version>
+	<version>5.0</version>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -62,9 +62,9 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.14.4-R0.1-SNAPSHOT</version>
+			<version>1.15.1-R0.1-SNAPSHOT</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/spigot-1.14.4.jar</systemPath>
+			<systemPath>${project.basedir}/lib/spigot-1.15.1.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.destroystokyo.paper</groupId>
@@ -75,7 +75,7 @@
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-api</artifactId>
-			<version>1.14-SNAPSHOT</version>
+			<version>1.15-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -122,7 +122,7 @@
 		<dependency>
 			<groupId>hu.montlikadani.ragemode</groupId>
 			<artifactId>RageMode</artifactId>
-			<version>1.4.0.000</version>
+			<version>1.5.5.000</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/lib/RageMode.jar</systemPath>
 		</dependency>

@@ -1,7 +1,7 @@
 reload-config: "&aThe plugin successfully reloaded!"
 no-permission: "&cYou don't have permission for that!&7 (%perm%)"
 unknown-sub-command: "&cUnknown sub-command&7 %subcmd%&c."
-unknown-command: "&cUnknown command.&7 Type '&f/%command% help&7' for help."
+no-console: "&cThis command '&7/%command%&c' can only be in-game."
 
 set-prefix-suffix:
   prefix:
@@ -46,7 +46,7 @@ tabname:
     target-name-reseted: "&aYou have been reseted&7 %target%&a name."
 
   get-name:
-    no-console: "&c You are not a player! Use: '&7/%command% get <player>&c'."
+    no-console: "&cYou are not a player! Use: '&7/%command% get <player>&c'."
     result: "&2%target%&9 tab name:&r %name%"
     target-result: "&aYour tab name:&r %name%"
 
@@ -58,9 +58,7 @@ toggle:
   player-not-found: "&cThis player&7 %player%&c not found!"
 
 fake-player:
-  no-console: "&cThis command '&7/%command% %args%&c' can only be in-game."
   usage: "&cUse: '&7/%command% %args% <add/remove/list> [<name>]&c'."
-
   added: "&aThe fake player&7 %name%&a successfully added!"
   removed: "&cThe fake player&7 %name%&c successfully removed!"
   already-added: "&cThe fake player&7 %name%&c already added."
@@ -78,23 +76,22 @@ chat-messages:
   - ""
   - "&7-&9 []&7 -&9 optional arguments"
   - "&7-&c <>&7 -&c required arguments"
-  - "&7-&3 ()&7 -&3 command abbreviations"
   - ""
   - "&8/&a%command%&b [+TAB]&5 -&6 Main plugin info."
   - "&8/&a%command% help&9 [2/3]&5 -&6 Help commands."
-  - "&8/&a%command% reload&3 (or rl)&5 -&6 Reload the plugin."
+  - "&8/&a%command% reload&5 -&6 Reload the plugin."
   - "&8/&a%command% toggle&9 [player/all]&5 -&6 Toggle on/off tab."
-  - "&8/&a%command% fakeplayers&3 (or fp)&a add&2/&aremove&3 (or rem)&c <name>&5 -&6 Create/remove fake player."
+  - "&8/&a%command% fakeplayers&a add&2/&aremove&3 (or rem)&c <name>&5 -&6 Create/remove fake player."
   - "&8/&a%command% fp list&5 -&6 Lists all fake player."
   2:
-  - "&8/&atabname&3 (or tname)&c <&9[player]&2/&cname>&c <name>&5 -&6 Change player tab name."
-  - "&8/&atname reset&9 [player]&5 -&6 Reset the specified player tab name."
+  - "&8/&atabname&c <&9[player]&2/&cname>&c <name>&5 -&6 Change player tab name."
+  - "&8/&atname reset&9 [player]&5 -&6 Resets the given player tab name."
   - "&8/&a%command% get&9 [player]&5 -&6 Get player tab name."
-  - "&8/&a%command% setprefix&c <player> <prefix>&5 -&6 Sets the specified player prefix."
-  - "&8/&a%command% removeplayer&c <player>&5 -&6 Removing the specified player prefix/suffix."
+  - "&8/&a%command% setprefix&c <player> <prefix>&5 -&6 Sets the given player prefix."
+  - "&8/&a%command% removeplayer&c <player>&5 -&6 Removes the given player prefix/suffix."
   3:
-  - "&8/&a%command% setsuffix&c <player> <suffix>&5 -&6 Sets the specified player suffix."
-  - "&8/&a%command% setpriority&c <player> <priority>&5 -&6 Sets the specified player sorting priority."
+  - "&8/&a%command% setsuffix&c <player> <suffix>&5 -&6 Sets the given player suffix."
+  - "&8/&a%command% setpriority&c <player> <priority>&5 -&6 Sets the given player sorting priority."
   - "&e&m---------------------------------------------------"
 
 # DO NOT CHANGE THIS!

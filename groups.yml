@@ -22,6 +22,9 @@ groups:
     prefix: "&a[&cStaff&a]&6 "
     suffix: "&7 <12>"
     # (Optional)
+    # Sorting the groups with the specific number
+    #sort-priority: 0
+    # (Optional)
     # This permission must be in the permission system.
     #permission: tablist.staff
     # (Optional)
@@ -35,3 +38,4 @@ groups:
   Admin:
     prefix: "&7<62>&r %anim:Admin%"
     suffix: "&7 <62>"
+    sort-priority: 0
