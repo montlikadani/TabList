@@ -11,6 +11,7 @@ about: Create a bug report to help us improve
 
 ### Details
 Plugin version: 
+
 Software (Spigot/Bukkit etc.. `/version`) version: 
 
 ### Console error
