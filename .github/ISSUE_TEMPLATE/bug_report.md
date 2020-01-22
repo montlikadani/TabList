@@ -6,13 +6,15 @@ about: Create a bug report to help us improve
 
 <!-- These comments will not show just read it and you don't need to delete them.-->
 
-### Describe your problem to what is
+### Problem
 <!--Understand what the problem is with the plugin.-->
 
 ### Details
 Plugin version: 
 
-Software (Spigot/Bukkit etc.. `/version`) version: 
+Software <!--(Spigot/Bukkit etc.. `/version`) -->version: 
+
+Relevant plugins<!-- (optional)-->: 
 
 ### Console error
 ```
