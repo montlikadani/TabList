@@ -1,9 +1,14 @@
 name: TabList
-main: hu.montlikadani.tablist.TabList
-version: 5.0
+main: hu.montlikadani.tablist.bukkit.TabList
+version: 5.1
 author: montlikadani
 description: An ultimate animated tablist.
-softdepend: [PlaceholderAPI, Essentials, Vault, SuperVanish, RageMode]
+softdepend:
+- PlaceholderAPI
+- Essentials
+- Vault
+- SuperVanish
+- RageMode
 api-version: 1.13
 # DO NOT EDIT ANYTHING ABOVE THIS LINE!
 

@@ -1,4 +1,18 @@
-﻿# v5.0
+﻿# v5.1
+Added:
+  Added option to use the system default time zone for time placeholders.
+Fixes:
+  Fixed issue when the random option not worked for tablist.
+  Fixed issue when the fake players are not removed from the tablist when the plugin disabled.
+  Fixed some issues with groups when cancels the update and won't displays on tab.
+  Fixed issue when some placeholders won't work with custom variables.
+Fixes (Bungee):
+  Fixed IndexOutOfBoundsException when using tablist headers/footers.
+Other:
+  Some reworks for tablist handling, to prevent more issues.
+  %staff-online% placeholder will not show the placeholder its name, now displays 0 if there are no staffs online.
+
+# v5.0
 Added:
   Added sort-priorities to the groups. (Now it works)
   Added option to randomize the animations.
@@ -9,6 +23,8 @@ Fixes:
   Fixed tabname blacklisted issue, when only checked the last text from the list.
 Fixes (Bungee/Bukkit):
   Fixed some issues with time & date, so it not shows the current time.
+Other:
+  Added support for 1.15+ servers.
 
 # v4.9
 Added:

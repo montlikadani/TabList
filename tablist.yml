@@ -11,7 +11,7 @@
 # Enable the tab? (Header & footer)
 enabled: true
 
-# Save the toggled tablists to a file to load the toggled tablists after server restart.
+# Save the toggled tablists to a file to load after server restart.
 # If this false, if the file is exists, it will be deleted automatically at server restart.
 remember-toggled-tablist-to-file: true
 
@@ -55,7 +55,7 @@ per-world:
     # display the same tab, which found in this section.
     #display-in-other-worlds:
     #- otherWorldnamehere
-    #- myWorldhere
+    #- my_nether # you should put the same world here too
 
   justWorld:
     header: "%anim:perWorld%"

@@ -6,7 +6,7 @@
 	<artifactId>tablist</artifactId>
 	<packaging>jar</packaging>
 	<name>tablist</name>
-	<version>5.0</version>
+	<version>5.1</version>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -58,13 +58,13 @@
 	</repositories>
 
 	<dependencies>
-		<!-- Spigot APIs -->
+		<!-- Spigot API -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.15.1-R0.1-SNAPSHOT</version>
+			<version>1.15.2-R0.1-SNAPSHOT</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/spigot-1.15.1.jar</systemPath>
+			<systemPath>${project.basedir}/lib/spigot-1.15.2.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>com.destroystokyo.paper</groupId>
@@ -122,7 +122,7 @@
 		<dependency>
 			<groupId>hu.montlikadani.ragemode</groupId>
 			<artifactId>RageMode</artifactId>
-			<version>1.5.5.000</version>
+			<version>1.6.0.000</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/lib/RageMode.jar</systemPath>
 		</dependency>

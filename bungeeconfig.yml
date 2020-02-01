@@ -1,12 +1,17 @@
-# Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/
-# Or google it: "what is my time zone"
-time-zone: "GMT0"
+placeholder-format:
+  time:
+    # Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/
+    # Or google it: "what is my time zone"
+    time-zone: "GMT0"
 
-# Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
-# Used for %time% placeholder.
-time-format: "mm:HH"
-# Used for %date% placeholder.
-date-format: "dd/MM/yyyy"
+    # Use system default time zone instead of searching for that?
+    use-system-zone: false
+
+    # Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
+    # Used for %time% placeholder.
+    time-format: "mm:HH"
+    # Used for %date% placeholder.
+    date-format: "dd/MM/yyyy"
 
 # Custom variables with unlimited variables.
 # Use: <something>: "&6Message...'

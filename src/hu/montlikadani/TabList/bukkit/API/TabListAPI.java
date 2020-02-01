@@ -9,10 +9,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import hu.montlikadani.tablist.Commands;
-import hu.montlikadani.tablist.ReflectionUtils;
-import hu.montlikadani.tablist.TabList;
-import hu.montlikadani.tablist.TabTitle;
+import hu.montlikadani.tablist.bukkit.ReflectionUtils;
+import hu.montlikadani.tablist.bukkit.TabHandler;
+import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.TabTitle;
 
 public class TabListAPI {
 
@@ -53,7 +53,7 @@ public class TabListAPI {
 	public static boolean isTabListToggledForPlayer(UUID uuid) {
 		Validate.notNull(uuid, "Player UUID can't be null!");
 
-		return Commands.enabled != null && Commands.enabled.containsKey(uuid) && Commands.enabled.get(uuid);
+		return TabHandler.tabEnabled.containsKey(uuid) && TabHandler.tabEnabled.get(uuid);
 	}
 
 	/**
@@ -79,17 +79,38 @@ public class TabListAPI {
 
 	/**
 	 * Gets the current ping of player
-	 * @throws Throwable
 	 * @param player Player
 	 * @return Ping integer
 	 */
-	public static int getPing(Player p) throws Throwable {
+	public static int getPing(Player p) {
 		Validate.notNull(p, "Player can't be null!");
 
 		int pingInt = 0;
-		Object nmsPlayer = ReflectionUtils.getNMSPlayer(p);
-		Field ping = ReflectionUtils.getField(nmsPlayer.getClass(), "ping", false);
-		pingInt = ping.getInt(nmsPlayer);
+		try {
+			Object nmsPlayer = ReflectionUtils.getNMSPlayer(p);
+			Field ping = ReflectionUtils.getField(nmsPlayer, "ping", false);
+			pingInt = ping.getInt(nmsPlayer);
+		} catch (Throwable t) {
+			t.printStackTrace();
+		}
+
 		return pingInt;
+	}
+
+	/**
+	 * Gets the current tps of server.
+	 * @return The current TPS
+	 */
+	public static double getTPS() {
+		double tps = 0d;
+		try {
+			Object mc = ReflectionUtils.invokeMethod(Bukkit.getServer(), "getServer", false);
+			Field rec = ReflectionUtils.getField(mc, "recentTps", false);
+			double[] recentTps = (double[]) rec.get(mc);
+			tps = recentTps[0];
+		} catch (Throwable t) {// TODO: Fix CraftBukkit TPS bug
+		}
+
+		return tps;
 	}
 }

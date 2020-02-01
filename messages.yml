@@ -93,6 +93,3 @@ chat-messages:
   - "&8/&a%command% setsuffix&c <player> <suffix>&5 -&6 Sets the given player suffix."
   - "&8/&a%command% setpriority&c <player> <priority>&5 -&6 Sets the given player sorting priority."
   - "&e&m---------------------------------------------------"
-
-# DO NOT CHANGE THIS!
-config-version: 7
