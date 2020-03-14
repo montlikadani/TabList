@@ -7,7 +7,7 @@ animations:
     # Display the text randomly?
     random: true
 
-    # The list of texts that will apear
+    # The list of texts that will appear
     texts:
     - "&b&lTabList"
     - "&6&lTabList"

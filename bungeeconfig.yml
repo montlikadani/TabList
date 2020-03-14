@@ -28,6 +28,8 @@ tablist-groups:
   refresh-time: 160
 
 # Group list
+# NOTE: If the permissions are not works correctly then you should use
+# a permission manager plugin such as LuckPerms.
 groups:
   admin:
     name:
@@ -144,13 +146,15 @@ messages:
   reload-config: "&aThe plugin successfully reloaded!"
   no-permission: "&cYou don't have permission for this!"
   toggle:
+    no-console: "&cUsage:&7 /tablist toggle <player/all>"
+    no-player: "&cUsage:&7 /tablist toggle <player>"
     enabled: "&aThe tab is successfully turned on!"
     disabled: "&cThe tab is successfully turned off!"
-    no-player: "&cThere is no player available on the server."
+    no-players-available: "&cThere is no player available on the server."
   chat-messages:
   - "&8&l-----------"
   - "&7/&atablist reload&7 (or rl)&e -&6 Reloads the plugin and config."
-  - "&7/&atablist toggle&e -&6 Toggle the tablist."
+  - "&7/&atablist toggle [player/all]&e -&6 Toggle the tablist."
   - "&8&l-----------"
 
 # DO NOT CHANGE THIS!

@@ -158,23 +158,18 @@ tablist-object-type:
   # custom - custom value
   type: ping
 
+  # The refresh interval when the objects are refreshing.
+  # Note: The health is not updating auto due to display issues.
+  refresh-interval: 3
+
+  # In which worlds not to display the object? (world names)?
+  disabled-worlds:
+  #- testingWorld
+
   # Objective settings
   object-settings:
-    # The ping side next to the player's name indicates the right side.
-    ping:
-      # Ping update time interval in seconds.
-      update-interval: 3
-
-      # Which worlds do not show up in ping (world names)?
-      disabled-worlds:
-      #- testingWorld
-
     # The player health (life) the player's name indicates the right side.
     health:
-      # Which worlds do not show the players health in tab?
-      disabled-worlds:
-      - world_the_end
-
       # Blacklisted players who do not show the health in tab.
       blacklisted-players:
       - exampleplayer
@@ -182,14 +177,7 @@ tablist-object-type:
 
     # It only accepts number-ending placeholders, such as player levels (doubled numbers "2.1" do NOT work).
     custom:
-      custom-value: "%player_level%"
-
-      # Refresh interval in seconds.
-      refresh-interval: 3
-
-      # Which worlds do not show the custom value setting (world names)?
-      disabled-worlds:
-      #- worlds
+      value: "%player_level%"
 
 # Changing player tablist name with unlimited characters.
 tabname:
@@ -227,6 +215,10 @@ tabname:
 #=========================================#
 # Check for updates.
 check-update: true
+
+# Download releases to \releases folder
+# This only works if the "check-update" is true.
+download-updates: true
 
 # Log plugin messages into console.
 logconsole: true
