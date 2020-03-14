@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;

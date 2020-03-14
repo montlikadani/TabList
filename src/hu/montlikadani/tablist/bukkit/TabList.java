@@ -21,6 +21,7 @@ import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
 
 import hu.montlikadani.ragemode.gameUtils.GameUtils;
+import hu.montlikadani.tablist.AnimCreator;
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.bukkit.commands.Commands;
 import hu.montlikadani.tablist.bukkit.commands.TabNameCmd;
