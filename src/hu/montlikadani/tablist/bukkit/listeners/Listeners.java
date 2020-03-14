@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.listeners;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -8,11 +8,16 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import hu.montlikadani.tablist.bukkit.PlayerList;
+import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
+import hu.montlikadani.tablist.bukkit.utils.Util;
+
 public class Listeners implements Listener {
 
 	private TabList plugin;
 
-	Listeners(TabList plugin) {
+	public Listeners(TabList plugin) {
 		this.plugin = plugin;
 	}
 

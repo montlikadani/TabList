@@ -8,10 +8,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import hu.montlikadani.tablist.bukkit.ReflectionUtils;
 import hu.montlikadani.tablist.bukkit.TabHandler;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.TabTitle;
+import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 
 public class TabListAPI {
 

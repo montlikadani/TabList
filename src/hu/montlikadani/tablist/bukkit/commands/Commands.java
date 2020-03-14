@@ -1,8 +1,8 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.commands;
 
-import static hu.montlikadani.tablist.bukkit.Util.colorMsg;
-import static hu.montlikadani.tablist.bukkit.Util.logConsole;
-import static hu.montlikadani.tablist.bukkit.Util.sendMsg;
+import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
+import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
+import static hu.montlikadani.tablist.bukkit.utils.Util.sendMsg;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -22,13 +22,17 @@ import org.bukkit.scoreboard.Team;
 import org.bukkit.util.StringUtil;
 
 import hu.montlikadani.tablist.Global;
-import hu.montlikadani.tablist.bukkit.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.Perm;
+import hu.montlikadani.tablist.bukkit.TabHandler;
+import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.utils.Util;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class Commands implements CommandExecutor, TabCompleter {
 
 	private TabList plugin;
 
-	Commands(TabList plugin) {
+	public Commands(TabList plugin) {
 		this.plugin = plugin;
 	}
 

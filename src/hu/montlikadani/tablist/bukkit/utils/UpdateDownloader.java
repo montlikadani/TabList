@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
 import org.bukkit.scheduler.BukkitRunnable;
+
+import hu.montlikadani.tablist.bukkit.TabList;
 
 /**
  * @author montlikadani

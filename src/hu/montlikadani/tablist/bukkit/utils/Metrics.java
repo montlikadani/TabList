@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.utils;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;

@@ -3,7 +3,7 @@ package hu.montlikadani.tablist.bukkit;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class PlayerList {
 

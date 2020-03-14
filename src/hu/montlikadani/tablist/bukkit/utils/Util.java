@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.utils;
 
 import java.util.logging.Level;
 
@@ -6,30 +6,31 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import hu.montlikadani.tablist.bukkit.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class Util {
 
-	static void logConsole(String msg) {
+	public static void logConsole(String msg) {
 		logConsole(msg, true);
 	}
 
-	static void logConsole(String msg, boolean loaded) {
+	public static void logConsole(String msg, boolean loaded) {
 		logConsole(Level.INFO, msg, loaded);
 	}
 
-	static void logConsole(Level level, String msg) {
+	public static void logConsole(Level level, String msg) {
 		logConsole(level, msg, true);
 	}
 
-	static void logConsole(Level level, String msg, boolean loaded) {
+	public static void logConsole(Level level, String msg, boolean loaded) {
 		if ((!loaded || TabList.getInstance().getC().getBoolean("logconsole", true)) && msg != null
 				&& !msg.trim().isEmpty()) {
 			Bukkit.getLogger().log(level != null ? level : Level.INFO, "[TabList] " + msg);
 		}
 	}
 
-	static String splitStringByVersion(String s) {
+	public static String splitStringByVersion(String s) {
 		if (Version.isCurrentLower(Version.v1_13_R1) && s.length() > 16) {
 			s = s.substring(0, 16);
 		} else if (Version.isCurrentEqualOrHigher(Version.v1_13_R1) && s.length() > 64) {

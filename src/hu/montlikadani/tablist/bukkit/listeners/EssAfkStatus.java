@@ -1,11 +1,13 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.listeners;
 
-import static hu.montlikadani.tablist.bukkit.Util.colorMsg;
+import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
+import hu.montlikadani.tablist.bukkit.PlayerList;
+import hu.montlikadani.tablist.bukkit.TabList;
 import net.ess3.api.events.AfkStatusChangeEvent;
 
 public class EssAfkStatus implements Listener {

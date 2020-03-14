@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,7 +16,8 @@ import com.earth2me.essentials.Essentials;
 import de.myzelyam.api.vanish.VanishAPI;
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.API.TabListAPI;
-import hu.montlikadani.tablist.bukkit.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 public class Variables {
@@ -166,7 +167,7 @@ public class Variables {
 	}
 
 	@SuppressWarnings("deprecation")
-	String setPlaceholders(Player p, String s) {
+	public String setPlaceholders(Player p, String s) {
 		if (plugin.hasPapi() && plugin.isPluginEnabled("PlaceholderAPI") && PlaceholderAPI.containsPlaceholders(s)) {
 			s = PlaceholderAPI.setPlaceholders(p, s);
 		}

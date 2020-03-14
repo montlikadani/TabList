@@ -8,7 +8,8 @@ import org.bukkit.entity.Player;
 
 import com.mojang.authlib.GameProfile;
 
-import hu.montlikadani.tablist.bukkit.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class FakePlayers {
 

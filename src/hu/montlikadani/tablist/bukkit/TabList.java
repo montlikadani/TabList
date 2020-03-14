@@ -1,7 +1,7 @@
 package hu.montlikadani.tablist.bukkit;
 
-import static hu.montlikadani.tablist.bukkit.Util.colorMsg;
-import static hu.montlikadani.tablist.bukkit.Util.logConsole;
+import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
+import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +22,16 @@ import com.earth2me.essentials.User;
 
 import hu.montlikadani.ragemode.gameUtils.GameUtils;
 import hu.montlikadani.tablist.Global;
-import hu.montlikadani.tablist.bukkit.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.commands.Commands;
+import hu.montlikadani.tablist.bukkit.commands.TabNameCmd;
+import hu.montlikadani.tablist.bukkit.listeners.EssAfkStatus;
+import hu.montlikadani.tablist.bukkit.listeners.Listeners;
+import hu.montlikadani.tablist.bukkit.utils.Metrics;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
+import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
+import hu.montlikadani.tablist.bukkit.utils.Util;
+import hu.montlikadani.tablist.bukkit.utils.Variables;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 import net.milkbowl.vault.permission.Permission;
 
 public class TabList extends JavaPlugin {
@@ -183,7 +192,7 @@ public class TabList extends JavaPlugin {
 		}
 	}
 
-	void reload() {
+	public void reload() {
 		tabHandler.unregisterTab();
 		loadListeners();
 		conf.loadFiles();
@@ -233,7 +242,7 @@ public class TabList extends JavaPlugin {
 		}
 	}
 
-	void loadFakePlayers() {
+	public void loadFakePlayers() {
 		if (!getC().getBoolean("enable-fake-players")) {
 			return;
 		}
@@ -256,7 +265,7 @@ public class TabList extends JavaPlugin {
 		return perm != null;
 	}
 
-	void setTabName(Player p, String name) {
+	public void setTabName(Player p, String name) {
 		if (!getC().getBoolean("tabname.enable")) {
 			return;
 		}
@@ -341,7 +350,7 @@ public class TabList extends JavaPlugin {
 		}
 	}
 
-	void unTabName(Player p) {
+	public void unTabName(Player p) {
 		if (!getC().getBoolean("tabname.enable")) {
 			return;
 		}
@@ -367,7 +376,7 @@ public class TabList extends JavaPlugin {
 		return name;
 	}
 
-	void updateAll(Player p) {
+	public void updateAll(Player p) {
 		updateAll(p, false);
 	}
 
@@ -407,7 +416,7 @@ public class TabList extends JavaPlugin {
 		tabHandler.updateTab(p);
 	}
 
-	boolean createPlayer(Player p, String name) {
+	public boolean createPlayer(Player p, String name) {
 		if (name == null || name.trim().isEmpty()) {
 			return false;
 		}
@@ -446,7 +455,7 @@ public class TabList extends JavaPlugin {
 		fpList.clear();
 	}
 
-	boolean removePlayer(String name) {
+	public boolean removePlayer(String name) {
 		if (name == null || name.trim().isEmpty()) {
 			return false;
 		}
@@ -474,7 +483,7 @@ public class TabList extends JavaPlugin {
 		return true;
 	}
 
-	protected void onPlayerQuit(Player p) {
+	public void onPlayerQuit(Player p) {
 		if (getC().getBoolean("tabname.enable") && getC().getBoolean("tabname.clear-player-tabname-on-quit")
 				&& conf.getNames().contains("players." + p.getName() + ".tabname")) {
 			unTabName(p);
@@ -492,12 +501,12 @@ public class TabList extends JavaPlugin {
 		g.removePlayerTeam(p);
 	}
 
-	String getChangeType() {
+	public String getChangeType() {
 		String path = "change-prefix-suffix-in-tablist.changing-type";
 		return getC().getString(path, "").isEmpty() ? "namer" : getC().getString(path).toLowerCase();
 	}
 
-	String getMsg(String key, Object... placeholders) {
+	public String getMsg(String key, Object... placeholders) {
 		if (!conf.getMessagesFile().exists())
 			return "FILENF";
 
@@ -623,7 +632,7 @@ public class TabList extends JavaPlugin {
 		return mcVersion;
 	}
 
-	boolean hasPapi() {
+	public boolean hasPapi() {
 		return papi;
 	}
 
@@ -648,7 +657,7 @@ public class TabList extends JavaPlugin {
 		return false;
 	}
 
-	File getFolder() {
+	public File getFolder() {
 		File dataFolder = getDataFolder();
 		if (!dataFolder.exists()) {
 			dataFolder.mkdir();

@@ -1,6 +1,6 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.commands;
 
-import static hu.montlikadani.tablist.bukkit.Util.sendMsg;
+import static hu.montlikadani.tablist.bukkit.utils.Util.sendMsg;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,11 +14,15 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
+import hu.montlikadani.tablist.bukkit.Perm;
+import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.utils.Util;
+
 public class TabNameCmd implements CommandExecutor, TabCompleter {
 
 	private TabList plugin;
 
-	TabNameCmd(TabList plugin) {
+	public TabNameCmd(TabList plugin) {
 		this.plugin = plugin;
 	}
 

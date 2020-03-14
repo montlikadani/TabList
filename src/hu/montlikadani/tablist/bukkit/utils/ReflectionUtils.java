@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.utils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;

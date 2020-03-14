@@ -1,6 +1,6 @@
 package hu.montlikadani.tablist.bukkit;
 
-import static hu.montlikadani.tablist.bukkit.Util.logConsole;
+import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
 
 import java.io.File;
 import java.io.IOException;
@@ -144,7 +144,7 @@ public class Configuration {
 		}
 	}
 
-	void createNamesFile() {
+	public void createNamesFile() {
 		if (names_file != null && names_file.exists()) {
 			return;
 		}
@@ -158,7 +158,7 @@ public class Configuration {
 		}
 	}
 
-	void createGroupsFile() {
+	public void createGroupsFile() {
 		if (groups_file != null && groups_file.exists()) {
 			return;
 		}
@@ -172,7 +172,7 @@ public class Configuration {
 		}
 	}
 
-	void createFakePlayersFile() {
+	public void createFakePlayersFile() {
 		if (fakeplayers_file != null && fakeplayers_file.exists()) {
 			return;
 		}

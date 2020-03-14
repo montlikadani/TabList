@@ -1,9 +1,6 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.utils;
 
 public class ServerVersion {
-
-	ServerVersion() {
-	}
 
 	public Version getVersion() {
 		return Version.getCurrent();

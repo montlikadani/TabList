@@ -1,6 +1,6 @@
 package hu.montlikadani.tablist.bukkit;
 
-import static hu.montlikadani.tablist.bukkit.Util.colorMsg;
+import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -19,7 +19,8 @@ import org.bukkit.scoreboard.Team;
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
 
-import hu.montlikadani.tablist.bukkit.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.utils.Util;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 @SuppressWarnings("deprecation")
@@ -108,7 +109,7 @@ public class Groups {
 		startTask(refInt, null);
 	}
 
-	protected void loadGroupForPlayer(final Player p) {
+	public void loadGroupForPlayer(final Player p) {
 		removeAllFromPlayer(p);
 
 		String path = "change-prefix-suffix-in-tablist.";

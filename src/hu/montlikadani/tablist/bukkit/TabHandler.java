@@ -1,6 +1,6 @@
 package hu.montlikadani.tablist.bukkit;
 
-import static hu.montlikadani.tablist.bukkit.Util.logConsole;
+import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +21,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
+
+import hu.montlikadani.tablist.bukkit.utils.Variables;
 
 public class TabHandler {
 
@@ -87,7 +89,7 @@ public class TabHandler {
 		return task;
 	}
 
-	protected void updateTab(final Player p) {
+	public void updateTab(final Player p) {
 		if (p == null) {
 			return;
 		}
