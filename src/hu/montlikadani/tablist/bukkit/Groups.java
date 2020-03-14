@@ -74,8 +74,7 @@ public class Groups {
 			}
 		}
 
-		// Sort groups by priority
-		// TODO
+		// Sort groups by priority (Not sure this needed)
 		for (int i = 0; i < groupsList.size(); i++) {
 			for (int j = groupsList.size() - 1; j > i; j--) {
 				int p1 = groupsList.get(i).getPriority();
@@ -213,6 +212,7 @@ public class Groups {
 				}
 			}
 
+			// TODO: Improve sort-priority work ability
 			if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-improved-group-sorting")) {
 				final String pref = prefix;
 				final String suf = suffix;
