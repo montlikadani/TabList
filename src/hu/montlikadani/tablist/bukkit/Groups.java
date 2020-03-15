@@ -88,10 +88,6 @@ public class Groups {
 			}
 		}
 
-		for (TeamHandler team : groupsList) {
-			Util.logConsole(team.getTeam() + " " + team.getPriority());
-		}
-
 		if (plugin.getGS().contains("players")) {
 			for (String pls : plugin.getGS().getConfigurationSection("players").getKeys(false)) {
 				String pPath = "players." + pls + ".";

@@ -19,20 +19,13 @@ public class EssAfkStatus implements Listener {
 
 		String path = "placeholder-format.afk-status.";
 		if (conf.getBoolean(path + "enable") && !conf.getBoolean(path + "show-player-group")) {
-			String result = "";
+			boolean rightLeft = conf.getBoolean(path + "show-in-right-or-left-side");
 
-			if (event.getValue()) {
-				if (conf.contains(path + "format-yes")) {
-					result = colorMsg(conf.getBoolean(path + "show-in-right-or-left-side")
-							? p.getName() + conf.getString(path + "format-yes")
-							: conf.getString(path + "format-yes") + p.getName());
-				}
-			} else {
-				if (conf.contains(path + "format-no")) {
-					result = colorMsg(conf.getBoolean(path + "show-in-right-or-left-side")
-							? p.getName() + conf.getString(path + "format-no")
-							: conf.getString(path + "format-no") + p.getName());
-				}
+			path += "format-" + (event.getValue() ? "yes" : "no");
+
+			String result = "";
+			if (conf.contains(path)) {
+				result = colorMsg(rightLeft ? p.getName() + conf.getString(path) : conf.getString(path) + p.getName());
 			}
 
 			if (!result.isEmpty()) {
