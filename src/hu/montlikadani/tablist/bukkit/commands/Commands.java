@@ -189,27 +189,22 @@ public class Commands implements CommandExecutor, TabCompleter {
 						return true;
 					}
 
-					boolean changed = false;
 					for (Player pl : Bukkit.getOnlinePlayers()) {
 						UUID uuid = pl.getUniqueId();
 						if (TabHandler.tabEnabled.containsKey(uuid)) {
 							if (!TabHandler.tabEnabled.get(uuid)) {
 								TabHandler.tabEnabled.put(uuid, true);
 								plugin.getTabHandler().cancelTabForPlayer(pl, true);
-								changed = true;
 							} else {
 								TabHandler.tabEnabled.put(uuid, false);
 								plugin.getTabHandler().updateTab(pl);
-								changed = false;
 							}
 						} else {
 							TabHandler.tabEnabled.put(uuid, true);
 							plugin.getTabHandler().cancelTabForPlayer(pl, true);
-							changed = true;
 						}
 					}
 
-					sendMsg(sender, plugin.getMsg("toggle." + (changed ? "disabled" : "enabled")));
 					return true;
 				}
 

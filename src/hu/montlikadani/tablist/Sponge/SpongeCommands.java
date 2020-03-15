@@ -90,19 +90,13 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 					if (!enabled.get(uuid)) {
 						enabled.put(uuid, true);
 						plugin.getTManager().cancelTab(pl);
-						src.sendMessage(TextSerializers.FORMATTING_CODE
-								.deserialize("&cThe tablist has been disabled for all players."));
 					} else {
 						enabled.put(uuid, false);
 						plugin.getTManager().loadTab(pl);
-						src.sendMessage(TextSerializers.FORMATTING_CODE
-								.deserialize("&aThe tab has been enabled for &e" + pl.getName() + "&a!"));
 					}
 				} else {
 					enabled.put(uuid, true);
 					plugin.getTManager().cancelTab(pl);
-					src.sendMessage(TextSerializers.FORMATTING_CODE
-							.deserialize("&cThe tablist has been disabled for all players."));
 				}
 			}
 
