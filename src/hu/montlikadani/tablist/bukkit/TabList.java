@@ -27,6 +27,7 @@ import hu.montlikadani.tablist.bukkit.commands.Commands;
 import hu.montlikadani.tablist.bukkit.commands.TabNameCmd;
 import hu.montlikadani.tablist.bukkit.listeners.EssAfkStatus;
 import hu.montlikadani.tablist.bukkit.listeners.Listeners;
+import hu.montlikadani.tablist.bukkit.listeners.SpectatorVisible;
 import hu.montlikadani.tablist.bukkit.utils.Metrics;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
@@ -187,9 +188,15 @@ public class TabList extends JavaPlugin {
 
 	void loadListeners() {
 		HandlerList.unregisterAll(this);
+
 		getServer().getPluginManager().registerEvents(new Listeners(this), this);
+
 		if (isPluginEnabled("Essentials")) {
 			getServer().getPluginManager().registerEvents(new EssAfkStatus(), this);
+		}
+
+		if (isPluginEnabled("ProtocolLib")) {
+			getServer().getPluginManager().registerEvents(new SpectatorVisible(), this);
 		}
 	}
 
