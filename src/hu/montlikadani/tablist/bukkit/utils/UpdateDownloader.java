@@ -53,17 +53,17 @@ public class UpdateDownloader {
 			currentVersion = Double.parseDouble(cVersion[0] + "." + cVersion[1]);
 
 			if (newVersion > currentVersion) {
-				if (sender.equals("player")) {
+				if ("player".equals(sender)) {
 					msg = "&8&m&l--------------------------------------------------\n"
 							+ "&aA new update for TabList is available!&4 Version:&7 " + versionString
 							+ (TabList.getInstance().getC().getBoolean("download-updates") ? ""
 									: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/")
 							+ "\n&8&m&l--------------------------------------------------";
-				} else if (sender.equals("console")) {
+				} else if ("console".equals(sender)) {
 					msg = "New version (" + versionString
 							+ ") is available at https://www.spigotmc.org/resources/46229/";
 				}
-			} else if (sender.equals("console")) {
+			} else if ("console".equals(sender)) {
 				return "You're running the latest version.";
 			}
 

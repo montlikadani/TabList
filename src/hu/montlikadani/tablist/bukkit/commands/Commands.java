@@ -299,7 +299,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 				}
 
 				List<String> fakepls = plugin.getConf().getFakeplayers().getStringList("fakeplayers");
-				if (fakepls == null || fakepls.isEmpty()) {
+				if (fakepls.isEmpty()) {
 					sendMsg(p, plugin.getMsg("fake-player.no-fake-player"));
 					return true;
 				}

@@ -506,7 +506,6 @@ public class TabList extends JavaPlugin {
 		tabHandler.cancelTabForPlayer(p, true);
 
 		g.removeGroup(p);
-		g.removePlayerTeam(p);
 	}
 
 	public String getChangeType() {

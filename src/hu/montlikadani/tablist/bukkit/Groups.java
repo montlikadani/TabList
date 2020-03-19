@@ -32,7 +32,6 @@ public class Groups {
 	private Integer simpleTask = -1;
 
 	private final List<TeamHandler> groupsList = new ArrayList<>();
-	private final List<TeamHandler> playersList = new ArrayList<>();
 
 	public Groups(TabList plugin) {
 		this.plugin = plugin;
@@ -40,10 +39,6 @@ public class Groups {
 
 	public List<TeamHandler> getGroupsList() {
 		return groupsList;
-	}
-
-	public List<TeamHandler> getPlayersList() {
-		return playersList;
 	}
 
 	protected void load() {
@@ -75,7 +70,7 @@ public class Groups {
 		}
 
 		// Sort groups by priority (Not sure this needed)
-		for (int i = 0; i < groupsList.size(); i++) {
+		/*for (int i = 0; i < groupsList.size(); i++) {
 			for (int j = groupsList.size() - 1; j > i; j--) {
 				int p1 = groupsList.get(i).getPriority();
 				int p2 = groupsList.get(j).getPriority();
@@ -86,26 +81,14 @@ public class Groups {
 					groupsList.set(j, t);
 				}
 			}
-		}
-
-		if (plugin.getGS().contains("players")) {
-			for (String pls : plugin.getGS().getConfigurationSection("players").getKeys(false)) {
-				String pPath = "players." + pls + ".";
-				String prefix = plugin.getGS().getString(pPath + "prefix", "");
-				String suffix = plugin.getGS().getString(pPath + "suffix", "");
-
-				int priority = plugin.getGS().getInt(pPath + "sort-priority", 0);
-
-				playersList.add(new TeamHandler(pls, prefix, suffix, priority));
-			}
-		}
+		}*/
 
 		int refInt = plugin.getC().getInt(path + "refresh-interval");
 		startTask(refInt, null);
 	}
 
 	public void loadGroupForPlayer(final Player p) {
-		removeAllFromPlayer(p);
+		removeGroup(p);
 
 		String path = "change-prefix-suffix-in-tablist.";
 		if (!plugin.getC().getBoolean(path + "enable")) {
@@ -117,23 +100,17 @@ public class Groups {
 	}
 
 	private void setGroup(Player p) {
-		final String path = "change-prefix-suffix-in-tablist.";
-
-		if (plugin.getC().getBoolean(path + "use-displayname")) {
-			p.setPlayerListName(p.getDisplayName());
-			return;
-		}
-
-		if (plugin.getGS().contains("players") && plugin.getGS().contains("players." + p.getName())) {
-			setPlayerGroup(p);
-			return;
-		}
-
 		for (final TeamHandler team : groupsList) {
 			String name = team.getTeam();
 
+			if (name.equalsIgnoreCase(p.getName())) {
+				setName(p, team);
+				break;
+			}
+
 			boolean change = false;
-			if (plugin.getC().getBoolean(path + "use-vault-group-names", false) && plugin.isPluginEnabled("Vault")) {
+			if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-vault-group-names", false)
+					&& plugin.isPluginEnabled("Vault")) {
 				for (String gn : plugin.getVaultPerm().getPlayerGroups(p)) {
 					if (gn.equalsIgnoreCase(name)) {
 						change = true;
@@ -172,14 +149,7 @@ public class Groups {
 
 			if (change) {
 				setName(p, team);
-			}
-		}
-	}
-
-	private void setPlayerGroup(final Player p) {
-		for (final TeamHandler th : playersList) {
-			if (th.getTeam().equals(p.getName())) {
-				setName(p, th);
+				break;
 			}
 		}
 	}
@@ -209,7 +179,7 @@ public class Groups {
 			}
 
 			// TODO: Improve sort-priority work ability
-			if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-improved-group-sorting")) {
+			if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-improved-group-sorting", false)) {
 				final String pref = prefix;
 				final String suf = suffix;
 				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
@@ -278,7 +248,10 @@ public class Groups {
 
 		player.setPlayerListName(prefix + player.getName() + suffix);
 		objective.setDisplaySlot(org.bukkit.scoreboard.DisplaySlot.PLAYER_LIST);
-		player.setScoreboard(tboard);
+		for (Player pl : Bukkit.getOnlinePlayers()) {
+			pl.setScoreboard(tboard);
+		}
+		//player.setScoreboard(tboard);
 	}
 
 	private void setPlayerTeam(Player player, String prefix, String suffix, String name) {
@@ -312,50 +285,6 @@ public class Groups {
 	public void removeGroupsFromAll() {
 		Bukkit.getOnlinePlayers().forEach(this::removeGroup);
 		groupsList.clear();
-	}
-
-	public void removePlayerTeamsFromAll() {
-		Bukkit.getOnlinePlayers().forEach(this::removePlayerTeam);
-		playersList.clear();
-	}
-
-	public void removeAllFromPlayer(Player pl) {
-		removeGroup(pl);
-		removePlayerTeam(pl);
-	}
-
-	public void removePlayerTeam(Player p) {
-		if (p == null) {
-			return;
-		}
-
-		for (Iterator<TeamHandler> it = playersList.iterator(); it.hasNext();) {
-			TeamHandler th = it.next();
-			if (th == null) {
-				continue;
-			}
-
-			if (plugin.getChangeType().equals("scoreboard")) {
-				Scoreboard tboard = p.getScoreboard();
-				Team team = tboard.getTeam(th.getFullTeamName());
-				if (team == null) {
-					continue;
-				}
-
-				if (Version.isCurrentLower(Version.v1_9_R1)) {
-					if (team.hasPlayer(p)) {
-						team.removePlayer(p);
-					}
-				} else if (team.hasEntry(p.getName())) {
-					team.removeEntry(p.getName());
-				}
-
-				// If IllegalStateException user is using craftbukkit
-				p.setScoreboard(tboard);
-			} else if (plugin.getChangeType().equals("namer")) {
-				p.setPlayerListName(p.getName());
-			}
-		}
 	}
 
 	public void removeGroup(Player p) {
@@ -403,7 +332,6 @@ public class Groups {
 
 	public void cancelUpdate(boolean removeGroup) {
 		if (removeGroup) {
-			removePlayerTeamsFromAll();
 			removeGroupsFromAll();
 		}
 
@@ -507,13 +435,16 @@ public class Groups {
 
 		if (plugin.getC().getBoolean(path + "hide-group-when-player-vanished") && plugin.isVanished(p, false)) {
 			removeGroup(p);
-			removePlayerTeam(p);
 			return false;
 		}
 
 		if (plugin.getC().getBoolean(path + "hide-group-when-player-afk") && plugin.isAfk(p, false)) {
 			removeGroup(p);
-			removePlayerTeam(p);
+			return false;
+		}
+
+		if (plugin.getC().getBoolean(path + "use-displayname")) {
+			p.setPlayerListName(p.getDisplayName());
 			return false;
 		}
 

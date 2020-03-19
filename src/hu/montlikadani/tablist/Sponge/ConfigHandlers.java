@@ -23,6 +23,15 @@ public class ConfigHandlers {
 		config.createFile();
 	}
 
+	public void reload() {
+		if (!isExists()) {
+			createFile();
+		} else {
+			config.load();
+			config.save();
+		}
+	}
+
 	public boolean isExists() {
 		return config != null && config.getFile().exists();
 	}

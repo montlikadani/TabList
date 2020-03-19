@@ -6,6 +6,7 @@ import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
+import org.spongepowered.api.event.game.state.GameStoppingEvent;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 
@@ -14,7 +15,9 @@ import com.google.inject.Inject;
 import hu.montlikadani.tablist.AnimCreator;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Plugin(id = "tablist", name = "TabList", version = "1.0", description = "An ultimate animated tablist", authors = "montlikadani")
 public class TabList {
@@ -29,7 +32,7 @@ public class TabList {
 	private TabListManager tManager;
 	private Variables variables;
 
-	private final List<AnimCreator> animations = new ArrayList<>();
+	private final Set<AnimCreator> animations = new HashSet<>();
 
 	@Listener
 	public void onPluginPreInit(GamePreInitializationEvent e) {
@@ -51,17 +54,23 @@ public class TabList {
 	}
 
 	@Listener
+	public void onPluginStop(GameStoppingEvent e) {
+		tManager.cancelTabForAll();
+
+		instance = null;
+	}
+
+	@Listener
 	public void onReload(GameReloadEvent event) {
 		reload();
 	}
 
 	private void initConfigs() {
 		config = new ConfigHandlers(this, "spongeConfig.conf");
-		config.createFile();
-		Config.load();
+		config.reload();
 
 		animationsFile = new ConfigHandlers(this, "animations.conf");
-		animationsFile.createFile();
+		animationsFile.reload();
 		loadAnimations();
 	}
 
@@ -75,11 +84,13 @@ public class TabList {
 			tManager = new TabListManager(this);
 		}
 
-		if (!config.getConfig().getFile().exists()) {
+		if (config == null || !config.getConfig().getFile().exists()) {
 			initConfigs();
 		} else {
-			Config.load();
+			config.reload();
 		}
+
+		loadAnimations();
 
 		tManager.cancelTabForAll();
 		Sponge.getServer().getOnlinePlayers().forEach(tManager::loadTab);
@@ -88,10 +99,46 @@ public class TabList {
 	private void loadAnimations() {
 		animations.clear();
 
-		// TODO: Load animations from file
+		if (animationsFile == null || !animationsFile.getConfig().getFile().exists()) {
+			initConfigs();
+		}
+
+		ConfigManager c = animationsFile.getConfig();
+		if (!c.contains("animations")) {
+			return;
+		}
+
+		for (Object o : c.get("animations").getChildrenMap().keySet()) {
+			String name = (String) o;
+			List<String> texts = c.getStringList("animations", name, "texts");
+			if (texts.isEmpty()) {
+				continue;
+			}
+
+			boolean random = c.getBoolean(false, "animations", name, "random");
+			int time = c.getInt(200, "animations", name, "interval");
+			if (time < 0) {
+				animations.add(new AnimCreator(name, new ArrayList<String>(texts), random));
+			} else {
+				animations.add(new AnimCreator(name, new ArrayList<String>(texts), time, random));
+			}
+		}
 	}
 
-	public ConfigHandlers getConfig() {
+	protected String makeAnim(String name) {
+		for (AnimCreator ac : animations) {
+			name = name.replace("%anim:" + ac.getAnimName() + "%",
+					ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
+		}
+
+		return name;
+	}
+
+	public Set<AnimCreator> getAnimations() {
+		return animations;
+	}
+
+	public ConfigHandlers getC() {
 		return config;
 	}
 

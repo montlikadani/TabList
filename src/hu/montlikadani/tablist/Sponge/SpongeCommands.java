@@ -11,10 +11,7 @@ import org.spongepowered.api.command.CommandResult;
 import org.spongepowered.api.command.CommandSource;
 import org.spongepowered.api.command.args.CommandContext;
 import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.source.CommandBlockSource;
-import org.spongepowered.api.command.source.ConsoleSource;
 import org.spongepowered.api.command.spec.CommandSpec;
-import org.spongepowered.api.command.spec.CommandSpec.Builder;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -31,14 +28,14 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 	public SpongeCommands(TabList plugin) {
 		this.plugin = plugin;
 
-		Builder builder = CommandSpec.builder();
-		reloadCmd = builder.description(Text.of("Reloads the plugin"))
-				.arguments(GenericArguments.optional(GenericArguments.none())).executor(this::reloadCommand).build();
+		reloadCmd = CommandSpec.builder().description(Text.of("Reloads the plugin"))
+				.arguments(GenericArguments.optional(GenericArguments.none())).permission("tablist.reload")
+				.executor(this::reloadCommand).build();
 
-		toggleCmd = builder.description(Text.of("Toggle on/off the tablist."))
-				.arguments(GenericArguments.seq(GenericArguments.onlyOne(GenericArguments.player(Text.of("player")))),
-						GenericArguments.optional(GenericArguments.onlyOne(GenericArguments.string(Text.of("all")))))
-				.executor(this::toggleCommand).build();
+		toggleCmd = CommandSpec.builder().description(Text.of("Toggle on/off the tablist."))
+				.arguments(GenericArguments.optional(GenericArguments.player(Text.of("player"))),
+						GenericArguments.optional(GenericArguments.string(Text.of("all"))))
+				.permission("tablist.toggle").executor(this::toggleCommand).build();
 	}
 
 	public void init() {
@@ -46,41 +43,32 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 	}
 
 	private CommandResult reloadCommand(CommandSource src, CommandContext args) {
-		if (!src.hasPermission("tablist.reload")) {
-			return CommandResult.empty();
-		}
-
 		plugin.reload();
-		src.sendMessage(TextSerializers.FORMATTING_CODE.deserialize("&aConfig has been reloaded."));
+		sendMsg(src, "&aConfig has been reloaded.");
 		return CommandResult.success();
 	}
 
 	private CommandResult toggleCommand(CommandSource src, CommandContext args) {
-		if (src instanceof ConsoleSource || src instanceof CommandBlockSource) {
+		if (args.hasAny("player")) {
 			Player p = args.<Player>getOne("player").get();
 			UUID uuid = p.getUniqueId();
 
 			if (enabled.containsKey(uuid)) {
 				if (!enabled.get(uuid)) {
 					enabled.put(uuid, true);
-					src.sendMessage(TextSerializers.FORMATTING_CODE
-							.deserialize("&cThe tab has been disabled for &e" + p.getName() + "&c!"));
+					sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
 				} else {
 					enabled.put(uuid, false);
-					src.sendMessage(TextSerializers.FORMATTING_CODE
-							.deserialize("&aThe tab has been enabled for &e" + p.getName() + "&a!"));
+					sendMsg(src, "&aThe tab has been enabled for &e" + p.getName() + "&a!");
 				}
 			} else {
 				enabled.put(uuid, true);
-				src.sendMessage(TextSerializers.FORMATTING_CODE
-						.deserialize("&cThe tab has been disabled for &e" + p.getName() + "&c!"));
+				sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
 			}
 
 			return CommandResult.success();
-		}
-
-		if (args.hasAny("all")) {
-			if (!src.hasPermission("tablist.toggle.all")) {
+		} else if (args.hasAny("all")) {
+			if (!hasPerm(src, "tablist.toggle.all")) {
 				return CommandResult.empty();
 			}
 
@@ -101,6 +89,23 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 			}
 
 			return CommandResult.success();
+		} else if (src instanceof Player) {
+			Player p = (Player) src;
+			UUID uuid = p.getUniqueId();
+			if (enabled.containsKey(uuid)) {
+				if (!enabled.get(uuid)) {
+					enabled.put(uuid, true);
+					sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
+				} else {
+					enabled.put(uuid, false);
+					sendMsg(src, "&aThe tab has been enabled for &e" + p.getName() + "&a!");
+				}
+			} else {
+				enabled.put(uuid, true);
+				sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
+			}
+
+			return CommandResult.success();
 		}
 
 		return CommandResult.empty();
@@ -109,5 +114,23 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 	@Override
 	public CommandCallable get() {
 		return CommandSpec.builder().child(reloadCmd, "reload", "rl").child(toggleCmd, "toggle").build();
+	}
+
+	private boolean hasPerm(CommandSource src, String perm) {
+		if (!(src instanceof Player)) {
+			return true;
+		}
+
+		return src.hasPermission(perm);
+	}
+
+	private void sendMsg(CommandSource src, String msg) {
+		if (msg != null && !msg.trim().isEmpty()) {
+			sendMsg(src, TextSerializers.FORMATTING_CODE.deserialize(msg));
+		}
+	}
+
+	private void sendMsg(CommandSource src, Text text) {
+		src.sendMessage(text);
 	}
 }
