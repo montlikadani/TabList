@@ -21,16 +21,8 @@ public class Variables {
 	}
 
 	public Text replaceVariables(Player p, String str) {
-		ConfigManager conf = plugin.getConfig().getConfig();
+		ConfigManager conf = plugin.getC().getConfig();
 		java.util.Collection<? extends Player> oPls = Sponge.getServer().getOnlinePlayers();
-
-		if (conf.contains("custom-variables")) {
-			for (String custom : conf.getStringList("custom-variables")) {
-				if (custom != null && str.contains(custom)) {
-					str = str.replace(custom, conf.getString("custom-variables", custom));
-				}
-			}
-		}
 
 		int staffs = 0;
 		if (str.contains("%staff-online%")) {
@@ -51,16 +43,17 @@ public class Variables {
 		String dt = null;
 		if (str.contains("%server-time%") || str.contains("%date%")) {
 			Object path = new Object[] { "placeholder-format", "time" };
-			DateTimeFormatter form = conf.isStringExistsAndNotEmpty(path, "time-format", "format")
-					? DateTimeFormatter.ofPattern(Config.getTimeFormat())
+			DateTimeFormatter form = conf.isExistsAndNotEmpty(path, "time-format", "format")
+					? DateTimeFormatter.ofPattern(conf.getString(path, "time-format", "format"))
 					: null;
 
-			DateTimeFormatter form2 = conf.isStringExistsAndNotEmpty(path, "date-format", "format")
-					? DateTimeFormatter.ofPattern(Config.getDateFormat())
+			DateTimeFormatter form2 = conf.isExistsAndNotEmpty(path, "date-format", "format")
+					? DateTimeFormatter.ofPattern(conf.getString(path, "date-format", "format"))
 					: null;
 
-			TimeZone zone = Config.isUsingSystemTimeZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
-					: TimeZone.getTimeZone(Config.getTimeZone());
+			TimeZone zone = conf.getBoolean(path, "time-zone", "use-system-zone")
+					? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
+					: TimeZone.getTimeZone(conf.getString(path, "time-zone", "time-zone"));
 			LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
 
 			Calendar cal = Calendar.getInstance();
