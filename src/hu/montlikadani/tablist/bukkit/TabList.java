@@ -195,6 +195,7 @@ public class TabList extends JavaPlugin {
 
 	public void reload() {
 		tabHandler.unregisterTab();
+		g.cancelUpdate(true);
 		loadListeners();
 		conf.loadFiles();
 		g.load();
@@ -221,7 +222,6 @@ public class TabList extends JavaPlugin {
 	}
 
 	private void loadAnimations() {
-		conf.createAnimFile();
 		animations.clear();
 
 		FileConfiguration c = conf.getAnimCreator();

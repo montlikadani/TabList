@@ -122,12 +122,6 @@ change-prefix-suffix-in-tablist:
   # and if correct, then it will grant the group to player.
   use-vault-group-names: true
 
-  # If this is enabled, it can worse the server performance by creating new class instances for
-  # queue priority to work. This is a test option and is not completely ready, so server freezes
-  # or possible shutdowns may occur. To prevent this, you should increase the update interval
-  # to make updates less frequently, thus preventing the plugin from slowing down.
-  use-improved-group-sorting: false
-
   # Hide player group in tablist when the player is vanished?
   # Required Essentials plugin!
   hide-group-when-player-vanished: false
@@ -183,7 +177,7 @@ tablist-object-type:
 
     # It only accepts number-ending placeholders, such as player levels (doubled numbers "2.1" do NOT work).
     custom:
-      value: "%player_level%"
+      value: "%level%"
 
 # Changing player tablist name with unlimited characters.
 tabname:

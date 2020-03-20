@@ -9,10 +9,8 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -42,10 +40,7 @@ public class Groups {
 	}
 
 	protected void load() {
-		cancelUpdate(true);
-
-		String path = "change-prefix-suffix-in-tablist.";
-		if (!plugin.getC().getBoolean(path + "enable")) {
+		if (!plugin.getC().getBoolean("change-prefix-suffix-in-tablist.enable")) {
 			return;
 		}
 
@@ -57,15 +52,19 @@ public class Groups {
 					continue;
 				}
 
-				String prefPath = "groups." + g + ".prefix";
-				String sufPath = "groups." + g + ".suffix";
+				String path = "groups." + g + ".";
 
-				String prefix = plugin.getGS().getString(prefPath, "");
-				String suffix = plugin.getGS().getString(sufPath, "");
+				String prefix = plugin.getGS().getString(path + "prefix", "");
+				String suffix = plugin.getGS().getString(path + "suffix", "");
 
-				int priority = plugin.getGS().getInt("groups." + g + ".sort-priority", 0);
+				String perm = plugin.getGS().getString(path + "permission", "");
+				if (perm.trim().isEmpty()) {
+					perm = "tablist." + g;
+				}
 
-				groupsList.add(new TeamHandler(g, prefix, suffix, priority));
+				int priority = plugin.getGS().getInt(path + "sort-priority", 0);
+
+				groupsList.add(new TeamHandler(g, prefix, suffix, perm, priority));
 			}
 		}
 
@@ -83,20 +82,15 @@ public class Groups {
 			}
 		}*/
 
-		int refInt = plugin.getC().getInt(path + "refresh-interval");
-		startTask(refInt, null);
+		startTask(null);
 	}
 
 	public void loadGroupForPlayer(final Player p) {
 		removeGroup(p);
 
-		String path = "change-prefix-suffix-in-tablist.";
-		if (!plugin.getC().getBoolean(path + "enable")) {
-			return;
+		if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.enable")) {
+			startTask(p);
 		}
-
-		int refInt = plugin.getC().getInt(path + "refresh-interval");
-		startTask(refInt, p);
 	}
 
 	private void setGroup(Player p) {
@@ -118,33 +112,16 @@ public class Groups {
 					}
 				}
 			} else if (plugin.isPluginEnabled("PermissionsEx")) {
-				String gPerm = plugin.getGS().getString("groups." + name + ".permission", "");
-				if (gPerm.trim().isEmpty()) {
-					gPerm = "tablist." + name;
-				}
-
-				if (plugin.getGS().getBoolean("groups." + name + ".bypass-operator", false)) {
-					if (p.hasPermission(new org.bukkit.permissions.Permission(gPerm, PermissionDefault.FALSE))) {
-						change = true;
-					}
-				} else if (PermissionsEx.getPermissionManager().has(p, gPerm)) {
+				if (PermissionsEx.getPermissionManager().has(p, team.getPermission())) {
 					change = true;
 				}
-			} else {
-				String gPerm = plugin.getGS().getString("groups." + name + ".permission", "");
-				if (gPerm.trim().isEmpty()) {
-					gPerm = "tablist." + name;
-				}
+			} else if (p.hasPermission(team.getPermission())) {
+				change = true;
 
-				// TODO Fix the operator player if has not permission then gets the default group
+				// TODO Fix the operator player if has not permission, it will gets another
+				// groups instead of 1
 				// Solution: You need to add "-" mark before the permission or writing to false
-				if (plugin.getGS().getBoolean("groups." + name + ".bypass-operator", false)) {
-					if (p.hasPermission(new org.bukkit.permissions.Permission(gPerm, PermissionDefault.FALSE))) {
-						change = true;
-					}
-				} else if (p.hasPermission(gPerm)) {
-					change = true;
-				}
+				// to negate
 			}
 
 			if (change) {
@@ -178,15 +155,7 @@ public class Groups {
 				}
 			}
 
-			// TODO: Improve sort-priority work ability
-			if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-improved-group-sorting", false)) {
-				final String pref = prefix;
-				final String suf = suffix;
-				Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
-						() -> setFixedPlayerTeam(p, pref, suf, team.getFullTeamName()));
-			} else {
-				setPlayerTeam(p, prefix, suffix, team.getFullTeamName());
-			}
+			setPlayerTeam(p, prefix, suffix, team.getFullTeamName());
 		} else if (plugin.getChangeType().equals("namer")) {
 			String result = "";
 
@@ -221,37 +190,6 @@ public class Groups {
 				p.setPlayerListName(result);
 			}
 		}
-	}
-
-	private void setFixedPlayerTeam(Player player, String prefix, String suffix, String name) {
-		Scoreboard tboard = Bukkit.getScoreboardManager().getNewScoreboard();
-		Team team = tboard.getTeam(name);
-		if (team == null) {
-			team = tboard.registerNewTeam(name);
-		}
-
-		Objective objective = tboard.getObjective("tabl");
-		if (objective == null) {
-			objective = tboard.registerNewObjective("tabl", "dummy", "Tab");
-		}
-
-		prefix = Util.splitStringByVersion(prefix);
-		suffix = Util.splitStringByVersion(suffix);
-
-		if (Version.isCurrentLower(Version.v1_9_R1)) {
-			if (!team.hasPlayer(player)) {
-				team.addPlayer(player);
-			}
-		} else if (!team.hasEntry(player.getName())) {
-			team.addEntry(player.getName());
-		}
-
-		player.setPlayerListName(prefix + player.getName() + suffix);
-		objective.setDisplaySlot(org.bukkit.scoreboard.DisplaySlot.PLAYER_LIST);
-		for (Player pl : Bukkit.getOnlinePlayers()) {
-			pl.setScoreboard(tboard);
-		}
-		//player.setScoreboard(tboard);
 	}
 
 	private void setPlayerTeam(Player player, String prefix, String suffix, String name) {
@@ -292,6 +230,11 @@ public class Groups {
 			return;
 		}
 
+		if (plugin.getChangeType().equals("namer")) {
+			p.setPlayerListName(p.getName());
+			return;
+		}
+
 		for (Iterator<TeamHandler> it = groupsList.iterator(); it.hasNext();) {
 			TeamHandler th = it.next();
 			if (th == null) {
@@ -320,8 +263,6 @@ public class Groups {
 				 */
 
 				p.setScoreboard(tboard);
-			} else if (plugin.getChangeType().equals("namer")) {
-				p.setPlayerListName(p.getName());
 			}
 		}
 	}
@@ -331,10 +272,6 @@ public class Groups {
 	}
 
 	public void cancelUpdate(boolean removeGroup) {
-		if (removeGroup) {
-			removeGroupsFromAll();
-		}
-
 		if (simpleTask != -1) {
 			Bukkit.getServer().getScheduler().cancelTask(simpleTask);
 			simpleTask = -1;
@@ -343,6 +280,10 @@ public class Groups {
 		if (animationTask != null) {
 			animationTask.cancel();
 			animationTask = null;
+		}
+
+		if (removeGroup) {
+			removeGroupsFromAll();
 		}
 	}
 
@@ -362,7 +303,9 @@ public class Groups {
 		return colour == 0 ? ChatColor.RESET : ChatColor.getByChar(colour);
 	}
 
-	private void startTask(final int refreshInt, Player p) {
+	private void startTask(Player p) {
+		final int refreshInt = plugin.getC().getInt("change-prefix-suffix-in-tablist.refresh-interval");
+
 		if (refreshInt < 1) {
 			if (p != null) {
 				if (isPlayerCanSeeGroup(p)) {

@@ -1,47 +1,28 @@
 package hu.montlikadani.tablist.bukkit;
 
-import org.bukkit.entity.Player;
-
 public class TeamHandler {
 
 	private String team;
 	private String prefix;
 	private String suffix;
+	private String permission;
+
 	private int priority;
-	@Deprecated private Player player;
 
 	public TeamHandler(String team, String prefix, String suffix) {
-		this(team, prefix, suffix, 0);
+		this(team, prefix, suffix, "tablist." + team);
 	}
 
-	@Deprecated
-	public TeamHandler(String team, String prefix, String suffix, Player player) {
-		this(team, prefix, suffix, 0, player);
+	public TeamHandler(String team, String prefix, String suffix, String permission) {
+		this(team, prefix, suffix, permission, 0);
 	}
 
-	public TeamHandler(String team, String prefix, String suffix, int priority) {
+	public TeamHandler(String team, String prefix, String suffix, String permission, int priority) {
 		this.team = team;
 		this.prefix = prefix;
 		this.suffix = suffix;
+		this.permission = permission;
 		this.priority = priority;
-	}
-
-	@Deprecated
-	public TeamHandler(String team, String prefix, String suffix, int priority, Player player) {
-		this.team = team;
-		this.prefix = prefix;
-		this.suffix = suffix;
-		this.priority = priority;
-		this.player = player;
-	}
-
-	/**
-	 * @deprecated Not used anymore
-	 * @param player Player
-	 */
-	@Deprecated
-	public void setPlayer(Player player) {
-		this.player = player;
 	}
 
 	public void setTeam(String team) {
@@ -54,6 +35,10 @@ public class TeamHandler {
 
 	public void setSuffix(String suffix) {
 		this.suffix = suffix;
+	}
+
+	public void setPermission(String permission) {
+		this.permission = permission;
 	}
 
 	public void setPriority(int priority) {
@@ -76,16 +61,11 @@ public class TeamHandler {
 		return suffix;
 	}
 
-	public int getPriority() {
-		return priority;
+	public String getPermission() {
+		return permission;
 	}
 
-	/**
-	 * @deprecated Not used anymore
-	 * @return {@link Player}
-	 */
-	@Deprecated
-	public Player getPlayer() {
-		return player;
+	public int getPriority() {
+		return priority;
 	}
 }
