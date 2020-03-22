@@ -196,11 +196,13 @@ public class TabList extends JavaPlugin {
 	public void reload() {
 		tabHandler.unregisterTab();
 		g.cancelUpdate(true);
+
 		loadListeners();
 		conf.loadFiles();
-		g.load();
 		loadAnimations();
 		loadValues();
+
+		g.load();
 
 		getServer().getOnlinePlayers().forEach(pl -> updateAll(pl, true));
 	}
@@ -392,15 +394,12 @@ public class TabList extends JavaPlugin {
 
 			switch (getC().getString("tablist-object-type.type").toLowerCase()) {
 			case "ping":
+			case "custom":
 				objects.unregisterHealthObjective();
 				objects.startTask();
 				break;
 			case "health":
 				objects.registerHealthTab(p);
-				break;
-			case "custom":
-				objects.unregisterHealthObjective();
-				objects.startTask();
 				break;
 			default:
 				break;

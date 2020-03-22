@@ -1,10 +1,18 @@
 package hu.montlikadani.tablist.bukkit.utils;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+
+import com.google.common.collect.ImmutableList;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
@@ -54,6 +62,33 @@ public class Util {
 				sender.sendMessage(s);
 			}
 		}
+	}
+
+	/**
+	 * Gets all classes in the given package name.
+	 * @param packageName where to find the classes
+	 * @return All classes in list
+	 */
+	public static ImmutableList<Class<?>> getClasses(String packageName) {
+		List<Class<?>> classes = new ArrayList<>();
+
+		try {
+			JarFile file = new JarFile(new File(TabList.getInstance().getFolder().getParentFile().getPath(),
+					TabList.getInstance().getDescription().getName() + ".jar"));
+			for (Enumeration<JarEntry> entry = file.entries(); entry.hasMoreElements();) {
+				JarEntry jarEntry = entry.nextElement();
+				String name = jarEntry.getName().replace("/", ".");
+				if (name.startsWith(packageName) && name.endsWith(".class")) {
+					classes.add(Class.forName(name.substring(0, name.length() - 6)));
+				}
+			}
+
+			file.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return ImmutableList.<Class<?>>builder().addAll(classes).build();
 	}
 
 	public static String stripColor(String str) {
