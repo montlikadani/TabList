@@ -50,7 +50,7 @@ public class TeamHandler {
 	}
 
 	public String getFullTeamName() {
-		return priority + team;
+		return (1000 + priority) + team;
 	}
 
 	public String getPrefix() {

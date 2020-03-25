@@ -61,9 +61,8 @@ public class setpriority implements ICommand {
 
 			if (t != null) {
 				t.unregister();
+				target.setScoreboard(b);
 			}
-
-			target.setScoreboard(b);
 
 			t = b.registerNewTeam(args[2]);
 			target.setScoreboard(b);

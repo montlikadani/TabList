@@ -495,7 +495,7 @@ public class TabList extends JavaPlugin {
 			objects.unregisterCustomValue();
 		}
 
-		tabHandler.cancelTabForPlayer(p, true);
+		tabHandler.unregisterTab(p);
 
 		g.removeGroup(p);
 	}

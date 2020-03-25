@@ -46,7 +46,7 @@ public class Listeners implements Listener {
 	public void onWorldChange(PlayerChangedWorldEvent eve) {
 		Player pla = eve.getPlayer();
 
-		plugin.getTabHandler().cancelTabForPlayer(pla);
+		plugin.getTabHandler().unregisterTab(pla);
 		plugin.updateAll(pla);
 	}
 
