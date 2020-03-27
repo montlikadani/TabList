@@ -68,20 +68,6 @@ public class Groups {
 			}
 		}
 
-		// Sort groups by priority (Not sure this needed)
-		/*for (int i = 0; i < groupsList.size(); i++) {
-			for (int j = groupsList.size() - 1; j > i; j--) {
-				int p1 = groupsList.get(i).getPriority();
-				int p2 = groupsList.get(j).getPriority();
-
-				if (p1 > p2) {
-					TeamHandler t = groupsList.get(i);
-					groupsList.set(i, groupsList.get(j));
-					groupsList.set(j, t);
-				}
-			}
-		}*/
-
 		startTask(null);
 	}
 

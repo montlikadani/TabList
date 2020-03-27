@@ -86,6 +86,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
+		boolean unknown = false;
 		for (Entry<String, String> a : arg.entrySet()) {
 			if (args[0].equalsIgnoreCase(a.getKey())) {
 				try {
@@ -100,8 +101,15 @@ public class Commands implements CommandExecutor, TabCompleter {
 					e.printStackTrace();
 				}
 
+				unknown = false;
 				break;
 			}
+
+			unknown = true;
+		}
+
+		if (unknown) {
+			sendMsg(sender, plugin.getMsg("unknown-sub-command", "%subcmd%", args[0]));
 		}
 
 		return true;

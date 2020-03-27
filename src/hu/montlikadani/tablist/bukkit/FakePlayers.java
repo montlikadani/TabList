@@ -29,19 +29,8 @@ public class FakePlayers {
 
 	public void createFakeplayer(Player p) {
 		try {
-			Class<?> server = null;
-			try {
-				server = ReflectionUtils.getNMSClass("MinecraftServer");
-			} catch (ClassNotFoundException c) {
-				server = ReflectionUtils.getNMSClass("DedicatedServer");
-			}
-			Object serverIns = null;
-			try {
-				serverIns = server.getMethod("getServer")
-						.invoke(ReflectionUtils.getCraftClass("CraftServer").cast(Bukkit.getServer()));
-			} catch (Exception x) {
-				serverIns = server.getMethod("getServer").invoke(server);
-			}
+			Class<?> server = ReflectionUtils.Classes.getMinecraftServer();
+			Object serverIns = ReflectionUtils.Classes.getServer(server);
 
 			profile = new GameProfile(UUID.randomUUID(), name);
 
@@ -67,15 +56,7 @@ public class FakePlayers {
 
 			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(profile.getName()));
 
-			if (Version.isCurrentEqual(Version.v1_8_R1)) {
-				enumPlayerInfoAction = ReflectionUtils.getNMSClass("EnumPlayerInfoAction");
-			} else if (Version.isCurrentEqualOrHigher(Version.v1_11_R1)) {
-				enumPlayerInfoAction = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo").getDeclaredClasses()[1];
-			}
-
-			if (enumPlayerInfoAction == null) {
-				enumPlayerInfoAction = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo").getDeclaredClasses()[2];
-			}
+			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
 
 			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakePl);

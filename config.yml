@@ -23,6 +23,13 @@ ignore-vanished-players-in-online-players: false
 # Requires Essentials plugin!
 hide-player-from-tab-when-afk: false
 
+# Hides all players from the player list (tab).
+# This removes all players from the tab list, but the player that has the
+# group set is retained as it is not changed during removal, so your group
+# will be restored if this option is disabled.
+# The "per-world-player-list" will not works if this enabled.
+hide-players-from-tablist: false
+
 # Placeholder formatting
 placeholder-format:
   # When the player changes the afk status, changes the tablist name format.
