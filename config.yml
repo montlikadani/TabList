@@ -235,4 +235,4 @@ plugin-enable: '&6&l[&5&lTab&c&lList&6&l]&7&l >&a The plugin successfully enable
 plugin-disable: '&6&l[&5&lTab&c&lList&6&l]&7&l >&c The plugin successfully disabled!'
 
 # DO NOT CHANGE THIS!
-config-version: 15
+config-version: 16

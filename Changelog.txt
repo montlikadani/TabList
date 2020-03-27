@@ -1,4 +1,26 @@
-﻿# v5.1
+﻿# v5.2
+- Fixed some placeholders are not display the correct value.
+- Setting prefix/suffix commands should works now.
+- Now supports Waterfall as server software.
+- Changing worlds now the groups will not be updated for player. The refresh task will update it.
+- Fixed some issues with groups on bungee networks.
+- Fixed issue when sometimes the tablist is not presented in worlds, because of Multiverse-Core.
+- Fixed issue when the user toggled tablist for all players and sent a lot of messages.
+- Fixed flickering issue for groups (bungee)
+- Ignored future errors when using max players placeholder (bungee)
+- Fixed issue when a player have more than 1 vault group or inheritance, will not show the given tablist group to him.
+- Some improvements for updating tablist objects.
+- Added sub-command argument to toggle for all online players and for specific player. (bungee)
+- Reworked the tablist & groups handling to prevent more issues. (bungee)
+- Added option to hide every players from tablist
+- Now cancels the tab refreshing task, to reduce performance on toggle
+- Removed bypass-operator option from groups, it was inappropriate for users and confused. (This is the reason why peoples don't read comments)
+- Fixed issue when the groups are not removed from tablist when reloaded.
+- Removed players section from groups, due to confusion. The player names are still usable in groups.
+- Finally the group sort now works with a minor change.
+- Added release downloader to download plugin updates.
+
+# v5.1
 Added:
   Added option to use the system default time zone for time placeholders.
 Fixes:

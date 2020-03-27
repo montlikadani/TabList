@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.tablist.bukkit.TabList
-version: 5.1
+version: 5.2
 author: montlikadani
 description: An ultimate animated tablist.
 softdepend:
@@ -71,16 +71,16 @@ permissions:
     description: Gives access to use /tname reset <player> command.
     default: false
   tablist.fakeplayers:
-    description: Gives access to use /tl fp command.
+    description: Gives access to use fakeplayers command.
     default: false
   tablist.fakeplayers.add:
-    description: Gives access to use /tl fp add command.
+    description: Gives access to use fakeplayers add command.
     default: false
   tablist.fakeplayers.remove:
-    description: Gives access to use /tl fp remove command.
+    description: Gives access to use fakeplayers remove command.
     default: false
   tablist.fakeplayers.list:
-    description: Gives access to use /tl fp list command.
+    description: Gives access to use fakeplayers list command.
     default: false
   tablist.setprefix:
     description: Gives access to use /tl setprefix command.
