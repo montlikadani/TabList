@@ -6,7 +6,7 @@
 	<artifactId>tablist</artifactId>
 	<packaging>jar</packaging>
 	<name>tablist</name>
-	<version>5.2</version>
+	<version>5.2.1</version>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -108,6 +108,36 @@
 			<artifactId>EssentialsX</artifactId>
 			<version>2.17.2</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>1_8_R2Provider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>1_8_R1Provider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>NMSProvider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>UpdatedMetaProvider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>ReflectionProvider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>LegacyProvider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>FlattenedProvider</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>me.clip</groupId>

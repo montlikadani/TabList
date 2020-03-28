@@ -1,4 +1,9 @@
-﻿# v5.2
+﻿# v5.2.1
+- Fixed critical issue when the players can't join through bungee
+- Now if the player have prefix and nickname set and currently is afk, then it will remains the set of format.
+- Fixed plugin not starting issue when someone renamed the file
+
+# v5.2
 - Fixed some placeholders are not display the correct value.
 - Setting prefix/suffix commands should works now.
 - Now supports Waterfall as server software.
