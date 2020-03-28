@@ -73,11 +73,26 @@ public class Util {
 		List<Class<?>> classes = new ArrayList<>();
 
 		try {
-			JarFile file = new JarFile(new File(TabList.getInstance().getFolder().getParentFile().getPath(),
-					TabList.getInstance().getDescription().getName() + ".jar"));
+			String pName = TabList.getInstance().getDescription().getName();
+
+			final String path = TabList.getInstance().getFolder().getParentFile().getPath();
+
+			File jar = new File(path, pName + ".jar");
+			if (!jar.exists()) {
+				for (File files : new File(path).listFiles()) {
+					String n = files.getName();
+					if (n.contains("TabList") && n.endsWith(".jar")) {
+						jar = new File(path, n);
+						break;
+					}
+				}
+			}
+
+			JarFile file = new JarFile(jar);
 			for (Enumeration<JarEntry> entry = file.entries(); entry.hasMoreElements();) {
 				JarEntry jarEntry = entry.nextElement();
 				String name = jarEntry.getName().replace("/", ".");
+
 				if (name.startsWith(packageName) && name.endsWith(".class")) {
 					classes.add(Class.forName(name.substring(0, name.length() - 6)));
 				}
