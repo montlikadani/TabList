@@ -81,7 +81,6 @@ public class Groups implements ITask {
 			return;
 		}
 
-		items.setUuid(pl.getUniqueId());
 		sendPacket(pl, name);
 	}
 
@@ -105,6 +104,7 @@ public class Groups implements ITask {
 			listItem.setAction(Action.UPDATE_DISPLAY_NAME);
 		}
 
+		items.setUuid(p.getUniqueId());
 		items.setDisplayName(
 				ComponentSerializer.toString(TextComponent.fromLegacyText(Misc.replaceVariables(name, p))));
 

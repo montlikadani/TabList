@@ -145,11 +145,20 @@ public class Groups {
 		} else if (plugin.getChangeType().equals("namer")) {
 			String result = "";
 
+			String userName = p.getName();
+			if (plugin.isPluginEnabled("Essentials")
+					&& plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
+				User user = JavaPlugin.getPlugin(Essentials.class).getUser(p);
+				if (user.getNickname() != null) {
+					userName = user.getNickname();
+				}
+			}
+
 			if (plugin.getC().getBoolean(phPath + "enable")) {
 				if (plugin.isAfk(p, false)) {
-					result = colorMsg(rightLeft
-							? prefix + p.getName() + suffix + plugin.getC().getString(phPath + "format-yes", "")
-							: plugin.getC().getString(phPath + "format-yes", "") + prefix + p.getName() + suffix);
+					result = colorMsg(
+							rightLeft ? prefix + userName + suffix + plugin.getC().getString(phPath + "format-yes", "")
+									: plugin.getC().getString(phPath + "format-yes", "") + prefix + userName + suffix);
 				} else {
 					prefix = colorMsg(rightLeft ? prefix + plugin.getC().getString(phPath + "format-no", "")
 							: plugin.getC().getString(phPath + "format-no", "") + prefix);
@@ -159,17 +168,7 @@ public class Groups {
 			}
 
 			if (result.isEmpty()) {
-				if (plugin.isPluginEnabled("Essentials")) {
-					User user = JavaPlugin.getPlugin(Essentials.class).getUser(p);
-					if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname")
-							&& user.getNickname() != null) {
-						result = prefix + user.getNickname() + suffix;
-					} else {
-						result = prefix + p.getName() + suffix;
-					}
-				} else {
-					result = prefix + p.getName() + suffix;
-				}
+				result = prefix + userName + suffix;
 			}
 
 			if (!result.isEmpty()) {
