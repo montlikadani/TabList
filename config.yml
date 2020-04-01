@@ -130,6 +130,11 @@ change-prefix-suffix-in-tablist:
   # to the permissions group.
   use-vault-group-names: true
 
+  # This for lazy users is designed to automatically add groups to the list of tablists every time
+  # there is a reload, so the user has less to do.
+  # If a plugin does not support Vault, it will not be added.
+  sync-plugins-groups-with-tablist: true
+
   # Hide player group in tablist when the player is vanished?
   # Required Essentials plugin!
   hide-group-when-player-vanished: false

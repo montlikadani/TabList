@@ -5,6 +5,7 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,6 +46,44 @@ public class Groups {
 		}
 
 		plugin.getConf().createGroupsFile();
+
+		// Automatically add existing groups to the list for "lazy peoples"
+		if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.sync-plugins-groups-with-tablist", false)
+				&& plugin.isPluginEnabled("Vault")) {
+			boolean have = false;
+
+			me: for (String s : plugin.getVaultPerm().getGroups()) {
+				for (String g : plugin.getGS().getConfigurationSection("groups").getKeys(false)) {
+					if (s.equalsIgnoreCase(g)) {
+						continue me;
+					}
+				}
+
+				String path = "groups." + s + ".";
+
+				// This again for lazy peoples
+				ChatColor[] colors = ChatColor.values();
+				ChatColor c = colors[ThreadLocalRandom.current().nextInt(colors.length)];
+
+				String cResult = "&" + c.getChar();
+				plugin.getGS().set(path + "prefix", cResult);
+
+				c = colors[ThreadLocalRandom.current().nextInt(colors.length)];
+
+				cResult = "&" + c.getChar();
+				plugin.getGS().set(path + "suffix", cResult);
+
+				have = true;
+			}
+
+			if (have) {
+				try {
+					plugin.getGS().save(plugin.getConf().getGroupsFile());
+				} catch (java.io.IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 
 		if (plugin.getGS().contains("groups")) {
 			for (String g : plugin.getGS().getConfigurationSection("groups").getKeys(false)) {

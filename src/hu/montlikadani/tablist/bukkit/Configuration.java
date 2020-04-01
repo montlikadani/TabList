@@ -17,7 +17,6 @@ public class Configuration {
 	private File config_file, messages_file, animation_file, tablist_file, groups_file, names_file, fakeplayers_file;
 
 	private int cver = 16;
-	private int gver = 5;
 
 	public Configuration(TabList plugin) {
 		this.plugin = plugin;
@@ -78,11 +77,6 @@ public class Configuration {
 
 				groups = createFile(groups_file, "groups.yml", false);
 				groups.load(groups_file);
-
-				if (!groups.isSet("config-version") || !groups.get("config-version").equals(gver)) {
-					logConsole(Level.WARNING, "Found outdated configuration (groups.yml)! (Your version: "
-							+ groups.getInt("config-version") + " | Newest version: " + gver + ")");
-				}
 			}
 
 			if (config.getBoolean("enable-fake-players")) {

@@ -98,7 +98,7 @@ public class ReflectionUtils {
 		try {
 			playerConnection.getClass().getDeclaredMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection,
 					packet);
-		} catch (IllegalAccessException il) {
+		} catch (Exception e) {
 			if (a < 8) {
 				Util.logConsole(Level.WARNING,
 						"You're using a plugin which overwrites sending packets. Remove that plugin.");

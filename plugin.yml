@@ -96,7 +96,6 @@ permissions:
     default: false
   tablist.onlinestaff:
     description: Online staffs permission.
-    default: op
   tablist.help:
     description: Help commands for TabList.
     default: false
