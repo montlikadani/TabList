@@ -25,10 +25,11 @@ public class UpdateDownloader {
 		}
 
 		String msg = "";
+		String versionString = "";
 		String lineWithVersion = "";
 
-		double newVersion = 0d;
-		double currentVersion = 0d;
+		int newVersion = 0;
+		int currentVersion = 0;
 
 		try {
 			URL githubUrl = new URL("https://raw.githubusercontent.com/montlikadani/TabList/master/plugin.yml");
@@ -42,15 +43,12 @@ public class UpdateDownloader {
 				}
 			}
 
-			String[] nVersion;
-			String[] cVersion;
+			versionString = lineWithVersion.split(": ")[1];
+			String nVersion = versionString.replaceAll("[^0-9]", "");
+			newVersion = Integer.parseInt(nVersion);
 
-			String versionString = lineWithVersion.split(": ")[1];
-			nVersion = versionString.replaceAll("[^0-9.]", "").split("\\.");
-			newVersion = Double.parseDouble(nVersion[0] + "." + nVersion[1]);
-
-			cVersion = TabList.getInstance().getDescription().getVersion().replaceAll("[^0-9.]", "").split("\\.");
-			currentVersion = Double.parseDouble(cVersion[0] + "." + cVersion[1]);
+			String cVersion = TabList.getInstance().getDescription().getVersion().replaceAll("[^0-9]", "");
+			currentVersion = Integer.parseInt(cVersion);
 
 			if (newVersion > currentVersion) {
 				if ("player".equals(sender)) {
@@ -77,7 +75,7 @@ public class UpdateDownloader {
 
 			Util.logConsole("Downloading new version of TabList...");
 
-			final String name = "TabList-" + newVersion;
+			final String name = "TabList-" + versionString;
 			final URL download = new URL(
 					"https://github.com/montlikadani/TabList/releases/latest/download/TabList.jar");
 
@@ -94,6 +92,12 @@ public class UpdateDownloader {
 						}
 
 						File jar = new File(updatesFolder + per + name + ".jar");
+						if (jar.exists()) {
+							in.close();
+							cancel();
+							return;
+						}
+
 						Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
 						in.close();

@@ -106,6 +106,8 @@ public class TabManager implements ITask {
 
 		Configuration con = plugin.getConf();
 
+		hList.clear();
+
 		hList.addAll(con.getStringList(path + "per-server." + server + ".per-player." + name + ".header"));
 		if (hList.isEmpty())
 			hList.addAll(con.getStringList(path + "per-server." + server + ".header"));
@@ -116,9 +118,7 @@ public class TabManager implements ITask {
 		if (hList.isEmpty())
 			hList.addAll(con.getStringList(path + "header"));
 
-		if (hList.isEmpty()) {
-			return null;
-		}
+		fList.clear();
 
 		fList.addAll(con.getStringList(path + "per-server." + server + ".per-player." + name + ".footer"));
 		if (fList.isEmpty())
@@ -130,7 +130,7 @@ public class TabManager implements ITask {
 		if (fList.isEmpty())
 			fList.addAll(con.getStringList(path + "footer"));
 
-		if (fList.isEmpty()) {
+		if (hList.isEmpty() && fList.isEmpty()) {
 			return null;
 		}
 

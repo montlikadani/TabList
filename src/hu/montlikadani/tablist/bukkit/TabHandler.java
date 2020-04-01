@@ -265,7 +265,7 @@ public class TabHandler {
 		setFooter(footer);
 
 		if (updateInterval < 1) {
-			cancelTabForPlayer(p);
+			cancelTask(p);
 
 			if (c.getStringList("disabled-worlds").contains(world)) {
 				return;
@@ -283,7 +283,7 @@ public class TabHandler {
 
 		task.put(uuid, createTask(() -> {
 			if (Bukkit.getOnlinePlayers().isEmpty()) {
-				cancelTabForPlayer(p);
+				cancelTask(p);
 				return;
 			}
 
@@ -448,7 +448,7 @@ public class TabHandler {
 		UUID uuid = p.getUniqueId();
 
 		if (updateInterval < 1) {
-			cancelTabForPlayer(p);
+			cancelTask(p);
 
 			if (c.getStringList("tablist.disabled-worlds").contains(world)) {
 				return;
@@ -469,7 +469,7 @@ public class TabHandler {
 
 			task.put(uuid, Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
 				if (Bukkit.getOnlinePlayers().isEmpty()) {
-					cancelTabForPlayer(p);
+					cancelTask(p);
 					return;
 				}
 
@@ -497,7 +497,7 @@ public class TabHandler {
 				@Override
 				public void run() {
 					if (Bukkit.getOnlinePlayers().isEmpty()) {
-						cancelTabForPlayer(p);
+						cancelTask(p);
 						return;
 					}
 
@@ -591,7 +591,7 @@ public class TabHandler {
 			return;
 		}
 
-		if (otherWorlds == null || otherWorlds.isEmpty()) {
+		if (otherWorlds.isEmpty()) {
 			for (Player player : p.getWorld().getPlayers()) {
 				TabTitle.sendTabTitle(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
 			}
@@ -703,20 +703,26 @@ public class TabHandler {
 		}
 	}
 
+	public void unregisterTab(Player p) {
+		cancelTask(p);
+
+		TabTitle.sendTabTitle(p, "", "");
+	}
+
 	public void unregisterTab() {
 		for (Player ps : Bukkit.getOnlinePlayers()) {
-			cancelTabForPlayer(ps);
+			cancelTask(ps);
 			TabTitle.sendTabTitle(ps, "", "");
 		}
 
 		task.clear();
 	}
 
-	public void cancelTabForPlayer(Player p) {
-		cancelTabForPlayer(p, false);
+	public void cancelTask(Player p) {
+		cancelTask(p, true);
 	}
 
-	public void cancelTabForPlayer(Player p, boolean remove) {
+	public void cancelTask(Player p, boolean remove) {
 		UUID uuid = p.getUniqueId();
 		if (task.containsKey(uuid)) {
 			task.get(uuid).cancel();

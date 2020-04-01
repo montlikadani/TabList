@@ -5,7 +5,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class ReflectionUtils {
 
@@ -20,7 +23,7 @@ public class ReflectionUtils {
 
 	public static Object getAsIChatBaseComponent(String name) throws Exception {
 		Class<?> iChatBaseComponent = getNMSClass("IChatBaseComponent");
-		if (ServerVersion.Version.isCurrentLower(ServerVersion.Version.v1_8_R2)) {
+		if (Version.isCurrentLower(Version.v1_8_R2)) {
 			Class<?> chatSerializer = getNMSClass("ChatSerializer");
 			Method m = chatSerializer.getMethod("a", String.class);
 			Object t = iChatBaseComponent.cast(m.invoke(chatSerializer, "{\"text\":\"" + name + "\"}"));
@@ -95,7 +98,7 @@ public class ReflectionUtils {
 		try {
 			playerConnection.getClass().getDeclaredMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection,
 					packet);
-		} catch (IllegalAccessException il) {
+		} catch (Exception e) {
 			if (a < 8) {
 				Util.logConsole(Level.WARNING,
 						"You're using a plugin which overwrites sending packets. Remove that plugin.");
@@ -105,6 +108,60 @@ public class ReflectionUtils {
 	}
 
 	public static String getPackageVersion() {
-		return org.bukkit.Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+		return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
+	}
+
+	public static class Classes {
+
+		public static Class<?> getMinecraftServer() {
+			Class<?> server = null;
+
+			try {
+				server = getNMSClass("MinecraftServer");
+			} catch (ClassNotFoundException c) {
+				try {
+					server = getNMSClass("DedicatedServer");
+				} catch (ClassNotFoundException e) {
+				}
+			}
+
+			return server;
+		}
+
+		public static Object getServer(Class<?> server) {
+			Object serverIns = null;
+
+			try {
+				serverIns = server.getMethod("getServer")
+						.invoke(ReflectionUtils.getCraftClass("CraftServer").cast(Bukkit.getServer()));
+			} catch (Exception x) {
+				try {
+					serverIns = server.getMethod("getServer").invoke(server);
+				} catch (Exception e) {
+				}
+			}
+
+			return serverIns;
+		}
+
+		public static Class<?> getEnumPlayerInfoAction() {
+			Class<?> enumPlayerInfoAction = null;
+
+			try {
+				if (Version.isCurrentEqual(Version.v1_8_R1)) {
+					enumPlayerInfoAction = getNMSClass("EnumPlayerInfoAction");
+				} else if (Version.isCurrentEqualOrHigher(Version.v1_11_R1)) {
+					enumPlayerInfoAction = getNMSClass("PacketPlayOutPlayerInfo").getDeclaredClasses()[1];
+				}
+
+				if (enumPlayerInfoAction == null) {
+					enumPlayerInfoAction = getNMSClass("PacketPlayOutPlayerInfo").getDeclaredClasses()[2];
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return enumPlayerInfoAction;
+		}
 	}
 }

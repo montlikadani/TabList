@@ -23,6 +23,13 @@ ignore-vanished-players-in-online-players: false
 # Requires Essentials plugin!
 hide-player-from-tab-when-afk: false
 
+# Hides all players from the player list (tab).
+# This removes all players from the tab list, but the player that has the
+# group set is retained as it is not changed during removal, so your group
+# will be restored if this option is disabled.
+# The "per-world-player-list" will not works if this enabled.
+hide-players-from-tablist: false
+
 # Placeholder formatting
 placeholder-format:
   # When the player changes the afk status, changes the tablist name format.
@@ -118,15 +125,15 @@ change-prefix-suffix-in-tablist:
     list:
     #- myWorld
 
-  # By enabling this, you will be able to specify the correct Vault group name in groups file
-  # and if correct, then it will grant the group to player.
+  # true - In groups file set equal group name as the permissions group. Vault plugin is required.
+  # false - In groups file use any group name, but specify a permission and then grant it
+  # to the permissions group.
   use-vault-group-names: true
 
-  # If this is enabled, it can worse the server performance by creating new class instances for
-  # queue priority to work. This is a test option and is not completely ready, so server freezes
-  # or possible shutdowns may occur. To prevent this, you should increase the update interval
-  # to make updates less frequently, thus preventing the plugin from slowing down.
-  use-improved-group-sorting: false
+  # This for lazy users is designed to automatically add groups to the list of tablists every time
+  # there is a reload, so the user has less to do.
+  # If a plugin does not support Vault, it will not be added.
+  sync-plugins-groups-with-tablist: true
 
   # Hide player group in tablist when the player is vanished?
   # Required Essentials plugin!
@@ -183,7 +190,7 @@ tablist-object-type:
 
     # It only accepts number-ending placeholders, such as player levels (doubled numbers "2.1" do NOT work).
     custom:
-      value: "%player_level%"
+      value: "%level%"
 
 # Changing player tablist name with unlimited characters.
 tabname:
@@ -234,4 +241,4 @@ plugin-enable: '&6&l[&5&lTab&c&lList&6&l]&7&l >&a The plugin successfully enable
 plugin-disable: '&6&l[&5&lTab&c&lList&6&l]&7&l >&c The plugin successfully disabled!'
 
 # DO NOT CHANGE THIS!
-config-version: 15
+config-version: 16

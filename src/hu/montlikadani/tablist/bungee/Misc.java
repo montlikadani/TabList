@@ -83,9 +83,13 @@ public class Misc {
 		if (str.contains("%server-online%"))
 			str = str.replace("%server-online%", online);
 
-		if (str.contains("%max-players%")) {
-			str = str.replace("%max-players%", Integer.toString(TabList.getInstance().getProxy()
-					.getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()));
+		try {
+			if (str.contains("%max-players%")) {
+				str = str.replace("%max-players%", Integer.toString(TabList.getInstance().getProxy()
+						.getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()));
+			}
+		} catch (Exception e) {
+			// Ignore unknown errors
 		}
 
 		if (str.contains("%ip%")) {

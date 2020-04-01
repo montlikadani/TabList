@@ -6,9 +6,11 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -55,6 +57,8 @@ public class TabList extends JavaPlugin {
 
 	private final Set<FakePlayers> fpList = new HashSet<>();
 	private final Set<AnimCreator> animations = new HashSet<>();
+
+	private final Map<Player, HidePlayers> hidePlayers = new HashMap<>();
 
 	@Override
 	public void onEnable() {
@@ -153,6 +157,7 @@ public class TabList extends JavaPlugin {
 			objects.unregisterCustomValue();
 			tabHandler.saveToggledTabs();
 			tabHandler.unregisterTab();
+			addBackAllHiddenPlayers();
 			removeAllFakePlayer();
 			HandlerList.unregisterAll(this);
 			getServer().getScheduler().cancelTasks(this);
@@ -202,11 +207,14 @@ public class TabList extends JavaPlugin {
 
 	public void reload() {
 		tabHandler.unregisterTab();
+		g.cancelUpdate(true);
+
 		loadListeners();
 		conf.loadFiles();
-		g.load();
 		loadAnimations();
 		loadValues();
+
+		g.load();
 
 		getServer().getOnlinePlayers().forEach(pl -> updateAll(pl, true));
 	}
@@ -228,7 +236,6 @@ public class TabList extends JavaPlugin {
 	}
 
 	private void loadAnimations() {
-		conf.createAnimFile();
 		animations.clear();
 
 		FileConfiguration c = conf.getAnimCreator();
@@ -399,25 +406,42 @@ public class TabList extends JavaPlugin {
 
 			switch (getC().getString("tablist-object-type.type").toLowerCase()) {
 			case "ping":
+			case "custom":
 				objects.unregisterHealthObjective();
 				objects.startTask();
 				break;
 			case "health":
 				objects.registerHealthTab(p);
 				break;
-			case "custom":
-				objects.unregisterHealthObjective();
-				objects.startTask();
-				break;
 			default:
 				break;
 			}
 		}
 
-		if (getC().getBoolean("per-world-player-list")) {
-			PlayerList.hideShow();
+		if (getC().getBoolean("hide-players-from-list")) {
+			HidePlayers h = null;
+			if (!hidePlayers.containsKey(p)) {
+				h = new HidePlayers(p);
+				hidePlayers.put(p, h);
+			} else {
+				h = hidePlayers.get(p);
+			}
+
+			if (h != null) {
+				h.removePlayerFromTab();
+			}
 		} else {
-			PlayerList.showEveryone(p);
+			if (!getC().getBoolean("hide-players-from-list") && hidePlayers.containsKey(p)) {
+				hidePlayers.get(p).addPlayerToTab();
+				hidePlayers.remove(p);
+			}
+
+			if (getC().getBoolean("per-world-player-list")) {
+				PlayerList.hideShow(p);
+				PlayerList.hideShow();
+			} else {
+				PlayerList.showEveryone(p);
+			}
 		}
 
 		loadTabName(p);
@@ -503,9 +527,17 @@ public class TabList extends JavaPlugin {
 			objects.unregisterCustomValue();
 		}
 
-		tabHandler.cancelTabForPlayer(p, true);
+		if (hidePlayers.containsKey(p)) {
+			hidePlayers.remove(p);
+		}
 
+		tabHandler.unregisterTab(p);
 		g.removeGroup(p);
+	}
+
+	void addBackAllHiddenPlayers() {
+		hidePlayers.entrySet().forEach(e -> e.getValue().addPlayerToTab());
+		hidePlayers.clear();
 	}
 
 	public String getChangeType() {
@@ -577,6 +609,10 @@ public class TabList extends JavaPlugin {
 		}
 
 		return null;
+	}
+
+	public Map<Player, HidePlayers> getHidePlayers() {
+		return hidePlayers;
 	}
 
 	public boolean isSpigot() {
@@ -652,7 +688,8 @@ public class TabList extends JavaPlugin {
 	}
 
 	public boolean isPluginEnabled(String name) {
-		return getServer().getPluginManager().getPlugin(name) != null && getServer().getPluginManager().isPluginEnabled(name);
+		return getServer().getPluginManager().getPlugin(name) != null
+				&& getServer().getPluginManager().isPluginEnabled(name);
 	}
 
 	public boolean isHookPreventTask(Player p) {

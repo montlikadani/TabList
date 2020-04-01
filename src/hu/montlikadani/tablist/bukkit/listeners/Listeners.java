@@ -8,7 +8,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import hu.montlikadani.tablist.bukkit.PlayerList;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
 import hu.montlikadani.tablist.bukkit.utils.Util;
@@ -33,10 +32,6 @@ public class Listeners implements Listener {
 			plugin.loadFakePlayers();
 		}
 
-		if (plugin.getC().getBoolean("per-world-player-list")) {
-			PlayerList.hideShow(p);
-		}
-
 		if (p.isOp()) {
 			Util.sendMsg(p, UpdateDownloader.checkFromGithub("player"));
 		}
@@ -46,7 +41,7 @@ public class Listeners implements Listener {
 	public void onWorldChange(PlayerChangedWorldEvent eve) {
 		Player pla = eve.getPlayer();
 
-		plugin.getTabHandler().cancelTabForPlayer(pla);
+		plugin.getTabHandler().unregisterTab(pla);
 		plugin.updateAll(pla);
 	}
 

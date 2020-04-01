@@ -39,7 +39,8 @@ public class Groups implements ITask {
 		}
 
 		task = plugin.getProxy().getScheduler().schedule(plugin, () -> {
-			if (plugin.getProxy().getPlayers().isEmpty()) {
+			if (plugin.getProxy().getPlayers().isEmpty() || !plugin.getConf().getBoolean("tablist-groups.enabled")
+					|| !plugin.getConf().contains("groups")) {
 				cancel();
 				return;
 			}
@@ -51,23 +52,11 @@ public class Groups implements ITask {
 	@Override
 	public void update(final ProxiedPlayer pl) {
 		Configuration c = plugin.getConf();
-		if (!c.getBoolean("tablist-groups.enabled")) {
-			cancel();
-			return;
-		}
-
-		if (!c.contains("groups")) {
-			cancel();
-			return;
-		}
-
-		listItem.setAction(Action.UPDATE_DISPLAY_NAME);
-		items.setUuid(pl.getUniqueId());
 
 		String name = "";
 		for (String num : c.getSection("groups").getKeys()) {
 			String perm = c.getString("groups." + num + ".permission", "");
-			if (perm.isEmpty() || !pl.hasPermission(perm)) {
+			if (!perm.trim().isEmpty() && !pl.hasPermission(perm)) {
 				continue;
 			}
 
@@ -81,22 +70,18 @@ public class Groups implements ITask {
 				}
 
 				name = list.get(y);
-			} else if (c.contains("groups." + num + ".name")) {
+			} else if (c.getString("groups." + num + ".name") != null) {
 				name = c.getString("groups." + num + ".name");
 			}
+
+			break;
 		}
 
 		if (name.trim().isEmpty()) {
 			return;
 		}
 
-		items.setDisplayName(
-				ComponentSerializer.toString(TextComponent.fromLegacyText(Misc.replaceVariables(name, pl))));
-
-		listItem.setItems(new Item[] { items });
-		for (ProxiedPlayer p : plugin.getProxy().getPlayers()) {
-			p.unsafe().sendPacket(listItem);
-		}
+		sendPacket(pl, name);
 	}
 
 	@Override
@@ -111,8 +96,21 @@ public class Groups implements ITask {
 			task = null;
 		}
 
-		plugin.getProxy().getPlayers().forEach(p -> items
-				.setDisplayName(ComponentSerializer.toString(TextComponent.fromLegacyText(p.getDisplayName()))));
+		plugin.getProxy().getPlayers().forEach(p -> sendPacket(p, p.getName()));
+	}
+
+	private void sendPacket(ProxiedPlayer p, String name) {
+		if (listItem.getAction() != Action.UPDATE_DISPLAY_NAME) {
+			listItem.setAction(Action.UPDATE_DISPLAY_NAME);
+		}
+
+		items.setUuid(p.getUniqueId());
+		items.setDisplayName(
+				ComponentSerializer.toString(TextComponent.fromLegacyText(Misc.replaceVariables(name, p))));
+
 		listItem.setItems(new Item[] { items });
+		for (ProxiedPlayer pl : plugin.getProxy().getPlayers()) {
+			pl.unsafe().sendPacket(listItem);
+		}
 	}
 }

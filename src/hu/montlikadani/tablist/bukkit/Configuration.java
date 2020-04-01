@@ -16,8 +16,7 @@ public class Configuration {
 	private FileConfiguration config, messages, names, groups, fakeplayers, animCreator, tablist;
 	private File config_file, messages_file, animation_file, tablist_file, groups_file, names_file, fakeplayers_file;
 
-	private int cver = 15;
-	private int gver = 5;
+	private int cver = 16;
 
 	public Configuration(TabList plugin) {
 		this.plugin = plugin;
@@ -39,16 +38,12 @@ public class Configuration {
 				animation_file = new File(folder, "animcreator.yml");
 			}
 
-			if (config_file.exists()) {
-				config = YamlConfiguration.loadConfiguration(config_file);
-				config.load(config_file);
+			config = createFile(config_file, "config.yml", false);
+			config.load(config_file);
 
-				if (!config.isSet("config-version") || !config.get("config-version").equals(cver)) {
-					logConsole(Level.WARNING, "Found outdated configuration (config.yml)! (Your version: "
-							+ config.getInt("config-version") + " | Newest version: " + cver + ")");
-				}
-			} else {
-				config = createFile(config_file, "config.yml", false);
+			if (!config.isSet("config-version") || !config.get("config-version").equals(cver)) {
+				logConsole(Level.WARNING, "Found outdated configuration (config.yml)! (Your version: "
+						+ config.getInt("config-version") + " | Newest version: " + cver + ")");
 			}
 
 			if (!config.contains("tablist")) {
@@ -56,41 +51,23 @@ public class Configuration {
 					tablist_file = new File(folder, "tablist.yml");
 				}
 
-				if (tablist_file.exists()) {
-					tablist = YamlConfiguration.loadConfiguration(tablist_file);
-					tablist.load(tablist_file);
-				} else {
-					tablist = createFile(tablist_file, "tablist.yml", false);
-				}
+				tablist = createFile(tablist_file, "tablist.yml", false);
+				tablist.load(tablist_file);
 			}
 
-			if (messages_file.exists()) {
-				messages = YamlConfiguration.loadConfiguration(messages_file);
-				messages.load(messages_file);
-				messages.save(messages_file);
-			} else {
-				messages = createFile(messages_file, "messages.yml", false);
-			}
+			messages = createFile(messages_file, "messages.yml", false);
+			messages.save(messages_file);
 
-			if (animation_file.exists()) {
-				animCreator = YamlConfiguration.loadConfiguration(animation_file);
-				animCreator.load(animation_file);
-			} else {
-				animCreator = createFile(animation_file, "animcreator.yml", false);
-			}
+			animCreator = createFile(animation_file, "animcreator.yml", false);
+			animCreator.load(animation_file);
 
 			if (config.getBoolean("tabname.enable")) {
 				if (names_file == null) {
 					names_file = new File(folder, "names.yml");
 				}
 
-				if (names_file.exists()) {
-					names = YamlConfiguration.loadConfiguration(names_file);
-					names.load(names_file);
-					names.save(names_file);
-				} else {
-					names = createFile(names_file, "names.yml", true);
-				}
+				names = createFile(names_file, "names.yml", true);
+				names.save(names_file);
 			}
 
 			if (config.getBoolean("change-prefix-suffix-in-tablist.enable")) {
@@ -98,17 +75,8 @@ public class Configuration {
 					groups_file = new File(folder, "groups.yml");
 				}
 
-				if (groups_file.exists()) {
-					groups = YamlConfiguration.loadConfiguration(groups_file);
-					groups.load(groups_file);
-
-					if (!groups.isSet("config-version") || !groups.get("config-version").equals(gver)) {
-						logConsole(Level.WARNING, "Found outdated configuration (groups.yml)! (Your version: "
-								+ groups.getInt("config-version") + " | Newest version: " + gver + ")");
-					}
-				} else {
-					groups = createFile(groups_file, "groups.yml", false);
-				}
+				groups = createFile(groups_file, "groups.yml", false);
+				groups.load(groups_file);
 			}
 
 			if (config.getBoolean("enable-fake-players")) {
@@ -116,17 +84,13 @@ public class Configuration {
 					fakeplayers_file = new File(folder, "fakeplayers.yml");
 				}
 
-				if (fakeplayers_file.exists()) {
-					fakeplayers = YamlConfiguration.loadConfiguration(fakeplayers_file);
-					fakeplayers.load(fakeplayers_file);
-				} else {
-					fakeplayers = createFile(fakeplayers_file, "fakeplayers.yml", true);
-				}
+				fakeplayers = createFile(fakeplayers_file, "fakeplayers.yml", true);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logConsole(Level.WARNING,
-					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues", false);
+					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues",
+					false);
 		}
 	}
 
@@ -139,9 +103,7 @@ public class Configuration {
 			animation_file = new File(plugin.getFolder(), "animcreator.yml");
 		}
 
-		if (!animation_file.exists()) {
-			animCreator = createFile(animation_file, "animcreator.yml", false);
-		}
+		animCreator = createFile(animation_file, "animcreator.yml", false);
 	}
 
 	public void createNamesFile() {
@@ -153,9 +115,7 @@ public class Configuration {
 			names_file = new File(plugin.getFolder(), "names.yml");
 		}
 
-		if (!names_file.exists()) {
-			names = createFile(names_file, "names.yml", true);
-		}
+		names = createFile(names_file, "names.yml", true);
 	}
 
 	public void createGroupsFile() {
@@ -167,9 +127,7 @@ public class Configuration {
 			groups_file = new File(plugin.getFolder(), "groups.yml");
 		}
 
-		if (groups_file.exists()) {
-			groups = createFile(groups_file, "groups.yml", false);
-		}
+		groups = createFile(groups_file, "groups.yml", false);
 	}
 
 	public void createFakePlayersFile() {
@@ -181,23 +139,24 @@ public class Configuration {
 			fakeplayers_file = new File(plugin.getFolder(), "fakeplayers.yml");
 		}
 
-		if (!fakeplayers_file.exists()) {
-			fakeplayers = createFile(fakeplayers_file, "fakeplayers.yml", true);
-		}
+		fakeplayers = createFile(fakeplayers_file, "fakeplayers.yml", true);
 	}
 
 	FileConfiguration createFile(File file, String name, boolean newFile) {
-		if (newFile) {
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
+		if (!file.exists()) {
+			if (newFile) {
+				try {
+					file.createNewFile();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} else {
+				plugin.saveResource(name, false);
 			}
-		} else {
-			plugin.saveResource(name, false);
+
+			logConsole(name + " file created!", false);
 		}
 
-		logConsole(name + " file created!", false);
 		return YamlConfiguration.loadConfiguration(file);
 	}
 

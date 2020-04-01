@@ -1,22 +1,11 @@
 # DO NOT CHANGE THIS!
 config-version: 5
 
-# Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
-
-# Player custom prefixes and suffixes with unlimited players.
-players:
-  testplayer:
-    prefix: "&f[&5Bot&f]&6 "
-    suffix: ""
-    sort-priority: 2
-  yourname:
-    prefix: "&6[&cOwner&6]&a "
-    suffix: ""
-    sort-priority: 1
-
 # Group prefixes and suffixes with unlimited group.
 groups:
   # Group name, you can write anything in here.
+  # If you want to set for a player group then use the original name
+  # of that player.
   # This will be ignored by default.
   exampleGroup:
     prefix: "&a[&cStaff&a]&6 "
@@ -27,10 +16,6 @@ groups:
     # (Optional)
     # This permission must be in the permission system.
     #permission: tablist.staff
-    # (Optional)
-    # If false, if a player operator on your server, will gets this group.
-    # If true, if a player operator on your server, will gets other group where this boolean is disabled.
-    #bypass-operator: false
 
   Default:
     prefix: "&7"
@@ -39,3 +24,7 @@ groups:
     prefix: "&7<62>&r %anim:Admin%"
     suffix: "&7 <62>"
     sort-priority: 0
+  PlayerName:
+    prefix: "&a[MyGroup]&7"
+    suffix: ""
+    sort-priority: 1
