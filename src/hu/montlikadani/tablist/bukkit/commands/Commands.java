@@ -3,14 +3,10 @@ package hu.montlikadani.tablist.bukkit.commands;
 import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 import static hu.montlikadani.tablist.bukkit.utils.Util.sendMsg;
 
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -19,8 +15,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
-import com.google.common.collect.ImmutableList;
-
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 
@@ -28,19 +22,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	private TabList plugin;
 
-	private final Map<String, String> arg = new HashMap<>();
-
 	public Commands(TabList plugin) {
 		this.plugin = plugin;
-
-		String path = "hu.montlikadani.tablist.bukkit.commands.list";
-		ImmutableList<Class<?>> classes = hu.montlikadani.tablist.bukkit.utils.Util.getClasses(path);
-		for (Class<?> cl : classes) {
-			if (cl != null) {
-				String className = cl.getName().toLowerCase();
-				arg.put(className.replace(path + ".", ""), className);
-			}
-		}
 	}
 
 	@Override
@@ -86,30 +69,19 @@ public class Commands implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
-		boolean unknown = false;
-		for (Entry<String, String> a : arg.entrySet()) {
-			if (args[0].equalsIgnoreCase(a.getKey())) {
-				try {
-					Object run = Class.forName(a.getValue()).newInstance();
-					Class<?>[] paramTypes = { TabList.class, CommandSender.class, Command.class, String.class,
-							String[].class };
-					Method printMethod = run.getClass().getDeclaredMethod("run", paramTypes);
-
-					Object[] arguments = { plugin, sender, cmd, label, args };
-					printMethod.invoke(run, arguments);
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-
-				unknown = false;
-				break;
-			}
-
-			unknown = true;
+		String path = "hu.montlikadani.tablist.bukkit.commands.list";
+		ICommand command = null;
+		try {
+			command = (ICommand) TabList.class.getClassLoader().loadClass(path + "." + args[0].toLowerCase())
+					.newInstance();
+		} catch (ClassNotFoundException e) {
+			sendMsg(sender, plugin.getMsg("unknown-sub-command", "%subcmd%", args[0]));
+		} catch (IllegalAccessException | InstantiationException e) {
+			e.printStackTrace();
 		}
 
-		if (unknown) {
-			sendMsg(sender, plugin.getMsg("unknown-sub-command", "%subcmd%", args[0]));
+		if (command != null) {
+			command.run(plugin, sender, cmd, label, args);
 		}
 
 		return true;
@@ -162,7 +134,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	private List<String> getCmds(CommandSender sender) {
 		List<String> c = new ArrayList<>();
-		for (String cmds : arg.keySet()) {
+		for (String cmds : Arrays.asList("reload", "fakeplayers", "get", "removeplayer", "setprefix", "setsuffix",
+				"setpriority", "toggle")) {
 			if (sender instanceof Player && !sender.hasPermission("tablist." + cmds)) {
 				continue;
 			}
