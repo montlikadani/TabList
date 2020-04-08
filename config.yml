@@ -19,6 +19,13 @@ enable-fake-players: false
 # Requires Essentials or SuperVanish plugin!
 ignore-vanished-players-in-online-players: false
 
+# true - it counts vanished staffs to %staff-online% placeholder that
+# have "tablist.onlinestaff" permission set.
+# false - will not count vanished staff in the %staff-online% placeholder
+# even if you have permission or not
+# Requires Essentials or SuperVanish plugin!
+count-vanished-staffs: true
+
 # Hides player from tab when afk status.
 # Requires Essentials plugin!
 hide-player-from-tab-when-afk: false

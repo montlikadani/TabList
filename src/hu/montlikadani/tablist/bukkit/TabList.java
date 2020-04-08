@@ -411,7 +411,7 @@ public class TabList extends JavaPlugin {
 			}
 		}
 
-		if (getC().getBoolean("hide-players-from-list")) {
+		if (getC().getBoolean("hide-players-from-tablist")) {
 			HidePlayers h = null;
 			if (!hidePlayers.containsKey(p)) {
 				h = new HidePlayers(p);
@@ -424,7 +424,7 @@ public class TabList extends JavaPlugin {
 				h.removePlayerFromTab();
 			}
 		} else {
-			if (!getC().getBoolean("hide-players-from-list") && hidePlayers.containsKey(p)) {
+			if (hidePlayers.containsKey(p)) {
 				hidePlayers.get(p).addPlayerToTab();
 				hidePlayers.remove(p);
 			}

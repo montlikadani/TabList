@@ -43,8 +43,18 @@ public class Variables {
 		int staffs = 0;
 		if (str.contains("%staff-online%")) {
 			for (Player all : oPls) {
-				if (all.hasPermission("tablist.onlinestaff"))
-					staffs++;
+				if (!all.hasPermission("tablist.onlinestaff")) {
+					continue;
+				}
+
+				if (!conf.getBoolean("count-vanished-staffs")
+						&& ((plugin.isPluginEnabled("SuperVanish") && VanishAPI.isInvisible(all))
+								|| (plugin.isPluginEnabled("Essentials")
+										&& JavaPlugin.getPlugin(Essentials.class).getUser(all).isVanished()))) {
+					continue;
+				}
+
+				staffs++;
 			}
 		}
 

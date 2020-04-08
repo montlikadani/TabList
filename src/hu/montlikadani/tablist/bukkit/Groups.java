@@ -119,6 +119,10 @@ public class Groups {
 	}
 
 	private void setGroup(Player p) {
+		if (!isPlayerCanSeeGroup(p)) {
+			return;
+		}
+
 		for (final TeamHandler team : groupsList) {
 			String name = team.getTeam();
 
@@ -142,11 +146,6 @@ public class Groups {
 				}
 			} else if (p.hasPermission(team.getPermission())) {
 				change = true;
-
-				// TODO Fix the operator player if has not permission, it will gets another
-				// groups instead of 1
-				// Solution: You need to add "-" mark before the permission or writing to false
-				// to negate
 			}
 
 			if (change) {
@@ -230,7 +229,7 @@ public class Groups {
 		team.setSuffix(suffix);
 
 		if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
-			team.setColor(fromPrefix(prefix));
+			team.setColor(Util.fromPrefix(prefix));
 		}
 
 		if (Version.isCurrentLower(Version.v1_9_R1)) {
@@ -311,35 +310,15 @@ public class Groups {
 		}
 	}
 
-	public ChatColor fromPrefix(String prefix) {
-		char colour = 0;
-		char[] chars = prefix.toCharArray();
-		for (int i = 0; i < chars.length; i++) {
-			char at = chars[i];
-			if ((at == '\u00a7' || at == '&') && i + 1 < chars.length) {
-				char code = chars[i + 1];
-				if (ChatColor.getByChar(code) != null) {
-					colour = code;
-				}
-			}
-		}
-
-		return colour == 0 ? ChatColor.RESET : ChatColor.getByChar(colour);
-	}
-
 	private void startTask(Player p) {
 		final int refreshInt = plugin.getC().getInt("change-prefix-suffix-in-tablist.refresh-interval");
 
 		if (refreshInt < 1) {
 			if (p != null) {
-				if (isPlayerCanSeeGroup(p)) {
-					setGroup(p);
-				}
+				setGroup(p);
 			} else {
 				for (final Player pla : Bukkit.getOnlinePlayers()) {
-					if (isPlayerCanSeeGroup(pla)) {
-						setGroup(pla);
-					}
+					setGroup(pla);
 				}
 			}
 
@@ -356,9 +335,7 @@ public class Groups {
 					}
 
 					for (Player pl : Bukkit.getOnlinePlayers()) {
-						if (isPlayerCanSeeGroup(pl)) {
-							setGroup(pl);
-						}
+						setGroup(pl);
 					}
 				}, refreshInt, refreshInt);
 			}
@@ -374,9 +351,7 @@ public class Groups {
 						}
 
 						for (Player pl : Bukkit.getOnlinePlayers()) {
-							if (isPlayerCanSeeGroup(pl)) {
-								setGroup(pl);
-							}
+							setGroup(pl);
 						}
 					}
 				}, 0L, refreshInt * 20L);

@@ -56,6 +56,22 @@ public class Util {
 		}
 	}
 
+	public static ChatColor fromPrefix(String prefix) {
+		char colour = 0;
+		char[] chars = prefix.toCharArray();
+		for (int i = 0; i < chars.length; i++) {
+			char at = chars[i];
+			if ((at == '\u00a7' || at == '&') && i + 1 < chars.length) {
+				char code = chars[i + 1];
+				if (ChatColor.getByChar(code) != null) {
+					colour = code;
+				}
+			}
+		}
+
+		return colour == 0 ? ChatColor.RESET : ChatColor.getByChar(colour);
+	}
+
 	public static String stripColor(String str) {
 		if (str.contains("&a"))
 			str = str.replace("&a", "");

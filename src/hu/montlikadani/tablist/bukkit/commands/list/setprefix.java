@@ -98,7 +98,7 @@ public class setprefix implements ICommand {
 			t.setPrefix(pref);
 
 			if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
-				t.setColor(plugin.getGroups().fromPrefix(pref));
+				t.setColor(Util.fromPrefix(pref));
 			}
 
 			if (plugin.getGS().contains("players." + target.getName() + ".suffix")) {
