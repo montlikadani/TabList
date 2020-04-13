@@ -150,7 +150,7 @@ public class TabList extends JavaPlugin {
 		if (instance == null) return;
 
 		try {
-			g.cancelUpdate(true);
+			g.cancelUpdate();
 			objects.unregisterHealthObjective();
 			objects.unregisterPingTab();
 			objects.unregisterCustomValue();
@@ -200,7 +200,7 @@ public class TabList extends JavaPlugin {
 
 	public void reload() {
 		tabHandler.unregisterTab();
-		g.cancelUpdate(true);
+		g.cancelUpdate();
 
 		loadListeners();
 		conf.loadFiles();

@@ -258,13 +258,13 @@ public class Groups {
 			return;
 		}
 
-		for (Iterator<TeamHandler> it = groupsList.iterator(); it.hasNext();) {
-			TeamHandler th = it.next();
-			if (th == null) {
-				continue;
-			}
+		if (plugin.getChangeType().equals("scoreboard")) {
+			for (Iterator<TeamHandler> it = groupsList.iterator(); it.hasNext();) {
+				TeamHandler th = it.next();
+				if (th == null) {
+					continue;
+				}
 
-			if (plugin.getChangeType().equals("scoreboard")) {
 				Scoreboard tboard = p.getScoreboard();
 				Team team = tboard.getTeam(th.getFullTeamName());
 				if (team == null) {
@@ -291,10 +291,6 @@ public class Groups {
 	}
 
 	public void cancelUpdate() {
-		cancelUpdate(false);
-	}
-
-	public void cancelUpdate(boolean removeGroup) {
 		if (simpleTask != -1) {
 			Bukkit.getServer().getScheduler().cancelTask(simpleTask);
 			simpleTask = -1;
@@ -305,9 +301,7 @@ public class Groups {
 			animationTask = null;
 		}
 
-		if (removeGroup) {
-			removeGroupsFromAll();
-		}
+		removeGroupsFromAll();
 	}
 
 	private void startTask(Player p) {
