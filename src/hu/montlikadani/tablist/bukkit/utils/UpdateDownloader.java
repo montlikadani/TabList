@@ -61,6 +61,8 @@ public class UpdateDownloader {
 					msg = "New version (" + versionString
 							+ ") is available at https://www.spigotmc.org/resources/46229/";
 				}
+
+				msg = Util.colorMsg(msg);
 			} else if ("console".equals(sender)) {
 				return "You're running the latest version.";
 			}

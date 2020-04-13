@@ -92,10 +92,11 @@ public class ReflectionUtils {
 
 	private static int a = 0;
 
-	public static void sendPacket(Player player, Object packet) throws Exception {
-		Object playerHandle = getNMSPlayer(player);
-		Object playerConnection = getFieldObject(playerHandle, getField(playerHandle, "playerConnection"));
+	public static void sendPacket(Player player, Object packet) {
 		try {
+			Object playerHandle = getNMSPlayer(player);
+			Object playerConnection = getFieldObject(playerHandle, getField(playerHandle, "playerConnection"));
+
 			playerConnection.getClass().getDeclaredMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection,
 					packet);
 		} catch (Exception e) {
