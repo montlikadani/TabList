@@ -39,7 +39,7 @@ random: false
 header:
 - "<lines>"
 - "%anim:tablist%"
-- "&7<75> %anim:welcome% <name>&c!&7 <74>\n&6Ping:&r %ping%&7ms"
+- "&7<75> %anim:welcome% %player%&c!&7 <74>\n&6Ping:&r %ping%&7ms"
 
 footer:
 - "<13>&e&l Players:&6 %online-players%&7/&6%max-players%"
@@ -47,15 +47,9 @@ footer:
 
 # Per world tablist
 per-world:
-  my_nether:
+  my_nether, otherWorld: # you can add multiple worlds here
     header: "&3This is a per world plugin %anim:tablist%&3."
     footer: "&6World:&7 %world%"
-
-    # (Optional) You can specify here the world names, where you want to
-    # display the same tab, which found in this section.
-    #display-in-other-worlds:
-    #- otherWorldnamehere
-    #- my_nether # you should put the same world here too
 
   justWorld:
     header: "%anim:perWorld%"
@@ -63,10 +57,6 @@ per-world:
 
     # Per player in per world tablist
     per-player:
-      # (Optional)
-      # If the player name is not given, will see the default tab.
-      #use-default-tab-if-player-not-given: true
-
       playerName:
         header: "&3This is a per player plugin %anim:tablist%&3."
         footer:
@@ -77,10 +67,6 @@ per-world:
     # Per group in per world tablist
     # Requires Vault plugin!
     per-group:
-      # (Optional)
-      # If the group name is not given, will see the default tab.
-      #use-default-tab-if-group-not-given: true
-
       groupName:
         header: "&3This is a per group plugin %anim:tablist%&3."
         footer:
@@ -89,10 +75,6 @@ per-world:
 
 # Per player tablist
 per-player:
-  # (Optional)
-  # If the player name is not given, will see the default tab.
-  #use-default-tab-if-player-not-given: false
-
   testplayer:
     header: "%anim:perPlayer%"
     footer: "<lines>"
@@ -100,10 +82,6 @@ per-player:
 # Per group tablist
 # Requires Vault plugin!
 per-group:
-  # (Optional)
-  # If the group name is not given, will see the default tab.
-  #use-default-tab-if-group-not-given: true
-
   vaultGroup:
     header: "%anim:perGroupHead%"
     footer: "%anim:perGroupFoot%"

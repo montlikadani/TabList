@@ -1,6 +1,3 @@
-# DO NOT CHANGE THIS!
-config-version: 5
-
 # Group prefixes and suffixes with unlimited group.
 groups:
   # Group name, you can write anything in here.
@@ -19,12 +16,10 @@ groups:
 
   Default:
     prefix: "&7"
-    suffix: ""
   Admin:
     prefix: "&7<62>&r %anim:Admin%"
     suffix: "&7 <62>"
     sort-priority: 0
   PlayerName:
     prefix: "&a[MyGroup]&7"
-    suffix: ""
     sort-priority: 1

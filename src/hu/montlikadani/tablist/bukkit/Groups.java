@@ -179,6 +179,15 @@ public class Groups {
 				}
 			}
 
+			if (plugin.isPluginEnabled("Essentials")
+					&& plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
+				User user = JavaPlugin.getPlugin(Essentials.class).getUser(p);
+				if (user.getNickname() != null) {
+					p.setPlayerListName(prefix + user.getNickname() + suffix);
+					return;
+				}
+			}
+
 			setPlayerTeam(p, prefix, suffix, team.getFullTeamName());
 		} else if (plugin.getChangeType().equals("namer")) {
 			String result = "";
@@ -253,9 +262,9 @@ public class Groups {
 			return;
 		}
 
-		if (plugin.getChangeType().equals("namer")) {
+		if (plugin.getChangeType().equals("namer")
+				|| plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
 			p.setPlayerListName(p.getName());
-			return;
 		}
 
 		if (plugin.getChangeType().equals("scoreboard")) {

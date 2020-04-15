@@ -135,12 +135,7 @@ public class TabHandler {
 
 		String group = null;
 		if (c.contains("per-world")) {
-			if (!c.contains("per-world." + world + ".per-player." + pName)) {
-				if (!c.getBoolean("per-world." + world + ".per-player.use-default-tab-if-player-not-given", true)) {
-					TabTitle.sendTabTitle(p, "", "");
-					return;
-				}
-			} else {
+			if (c.contains("per-world." + world + ".per-player." + pName)) {
 				String path = "per-world." + world + ".per-player." + pName + ".";
 				header = c.isList(path + "header") ? c.getStringList(path + "header")
 						: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
@@ -153,10 +148,7 @@ public class TabHandler {
 			if (header == null && footer == null) {
 				if (c.isConfigurationSection("per-world")) {
 					for (String s : c.getConfigurationSection("per-world").getKeys(false)) {
-						List<String> l = c.getStringList("per-world." + s + ".display-in-other-worlds");
-						if (!l.isEmpty()) {
-							worldList.addAll(l);
-						}
+						worldList.add(s);
 					}
 				}
 
@@ -171,15 +163,22 @@ public class TabHandler {
 						worldEnable = true;
 					}
 				} else {
-					for (String w : worldList) {
-						if (c.contains("per-world." + w)) {
-							String path = "per-world." + w + ".";
-							header = c.isList(path + "header") ? c.getStringList(path + "header")
-									: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
-							footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
-									: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
+					t: for (String w : worldList) {
+						for (String split : w.split(", ")) {
+							if (world.equals(split)) {
+								String path = "per-world." + w + ".";
+								hu.montlikadani.tablist.bukkit.utils.Util.logConsole(path + "header");
 
-							worldEnable = true;
+								header = c.isList(path + "header") ? c.getStringList(path + "header")
+										: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header"))
+												: null;
+								footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
+										: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer"))
+												: null;
+
+								worldEnable = true;
+								break t;
+							}
 						}
 					}
 				}
@@ -195,13 +194,7 @@ public class TabHandler {
 				}
 
 				if (group != null) {
-					if (!c.contains("per-world." + world + ".per-group." + group)) {
-						if (!c.getBoolean("per-world." + world + ".per-group.use-default-tab-if-group-not-given",
-								true)) {
-							TabTitle.sendTabTitle(p, "", "");
-							return;
-						}
-					} else {
+					if (c.contains("per-world." + world + ".per-group." + group)) {
 						String path = "per-world." + world + ".per-group." + group + ".";
 						header = c.isList(path + "header") ? c.getStringList(path + "header")
 								: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
@@ -215,12 +208,7 @@ public class TabHandler {
 		}
 
 		if ((header == null && footer == null) && c.contains("per-player")) {
-			if (!c.contains("per-player." + pName)) {
-				if (!c.getBoolean("per-player.use-default-tab-if-player-not-given", true)) {
-					TabTitle.sendTabTitle(p, "", "");
-					return;
-				}
-			} else {
+			if (c.contains("per-player." + pName)) {
 				String path = "per-player." + pName + ".";
 				header = c.isList(path + "header") ? c.getStringList(path + "header")
 						: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
@@ -239,12 +227,7 @@ public class TabHandler {
 			}
 
 			if (group != null) {
-				if (!c.contains("per-group." + group)) {
-					if (!c.getBoolean("per-group.use-default-tab-if-group-not-given", true)) {
-						TabTitle.sendTabTitle(p, "", "");
-						return;
-					}
-				} else {
+				if (c.contains("per-group." + group)) {
 					String path = "per-group." + group + ".";
 					header = c.isList(path + "header") ? c.getStringList(path + "header")
 							: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
@@ -263,6 +246,15 @@ public class TabHandler {
 
 		setHeader(header);
 		setFooter(footer);
+
+		// Splitting the ", " from names
+		List<String> newWorlds = worldList;
+		worldList.clear();
+		for (String w : newWorlds) {
+			for (String split : w.split(", ")) {
+				worldList.add(split);
+			}
+		}
 
 		if (updateInterval < 1) {
 			cancelTask(p);
@@ -715,20 +707,15 @@ public class TabHandler {
 			TabTitle.sendTabTitle(ps, "", "");
 		}
 
+		// if there are still
 		task.clear();
 	}
 
 	public void cancelTask(Player p) {
-		cancelTask(p, true);
-	}
-
-	public void cancelTask(Player p, boolean remove) {
 		UUID uuid = p.getUniqueId();
 		if (task.containsKey(uuid)) {
 			task.get(uuid).cancel();
-			if (remove) {
-				task.remove(uuid);
-			}
+			task.remove(uuid);
 		}
 	}
 
