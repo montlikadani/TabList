@@ -153,7 +153,6 @@ change-prefix-suffix-in-tablist:
   # Use the essentials nickname instead of player original name?
   # true - Using this format: "prefix playerNickName suffix"
   # false - Using this format: "prefix playerOriginalName suffix"
-  # This will only works if the "changing-type" is "namer".
   use-essentials-nickname: false
 
   # Use the player displayname instead of groups?
@@ -242,10 +241,6 @@ download-updates: true
 
 # Log plugin messages into console.
 logconsole: true
-
-# Plugin enable/disable messages in console.
-plugin-enable: '&6&l[&5&lTab&c&lList&6&l]&7&l >&a The plugin successfully enabled&6 v${version}&a!'
-plugin-disable: '&6&l[&5&lTab&c&lList&6&l]&7&l >&c The plugin successfully disabled!'
 
 # DO NOT CHANGE THIS!
 config-version: 16

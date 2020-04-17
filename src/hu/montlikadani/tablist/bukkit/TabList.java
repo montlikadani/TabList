@@ -136,7 +136,11 @@ public class TabList extends JavaPlugin {
 				logConsole("Metrics enabled.");
 			}
 
-			Util.sendMsg(getServer().getConsoleSender(), colorMsg(getC().getString("plugin-enable")));
+			if (getC().getBoolean("logconsole")) {
+				String msg = "&6&l[&5&lTab&c&lList&6&l]&7&l >&a The plugin successfully enabled&6 v"
+						+ getDescription().getVersion() + "&a!";
+				Util.sendMsg(getServer().getConsoleSender(), colorMsg(msg));
+			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 			logConsole(Level.WARNING,
@@ -162,7 +166,10 @@ public class TabList extends JavaPlugin {
 			HandlerList.unregisterAll(this);
 			getServer().getScheduler().cancelTasks(this);
 
-			Util.sendMsg(getServer().getConsoleSender(), colorMsg(getC().getString("plugin-disable")));
+			if (getC().getBoolean("logconsole")) {
+				String msg = "&6&l[&5&lTab&c&lList&6&l]&7&l >&c The plugin successfully disabled!";
+				Util.sendMsg(getServer().getConsoleSender(), colorMsg(msg));
+			}
 
 			instance = null;
 		} catch (Exception e) {
