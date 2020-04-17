@@ -86,6 +86,8 @@ public class HidePlayers {
 
 			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
 
+			ReflectionUtils.setField(playerConst, "listName", ReflectionUtils.getAsIChatBaseComponent(profile.getName()));
+
 			entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
 			Array.set(entityPlayerArray, 0, playerConst);
 
