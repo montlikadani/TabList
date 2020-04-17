@@ -167,7 +167,6 @@ public class TabHandler {
 						for (String split : w.split(", ")) {
 							if (world.equals(split)) {
 								String path = "per-world." + w + ".";
-								hu.montlikadani.tablist.bukkit.utils.Util.logConsole(path + "header");
 
 								header = c.isList(path + "header") ? c.getStringList(path + "header")
 										: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header"))
