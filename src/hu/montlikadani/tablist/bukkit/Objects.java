@@ -63,7 +63,7 @@ public class Objects {
 		final String main = "tablist-object-type.object-settings.";
 		final int timer = 20 * plugin.getC().getInt(main + "refresh-interval", 3);
 
-		task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+		task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
 			if (Bukkit.getOnlinePlayers().isEmpty()) {
 				cancelTask();
 				return;
@@ -132,30 +132,41 @@ public class Objects {
 	}
 
 	public void cancelTask() {
-		if (task != null) {
+		if (!isCancelled()) {
 			task.cancel();
 			task = null;
 		}
 	}
 
+	public boolean isCancelled() {
+		// Do NOT use #isCancelled method, it depends from version
+		return task == null;
+	}
+
 	public void unregisterPingTab() {
-		for (Player pl : Bukkit.getOnlinePlayers()) {
-			if (getPingObject(pl) != null) {
-				getPingObject(pl).unregister();
-			}
-		}
+		Bukkit.getOnlinePlayers().forEach(this::unregisterPingTab);
 
 		cancelTask();
 	}
 
-	public void unregisterCustomValue() {
-		for (Player pl : Bukkit.getOnlinePlayers()) {
-			if (getCustomObject(pl) != null) {
-				getCustomObject(pl).unregister();
-			}
+	public void unregisterPingTab(Player p) {
+		Objective obj = getPingObject(p);
+		if (obj != null) {
+			obj.unregister();
 		}
+	}
+
+	public void unregisterCustomValue() {
+		Bukkit.getOnlinePlayers().forEach(this::unregisterCustomValue);
 
 		cancelTask();
+	}
+
+	public void unregisterCustomValue(Player p) {
+		Objective obj = getCustomObject(p);
+		if (obj != null) {
+			obj.unregister();
+		}
 	}
 
 	public void unregisterHealthObjective() {

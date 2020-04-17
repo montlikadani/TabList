@@ -402,14 +402,18 @@ public class TabList extends JavaPlugin {
 			objects.unregisterCustomValue();
 			objects.unregisterHealthObjective();
 		} else if (!reload) {
-			objects.unregisterPingTab();
-			objects.unregisterCustomValue();
+			objects.unregisterPingTab(p);
+			objects.unregisterCustomValue(p);
 
 			switch (getC().getString("tablist-object-type.type").toLowerCase()) {
 			case "ping":
 			case "custom":
 				objects.unregisterHealthObjective();
-				objects.startTask();
+
+				if (objects.isCancelled()) {
+					objects.startTask();
+				}
+
 				break;
 			case "health":
 				objects.registerHealthTab(p);
