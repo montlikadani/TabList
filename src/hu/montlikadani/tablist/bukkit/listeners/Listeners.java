@@ -1,9 +1,11 @@
 package hu.montlikadani.tablist.bukkit.listeners;
 
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -34,6 +36,19 @@ public class Listeners implements Listener {
 
 		if (p.isOp()) {
 			Util.sendMsg(p, UpdateDownloader.checkFromGithub("player"));
+		}
+	}
+
+	@EventHandler
+	public void onGamemodeChange(PlayerGameModeChangeEvent e) {
+		Player p = e.getPlayer();
+
+		if (plugin.getHidePlayers().containsKey(p)) {
+			if (e.getNewGameMode() == GameMode.SPECTATOR) {
+				plugin.getHidePlayers().get(p).addPlayerToTab(p);
+			} else {
+				plugin.getHidePlayers().get(p).removePlayerFromTab(p, p);
+			}
 		}
 	}
 

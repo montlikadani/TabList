@@ -45,10 +45,6 @@ public class HidePlayers {
 	}
 
 	public void addPlayerToTab(Player to) {
-		a(to);
-	}
-
-	private void a(Player to) {
 		try {
 			Object packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
 					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(ReflectionUtils
