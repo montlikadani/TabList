@@ -14,7 +14,7 @@ public enum Perm {
 	SETPREFIX("tablist.setprefix"),
 	SETPRIORITY("tablist.setpriority"),
 	SETSUFFIX("tablist.setsuffix"),
-	REMOVEPLAYER("tablist.removeplayer"),
+	REMOVEGROUP("tablist.removegroup"),
 	TABNAME("tablist.tabname"),
 	TABNAMEOTHER("tablist.tabname.other"),
 	TOGGLE("tablist.toggle"),

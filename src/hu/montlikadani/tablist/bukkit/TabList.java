@@ -537,7 +537,7 @@ public class TabList extends JavaPlugin {
 		}
 
 		tabHandler.unregisterTab(p);
-		g.removeGroup(p);
+		g.removePlayerGroup(p);
 	}
 
 	void addBackAllHiddenPlayers() {

@@ -13,6 +13,10 @@ public class TeamHandler {
 		this(team, prefix, suffix, "tablist." + team);
 	}
 
+	public TeamHandler(String team, String prefix, String suffix, int priority) {
+		this(team, prefix, suffix, "tablist." + team, priority);
+	}
+
 	public TeamHandler(String team, String prefix, String suffix, String permission) {
 		this(team, prefix, suffix, permission, 0);
 	}

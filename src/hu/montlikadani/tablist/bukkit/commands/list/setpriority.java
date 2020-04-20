@@ -8,11 +8,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
+import hu.montlikadani.tablist.bukkit.Groups;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.TeamHandler;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
@@ -31,6 +31,8 @@ public class setpriority implements ICommand {
 			return false;
 		}
 
+		plugin.getConf().createGroupsFile();
+
 		if (args.length < 3) {
 			sendMsg(sender, plugin.getMsg("set-prefix-suffix.set-priority.usage", "%command%", label));
 			return false;
@@ -38,47 +40,55 @@ public class setpriority implements ICommand {
 
 		Player target = Bukkit.getPlayer(args[1]);
 		if (target == null) {
-			sendMsg(sender, plugin.getMsg("set-prefix-suffix.set-priority.player-not-found", "%target%", args[1]));
+			sendMsg(sender, plugin.getMsg("set-prefix-suffix.player-not-found", "%target%", args[1]));
 			return false;
 		}
 
-		if (!args[2].matches("[0-9]+")) {
+		String match = args[args.length == 2 ? 3 : 2];
+		if (!match.matches("[0-9]+")) {
 			sendMsg(sender, plugin.getMsg("set-prefix-suffix.set-priority.priority-must-be-number"));
 			return false;
 		}
 
-		if (plugin.getChangeType().equals("scoreboard")) {
-			Scoreboard b = Bukkit.getScoreboardManager().getNewScoreboard();
+		String name = args.length > 2 ? args[2] : target.getName();
+		int priority = Integer.parseInt(match);
 
-			String name = target.getName();
-			Team t = null;
-			if (plugin.getGS().contains("players." + target.getName() + ".sort-priority")) {
-				name = Integer.toString(plugin.getGS().getInt("players." + target.getName() + ".sort-priority"));
-				t = b.getTeam(name);
-			} else {
-				t = b.getTeam(name);
-			}
-
-			if (t != null) {
-				t.unregister();
-				target.setScoreboard(b);
-			}
-
-			t = b.registerNewTeam(args[2]);
-			target.setScoreboard(b);
-		} else if (plugin.getChangeType().equals("namer")) {
-			target.setPlayerListName(target.getName());
-		}
-
-		plugin.getGS().set("players." + target.getName() + ".sort-priority", Integer.valueOf(args[2]));
+		plugin.getGS().set("groups." + name + ".sort-priority", priority);
 		try {
 			plugin.getGS().save(plugin.getConf().getGroupsFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		sendMsg(sender, plugin.getMsg("set-prefix-suffix.set-priority.successfully-set", "%number%", args[2],
-				"%target%", target.getName()));
+		String prefix = plugin.getGS().getString("groups." + name + ".prefix", "");
+		String suffix = plugin.getGS().getString("groups." + name + ".suffix", "");
+
+		Groups groups = plugin.getGroups();
+
+		TeamHandler team = groups.getTeam(name);
+		if (team == null) {
+			team = new TeamHandler(name, prefix, suffix);
+		}
+
+		team.setPriority(priority);
+
+		if (!prefix.isEmpty()) {
+			prefix = plugin.getPlaceholders().replaceVariables(target, prefix);
+		}
+		if (!suffix.isEmpty()) {
+			suffix = plugin.getPlaceholders().replaceVariables(target, suffix);
+		}
+
+		groups.setPlayerTeam(target, prefix, suffix, team.getFullTeamName());
+
+		if (groups.getGroupsList().contains(team)) {
+			groups.getGroupsList().remove(team);
+		}
+
+		groups.getGroupsList().add(team);
+
+		sendMsg(sender,
+				plugin.getMsg("set-prefix-suffix.set-priority.successfully-set", "%group%", name, "%number%", args[2]));
 		return true;
 	}
 }

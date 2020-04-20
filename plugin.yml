@@ -42,7 +42,7 @@ permissions:
        tablist.setprefix: true
        tablist.setsuffix: true
        tablist.setpriority: true
-       tablist.removeplayer: true
+       tablist.removegroup: true
        tablist.onlinestaff: true
        tablist.reload: true
        tablist.help: true
@@ -91,7 +91,7 @@ permissions:
   tablist.setpriority:
     description: Gives access to use /tl setpriority command.
     default: false
-  tablist.removeplayer:
+  tablist.removegroup:
     description: Gives access to use /tl removeplayer command.
     default: false
   tablist.onlinestaff:

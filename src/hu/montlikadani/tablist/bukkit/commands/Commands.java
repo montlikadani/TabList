@@ -134,7 +134,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	private List<String> getCmds(CommandSender sender) {
 		List<String> c = new ArrayList<>();
-		for (String cmds : Arrays.asList("reload", "fakeplayers", "get", "removeplayer", "setprefix", "setsuffix",
+		for (String cmds : Arrays.asList("reload", "fakeplayers", "get", "removegroup", "setprefix", "setsuffix",
 				"setpriority", "toggle")) {
 			if (sender instanceof Player && !sender.hasPermission("tablist." + cmds)) {
 				continue;

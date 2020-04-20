@@ -32,22 +32,27 @@ public class toggle implements ICommand {
 			Player p = (Player) sender;
 			UUID uuid = p.getUniqueId();
 
+			boolean changed = false;
 			if (TabHandler.tabEnabled.containsKey(uuid)) {
-				if (!TabHandler.tabEnabled.get(uuid)) {
-					TabHandler.tabEnabled.put(uuid, true);
-					plugin.getTabHandler().unregisterTab(p);
-					sendMsg(p, plugin.getMsg("toggle.disabled"));
-				} else {
-					TabHandler.tabEnabled.put(uuid, false);
-					plugin.getTabHandler().updateTab(p);
-					sendMsg(p, plugin.getMsg("toggle.enabled"));
-				}
+				changed = !TabHandler.tabEnabled.get(uuid) ? true : false;
 			} else {
+				changed = true;
+			}
+
+			if (changed) {
 				TabHandler.tabEnabled.put(uuid, true);
 				plugin.getTabHandler().unregisterTab(p);
 				sendMsg(p, plugin.getMsg("toggle.disabled"));
+			} else {
+				TabHandler.tabEnabled.remove(uuid);
+				plugin.getTabHandler().updateTab(p);
+				sendMsg(p, plugin.getMsg("toggle.enabled"));
 			}
-		} else if (args.length == 2) {
+
+			return true;
+		}
+
+		if (args.length == 2) {
 			if (args[1].equalsIgnoreCase("all")) {
 				if (sender instanceof Player && !sender.hasPermission(Perm.TOGGLEALL.getPerm())) {
 					sendMsg(sender, plugin.getMsg("no-permission", "%perm%", Perm.TOGGLEALL.getPerm()));
@@ -61,17 +66,20 @@ public class toggle implements ICommand {
 
 				for (Player pl : Bukkit.getOnlinePlayers()) {
 					UUID uuid = pl.getUniqueId();
+					boolean changed = false;
+
 					if (TabHandler.tabEnabled.containsKey(uuid)) {
-						if (!TabHandler.tabEnabled.get(uuid)) {
-							TabHandler.tabEnabled.put(uuid, true);
-							plugin.getTabHandler().unregisterTab(pl);
-						} else {
-							TabHandler.tabEnabled.put(uuid, false);
-							plugin.getTabHandler().updateTab(pl);
-						}
+						changed = !TabHandler.tabEnabled.get(uuid) ? true : false;
 					} else {
+						changed = true;
+					}
+
+					if (changed) {
 						TabHandler.tabEnabled.put(uuid, true);
 						plugin.getTabHandler().unregisterTab(pl);
+					} else {
+						TabHandler.tabEnabled.remove(uuid);
+						plugin.getTabHandler().updateTab(pl);
 					}
 				}
 
@@ -85,20 +93,22 @@ public class toggle implements ICommand {
 			}
 
 			UUID uuid = pl.getUniqueId();
+			boolean changed = false;
+
 			if (TabHandler.tabEnabled.containsKey(uuid)) {
-				if (!TabHandler.tabEnabled.get(uuid)) {
-					TabHandler.tabEnabled.put(uuid, true);
-					plugin.getTabHandler().unregisterTab(pl);
-					sendMsg(sender, plugin.getMsg("toggle.disabled"));
-				} else {
-					TabHandler.tabEnabled.put(uuid, false);
-					plugin.getTabHandler().updateTab(pl);
-					sendMsg(sender, plugin.getMsg("toggle.enabled"));
-				}
+				changed = !TabHandler.tabEnabled.get(uuid) ? true : false;
 			} else {
+				changed = true;
+			}
+
+			if (changed) {
 				TabHandler.tabEnabled.put(uuid, true);
 				plugin.getTabHandler().unregisterTab(pl);
-				sendMsg(sender, plugin.getMsg("toggle.disabled"));
+				sendMsg(pl, plugin.getMsg("toggle.disabled"));
+			} else {
+				TabHandler.tabEnabled.remove(uuid);
+				plugin.getTabHandler().updateTab(pl);
+				sendMsg(pl, plugin.getMsg("toggle.enabled"));
 			}
 		}
 

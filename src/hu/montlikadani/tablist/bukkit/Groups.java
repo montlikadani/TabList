@@ -2,11 +2,11 @@ package hu.montlikadani.tablist.bukkit;
 
 import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -30,17 +30,32 @@ public class Groups {
 	private BukkitTask animationTask = null;
 	private Integer simpleTask = -1;
 
-	private final List<TeamHandler> groupsList = new ArrayList<>();
+	private final Set<TeamHandler> groupsList = new HashSet<>();
 
 	public Groups(TabList plugin) {
 		this.plugin = plugin;
 	}
 
-	public List<TeamHandler> getGroupsList() {
+	public Set<TeamHandler> getGroupsList() {
 		return groupsList;
 	}
 
+	public TeamHandler getTeam(String name) {
+		Validate.notNull(name, "The team name can't be null!");
+		Validate.notEmpty(name, "The team name can't be empty!");
+
+		for (TeamHandler handler : groupsList) {
+			if (handler.getTeam().equalsIgnoreCase(name)) {
+				return handler;
+			}
+		}
+
+		return null;
+	}
+
 	protected void load() {
+		groupsList.clear();
+
 		if (!plugin.getC().getBoolean("change-prefix-suffix-in-tablist.enable")) {
 			return;
 		}
@@ -111,7 +126,7 @@ public class Groups {
 	}
 
 	public void loadGroupForPlayer(final Player p) {
-		removeGroup(p);
+		removePlayerGroup(p);
 
 		if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.enable")) {
 			startTask(p);
@@ -123,35 +138,34 @@ public class Groups {
 			return;
 		}
 
+		TeamHandler h = null;
 		for (final TeamHandler team : groupsList) {
 			String name = team.getTeam();
 
 			if (name.equalsIgnoreCase(p.getName())) {
 				setName(p, team);
-				break;
+				return;
 			}
 
-			boolean change = false;
 			if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-vault-group-names", false)
 					&& plugin.isPluginEnabled("Vault")) {
 				for (String gn : plugin.getVaultPerm().getPlayerGroups(p)) {
 					if (gn.equalsIgnoreCase(name)) {
-						change = true;
+						h = team;
 						break;
 					}
 				}
 			} else if (plugin.isPluginEnabled("PermissionsEx")) {
 				if (PermissionsEx.getPermissionManager().has(p, team.getPermission())) {
-					change = true;
+					h = team;
 				}
 			} else if (p.hasPermission(team.getPermission())) {
-				change = true;
+				h = team;
 			}
+		}
 
-			if (change) {
-				setName(p, team);
-				break;
-			}
+		if (h != null) {
+			setName(p, h);
 		}
 	}
 
@@ -224,7 +238,7 @@ public class Groups {
 		}
 	}
 
-	private void setPlayerTeam(Player player, String prefix, String suffix, String name) {
+	public void setPlayerTeam(Player player, String prefix, String suffix, String name) {
 		Scoreboard tboard = player.getScoreboard();
 		Team team = tboard.getTeam(name);
 		if (team == null) {
@@ -253,11 +267,10 @@ public class Groups {
 	}
 
 	public void removeGroupsFromAll() {
-		Bukkit.getOnlinePlayers().forEach(this::removeGroup);
-		groupsList.clear();
+		Bukkit.getOnlinePlayers().forEach(this::removePlayerGroup);
 	}
 
-	public void removeGroup(Player p) {
+	public void removePlayerGroup(Player p) {
 		if (p == null) {
 			return;
 		}
@@ -268,8 +281,7 @@ public class Groups {
 		}
 
 		if (plugin.getChangeType().equals("scoreboard")) {
-			for (Iterator<TeamHandler> it = groupsList.iterator(); it.hasNext();) {
-				TeamHandler th = it.next();
+			for (TeamHandler th : groupsList) {
 				if (th == null) {
 					continue;
 				}
@@ -296,6 +308,23 @@ public class Groups {
 
 				p.setScoreboard(tboard);
 			}
+		}
+	}
+
+	public void removeGroup(String teamName) {
+		TeamHandler th = null;
+
+		// We using "simply for loop" because Iterator breaks in some cases
+		for (TeamHandler team : groupsList) {
+			// Use contains because of priority numbers
+			if (team.getTeam().contains(teamName)) {
+				th = team;
+				break;
+			}
+		}
+
+		if (th != null) {
+			groupsList.remove(th);
 		}
 	}
 
@@ -379,12 +408,12 @@ public class Groups {
 		}
 
 		if (plugin.getC().getBoolean(path + "hide-group-when-player-vanished") && plugin.isVanished(p, false)) {
-			removeGroup(p);
+			removePlayerGroup(p);
 			return false;
 		}
 
 		if (plugin.getC().getBoolean(path + "hide-group-when-player-afk") && plugin.isAfk(p, false)) {
-			removeGroup(p);
+			removePlayerGroup(p);
 			return false;
 		}
 
