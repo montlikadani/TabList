@@ -2,8 +2,8 @@ package hu.montlikadani.tablist.bukkit;
 
 import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang.Validate;
@@ -30,13 +30,13 @@ public class Groups {
 	private BukkitTask animationTask = null;
 	private Integer simpleTask = -1;
 
-	private final Set<TeamHandler> groupsList = new HashSet<>();
+	private final List<TeamHandler> groupsList = new ArrayList<>();
 
 	public Groups(TabList plugin) {
 		this.plugin = plugin;
 	}
 
-	public Set<TeamHandler> getGroupsList() {
+	public List<TeamHandler> getGroupsList() {
 		return groupsList;
 	}
 

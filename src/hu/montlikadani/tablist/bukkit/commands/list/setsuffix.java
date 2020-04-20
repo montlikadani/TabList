@@ -88,7 +88,8 @@ public class setsuffix implements ICommand {
 
 		groups.getGroupsList().add(team);
 
-		sendMsg(sender, plugin.getMsg("set-prefix-suffix.suffix.successfully-set", "%group%", name, "%tag%", suffix));
+		sendMsg(sender, plugin.getMsg("set-prefix-suffix.suffix.successfully-set", "%group%", name, "%tag%",
+				builder.toString()));
 		return true;
 	}
 }

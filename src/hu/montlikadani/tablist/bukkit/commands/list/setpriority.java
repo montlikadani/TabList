@@ -44,13 +44,13 @@ public class setpriority implements ICommand {
 			return false;
 		}
 
-		String match = args[args.length == 2 ? 3 : 2];
+		String match = args[args.length == 4 ? 3 : 2];
 		if (!match.matches("[0-9]+")) {
 			sendMsg(sender, plugin.getMsg("set-prefix-suffix.set-priority.priority-must-be-number"));
 			return false;
 		}
 
-		String name = args.length > 2 ? args[2] : target.getName();
+		String name = args.length > 3 ? args[2] : target.getName();
 		int priority = Integer.parseInt(match);
 
 		plugin.getGS().set("groups." + name + ".sort-priority", priority);
@@ -88,7 +88,7 @@ public class setpriority implements ICommand {
 		groups.getGroupsList().add(team);
 
 		sendMsg(sender,
-				plugin.getMsg("set-prefix-suffix.set-priority.successfully-set", "%group%", name, "%number%", args[2]));
+				plugin.getMsg("set-prefix-suffix.set-priority.successfully-set", "%group%", name, "%number%", match));
 		return true;
 	}
 }
