@@ -82,11 +82,11 @@ public class setsuffix implements ICommand {
 
 		groups.setPlayerTeam(target, prefix, suffix, team.getFullTeamName());
 
-		if (groups.getGroupsList().contains(team)) {
-			groups.getGroupsList().remove(team);
-		}
+		java.util.List<TeamHandler> teams = groups.getGroupsList();
+		teams.add(team);
 
-		groups.getGroupsList().add(team);
+		groups.getGroupsList().clear();
+		groups.getGroupsList().addAll(teams);
 
 		sendMsg(sender, plugin.getMsg("set-prefix-suffix.suffix.successfully-set", "%group%", name, "%tag%",
 				builder.toString()));

@@ -81,11 +81,11 @@ public class setpriority implements ICommand {
 
 		groups.setPlayerTeam(target, prefix, suffix, team.getFullTeamName());
 
-		if (groups.getGroupsList().contains(team)) {
-			groups.getGroupsList().remove(team);
-		}
+		java.util.List<TeamHandler> teams = groups.getGroupsList();
+		teams.add(team);
 
-		groups.getGroupsList().add(team);
+		groups.getGroupsList().clear();
+		groups.getGroupsList().addAll(teams);
 
 		sendMsg(sender,
 				plugin.getMsg("set-prefix-suffix.set-priority.successfully-set", "%group%", name, "%number%", match));
