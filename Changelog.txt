@@ -1,4 +1,22 @@
-﻿# v5.2.1
+﻿# v5.3
+- Added option to sync plugins groups to add to tablist groups.
+- Improved release downloader
+- Improved commands registration
+- Added option to count vanished staff players in placeholder
+- Fixed when the hide players from tablist option not works
+  - Fixed issue when the spectators can't go through blocks
+  - Fixed issue when the players are invisible
+- Fix errors when using protocol changer plugin
+- Now the essentials nickname can be used with scoreboard type
+- Removed option use-default-tab... from tablist file
+- Moved multiple-worlds to the section name, separates with ", " to display one tablist to other worlds.
+- Now the tablist objects running in asynchronously to prevent server performance lost.
+- Improvements in some commands
+  - Renamed removeplayer -> removegroup
+  - Now setting prefix/suffix will not disappear after some seconds
+  - Now you can create groups with setprefix/setsuffix commands
+
+# v5.2.1
 - Fixed critical issue when the players can't join through bungee
 - Now if the player have prefix and nickname set and currently is afk, then it will remains the set of format.
 - Fixed plugin not starting issue when someone renamed the file

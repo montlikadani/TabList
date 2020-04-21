@@ -243,4 +243,4 @@ download-updates: true
 logconsole: true
 
 # DO NOT CHANGE THIS!
-config-version: 16
+config-version: 17
