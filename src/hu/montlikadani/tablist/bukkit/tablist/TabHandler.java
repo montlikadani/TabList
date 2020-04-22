@@ -314,11 +314,11 @@ public class TabHandler implements ITabHandler {
 			}
 		}
 
-		if (!he.isEmpty()) {
+		if (!he.trim().isEmpty()) {
 			he = plugin.makeAnim(he);
 		}
 
-		if (!fo.isEmpty()) {
+		if (!fo.trim().isEmpty()) {
 			fo = plugin.makeAnim(fo);
 		}
 
