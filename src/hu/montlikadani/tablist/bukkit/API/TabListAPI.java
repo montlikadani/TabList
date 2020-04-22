@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.API;
+package hu.montlikadani.tablist.bukkit.API;
 
 import java.lang.reflect.Field;
 import java.util.UUID;
@@ -8,22 +8,24 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import hu.montlikadani.tablist.bukkit.FakePlayers;
 import hu.montlikadani.tablist.bukkit.TabHandler;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.TabTitle;
+import hu.montlikadani.tablist.bukkit.TeamHandler;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 
 /**
+ * The API methods for TabList.
  * 
  * @author montlikadani
- * @deprecated Moved to {@link hu.montlikadani.tablist.bukkit.API.TabListAPI}
  *
  */
-@Deprecated
 public class TabListAPI {
 
 	/**
 	 * Returns TabListAPI as a plugin
+	 * 
 	 * @return Plugin
 	 */
 	public static TabList getPlugin() {
@@ -32,6 +34,7 @@ public class TabListAPI {
 
 	/**
 	 * Gets the plugin instance.
+	 * 
 	 * @return TabList instance
 	 */
 	public static TabList getInstance() {
@@ -39,24 +42,38 @@ public class TabListAPI {
 	}
 
 	/**
-	 * Checks whatever the tablist toggled for the specified player uuid.
-	 * This is much slower to respond because it converts the string to uuid.
+	 * Checks whatever the tablist toggled for the specified player uuid. This is
+	 * much slower to respond because it converts the string to uuid.
+	 * 
 	 * @param uuid Player UUID
 	 * @return true if toggled
 	 */
-	public static boolean isTabListToggledForPlayer(String uuid) {
+	public static boolean isTabListToggled(String uuid) {
 		Validate.notNull(uuid, "Player UUID can't be null!");
 		Validate.notEmpty(uuid, "Player UUID can't be empty!");
 
-		return isTabListToggledForPlayer(UUID.fromString(uuid));
+		return isTabListToggled(UUID.fromString(uuid));
+	}
+
+	/**
+	 * Checks whatever the tablist toggled for the specified player.
+	 * 
+	 * @param uuid Player
+	 * @return true if toggled
+	 */
+	public static boolean isTabListToggled(Player player) {
+		Validate.notNull(player, "Player can't be null!");
+
+		return isTabListToggled(player.getUniqueId());
 	}
 
 	/**
 	 * Checks whatever the tablist toggled for the specified player uuid.
+	 * 
 	 * @param uuid Player UUID
 	 * @return true if toggled
 	 */
-	public static boolean isTabListToggledForPlayer(UUID uuid) {
+	public static boolean isTabListToggled(UUID uuid) {
 		Validate.notNull(uuid, "Player UUID can't be null!");
 
 		return TabHandler.TABENABLED.containsKey(uuid) && TabHandler.TABENABLED.get(uuid);
@@ -64,6 +81,7 @@ public class TabListAPI {
 
 	/**
 	 * Sends the tab header and footer to the given player
+	 * 
 	 * @param p Player
 	 * @param string Header
 	 * @param string Footer
@@ -76,6 +94,7 @@ public class TabListAPI {
 
 	/**
 	 * Sends the tab header and footer to all online players
+	 * 
 	 * @param string Header
 	 * @param string Footer
 	 */
@@ -84,7 +103,31 @@ public class TabListAPI {
 	}
 
 	/**
+	 * Creates a new fake player that only appear in tablist.
+	 * 
+	 * @param player the player who's own that player
+	 * @param name the fake player name
+	 * @return {@link FakePlayers}
+	 */
+	public static FakePlayers createFakePlayer(Player player, String name) {
+		FakePlayers fp = new FakePlayers(name);
+		fp.createFakeplayer(player);
+		return fp;
+	}
+
+	/**
+	 * Gets a group by name.
+	 * 
+	 * @param name Group name
+	 * @return {@link TeamHandler} if exists
+	 */
+	public static TeamHandler getGroup(String name) {
+		return getInstance().getGroups().getTeam(name);
+	}
+
+	/**
 	 * Gets the current ping of player
+	 * 
 	 * @param player Player
 	 * @return Ping integer
 	 */
@@ -105,6 +148,7 @@ public class TabListAPI {
 
 	/**
 	 * Gets the current tps of server.
+	 * 
 	 * @return The current TPS
 	 */
 	public static double getTPS() {

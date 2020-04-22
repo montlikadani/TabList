@@ -35,7 +35,7 @@ public class TabHandler {
 
 	private final Map<UUID, BukkitTask> task = new HashMap<>();
 
-	public static Map<UUID, Boolean> tabEnabled = new HashMap<>();
+	public static final Map<UUID, Boolean> TABENABLED = new HashMap<>();
 
 	@Deprecated
 	private List<String> lHeader;
@@ -115,7 +115,7 @@ public class TabHandler {
 
 		final UUID uuid = p.getUniqueId();
 
-		if (tabEnabled.containsKey(uuid) && tabEnabled.get(uuid)) {
+		if (TABENABLED.containsKey(uuid) && TABENABLED.get(uuid)) {
 			return;
 		}
 
@@ -290,7 +290,7 @@ public class TabHandler {
 				return;
 			}
 
-			if (tabEnabled.containsKey(uuid) && tabEnabled.get(uuid)) {
+			if (TABENABLED.containsKey(uuid) && TABENABLED.get(uuid)) {
 				TabTitle.sendTabTitle(p, "", "");
 			} else {
 				sendTab(p, enableW, worldList);
@@ -314,8 +314,8 @@ public class TabHandler {
 		if (!p.isOnline())
 			return;
 
-		if (tabEnabled != null
-				&& (tabEnabled.containsKey(p.getUniqueId()) && tabEnabled.get(p.getUniqueId())))
+		if (TABENABLED != null
+				&& (TABENABLED.containsKey(p.getUniqueId()) && TABENABLED.get(p.getUniqueId())))
 			return;
 
 		if (plugin.isHookPreventTask(p)) {
@@ -476,8 +476,8 @@ public class TabHandler {
 					return;
 				}
 
-				if (tabEnabled != null
-						&& (tabEnabled.containsKey(p.getUniqueId()) && tabEnabled.get(p.getUniqueId()))) {
+				if (TABENABLED != null
+						&& (TABENABLED.containsKey(p.getUniqueId()) && TABENABLED.get(p.getUniqueId()))) {
 					TabTitle.sendTabTitle(p, "", "");
 				} else {
 					sendTab(p, enableW);
@@ -504,8 +504,8 @@ public class TabHandler {
 						return;
 					}
 
-					if (tabEnabled != null && (tabEnabled.containsKey(p.getUniqueId())
-							&& tabEnabled.get(p.getUniqueId()))) {
+					if (TABENABLED != null && (TABENABLED.containsKey(p.getUniqueId())
+							&& TABENABLED.get(p.getUniqueId()))) {
 						TabTitle.sendTabTitle(p, "", "");
 					} else {
 						sendTab(p, enableW);
@@ -723,7 +723,7 @@ public class TabHandler {
 			return;
 		}
 
-		tabEnabled.clear();
+		TABENABLED.clear();
 
 		File f = new File(plugin.getFolder(), "toggledtablists.yml");
 		if (f.exists()) {
@@ -731,7 +731,7 @@ public class TabHandler {
 
 			if (t.contains("tablists")) {
 				for (String uuid : t.getConfigurationSection("tablists").getKeys(false)) {
-					tabEnabled.put(UUID.fromString(uuid), t.getConfigurationSection("tablists").getBoolean(uuid));
+					TABENABLED.put(UUID.fromString(uuid), t.getConfigurationSection("tablists").getBoolean(uuid));
 				}
 			}
 		}
@@ -747,7 +747,7 @@ public class TabHandler {
 			return;
 		}
 
-		if (tabEnabled.isEmpty()) {
+		if (TABENABLED.isEmpty()) {
 			return;
 		}
 
@@ -762,7 +762,7 @@ public class TabHandler {
 		FileConfiguration t = YamlConfiguration.loadConfiguration(f);
 		t.set("tablists", null);
 
-		for (Entry<UUID, Boolean> list : tabEnabled.entrySet()) {
+		for (Entry<UUID, Boolean> list : TABENABLED.entrySet()) {
 			if (list.getValue()) {
 				t.set("tablists." + list.getKey(), list.getValue());
 			}
@@ -774,6 +774,6 @@ public class TabHandler {
 			e.printStackTrace();
 		}
 
-		tabEnabled.clear();
+		TABENABLED.clear();
 	}
 }

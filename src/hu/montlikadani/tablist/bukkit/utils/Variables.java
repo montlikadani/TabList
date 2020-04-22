@@ -15,7 +15,7 @@ import com.earth2me.essentials.Essentials;
 
 import de.myzelyam.api.vanish.VanishAPI;
 import hu.montlikadani.tablist.Global;
-import hu.montlikadani.tablist.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 import me.clip.placeholderapi.PlaceholderAPI;

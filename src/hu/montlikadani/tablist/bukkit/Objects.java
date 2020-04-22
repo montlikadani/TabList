@@ -8,8 +8,8 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.RenderType;
 
-import hu.montlikadani.tablist.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.utils.Util;
+import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class Objects {

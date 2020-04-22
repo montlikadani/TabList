@@ -33,18 +33,18 @@ public class toggle implements ICommand {
 			UUID uuid = p.getUniqueId();
 
 			boolean changed = false;
-			if (TabHandler.tabEnabled.containsKey(uuid)) {
-				changed = !TabHandler.tabEnabled.get(uuid) ? true : false;
+			if (TabHandler.TABENABLED.containsKey(uuid)) {
+				changed = !TabHandler.TABENABLED.get(uuid) ? true : false;
 			} else {
 				changed = true;
 			}
 
 			if (changed) {
-				TabHandler.tabEnabled.put(uuid, true);
+				TabHandler.TABENABLED.put(uuid, true);
 				plugin.getTabHandler().unregisterTab(p);
 				sendMsg(p, plugin.getMsg("toggle.disabled"));
 			} else {
-				TabHandler.tabEnabled.remove(uuid);
+				TabHandler.TABENABLED.remove(uuid);
 				plugin.getTabHandler().updateTab(p);
 				sendMsg(p, plugin.getMsg("toggle.enabled"));
 			}
@@ -68,17 +68,17 @@ public class toggle implements ICommand {
 					UUID uuid = pl.getUniqueId();
 					boolean changed = false;
 
-					if (TabHandler.tabEnabled.containsKey(uuid)) {
-						changed = !TabHandler.tabEnabled.get(uuid) ? true : false;
+					if (TabHandler.TABENABLED.containsKey(uuid)) {
+						changed = !TabHandler.TABENABLED.get(uuid) ? true : false;
 					} else {
 						changed = true;
 					}
 
 					if (changed) {
-						TabHandler.tabEnabled.put(uuid, true);
+						TabHandler.TABENABLED.put(uuid, true);
 						plugin.getTabHandler().unregisterTab(pl);
 					} else {
-						TabHandler.tabEnabled.remove(uuid);
+						TabHandler.TABENABLED.remove(uuid);
 						plugin.getTabHandler().updateTab(pl);
 					}
 				}
@@ -95,18 +95,18 @@ public class toggle implements ICommand {
 			UUID uuid = pl.getUniqueId();
 			boolean changed = false;
 
-			if (TabHandler.tabEnabled.containsKey(uuid)) {
-				changed = !TabHandler.tabEnabled.get(uuid) ? true : false;
+			if (TabHandler.TABENABLED.containsKey(uuid)) {
+				changed = !TabHandler.TABENABLED.get(uuid) ? true : false;
 			} else {
 				changed = true;
 			}
 
 			if (changed) {
-				TabHandler.tabEnabled.put(uuid, true);
+				TabHandler.TABENABLED.put(uuid, true);
 				plugin.getTabHandler().unregisterTab(pl);
 				sendMsg(pl, plugin.getMsg("toggle.disabled"));
 			} else {
-				TabHandler.tabEnabled.remove(uuid);
+				TabHandler.TABENABLED.remove(uuid);
 				plugin.getTabHandler().updateTab(pl);
 				sendMsg(pl, plugin.getMsg("toggle.enabled"));
 			}
