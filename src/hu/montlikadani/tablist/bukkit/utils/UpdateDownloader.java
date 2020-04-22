@@ -75,9 +75,22 @@ public class UpdateDownloader {
 				return msg;
 			}
 
+			final String name = "TabList-" + versionString;
+
+			String updatesFolder = TabList.getInstance().getFolder() + File.separator + "releases";
+			File temp = new File(updatesFolder);
+			if (!temp.exists()) {
+				temp.mkdir();
+			}
+
+			final File jar = new File(updatesFolder + File.separator + name + ".jar");
+			if (jar.exists()) {
+				temp.delete();
+				return msg;
+			}
+
 			Util.logConsole("Downloading new version of TabList...");
 
-			final String name = "TabList-" + versionString;
 			final URL download = new URL(
 					"https://github.com/montlikadani/TabList/releases/latest/download/TabList.jar");
 
@@ -86,20 +99,6 @@ public class UpdateDownloader {
 				public void run() {
 					try {
 						InputStream in = download.openStream();
-						String per = File.separator;
-						String updatesFolder = TabList.getInstance().getFolder() + per + "releases";
-						File temp = new File(updatesFolder);
-						if (!temp.exists()) {
-							temp.mkdir();
-						}
-
-						File jar = new File(updatesFolder + per + name + ".jar");
-						if (jar.exists()) {
-							in.close();
-							cancel();
-							return;
-						}
-
 						Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
 						in.close();
