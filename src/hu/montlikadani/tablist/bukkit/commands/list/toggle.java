@@ -10,9 +10,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.Perm;
-import hu.montlikadani.tablist.bukkit.TabHandler;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
+import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 
 public class toggle implements ICommand {
 
@@ -33,19 +33,23 @@ public class toggle implements ICommand {
 			UUID uuid = p.getUniqueId();
 
 			boolean changed = false;
-			if (TabHandler.TABENABLED.containsKey(uuid)) {
-				changed = !TabHandler.TABENABLED.get(uuid) ? true : false;
+			if (TabManager.TABENABLED.containsKey(uuid)) {
+				changed = !TabManager.TABENABLED.get(uuid) ? true : false;
 			} else {
 				changed = true;
 			}
 
+			if (!plugin.getTabManager().isPlayerInTab(p)) {
+				return true;
+			}
+
 			if (changed) {
-				TabHandler.TABENABLED.put(uuid, true);
-				plugin.getTabHandler().unregisterTab(p);
+				TabManager.TABENABLED.put(uuid, true);
+				plugin.getTabManager().getPlayerTab(p).unregisterTab();
 				sendMsg(p, plugin.getMsg("toggle.disabled"));
 			} else {
-				TabHandler.TABENABLED.remove(uuid);
-				plugin.getTabHandler().updateTab(p);
+				TabManager.TABENABLED.remove(uuid);
+				plugin.getTabManager().getPlayerTab(p).updateTab();
 				sendMsg(p, plugin.getMsg("toggle.enabled"));
 			}
 
@@ -68,18 +72,22 @@ public class toggle implements ICommand {
 					UUID uuid = pl.getUniqueId();
 					boolean changed = false;
 
-					if (TabHandler.TABENABLED.containsKey(uuid)) {
-						changed = !TabHandler.TABENABLED.get(uuid) ? true : false;
+					if (TabManager.TABENABLED.containsKey(uuid)) {
+						changed = !TabManager.TABENABLED.get(uuid) ? true : false;
 					} else {
 						changed = true;
 					}
 
+					if (!plugin.getTabManager().isPlayerInTab(pl)) {
+						continue;
+					}
+
 					if (changed) {
-						TabHandler.TABENABLED.put(uuid, true);
-						plugin.getTabHandler().unregisterTab(pl);
+						TabManager.TABENABLED.put(uuid, true);
+						plugin.getTabManager().getPlayerTab(pl).unregisterTab();
 					} else {
-						TabHandler.TABENABLED.remove(uuid);
-						plugin.getTabHandler().updateTab(pl);
+						TabManager.TABENABLED.remove(uuid);
+						plugin.getTabManager().getPlayerTab(pl).updateTab();
 					}
 				}
 
@@ -95,19 +103,23 @@ public class toggle implements ICommand {
 			UUID uuid = pl.getUniqueId();
 			boolean changed = false;
 
-			if (TabHandler.TABENABLED.containsKey(uuid)) {
-				changed = !TabHandler.TABENABLED.get(uuid) ? true : false;
+			if (TabManager.TABENABLED.containsKey(uuid)) {
+				changed = !TabManager.TABENABLED.get(uuid) ? true : false;
 			} else {
 				changed = true;
 			}
 
+			if (!plugin.getTabManager().isPlayerInTab(pl)) {
+				return true;
+			}
+
 			if (changed) {
-				TabHandler.TABENABLED.put(uuid, true);
-				plugin.getTabHandler().unregisterTab(pl);
+				TabManager.TABENABLED.put(uuid, true);
+				plugin.getTabManager().getPlayerTab(pl).unregisterTab();
 				sendMsg(pl, plugin.getMsg("toggle.disabled"));
 			} else {
-				TabHandler.TABENABLED.remove(uuid);
-				plugin.getTabHandler().updateTab(pl);
+				TabManager.TABENABLED.remove(uuid);
+				plugin.getTabManager().getPlayerTab(pl).updateTab();
 				sendMsg(pl, plugin.getMsg("toggle.enabled"));
 			}
 		}

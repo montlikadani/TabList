@@ -29,6 +29,7 @@ import hu.montlikadani.tablist.bukkit.commands.Commands;
 import hu.montlikadani.tablist.bukkit.commands.TabNameCmd;
 import hu.montlikadani.tablist.bukkit.listeners.EssAfkStatus;
 import hu.montlikadani.tablist.bukkit.listeners.Listeners;
+import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 import hu.montlikadani.tablist.bukkit.utils.Metrics;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
@@ -48,11 +49,12 @@ public class TabList extends JavaPlugin {
 	private Groups g = null;
 	private ServerVersion mcVersion = null;
 	private Configuration conf = null;
-	private TabHandler tabHandler = null;
+	private TabManager tabManager = null;
 
 	private boolean papi = false;
-	private boolean oldTab = false;
 	private boolean isSpigot = false;
+
+	private int tabRefreshTime = 0;
 
 	private final Set<FakePlayers> fpList = new HashSet<>();
 	private final Set<AnimCreator> animations = new HashSet<>();
@@ -105,16 +107,10 @@ public class TabList extends JavaPlugin {
 			loadListeners();
 			registerCommands();
 
-			tabHandler.loadToggledTabs();
+			tabManager.loadToggledTabs();
 			g.load();
 
 			getServer().getOnlinePlayers().forEach(this::updateAll);
-
-			if (oldTab) {
-				logConsole(
-						"Seems you still using the deprecated (old) tablist. The new tablist moved to a new file named with tablist.yml.");
-				logConsole("It's very important to move your tablist settings to the new file to prevent any issues.");
-			}
 
 			logConsole(UpdateDownloader.checkFromGithub("console"));
 
@@ -156,14 +152,20 @@ public class TabList extends JavaPlugin {
 
 		try {
 			g.cancelUpdate();
+
 			objects.unregisterHealthObjective();
 			objects.unregisterPingTab();
 			objects.unregisterCustomValue();
-			tabHandler.saveToggledTabs();
-			tabHandler.unregisterTab();
+
+			tabManager.saveToggledTabs();
+			tabManager.removePlayer();
+
 			addBackAllHiddenPlayers();
+
 			removeAllFakePlayer();
+
 			HandlerList.unregisterAll(this);
+
 			getServer().getScheduler().cancelTasks(this);
 
 			if (getC().getBoolean("logconsole")) {
@@ -185,7 +187,7 @@ public class TabList extends JavaPlugin {
 		objects = new Objects();
 		g = new Groups(this);
 		variables = new Variables(this);
-		tabHandler = new TabHandler(this);
+		tabManager = new TabManager(this);
 	}
 
 	private void registerCommands() {
@@ -207,7 +209,7 @@ public class TabList extends JavaPlugin {
 	}
 
 	public void reload() {
-		tabHandler.unregisterTab();
+		tabManager.removePlayer();
 		g.cancelUpdate();
 
 		loadListeners();
@@ -224,16 +226,7 @@ public class TabList extends JavaPlugin {
 		this.papi = getC().contains("placeholderapi") ? getC().getBoolean("placeholderapi")
 				: getC().getBoolean("hook.placeholderapi", false);
 
-		int utick = 0;
-		if (getC().contains("tablist")) {
-			oldTab = true;
-			utick = getC().getInt("tablist.interval");
-		} else {
-			oldTab = false;
-			utick = getTabC().getInt("interval", 4);
-		}
-
-		tabHandler.setUpdateInterval(utick);
+		this.tabRefreshTime = getTabC().getInt("interval", 4);
 	}
 
 	private void loadAnimations() {
@@ -383,7 +376,7 @@ public class TabList extends JavaPlugin {
 		}
 	}
 
-	protected String makeAnim(String name) {
+	public String makeAnim(String name) {
 		for (AnimCreator ac : animations) {
 			name = name.replace("%anim:" + ac.getAnimName() + "%",
 					ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
@@ -450,7 +443,7 @@ public class TabList extends JavaPlugin {
 		}
 
 		loadTabName(p);
-		tabHandler.updateTab(p);
+		tabManager.addPlayer(p);
 	}
 
 	public boolean createPlayer(Player p, String name) {
@@ -536,7 +529,8 @@ public class TabList extends JavaPlugin {
 			hidePlayers.remove(p);
 		}
 
-		tabHandler.unregisterTab(p);
+		tabManager.removePlayer(p);
+
 		g.removePlayerGroup(p);
 	}
 
@@ -582,7 +576,7 @@ public class TabList extends JavaPlugin {
 		return msg;
 	}
 
-	boolean isAfk(Player p, boolean log) {
+	public boolean isAfk(Player p, boolean log) {
 		if (isPluginEnabled("Essentials")) {
 			return getPlugin(Essentials.class).getUser(p).isAfk();
 		}
@@ -594,7 +588,7 @@ public class TabList extends JavaPlugin {
 		return false;
 	}
 
-	boolean isVanished(Player p, boolean log) {
+	public boolean isVanished(Player p, boolean log) {
 		if (isPluginEnabled("Essentials")) {
 			return getPlugin(Essentials.class).getUser(p).isVanished();
 		}
@@ -624,10 +618,6 @@ public class TabList extends JavaPlugin {
 		return isSpigot;
 	}
 
-	public boolean isUsingOldTab() {
-		return oldTab;
-	}
-
 	public Variables getPlaceholders() {
 		return variables;
 	}
@@ -640,8 +630,8 @@ public class TabList extends JavaPlugin {
 		return animations;
 	}
 
-	public TabHandler getTabHandler() {
-		return tabHandler;
+	public TabManager getTabManager() {
+		return tabManager;
 	}
 
 	public Groups getGroups() {
@@ -672,7 +662,7 @@ public class TabList extends JavaPlugin {
 		return conf.getGroups();
 	}
 
-	Permission getVaultPerm() {
+	public Permission getVaultPerm() {
 		return perm;
 	}
 
@@ -682,6 +672,10 @@ public class TabList extends JavaPlugin {
 
 	public boolean hasPapi() {
 		return papi;
+	}
+
+	public int getTabRefreshTime() {
+		return tabRefreshTime;
 	}
 
 	/**

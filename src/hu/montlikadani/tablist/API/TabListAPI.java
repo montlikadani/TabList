@@ -8,9 +8,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import hu.montlikadani.tablist.bukkit.TabHandler;
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.TabTitle;
+import hu.montlikadani.tablist.bukkit.tablist.TabManager;
+import hu.montlikadani.tablist.bukkit.tablist.TabTitle;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 
 /**
@@ -59,7 +59,7 @@ public class TabListAPI {
 	public static boolean isTabListToggledForPlayer(UUID uuid) {
 		Validate.notNull(uuid, "Player UUID can't be null!");
 
-		return TabHandler.TABENABLED.containsKey(uuid) && TabHandler.TABENABLED.get(uuid);
+		return TabManager.TABENABLED.containsKey(uuid) && TabManager.TABENABLED.get(uuid);
 	}
 
 	/**
