@@ -59,7 +59,11 @@ public class TabListManager {
 		}
 
 		final UUID uuid = p.getUniqueId();
-		if (SpongeCommands.enabled.containsKey(uuid) && SpongeCommands.enabled.get(uuid)) {
+		if (taskMap.containsKey(uuid)) {
+			cancelTab(p);
+		}
+
+		if (SpongeCommands.TABENABLED.containsKey(uuid) && SpongeCommands.TABENABLED.get(uuid)) {
 			return;
 		}
 
@@ -81,7 +85,9 @@ public class TabListManager {
 		setHeader(header);
 		setFooter(footer);
 
-		if (conf.getInt("tablist", "update-time") < 1) {
+		final int refreshTime = conf.getInt("tablist", "update-time");
+
+		if (refreshTime < 1) {
 			cancelTab(p);
 
 			if (conf.getStringList("tablist", "disabled-worlds").contains(world)) {
@@ -96,7 +102,7 @@ public class TabListManager {
 			return;
 		}
 
-		taskMap.put(uuid, Task.builder().async().intervalTicks(conf.getInt("tablist", "update-time")).execute(task -> {
+		taskMap.put(uuid, Task.builder().async().intervalTicks(refreshTime).execute(task -> {
 			if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
 				cancelTabForAll();
 				return;
@@ -110,15 +116,17 @@ public class TabListManager {
 				return;
 			}
 
-			if (SpongeCommands.enabled.containsKey(uuid) && SpongeCommands.enabled.get(uuid)) {
+			if (SpongeCommands.TABENABLED.containsKey(uuid) && SpongeCommands.TABENABLED.get(uuid)) {
 				sendTabList(p, "", "");
-			} else {
-				updateTab(p);
+				cancelTab(p);
+				return;
 			}
+
+			updateTab(p);
 		}).submit(plugin));
 	}
 
-	public void updateTab(Player p) {
+	private void updateTab(Player p) {
 		String he = "";
 		int r = 0;
 
@@ -187,13 +195,17 @@ public class TabListManager {
 
 	public void cancelTabForAll() {
 		Sponge.getServer().getOnlinePlayers().forEach(this::cancelTab);
+
+		// To make sure all removed
 		taskMap.clear();
 	}
 
 	public void cancelTab(Player p) {
 		UUID uuid = p.getUniqueId();
+
 		if (taskMap.containsKey(uuid)) {
 			taskMap.get(uuid).cancel();
+			taskMap.remove(uuid);
 		}
 	}
 }

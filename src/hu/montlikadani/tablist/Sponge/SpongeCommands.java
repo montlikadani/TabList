@@ -23,18 +23,18 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 	private CommandCallable reloadCmd;
 	private CommandCallable toggleCmd;
 
-	public static Map<UUID, Boolean> enabled = new HashMap<>();
+	public static final Map<UUID, Boolean> TABENABLED = new HashMap<>();
 
 	public SpongeCommands(TabList plugin) {
 		this.plugin = plugin;
 
-		reloadCmd = CommandSpec.builder().description(Text.of("Reloads the plugin"))
-				.arguments(GenericArguments.optional(GenericArguments.none())).permission("tablist.reload")
-				.executor(this::reloadCommand).build();
+		reloadCmd = CommandSpec.builder().description(Text.of("Reloads the plugin")).arguments(GenericArguments.none())
+				.permission("tablist.reload").executor(this::reloadCommand).build();
 
 		toggleCmd = CommandSpec.builder().description(Text.of("Toggle on/off the tablist."))
-				.arguments(GenericArguments.optional(GenericArguments.player(Text.of("player"))),
-						GenericArguments.optional(GenericArguments.string(Text.of("all"))))
+				.arguments(GenericArguments.optional(GenericArguments.firstParsing(
+						GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))),
+						GenericArguments.string(Text.of("all")))))
 				.permission("tablist.toggle").executor(this::toggleCommand).build();
 	}
 
@@ -49,60 +49,73 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 	}
 
 	private CommandResult toggleCommand(CommandSource src, CommandContext args) {
-		if (args.hasAny("player")) {
-			Player p = args.<Player>getOne("player").get();
-			UUID uuid = p.getUniqueId();
-
-			if (enabled.containsKey(uuid)) {
-				if (!enabled.get(uuid)) {
-					enabled.put(uuid, true);
-					sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
-				} else {
-					enabled.put(uuid, false);
-					sendMsg(src, "&aThe tab has been enabled for &e" + p.getName() + "&a!");
-				}
-			} else {
-				enabled.put(uuid, true);
-				sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
-			}
-
-			return CommandResult.success();
-		} else if (args.hasAny("all")) {
+		if (args.<String>getOne("all").isPresent() && args.<String>getOne("all").get().equalsIgnoreCase("all")) {
 			if (!hasPerm(src, "tablist.toggle.all")) {
 				return CommandResult.empty();
 			}
 
 			for (Player pl : Sponge.getServer().getOnlinePlayers()) {
 				UUID uuid = pl.getUniqueId();
-				if (enabled.containsKey(uuid)) {
-					if (!enabled.get(uuid)) {
-						enabled.put(uuid, true);
-						plugin.getTManager().cancelTab(pl);
-					} else {
-						enabled.put(uuid, false);
-						plugin.getTManager().loadTab(pl);
-					}
+
+				boolean changed = false;
+				if (TABENABLED.containsKey(uuid)) {
+					changed = !TABENABLED.get(uuid) ? true : false;
 				} else {
-					enabled.put(uuid, true);
-					plugin.getTManager().cancelTab(pl);
+					changed = true;
+				}
+
+				if (changed) {
+					TABENABLED.put(uuid, true);
+				} else {
+					TABENABLED.remove(uuid);
+					plugin.getTManager().loadTab(pl);
 				}
 			}
 
 			return CommandResult.success();
-		} else if (src instanceof Player) {
+		}
+
+		if (args.<Player>getOne("player").isPresent()) {
+			Player p = args.<Player>getOne("player").get();
+			UUID uuid = p.getUniqueId();
+
+			boolean changed = false;
+			if (TABENABLED.containsKey(uuid)) {
+				changed = !TABENABLED.get(uuid) ? true : false;
+			} else {
+				changed = true;
+			}
+
+			if (changed) {
+				TABENABLED.put(uuid, true);
+				sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
+			} else {
+				TABENABLED.remove(uuid);
+				plugin.getTManager().loadTab(p);
+				sendMsg(src, "&aThe tab has been enabled for &e" + p.getName() + "&a!");
+			}
+
+			return CommandResult.success();
+		}
+
+		if (src instanceof Player) {
 			Player p = (Player) src;
 			UUID uuid = p.getUniqueId();
-			if (enabled.containsKey(uuid)) {
-				if (!enabled.get(uuid)) {
-					enabled.put(uuid, true);
-					sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
-				} else {
-					enabled.put(uuid, false);
-					sendMsg(src, "&aThe tab has been enabled for &e" + p.getName() + "&a!");
-				}
+
+			boolean changed = false;
+			if (TABENABLED.containsKey(uuid)) {
+				changed = !TABENABLED.get(uuid) ? true : false;
 			} else {
-				enabled.put(uuid, true);
+				changed = true;
+			}
+
+			if (changed) {
+				TABENABLED.put(uuid, true);
 				sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
+			} else {
+				TABENABLED.remove(uuid);
+				plugin.getTManager().loadTab(p);
+				sendMsg(src, "&aThe tab has been enabled for &e" + p.getName() + "&a!");
 			}
 
 			return CommandResult.success();
@@ -117,11 +130,7 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 	}
 
 	private boolean hasPerm(CommandSource src, String perm) {
-		if (!(src instanceof Player)) {
-			return true;
-		}
-
-		return src.hasPermission(perm);
+		return !(src instanceof Player) ? true : src.hasPermission(perm);
 	}
 
 	private void sendMsg(CommandSource src, String msg) {
