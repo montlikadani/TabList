@@ -12,8 +12,6 @@ import org.spongepowered.api.plugin.PluginContainer;
 
 import com.google.inject.Inject;
 
-import hu.montlikadani.tablist.AnimCreator;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -66,10 +64,16 @@ public class TabList {
 	}
 
 	private void initConfigs() {
-		config = new ConfigHandlers(this, "spongeConfig.conf");
+		if (config == null) {
+			config = new ConfigHandlers(this, "spongeConfig.conf");
+		}
+
 		config.reload();
 
-		animationsFile = new ConfigHandlers(this, "animations.conf");
+		if (animationsFile == null) {
+			animationsFile = new ConfigHandlers(this, "animations.conf");
+		}
+
 		animationsFile.reload();
 		loadAnimations();
 	}
@@ -84,13 +88,7 @@ public class TabList {
 			tManager = new TabListManager(this);
 		}
 
-		if (config == null || !config.getConfig().getFile().exists()) {
-			initConfigs();
-		} else {
-			config.reload();
-		}
-
-		loadAnimations();
+		initConfigs();
 
 		tManager.cancelTabForAll();
 		Sponge.getServer().getOnlinePlayers().forEach(tManager::loadTab);

@@ -58,10 +58,9 @@ public class TabListManager {
 			return;
 		}
 
+		cancelTab(p);
+
 		final UUID uuid = p.getUniqueId();
-		if (taskMap.containsKey(uuid)) {
-			cancelTab(p);
-		}
 
 		if (SpongeCommands.TABENABLED.containsKey(uuid) && SpongeCommands.TABENABLED.get(uuid)) {
 			return;
@@ -90,11 +89,8 @@ public class TabListManager {
 		if (refreshTime < 1) {
 			cancelTab(p);
 
-			if (conf.getStringList("tablist", "disabled-worlds").contains(world)) {
-				return;
-			}
-
-			if (conf.getStringList("tablist", "blacklisted-players").contains(pName)) {
+			if (conf.getStringList("tablist", "disabled-worlds").contains(world)
+					|| conf.getStringList("tablist", "blacklisted-players").contains(pName)) {
 				return;
 			}
 
@@ -108,15 +104,9 @@ public class TabListManager {
 				return;
 			}
 
-			if (conf.getStringList("tablist", "disabled-worlds").contains(world)) {
-				return;
-			}
-
-			if (conf.getStringList("tablist", "blacklisted-players").contains(pName)) {
-				return;
-			}
-
-			if (SpongeCommands.TABENABLED.containsKey(uuid) && SpongeCommands.TABENABLED.get(uuid)) {
+			if (conf.getStringList("tablist", "disabled-worlds").contains(world)
+					|| conf.getStringList("tablist", "blacklisted-players").contains(pName)
+					|| (SpongeCommands.TABENABLED.containsKey(uuid) && SpongeCommands.TABENABLED.get(uuid))) {
 				sendTabList(p, "", "");
 				cancelTab(p);
 				return;
@@ -170,16 +160,13 @@ public class TabListManager {
 			}
 		}
 
-		if (he.trim().isEmpty()) {
-			he = "Something wrong with your tablist config in header section! Please check it!";
+		if (!he.trim().isEmpty()) {
+			he = plugin.makeAnim(he);
 		}
 
-		if (fo.trim().isEmpty()) {
-			fo = "Something wrong with your tablist config in footer section! Please check it!";
+		if (!fo.trim().isEmpty()) {
+			fo = plugin.makeAnim(fo);
 		}
-
-		he = plugin.makeAnim(he);
-		fo = plugin.makeAnim(fo);
 
 		Variables v = plugin.getVariables();
 		sendTabList(p, v.replaceVariables(p, he), v.replaceVariables(p, fo));
