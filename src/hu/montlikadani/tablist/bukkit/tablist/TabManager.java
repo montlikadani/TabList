@@ -47,6 +47,7 @@ public class TabManager {
 		}
 
 		TabHandler tabHandler = getPlayerTab(player);
+		tabHandler.unregisterTab();
 		tabPlayers.remove(tabHandler);
 	}
 

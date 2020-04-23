@@ -57,7 +57,7 @@ public class Listeners implements Listener {
 		Player pla = eve.getPlayer();
 
 		if (plugin.getTabManager().isPlayerInTab(pla)) {
-			plugin.getTabManager().getPlayerTab(pla).unregisterTab();
+			plugin.getTabManager().removePlayer(pla);
 		}
 
 		plugin.updateAll(pla);

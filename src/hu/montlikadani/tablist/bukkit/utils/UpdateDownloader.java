@@ -85,19 +85,18 @@ public class UpdateDownloader {
 
 			final File jar = new File(updatesFolder + File.separator + name + ".jar");
 			if (jar.exists()) {
-				temp.delete();
 				return msg;
 			}
 
 			Util.logConsole("Downloading new version of TabList...");
 
-			final URL download = new URL(
-					"https://github.com/montlikadani/TabList/releases/latest/download/TabList.jar");
-
 			new BukkitRunnable() {
 				@Override
 				public void run() {
 					try {
+						final URL download = new URL(
+								"https://github.com/montlikadani/TabList/releases/latest/download/" + name + ".jar");
+
 						InputStream in = download.openStream();
 						Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
