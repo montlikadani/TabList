@@ -12,7 +12,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
-import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class Listeners implements Listener {
 
@@ -35,7 +34,7 @@ public class Listeners implements Listener {
 		}
 
 		if (p.isOp()) {
-			Util.sendMsg(p, UpdateDownloader.checkFromGithub("player"));
+			UpdateDownloader.checkFromGithub(p);
 		}
 	}
 

@@ -101,6 +101,8 @@ public class Groups {
 		}
 
 		if (plugin.getGS().contains("groups")) {
+			int last = 0;
+
 			for (String g : plugin.getGS().getConfigurationSection("groups").getKeys(false)) {
 				if (g.equalsIgnoreCase("exampleGroup")) {
 					continue;
@@ -110,15 +112,12 @@ public class Groups {
 
 				String prefix = plugin.getGS().getString(path + "prefix", "");
 				String suffix = plugin.getGS().getString(path + "suffix", "");
-
 				String perm = plugin.getGS().getString(path + "permission", "");
-				if (perm.trim().isEmpty()) {
-					perm = "tablist." + g;
-				}
-
-				int priority = plugin.getGS().getInt(path + "sort-priority", 0);
+				int priority = plugin.getGS().getInt(path + "sort-priority", last + 1);
 
 				groupsList.add(new TeamHandler(g, prefix, suffix, perm, priority));
+
+				last = priority;
 			}
 		}
 
@@ -138,7 +137,6 @@ public class Groups {
 			return;
 		}
 
-		TeamHandler h = null;
 		for (final TeamHandler team : groupsList) {
 			String name = team.getTeam();
 
@@ -147,25 +145,25 @@ public class Groups {
 				return;
 			}
 
-			if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-vault-group-names", false)
-					&& plugin.isPluginEnabled("Vault")) {
-				for (String gn : plugin.getVaultPerm().getPlayerGroups(p)) {
-					if (gn.equalsIgnoreCase(name)) {
-						h = team;
-						break;
-					}
-				}
-			} else if (plugin.isPluginEnabled("PermissionsEx")) {
-				if (PermissionsEx.getPermissionManager().has(p, team.getPermission())) {
-					h = team;
-				}
-			} else if (p.hasPermission(team.getPermission())) {
-				h = team;
+			boolean change = false;
+			if (plugin.isPluginEnabled("Vault") && plugin.getVaultPerm().playerInGroup(p, name)) {
+				change = true;
 			}
-		}
 
-		if (h != null) {
-			setName(p, h);
+			if (!team.getPermission().isEmpty()) {
+				if (plugin.isPluginEnabled("PermissionsEx")) {
+					if (PermissionsEx.getPermissionManager().has(p, team.getPermission())) {
+						change = true;
+					}
+				} else if (p.hasPermission(team.getPermission())) {
+					change = true;
+				}
+			}
+
+			if (change) {
+				setName(p, team);
+				break;
+			}
 		}
 	}
 
@@ -193,16 +191,18 @@ public class Groups {
 				}
 			}
 
+			String teamName = team.getTeam();
+
 			if (plugin.isPluginEnabled("Essentials")
 					&& plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
-				User user = JavaPlugin.getPlugin(Essentials.class).getUser(p);
-				if (user.getNickname() != null) {
-					p.setPlayerListName(prefix + user.getNickname() + suffix);
-					return;
+				String nick = JavaPlugin.getPlugin(Essentials.class).getUser(p).getNickname();
+				if (nick != null) {
+					teamName = nick;
+					prefix += nick;
 				}
 			}
 
-			setPlayerTeam(p, prefix, suffix, team.getFullTeamName());
+			setPlayerTeam(p, prefix, suffix, (1000 + team.getPriority()) + teamName);
 		} else if (plugin.getChangeType().equals("namer")) {
 			String result = "";
 
@@ -239,6 +239,10 @@ public class Groups {
 	}
 
 	public void setPlayerTeam(Player player, String prefix, String suffix, String name) {
+		if (name.length() > 16) {
+			name = name.substring(0, 16);
+		}
+
 		Scoreboard tboard = player.getScoreboard();
 		Team team = tboard.getTeam(name);
 		if (team == null) {
@@ -275,8 +279,7 @@ public class Groups {
 			return;
 		}
 
-		if (plugin.getChangeType().equals("namer")
-				|| plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
+		if (plugin.getChangeType().equals("namer")) {
 			p.setPlayerListName(p.getName());
 		}
 
@@ -414,11 +417,6 @@ public class Groups {
 
 		if (plugin.getC().getBoolean(path + "hide-group-when-player-afk") && plugin.isAfk(p, false)) {
 			removePlayerGroup(p);
-			return false;
-		}
-
-		if (plugin.getC().getBoolean(path + "use-displayname")) {
-			p.setPlayerListName(p.getDisplayName());
 			return false;
 		}
 

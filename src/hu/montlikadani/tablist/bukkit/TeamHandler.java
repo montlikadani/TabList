@@ -1,6 +1,6 @@
 package hu.montlikadani.tablist.bukkit;
 
-public class TeamHandler {
+public class TeamHandler implements Cloneable {
 
 	private String team;
 	private String prefix;
@@ -10,11 +10,11 @@ public class TeamHandler {
 	private int priority;
 
 	public TeamHandler(String team, String prefix, String suffix) {
-		this(team, prefix, suffix, "tablist." + team);
+		this(team, prefix, suffix, "");
 	}
 
 	public TeamHandler(String team, String prefix, String suffix, int priority) {
-		this(team, prefix, suffix, "tablist." + team, priority);
+		this(team, prefix, suffix, "", priority);
 	}
 
 	public TeamHandler(String team, String prefix, String suffix, String permission) {
@@ -71,5 +71,16 @@ public class TeamHandler {
 
 	public int getPriority() {
 		return priority;
+	}
+
+	@Override
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 }

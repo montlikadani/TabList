@@ -132,11 +132,6 @@ change-prefix-suffix-in-tablist:
     list:
     #- myWorld
 
-  # true - In groups file set equal group name as the permissions group. Vault plugin is required.
-  # false - In groups file use any group name, but specify a permission and then grant it
-  # to the permissions group.
-  use-vault-group-names: true
-
   # This for lazy users is designed to automatically add groups to the list of tablists every time
   # there is a reload, so the user has less to do.
   # If a plugin does not support Vault, it will not be added.
@@ -154,11 +149,6 @@ change-prefix-suffix-in-tablist:
   # true - Using this format: "prefix playerNickName suffix"
   # false - Using this format: "prefix playerOriginalName suffix"
   use-essentials-nickname: false
-
-  # Use the player displayname instead of groups?
-  # This supports the player "prefix playerName suffix" format like on chat.
-  # If the player has no any format on chat then display the player name.
-  use-displayname: false
 
   # Scoreboard changing types (if you experience some problems by changing group).
   # scoreboard - Maximum character is 16 (if use 1.13+ version max. 64) in prefix & suffix.

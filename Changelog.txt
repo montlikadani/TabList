@@ -1,4 +1,11 @@
-﻿# v5.3
+﻿# v5.3.1
+- Added more methods to API
+- Reworked the whole tablist handler to work with per-player
+- Removed the old tablist section that found in main config. Not supported anymore
+- Fixed critical error when the plugin tries to download the new release from github.
+- Fixed issue when the per-group tablist not works on world change
+
+# v5.3
 - Added option to sync plugins groups to add to tablist groups.
 - Improved release downloader
 - Improved commands registration

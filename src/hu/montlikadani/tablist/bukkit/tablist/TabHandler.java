@@ -74,6 +74,8 @@ public class TabHandler implements ITabHandler {
 			return;
 		}
 
+		unregisterTab();
+
 		if (plugin.getConf().getTablistFile() == null || !plugin.getConf().getTablistFile().exists()) {
 			return;
 		}
@@ -84,7 +86,6 @@ public class TabHandler implements ITabHandler {
 		}
 
 		if (!c.getBoolean("enabled")) {
-			unregisterTab();
 			return;
 		}
 
@@ -105,7 +106,6 @@ public class TabHandler implements ITabHandler {
 
 		final List<String> worldList = new ArrayList<>();
 
-		String group = null;
 		if (c.contains("per-world")) {
 			if (c.contains("per-world." + world + ".per-player." + pName)) {
 				String path = "per-world." + world + ".per-player." + pName + ".";
@@ -156,6 +156,8 @@ public class TabHandler implements ITabHandler {
 			}
 
 			if ((header == null && footer == null) && c.contains("per-world." + world + ".per-group")) {
+				String group = null;
+
 				if (plugin.isPluginEnabled("Vault")) {
 					try {
 						group = plugin.getVaultPerm().getPrimaryGroup(world, player);
@@ -189,6 +191,8 @@ public class TabHandler implements ITabHandler {
 		}
 
 		if ((header == null && footer == null) && c.contains("per-group")) {
+			String group = null;
+
 			if (plugin.isPluginEnabled("Vault")) {
 				try {
 					group = plugin.getVaultPerm().getPrimaryGroup(player);

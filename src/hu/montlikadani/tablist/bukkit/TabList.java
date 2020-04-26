@@ -112,7 +112,7 @@ public class TabList extends JavaPlugin {
 
 			getServer().getOnlinePlayers().forEach(this::updateAll);
 
-			logConsole(UpdateDownloader.checkFromGithub("console"));
+			UpdateDownloader.checkFromGithub(getServer().getConsoleSender());
 
 			Metrics metrics = new Metrics(this, 1479);
 			if (metrics.isEnabled()) {
