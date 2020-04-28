@@ -63,6 +63,8 @@ public class TabList extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		long load = System.currentTimeMillis();
+
 		instance = this;
 
 		try {
@@ -134,7 +136,7 @@ public class TabList extends JavaPlugin {
 
 			if (getC().getBoolean("logconsole")) {
 				String msg = "&6&l[&5&lTab&c&lList&6&l]&7&l >&a The plugin successfully enabled&6 v"
-						+ getDescription().getVersion() + "&a!";
+						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)";
 				Util.sendMsg(getServer().getConsoleSender(), colorMsg(msg));
 			}
 		} catch (Throwable e) {
@@ -537,11 +539,6 @@ public class TabList extends JavaPlugin {
 	void addBackAllHiddenPlayers() {
 		hidePlayers.entrySet().forEach(e -> e.getValue().addPlayerToTab());
 		hidePlayers.clear();
-	}
-
-	public String getChangeType() {
-		String path = "change-prefix-suffix-in-tablist.changing-type";
-		return getC().getString(path, "").isEmpty() ? "namer" : getC().getString(path).toLowerCase();
 	}
 
 	public String getMsg(String key, Object... placeholders) {

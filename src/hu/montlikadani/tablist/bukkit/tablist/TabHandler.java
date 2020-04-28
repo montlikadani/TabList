@@ -81,23 +81,19 @@ public class TabHandler implements ITabHandler {
 		}
 
 		final FileConfiguration c = plugin.getTabC();
-		if (c == null) {
-			return;
-		}
-
-		if (!c.getBoolean("enabled")) {
+		if (c == null || !c.getBoolean("enabled")) {
 			return;
 		}
 
 		final UUID uuid = player.getUniqueId();
+		final String world = player.getWorld().getName();
+		final String pName = player.getName();
 
-		if ((TabManager.TABENABLED.containsKey(uuid) && TabManager.TABENABLED.get(uuid))
+		if (c.getStringList("disabled-worlds").contains(world) || c.getStringList("blacklisted-players").contains(pName)
+				|| (TabManager.TABENABLED.containsKey(uuid) && TabManager.TABENABLED.get(uuid))
 				|| plugin.isHookPreventTask(player)) {
 			return;
 		}
-
-		final String world = player.getWorld().getName();
-		final String pName = player.getName();
 
 		List<String> header = null;
 		List<String> footer = null;
@@ -235,12 +231,6 @@ public class TabHandler implements ITabHandler {
 
 		if (refreshTime < 1) {
 			cancelTask();
-
-			if (c.getStringList("disabled-worlds").contains(world)
-					|| c.getStringList("blacklisted-players").contains(pName)) {
-				return;
-			}
-
 			sendTab(worldEnable, worldList);
 			return;
 		}

@@ -55,17 +55,15 @@ public class UpdateDownloader {
 					String msg = "";
 					if (newVersion > currentVersion) {
 						if (sender instanceof Player) {
-							msg = Util.colorMsg("&8&m&l--------------------------------------------------\n"
+							msg = Util.colorMsg("&8&m&l---------------------------------------------\n"
 									+ "&aA new update for TabList is available!&4 Version:&7 " + versionString
 									+ (TabList.getInstance().getC().getBoolean("download-updates") ? ""
 											: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/")
-									+ "\n&8&m&l--------------------------------------------------");
+									+ "\n&8&m&l---------------------------------------------");
 						} else {
 							msg = "New version (" + versionString
 									+ ") is available at https://www.spigotmc.org/resources/46229/";
 						}
-
-						msg = Util.colorMsg(msg);
 					} else if (!(sender instanceof Player)) {
 						msg = "You're running the latest version.";
 					}
@@ -80,7 +78,7 @@ public class UpdateDownloader {
 						return;
 					}
 
-					final String name = "TabList-" + versionString;
+					final String name = "TabList-v" + versionString;
 
 					String updatesFolder = TabList.getInstance().getFolder() + File.separator + "releases";
 					File temp = new File(updatesFolder);

@@ -16,7 +16,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import com.earth2me.essentials.Essentials;
-import com.earth2me.essentials.User;
 
 import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
@@ -179,66 +178,37 @@ public class Groups {
 
 		final boolean rightLeft = plugin.getC().getBoolean(phPath + "show-in-right-or-left-side");
 
-		if (plugin.getChangeType().equals("scoreboard")) {
-			if (plugin.getC().getBoolean(phPath + "enable")) {
-				if (rightLeft) {
-					suffix = suffix + colorMsg(
-							plugin.getC().getString(phPath + "format-" + (plugin.isAfk(p, false) ? "yes" : "no"), ""));
-				} else {
-					prefix = colorMsg(
-							plugin.getC().getString(phPath + "format-" + (plugin.isAfk(p, false) ? "yes" : "no"), ""))
-							+ prefix;
-				}
-			}
+		String pName = p.getName();
+		String teamName = team.getTeam();
 
-			String teamName = team.getTeam();
-
-			if (plugin.isPluginEnabled("Essentials")
-					&& plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
-				String nick = JavaPlugin.getPlugin(Essentials.class).getUser(p).getNickname();
-				if (nick != null) {
-					teamName = nick;
-					prefix += nick;
-				}
-			}
-
-			setPlayerTeam(p, prefix, suffix, (1000 + team.getPriority()) + teamName);
-		} else if (plugin.getChangeType().equals("namer")) {
-			String result = "";
-
-			String userName = p.getName();
-			if (plugin.isPluginEnabled("Essentials")
-					&& plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
-				User user = JavaPlugin.getPlugin(Essentials.class).getUser(p);
-				if (user.getNickname() != null) {
-					userName = user.getNickname();
-				}
-			}
-
-			if (plugin.getC().getBoolean(phPath + "enable")) {
-				if (plugin.isAfk(p, false)) {
-					result = colorMsg(
-							rightLeft ? prefix + userName + suffix + plugin.getC().getString(phPath + "format-yes", "")
-									: plugin.getC().getString(phPath + "format-yes", "") + prefix + userName + suffix);
-				} else {
-					prefix = colorMsg(rightLeft ? prefix + plugin.getC().getString(phPath + "format-no", "")
-							: plugin.getC().getString(phPath + "format-no", "") + prefix);
-					suffix = colorMsg(rightLeft ? suffix + plugin.getC().getString(phPath + "format-no", "")
-							: plugin.getC().getString(phPath + "format-no", "") + suffix);
-				}
-			}
-
-			if (result.isEmpty()) {
-				result = prefix + userName + suffix;
-			}
-
-			if (!result.isEmpty()) {
-				p.setPlayerListName(result);
+		if (plugin.getC().getBoolean(phPath + "enable")) {
+			if (rightLeft) {
+				suffix = suffix + colorMsg(
+						plugin.getC().getString(phPath + "format-" + (plugin.isAfk(p, false) ? "yes" : "no"), ""));
+			} else {
+				prefix = colorMsg(
+						plugin.getC().getString(phPath + "format-" + (plugin.isAfk(p, false) ? "yes" : "no"), ""))
+						+ prefix;
 			}
 		}
+
+		if (plugin.isPluginEnabled("Essentials")
+				&& plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
+			String nick = JavaPlugin.getPlugin(Essentials.class).getUser(p).getNickname();
+			if (nick != null) {
+				teamName = nick;
+				pName = nick;
+			}
+		}
+
+		setPlayerTeam(p, prefix, suffix, (1000 + team.getPriority()) + teamName, pName);
 	}
 
 	public void setPlayerTeam(Player player, String prefix, String suffix, String name) {
+		setPlayerTeam(player, prefix, suffix, name, player.getName());
+	}
+
+	public void setPlayerTeam(Player player, String prefix, String suffix, String name, String playerName) {
 		if (name.length() > 16) {
 			name = name.substring(0, 16);
 		}
@@ -267,6 +237,8 @@ public class Groups {
 			team.addEntry(player.getName());
 		}
 
+		player.setPlayerListName(prefix + playerName + suffix);
+
 		player.setScoreboard(tboard);
 	}
 
@@ -279,38 +251,30 @@ public class Groups {
 			return;
 		}
 
-		if (plugin.getChangeType().equals("namer")) {
-			p.setPlayerListName(p.getName());
-		}
+		p.setPlayerListName(p.getName());
 
-		if (plugin.getChangeType().equals("scoreboard")) {
-			for (TeamHandler th : groupsList) {
-				if (th == null) {
-					continue;
-				}
-
-				Scoreboard tboard = p.getScoreboard();
-				Team team = tboard.getTeam(th.getFullTeamName());
-				if (team == null) {
-					continue;
-				}
-
-				if (Version.isCurrentLower(Version.v1_9_R1)) {
-					if (team.hasPlayer(p)) {
-						team.removePlayer(p);
-					}
-				} else if (team.hasEntry(p.getName())) {
-					team.removeEntry(p.getName());
-				}
-
-				// do not unregister team to prevent removing teams from others
-				/*
-				 * team.setPrefix(""); team.setSuffix(""); try { team.unregister(); } catch
-				 * (IllegalStateException e) { }
-				 */
-
-				p.setScoreboard(tboard);
+		for (TeamHandler th : groupsList) {
+			if (th == null) {
+				continue;
 			}
+
+			Scoreboard tboard = p.getScoreboard();
+			Team team = tboard.getTeam(th.getFullTeamName());
+			if (team == null) {
+				continue;
+			}
+
+			if (Version.isCurrentLower(Version.v1_9_R1)) {
+				if (team.hasPlayer(p)) {
+					team.removePlayer(p);
+				}
+			} else if (team.hasEntry(p.getName())) {
+				team.removeEntry(p.getName());
+			}
+
+			// team.unregister();
+
+			p.setScoreboard(tboard);
 		}
 	}
 
