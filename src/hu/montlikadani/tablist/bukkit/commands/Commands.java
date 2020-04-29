@@ -99,7 +99,6 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 			StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
 			Collections.sort(completionList);
-
 			return completionList;
 		}
 
@@ -110,7 +109,6 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 				StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
 				Collections.sort(completionList);
-
 				return completionList;
 			}
 		}
@@ -124,7 +122,6 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 				StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
 				Collections.sort(completionList);
-
 				return completionList;
 			}
 		}

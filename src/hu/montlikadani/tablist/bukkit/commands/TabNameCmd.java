@@ -252,7 +252,6 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 
 				StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
 				Collections.sort(completionList);
-
 				return completionList;
 			}
 
@@ -262,7 +261,6 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 
 				StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
 				Collections.sort(completionList);
-
 				return completionList;
 			}
 		}

@@ -31,6 +31,8 @@ public class Groups {
 
 	private final List<TeamHandler> groupsList = new ArrayList<>();
 
+	private final Scoreboard b = Bukkit.getScoreboardManager().getNewScoreboard();
+
 	public Groups(TabList plugin) {
 		this.plugin = plugin;
 	}
@@ -213,10 +215,9 @@ public class Groups {
 			name = name.substring(0, 16);
 		}
 
-		Scoreboard tboard = player.getScoreboard();
-		Team team = tboard.getTeam(name);
+		Team team = b.getTeam(name);
 		if (team == null) {
-			team = tboard.registerNewTeam(name);
+			team = b.registerNewTeam(name);
 		}
 
 		prefix = Util.splitStringByVersion(prefix);
@@ -239,7 +240,7 @@ public class Groups {
 
 		player.setPlayerListName(prefix + playerName + suffix);
 
-		player.setScoreboard(tboard);
+		player.setScoreboard(b);
 	}
 
 	public void removeGroupsFromAll() {
