@@ -453,6 +453,10 @@ public class TabList extends JavaPlugin {
 			return false;
 		}
 
+		if (name.length() > 16) {
+			name = name.substring(0, 16);
+		}
+
 		if (getFakePlayerByName(name) != null) {
 			return false;
 		}

@@ -180,9 +180,6 @@ public class Groups {
 
 		final boolean rightLeft = plugin.getC().getBoolean(phPath + "show-in-right-or-left-side");
 
-		String pName = p.getName();
-		String teamName = team.getTeam();
-
 		if (plugin.getC().getBoolean(phPath + "enable")) {
 			if (rightLeft) {
 				suffix = suffix + colorMsg(
@@ -193,6 +190,9 @@ public class Groups {
 						+ prefix;
 			}
 		}
+
+		String pName = p.getName();
+		String teamName = team.getTeam();
 
 		if (plugin.isPluginEnabled("Essentials")
 				&& plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
