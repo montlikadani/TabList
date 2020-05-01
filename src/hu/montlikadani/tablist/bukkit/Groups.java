@@ -223,13 +223,6 @@ public class Groups {
 		prefix = Util.splitStringByVersion(prefix);
 		suffix = Util.splitStringByVersion(suffix);
 
-		team.setPrefix(prefix);
-		team.setSuffix(suffix);
-
-		if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
-			team.setColor(Util.fromPrefix(prefix));
-		}
-
 		if (Version.isCurrentLower(Version.v1_9_R1)) {
 			if (!team.hasPlayer(player)) {
 				team.addPlayer(player);
