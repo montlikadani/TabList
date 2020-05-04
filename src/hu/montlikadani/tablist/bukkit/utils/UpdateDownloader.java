@@ -52,29 +52,25 @@ public class UpdateDownloader {
 					String cVersion = TabList.getInstance().getDescription().getVersion().replaceAll("[^0-9]", "");
 					currentVersion = Integer.parseInt(cVersion);
 
+					if (newVersion <= currentVersion || currentVersion >= newVersion) {
+						return;
+					}
+
 					String msg = "";
-					if (newVersion > currentVersion) {
-						if (sender instanceof Player) {
-							msg = Util.colorMsg("&8&m&l---------------------------------------------\n"
-									+ "&aA new update for TabList is available!&4 Version:&7 " + versionString
-									+ (TabList.getInstance().getC().getBoolean("download-updates") ? ""
-											: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/")
-									+ "\n&8&m&l---------------------------------------------");
-						} else {
-							msg = "New version (" + versionString
-									+ ") is available at https://www.spigotmc.org/resources/46229/";
-						}
-					} else if (!(sender instanceof Player)) {
-						msg = "You're running the latest version.";
+					if (sender instanceof Player) {
+						msg = Util.colorMsg("&8&m&l---------------------------------------------\n"
+								+ "&aA new update for TabList is available!&4 Version:&7 " + versionString
+								+ (TabList.getInstance().getC().getBoolean("download-updates", false) ? ""
+										: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/")
+								+ "\n&8&m&l---------------------------------------------");
+					} else {
+						msg = "New version (" + versionString
+								+ ") is available at https://www.spigotmc.org/resources/46229/";
 					}
 
 					sender.sendMessage(msg);
 
-					if (newVersion <= currentVersion) {
-						return;
-					}
-
-					if (!TabList.getInstance().getC().getBoolean("download-updates")) {
+					if (!TabList.getInstance().getC().getBoolean("download-updates", false)) {
 						return;
 					}
 

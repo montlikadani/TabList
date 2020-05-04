@@ -137,6 +137,11 @@ change-prefix-suffix-in-tablist:
   # If a plugin does not support Vault, it will not be added.
   sync-plugins-groups-with-tablist: true
 
+  # This option allows you to use a different scoreboard to run groups if there is a problem
+  # with other scoreboard plugins. If it doesn’t happen that the scoreboard disappears,
+  # you don’t need to change it.
+  use-own-scoreboard: false
+
   # Hide player group in tablist when the player is vanished?
   # Required Essentials plugin!
   hide-group-when-player-vanished: false
@@ -149,11 +154,6 @@ change-prefix-suffix-in-tablist:
   # true - Using this format: "prefix playerNickName suffix"
   # false - Using this format: "prefix playerOriginalName suffix"
   use-essentials-nickname: false
-
-  # Scoreboard changing types (if you experience some problems by changing group).
-  # scoreboard - Maximum character is 16 (if use 1.13+ version max. 64) in prefix & suffix.
-  # namer - Max. character is unlimited.
-  changing-type: scoreboard
 
 # Tablist objective types
 # Shows your current health (with life indicator), shows your current ping or a custom placeholder

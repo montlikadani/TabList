@@ -215,9 +215,14 @@ public class Groups {
 			name = name.substring(0, 16);
 		}
 
-		Team team = b.getTeam(name);
+		Scoreboard tboard = b;
+		if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-own-scoreboard", false)) {
+			tboard = player.getScoreboard();
+		}
+
+		Team team = tboard.getTeam(name);
 		if (team == null) {
-			team = b.registerNewTeam(name);
+			team = tboard.registerNewTeam(name);
 		}
 
 		prefix = Util.splitStringByVersion(prefix);
@@ -233,7 +238,7 @@ public class Groups {
 
 		player.setPlayerListName(prefix + playerName + suffix);
 
-		player.setScoreboard(b);
+		player.setScoreboard(tboard);
 	}
 
 	public void removeGroupsFromAll() {
