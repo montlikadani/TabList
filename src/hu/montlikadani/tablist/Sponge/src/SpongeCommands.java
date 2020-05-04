@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.Sponge;
+package hu.montlikadani.tablist.Sponge.src;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,7 +44,7 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 
 	private CommandResult reloadCommand(CommandSource src, CommandContext args) {
 		plugin.reload();
-		sendMsg(src, "&aConfig has been reloaded.");
+		sendMsg(src, "&aPlugin has been reloaded.");
 		return CommandResult.success();
 	}
 

@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.Sponge;
+package hu.montlikadani.tablist.Sponge.src.tablist;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -12,6 +12,11 @@ import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
+
+import hu.montlikadani.tablist.Sponge.src.ConfigManager;
+import hu.montlikadani.tablist.Sponge.src.SpongeCommands;
+import hu.montlikadani.tablist.Sponge.src.TabList;
+import hu.montlikadani.tablist.Sponge.src.Variables;
 
 public class TabListManager {
 
@@ -50,7 +55,7 @@ public class TabListManager {
 
 	public void loadTab(Player p) {
 		ConfigManager conf = plugin.getC().getConfig();
-		if (!conf.getBoolean("tablist", "enabled")) {
+		if (!conf.getBoolean(true, "tablist", "enabled")) {
 			return;
 		}
 
@@ -107,7 +112,6 @@ public class TabListManager {
 			if (conf.getStringList("tablist", "disabled-worlds").contains(world)
 					|| conf.getStringList("tablist", "blacklisted-players").contains(pName)
 					|| (SpongeCommands.TABENABLED.containsKey(uuid) && SpongeCommands.TABENABLED.get(uuid))) {
-				sendTabList(p, "", "");
 				cancelTab(p);
 				return;
 			}
@@ -194,5 +198,7 @@ public class TabListManager {
 			taskMap.get(uuid).cancel();
 			taskMap.remove(uuid);
 		}
+
+		sendTabList(p, "", "");
 	}
 }

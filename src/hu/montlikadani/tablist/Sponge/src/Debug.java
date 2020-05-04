@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.Sponge;
+package hu.montlikadani.tablist.Sponge.src;
 
 import org.slf4j.Logger;
 
@@ -6,19 +6,19 @@ public class Debug {
 
 	private static Logger log = TabList.get().getPluginContainer().getLogger();
 
-	static void debug(String msg) {
+	public static void debug(String msg) {
 		log.debug(msg);
 	}
 
-	static void error(String msg) {
+	public static void error(String msg) {
 		log.error(msg);
 	}
 
-	static void warn(String msg) {
+	public static void warn(String msg) {
 		log.warn(msg);
 	}
 
-	static void info(String msg) {
+	public static void info(String msg) {
 		log.info(msg);
 	}
 }
