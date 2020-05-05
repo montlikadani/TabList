@@ -137,6 +137,7 @@ public class Groups {
 			return;
 		}
 
+		TeamHandler result = null;
 		for (final TeamHandler team : groupsList) {
 			String name = team.getTeam();
 
@@ -145,25 +146,24 @@ public class Groups {
 				return;
 			}
 
-			boolean change = false;
-			if (plugin.isPluginEnabled("Vault") && plugin.getVaultPerm().playerInGroup(p, name)) {
-				change = true;
+			if (team.getPermission().isEmpty() && plugin.isPluginEnabled("Vault")
+					&& plugin.getVaultPerm().playerInGroup(p, name)) {
+				result = team;
 			}
 
 			if (!team.getPermission().isEmpty()) {
 				if (plugin.isPluginEnabled("PermissionsEx")) {
 					if (PermissionsEx.getPermissionManager().has(p, team.getPermission())) {
-						change = true;
+						result = team;
 					}
-				} else if (p.hasPermission(team.getPermission())) {
-					change = true;
+				} else if (p.isPermissionSet(team.getPermission()) && p.hasPermission(team.getPermission())) {
+					result = team;
 				}
 			}
+		}
 
-			if (change) {
-				setName(p, team);
-				break;
-			}
+		if (result != null) {
+			setName(p, result);
 		}
 	}
 
