@@ -7,26 +7,20 @@ set-prefix-suffix:
   group-not-found: "&cThis group&7 %group%&c not found."
   player-not-found: "&cThis player&7 %target%&c not found."
   prefix:
-    usage: "&cUse: '&7/%command% setprefix <player> [group] <prefix>&c'."
     could-not-be-empty: "&cThe prefix text could not be empty!"
     successfully-set: "&aYou have successfully set prefix for&e %group%&a, with this prefix:&r %tag%"
   suffix:
-    usage: "&cUse: '&7/%command% setsuffix <player> [group] <suffix>&c'."
     could-not-be-empty: "&cThe suffix text could not be empty!"
     successfully-set: "&aYou have successfully set suffix for&e %group%&a, with this suffix:&r %tag%"
   set-priority:
-    usage: "&cUse: '&7/%command% setpriority <player> [group] <number>&c'."
     priority-must-be-number: "&cThe priority must be a number!"
     successfully-set: "&aYou have successfully set priority for&e %group%&a, with priority&r %number%"
   remove-group:
-    usage: "&cUse: '&7/%command% removegroup <player> [group]&c'."
     not-found-in-database: "&cThis group&7 %group%&c not found in the database."
     successfully-removed: "&cYou have successfully removed&7 %group%&c group."
 
 tabname:
-  usage: "&cUse: '&7/%command% <name>&c'."
   console-usage: "&cUse: '&7/%command% <player> <name>&c'."
-
   player-not-online: "&cThis player&7 %player%&c not online."
   no-tab-name: "&7%player%&c has no name set for this player."
   name-disabled: "&cThis name&7 %name%&c is disabled."

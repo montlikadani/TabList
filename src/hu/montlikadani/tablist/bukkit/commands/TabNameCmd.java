@@ -113,7 +113,12 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 
 		Player p = (Player) sender;
 		if (args.length == 0) {
-			sendMsg(p, plugin.getMsg("tabname.usage", "%command%", label));
+			if (sender instanceof Player) {
+				((Player) sender).performCommand("tl help 2");
+			} else {
+				Bukkit.dispatchCommand(sender, "tl help");
+			}
+
 			return true;
 		}
 

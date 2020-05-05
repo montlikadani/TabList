@@ -32,7 +32,12 @@ public class removegroup implements ICommand {
 		plugin.getConf().createGroupsFile();
 
 		if (args.length < 2) {
-			sendMsg(sender, plugin.getMsg("set-prefix-suffix.remove-group.usage", "%command%", label));
+			if (sender instanceof Player) {
+				((Player) sender).performCommand("tl help 2");
+			} else {
+				Bukkit.dispatchCommand(sender, "tl help");
+			}
+
 			return false;
 		}
 

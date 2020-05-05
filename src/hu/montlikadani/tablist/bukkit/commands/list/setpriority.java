@@ -34,7 +34,12 @@ public class setpriority implements ICommand {
 		plugin.getConf().createGroupsFile();
 
 		if (args.length < 3) {
-			sendMsg(sender, plugin.getMsg("set-prefix-suffix.set-priority.usage", "%command%", label));
+			if (sender instanceof Player) {
+				((Player) sender).performCommand("tl help 3");
+			} else {
+				Bukkit.dispatchCommand(sender, "tl help");
+			}
+
 			return false;
 		}
 
