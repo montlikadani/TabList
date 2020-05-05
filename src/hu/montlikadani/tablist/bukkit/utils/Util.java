@@ -7,7 +7,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class Util {
 
@@ -30,16 +29,6 @@ public class Util {
 		}
 	}
 
-	public static String splitStringByVersion(String s) {
-		if (Version.isCurrentLower(Version.v1_13_R1) && s.length() > 16) {
-			s = s.substring(0, 16);
-		} else if (Version.isCurrentEqualOrHigher(Version.v1_13_R1) && s.length() > 64) {
-			s = s.substring(0, 64);
-		}
-
-		return s;
-	}
-
 	public static String colorMsg(String msg) {
 		return msg == null ? "" : ChatColor.translateAlternateColorCodes('&', msg);
 	}
@@ -54,22 +43,6 @@ public class Util {
 				sender.sendMessage(s);
 			}
 		}
-	}
-
-	public static ChatColor fromPrefix(String prefix) {
-		char colour = 0;
-		char[] chars = prefix.toCharArray();
-		for (int i = 0; i < chars.length; i++) {
-			char at = chars[i];
-			if ((at == '\u00a7' || at == '&') && i + 1 < chars.length) {
-				char code = chars[i + 1];
-				if (ChatColor.getByChar(code) != null) {
-					colour = code;
-				}
-			}
-		}
-
-		return colour == 0 ? ChatColor.RESET : ChatColor.getByChar(colour);
 	}
 
 	public static String stripColor(String str) {

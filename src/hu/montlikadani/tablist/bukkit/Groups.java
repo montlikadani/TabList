@@ -17,7 +17,6 @@ import org.bukkit.scoreboard.Team;
 
 import com.earth2me.essentials.Essentials;
 
-import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -224,9 +223,6 @@ public class Groups {
 		if (team == null) {
 			team = tboard.registerNewTeam(name);
 		}
-
-		prefix = Util.splitStringByVersion(prefix);
-		suffix = Util.splitStringByVersion(suffix);
 
 		if (Version.isCurrentLower(Version.v1_9_R1)) {
 			if (!team.hasPlayer(player)) {
