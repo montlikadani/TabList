@@ -16,12 +16,12 @@ import hu.montlikadani.tablist.bukkit.TeamHandler;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
-public class setprefix implements ICommand {
+public class setpriority implements ICommand {
 
 	@Override
 	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player && !sender.hasPermission(Perm.SETPREFIX.getPerm())) {
-			sendMsg(sender, plugin.getMsg("no-permission", "%perm%", Perm.SETPREFIX.getPerm()));
+		if (sender instanceof Player && !sender.hasPermission(Perm.SETPRIORITY.getPerm())) {
+			sendMsg(sender, plugin.getMsg("no-permission", "%perm%", Perm.SETPRIORITY.getPerm()));
 			return false;
 		}
 
@@ -34,7 +34,7 @@ public class setprefix implements ICommand {
 		plugin.getConf().createGroupsFile();
 
 		if (args.length < 3) {
-			sendMsg(sender, plugin.getMsg("set-prefix-suffix.prefix.usage", "%command%", label));
+			sendMsg(sender, plugin.getMsg("set-prefix-suffix.set-priority.usage", "%command%", label));
 			return false;
 		}
 
@@ -44,43 +44,42 @@ public class setprefix implements ICommand {
 			return false;
 		}
 
-		StringBuilder builder = new StringBuilder();
-		for (int i = (args.length == 4 ? 3 : 2); i < args.length; i++) {
-			builder.append(args[i]);
-		}
-
-		String prefix = builder.toString();
-		if (prefix.trim().isEmpty()) {
-			sendMsg(sender, plugin.getMsg("set-prefix-suffix.prefix.could-not-be-empty"));
+		String match = args[args.length == 4 ? 3 : 2];
+		if (!match.matches("[0-9]+")) {
+			sendMsg(sender, plugin.getMsg("set-prefix-suffix.set-priority.priority-must-be-number"));
 			return false;
 		}
 
 		String name = args.length > 3 ? args[2] : target.getName();
+		int priority = Integer.parseInt(match);
 
-		plugin.getGS().set("groups." + name + ".prefix", prefix);
+		plugin.getGS().set("groups." + name + ".sort-priority", priority);
 		try {
 			plugin.getGS().save(plugin.getConf().getGroupsFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		Groups groups = plugin.getGroups();
-		groups.removePlayerGroup(target);
-
+		String prefix = plugin.getGS().getString("groups." + name + ".prefix", "");
 		String suffix = plugin.getGS().getString("groups." + name + ".suffix", "");
+
+		Groups groups = plugin.getGroups();
 
 		TeamHandler team = groups.getTeam(name);
 		if (team == null) {
-			int priority = plugin.getGS().getInt("groups." + name + ".sort-priority", 0);
-			team = new TeamHandler(name, prefix, suffix, priority);
+			team = new TeamHandler(name, prefix, suffix);
 		}
 
-		prefix = plugin.getPlaceholders().replaceVariables(target, prefix);
+		team.setPriority(priority);
+
+		if (!prefix.isEmpty()) {
+			prefix = plugin.getPlaceholders().replaceVariables(target, prefix);
+		}
 		if (!suffix.isEmpty()) {
 			suffix = plugin.getPlaceholders().replaceVariables(target, suffix);
 		}
-
-		groups.setPlayerTeam(target, prefix, suffix, team.getFullTeamName());
+		// TODO: reimplement
+		//groups.setPlayerTeam(target, prefix, suffix, team.getFullTeamName());
 
 		java.util.List<TeamHandler> teams = groups.getGroupsList();
 		teams.add(team);
@@ -88,8 +87,8 @@ public class setprefix implements ICommand {
 		groups.getGroupsList().clear();
 		groups.getGroupsList().addAll(teams);
 
-		sendMsg(sender, plugin.getMsg("set-prefix-suffix.prefix.successfully-set", "%group%", name, "%tag%",
-				builder.toString()));
+		sendMsg(sender,
+				plugin.getMsg("set-prefix-suffix.set-priority.successfully-set", "%group%", name, "%number%", match));
 		return true;
 	}
 }

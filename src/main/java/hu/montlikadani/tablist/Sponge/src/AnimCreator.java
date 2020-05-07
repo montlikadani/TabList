@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.Sponge;
+package hu.montlikadani.tablist.Sponge.src;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;

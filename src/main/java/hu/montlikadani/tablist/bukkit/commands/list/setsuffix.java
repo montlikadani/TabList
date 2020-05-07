@@ -79,8 +79,8 @@ public class setsuffix implements ICommand {
 			prefix = plugin.getPlaceholders().replaceVariables(target, prefix);
 		}
 		suffix = plugin.getPlaceholders().replaceVariables(target, suffix);
-
-		groups.setPlayerTeam(target, prefix, suffix, team.getFullTeamName());
+		// TODO: reimplement
+		//groups.setPlayerTeam(target, prefix, suffix, team.getFullTeamName());
 
 		java.util.List<TeamHandler> teams = groups.getGroupsList();
 		teams.add(team);
