@@ -37,7 +37,6 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 	public void removeGroup() {
 		this.group = null;
-		return;
 	}
 
 	public Player getPlayer() {
@@ -66,17 +65,19 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	}
 
 	public boolean update() {
+		boolean update = false;
+
 		String phPath = "placeholder-format.afk-status.";
 		if (!isPlayerCanSeeGroup() || plugin.getC().getBoolean(phPath + "enable") && plugin.isAfk(player, false)
 				&& !plugin.getC().getBoolean(phPath + "show-player-group")) {
 			if (group != null) {
 				group = null;
+				update = true;
 			}
-
-			return true;
+			return update;
 		}
 
-		boolean update = false;
+
 
 		for (final TeamHandler team : plugin.getGroups().getGroupsList()) {
 			String name = team.getTeam();
@@ -86,6 +87,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 					update = true;
 					group = team;
 				}
+				else break;
 			}
 
 			String perm = team.getPermission();
@@ -97,6 +99,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 					update = true;
 					group = team;
 				}
+				else break;
 			}
 
 			if (perm.isEmpty() && plugin.isPluginEnabled("Vault")) {
@@ -106,6 +109,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 							update = true;
 							group = team;
 						}
+						else break;
 					}
 				}
 			}
