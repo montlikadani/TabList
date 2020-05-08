@@ -179,10 +179,9 @@ public class Groups {
 
 		int priority = 0;
 		for (TabListPlayer tlp : sortedTabListPlayers) {
-			setPlayerTeam(tlp.getPlayer(), tlp.getPrefix(), tlp.getSuffix(),
-					Integer.toString(100000 + priority)
-							+ (tlp.getGroup() == null ? tlp.getPlayer().getName() : tlp.getGroup().getTeam()),
-					tlp.getPlayerName());
+			String group = Integer.toString(100000 + priority)
+					+ (tlp.getGroup() == null ? tlp.getPlayer().getName() : tlp.getGroup().getTeam());
+			setPlayerTeam(tlp.getPlayer(), tlp.getPrefix(), tlp.getSuffix(), group, tlp.getPlayerName());
 			priority++;
 		}
 
@@ -309,10 +308,9 @@ public class Groups {
 
 		int priority = 0;
 		for (TabListPlayer tlp : sortedTabListPlayers) {
-			setPlayerTeam(tlp.getPlayer(), tlp.getPrefix(), tlp.getSuffix(),
-					Integer.toString(100000 + priority)
-							+ (tlp.getGroup() == null ? tlp.getPlayer().getName() : tlp.getGroup().getTeam()),
-					tlp.getPlayerName());
+			String group = Integer.toString(100000 + priority)
+					+ (tlp.getGroup() == null ? tlp.getPlayer().getName() : tlp.getGroup().getTeam());
+			setPlayerTeam(tlp.getPlayer(), tlp.getPrefix(), tlp.getSuffix(), group, tlp.getPlayerName());
 			priority++;
 		}
 	}

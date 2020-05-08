@@ -2,8 +2,6 @@ package hu.montlikadani.tablist.bukkit;
 
 import com.earth2me.essentials.Essentials;
 
-import hu.montlikadani.tablist.bukkit.utils.Util;
-
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
@@ -68,43 +66,46 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	}
 
 	public boolean update() {
-		boolean update = false;
 		String phPath = "placeholder-format.afk-status.";
 		if (!isPlayerCanSeeGroup() || plugin.getC().getBoolean(phPath + "enable") && plugin.isAfk(player, false)
 				&& !plugin.getC().getBoolean(phPath + "show-player-group")) {
 			if (group != null) {
 				group = null;
-				update = true;
 			}
+
+			return true;
 		}
+
+		boolean update = false;
 
 		for (final TeamHandler team : plugin.getGroups().getGroupsList()) {
 			String name = team.getTeam();
 
 			if (name.equalsIgnoreCase(player.getName())) {
-				update = true;
-				group = team;
-			}
-
-			try {
-				if ((!team.getPermission().isEmpty()
-						&& (plugin.isPluginEnabled("PermissionsEx")
-								&& PermissionsEx.getPermissionManager().has(player, team.getPermission()))
-						|| (player.isPermissionSet(team.getPermission())
-								&& player.hasPermission(team.getPermission())))) {
+				if (group != team) {
 					update = true;
 					group = team;
 				}
-			} catch (NullPointerException e) {
-				Util.logConsole("You have a permission plugin that Vault is not support.");
-				return false;
 			}
 
-			if (team.getPermission().isEmpty() && plugin.isPluginEnabled("Vault")) {
+			String perm = team.getPermission();
+
+			if (!perm.isEmpty() && ((plugin.isPluginEnabled("PermissionsEx")
+					&& PermissionsEx.getPermissionManager().has(player, perm))
+					|| (player.isPermissionSet(perm) && player.hasPermission(perm)))) {
+				if (group != team) {
+					update = true;
+					group = team;
+				}
+			}
+
+			if (perm.isEmpty() && plugin.isPluginEnabled("Vault")) {
 				for (String groups : plugin.getVaultPerm().getPlayerGroups(player)) {
 					if (groups.equalsIgnoreCase(name)) {
-						update = true;
-						group = team;
+						if (group != team) {
+							update = true;
+							group = team;
+						}
 					}
 				}
 			}
@@ -114,8 +115,8 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				&& plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
 			String nick = JavaPlugin.getPlugin(Essentials.class).getUser(player).getNickname();
 			if (nick == null && this.nick != null || nick != null && !nick.equals(this.nick)) {
-				update = true;
 				this.nick = nick;
+				update = true;
 			}
 		}
 
@@ -132,6 +133,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			}
 		} else {
 			if (plugin.getC().getStringList(path + "disabled-worlds.list").contains(p.getWorld().getName())) {
+				nick = null;
 				return false;
 			}
 		}

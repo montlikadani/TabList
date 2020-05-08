@@ -1,7 +1,7 @@
 # Hook plugins
 hook:
   # Hooks into PlaceholderAPI to use custom placeholders.
-  placeholderapi: false
+  placeholderapi: true
 
   # Hooking to my RageMode plugin. (https://www.spigotmc.org/resources/69169/)
   # If true, will disable the tablist, groups and the tablist objects, while
