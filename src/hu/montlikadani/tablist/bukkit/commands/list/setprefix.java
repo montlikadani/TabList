@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import hu.montlikadani.tablist.bukkit.Groups;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.TeamHandler;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.utils.Util;
@@ -73,10 +74,10 @@ public class setprefix implements ICommand {
 		groups.removePlayerGroup(target);
 
 		String suffix = plugin.getGS().getString("groups." + name + ".suffix", "");
+		int priority = plugin.getGS().getInt("groups." + name + ".sort-priority", 0);
 
 		TeamHandler team = groups.getTeam(name);
 		if (team == null) {
-			int priority = plugin.getGS().getInt("groups." + name + ".sort-priority", 0);
 			team = new TeamHandler(name, prefix, suffix, priority);
 		}
 
@@ -85,7 +86,12 @@ public class setprefix implements ICommand {
 			suffix = plugin.getPlaceholders().replaceVariables(target, suffix);
 		}
 
-		groups.setPlayerTeam(target, prefix, suffix, team.getFullTeamName());
+		TabListPlayer tabPlayer = groups.addPlayer(target);
+		tabPlayer.setCustomPrefix(prefix);
+		tabPlayer.setCustomSuffix(suffix);
+		tabPlayer.setCustomPriority(priority);
+		groups.setPlayerTeam(target, prefix, suffix, Integer.toString(100000 + priority)
+				+ (tabPlayer.getGroup() == null ? target.getName() : tabPlayer.getGroup().getTeam()));
 
 		java.util.List<TeamHandler> teams = groups.getGroupsList();
 		teams.add(team);

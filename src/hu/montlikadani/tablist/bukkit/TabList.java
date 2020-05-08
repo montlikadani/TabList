@@ -131,7 +131,6 @@ public class TabList extends JavaPlugin {
 						new Metrics.SimplePie("enable_fake_players", () -> getC().getString("enable-fake-players")));
 				metrics.addCustomChart(new Metrics.SimplePie("enable_groups",
 						() -> getC().getString("change-prefix-suffix-in-tablist.enable")));
-				logConsole("Metrics enabled.");
 			}
 
 			if (getC().getBoolean("logconsole")) {

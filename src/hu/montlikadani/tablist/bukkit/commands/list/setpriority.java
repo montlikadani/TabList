@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import hu.montlikadani.tablist.bukkit.Groups;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.TeamHandler;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.utils.Util;
@@ -84,7 +85,12 @@ public class setpriority implements ICommand {
 			suffix = plugin.getPlaceholders().replaceVariables(target, suffix);
 		}
 
-		groups.setPlayerTeam(target, prefix, suffix, team.getFullTeamName());
+		TabListPlayer tabPlayer = groups.addPlayer(target);
+		tabPlayer.setCustomPrefix(prefix);
+		tabPlayer.setCustomSuffix(suffix);
+		tabPlayer.setCustomPriority(priority);
+		groups.setPlayerTeam(target, prefix, suffix, Integer.toString(100000 + priority)
+				+ (tabPlayer.getGroup() == null ? target.getName() : tabPlayer.getGroup().getTeam()));
 
 		java.util.List<TeamHandler> teams = groups.getGroupsList();
 		teams.add(team);
