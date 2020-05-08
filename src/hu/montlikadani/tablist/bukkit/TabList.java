@@ -90,14 +90,9 @@ public class TabList extends JavaPlugin {
 			conf.loadFiles();
 			loadValues();
 
-			if (papi) {
-				if (isPluginEnabled("PlaceholderAPI")) {
-					logConsole("Hooked PlaceholderAPI version: "
-							+ me.clip.placeholderapi.PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
-				} else {
-					logConsole(Level.WARNING, "Could not find PlaceholderAPI!");
-					logConsole("PlaceholderAPI Download: https://www.spigotmc.org/resources/6245/");
-				}
+			if (papi && isPluginEnabled("PlaceholderAPI")) {
+				logConsole("Hooked PlaceholderAPI version: "
+						+ me.clip.placeholderapi.PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
 			}
 
 			if (isPluginEnabled("Vault")) {
