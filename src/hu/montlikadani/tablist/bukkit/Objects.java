@@ -8,8 +8,8 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.RenderType;
 
-import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class Objects {
@@ -108,19 +108,24 @@ public class Objects {
 						continue;
 					}
 
-					String value = plugin.getC().getString(path + "value",
+					final String value = plugin.getC().getString(path + "value",
 							plugin.getC().getString(path + "custom-value"));
+					String result = plugin.getPlaceholders().replaceVariables(player, value);
+
+					if (result.contains(".")) {
+						result = result.replace(".", "");
+					}
+
 					try {
-						score = Integer.parseInt(plugin.getPlaceholders().replaceVariables(player, value));
-					} catch (NumberFormatException n) {
-						Util.logConsole(java.util.logging.Level.WARNING,
-								"Placeholder must be a number (NOT double): " + value);
-						break;
+						score = Integer.parseInt(result);
+					} catch (NumberFormatException e) {
+						Util.logConsole("Not correct custom objective: " + value);
 					}
 				}
 
 				if (obj != null) {
 					obj.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+
 					if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
 						obj.setRenderType(RenderType.INTEGER);
 					}
