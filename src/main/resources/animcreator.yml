@@ -1,0 +1,141 @@
+# Animations with unlimited names & texts.
+animations:
+  tablist:
+    # Text changing interval in milliseconds (ticks).
+    interval: 60
+
+    # Display the text randomly?
+    random: true
+
+    # The list of texts that will appear
+    texts:
+    - "&b&lTabList"
+    - "&6&lTabList"
+    - "&4&lTabList"
+    - "&9&lTabList"
+    - "&a&lTabList"
+    - "&e&lTabList"
+    - "&5&lTabList"
+    - "&b&lTabList"
+    - "&6&lTabList"
+    - "&4&lTabList"
+    - "&9&lTabList"
+    - "&a&lTabList"
+    - "&e&lTabList"
+    - "&5&lTabList"
+    - "&b&lTabList"
+    - "&6&lTabList"
+    - "&4&lTabList"
+    - "&9&lTabList"
+    - "&a&lTabList"
+    - "&e&lTabList"
+    - "&5&lTabList"
+    - "&b&lTabList"
+
+  welcome:
+    interval: 200
+    texts:
+    - "&cW"
+    - "&cWe"
+    - "&cWel"
+    - "&cWelc"
+    - "&cWelco"
+    - "&cWelcom"
+    - "&cWelcome"
+    - "&6Welcome"
+    - "&7Welcome"
+    - "&4Welcome"
+    - "&aWelcome"
+    - "&bWelcome"
+    - "&9Welcome"
+    - "&fWelcome"
+    - "&fWelcom"
+    - "&fWelco"
+    - "&fWelc"
+    - "&fWel"
+    - "&fWe"
+    - "&fW"
+    - "&f "
+    - "&f"
+
+  Admin:
+    interval: 200
+    texts:
+    - "&a[&cAdmin&a]&6 "
+    - "&a"
+    - "&a["
+    - "&a[&cA"
+    - "&a[&cAd"
+    - "&a[&cAdm"
+    - "&a[&cAdmi"
+    - "&a[&cAdmin"
+    - "&a[&cAdmin&a"
+    - "&a[&cAdmin&a]"
+    - "&a[&cAdmin&a]&6 "
+    - "&a[&cAdmin&a]&6 "
+    - "&a[&cAdmin&a]&a "
+    - "&a[&cAdmin&a]&e "
+    - "&a[&cAdmin&a]&f "
+    - "&a[&cAdmin&a]&c "
+    - "&a[&cAdmin&a]&b "
+    - "&a[&cAdmin&a]&9 "
+
+  website:
+    interval: 200
+    texts:
+    - "&f&o Website"
+    - "&f&o Website"
+    - "&f&o Website"
+    - "&f&o Website"
+    - "&f&o Website"
+    - "&f&o Website"
+    - "&f&o Website"
+    - "&6&o W&f&oebsite"
+    - "&f&o W&6&oe&f&obsite"
+    - "&f&o We&6&ob&f&osite"
+    - "&f&o Web&6&os&f&oite"
+    - "&f&o Webs&6&oi&f&ote"
+    - "&f&o Websi&6&ot&f&oe"
+    - "&f&o Websit&6&oe"
+
+  perWorld:
+    interval: 300
+    texts:
+    - "&cThis is a per world plugin&6 TabList"
+    - "&6This is a per world plugin&3 TabList"
+    - "&3This is a per world plugin&a TabList"
+    - "&aThis is a per world plugin&7 TabList"
+
+  perPlayer:
+    interval: 250
+    texts:
+    - "&aWelcome&6 %player%\n<lines>"
+    - "&aWelcome&7 %player%\n<lines>"
+    - "&aWelcome&c %player%\n<lines>"
+    - "&aWelcome&f %player%\n<lines>"
+    - "&aWelcome&e %player%\n<lines>"
+    - "&aWelcome&a %player%\n<lines>"
+    - "&aWelcome&5 %player%\n<lines>"
+    - "&aWelcome&b %player%\n<lines>"
+
+  perGroupHead:
+    interval: 200
+    random: true
+    texts:
+    - "&aWelcome&6 %player%"
+    - "&aWelcome&7 %player%"
+    - "&aWelcome&c %player%"
+    - "&aWelcome&f %player%"
+    - "&aWelcome&e %player%"
+    - "&aWelcome&a %player%"
+    - "&aWelcome&5 %player%"
+    - "&aWelcome&b %player%"
+
+  perGroupFoot:
+    interval: 160
+    texts:
+    - "&cYour rank: %vault_rank%"
+    - "&6Your rank: %vault_rank%"
+    - "&7Your rank: %vault_rank%"
+    - "&5Your rank: %vault_rank%"
+    - "&eYour rank: %vault_rank%"

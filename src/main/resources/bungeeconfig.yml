@@ -1,0 +1,161 @@
+placeholder-format:
+  time:
+    # Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/
+    # Or google it: "what is my time zone"
+    time-zone: "GMT0"
+
+    # Use system default time zone instead of searching for that?
+    use-system-zone: false
+
+    # Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
+    # Used for %time% placeholder.
+    time-format: "mm:HH"
+    # Used for %date% placeholder.
+    date-format: "dd/MM/yyyy"
+
+# Custom variables with unlimited variables.
+# Use: <something>: "&6Message...'
+custom-variables:
+  <name>: "&7&o%player-name%"
+  <lines>: "&5&m======================"
+
+# Should enable the tablist groups?
+tablist-groups:
+  enabled: false
+
+  # Group refreshing time in milliseconds.
+  # If you want animation just decrease the value.
+  refresh-time: 160
+
+# Group list
+# NOTE: If the permissions are not works correctly then you should use
+# a permission manager plugin such as LuckPerms.
+groups:
+  admin:
+    name:
+    - "&a[&cAdmin&a]&6 %player-name%"
+    - "&a"
+    - "&a["
+    - "&a[&cA"
+    - "&a[&cAd"
+    - "&a[&cAdm"
+    - "&a[&cAdmi"
+    - "&a[&cAdmin"
+    - "&a[&cAdmin&a"
+    - "&a[&cAdmin&a]"
+    - "&a[&cAdmin&a]&6 %player-name%"
+    - "&a[&cAdmin&a]&6 %player-name%"
+    - "&a[&cAdmin&a]&a %player-name%"
+    - "&a[&cAdmin&a]&e %player-name%"
+    - "&a[&cAdmin&a]&f %player-name%"
+    - "&a[&cAdmin&a]&c %player-name%"
+    - "&a[&cAdmin&a]&b %player-name%"
+    - "&a[&cAdmin&a]&9 %player-name%"
+    permission: groups.admin # any permission name are accepted
+  default:
+    name: "&7 %player-name%"
+    permission: tablist.default
+
+# TabList, header & footer
+# Current plugin placeholders: https://github.com/montlikadani/TabList/wiki/Placeholders#bungee
+# Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
+tablist:
+  # Enable tablist header & footer?
+  enable: true
+
+  # Disabled servers, where you can not see the tab.
+  disabled-servers:
+  #- serverName
+
+  # Blacklisted players, where the player not see the tab.
+  blacklisted-players:
+  #- playerName
+
+  # How often to refresh the tablist (in milliseconds).
+  refresh-interval: 180
+
+  header:
+  - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&6&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&4&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&9&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&a&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&e&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&5&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+  - "&b&lTabList\n&6Ping:&r %ping%&7ms\n<lines>"
+
+  footer:
+  - "<lines>\n&7Website:&2 example.com"
+
+  # Per player tablist
+  per-player:
+    playername:
+      header:
+      - "&2Tab&6List\n&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================="
+      footer:
+      - "&5&l&m================="
+      - "&a&l&m================="
+      - "&b&l&m================="
+      - "&f&l&m================="
+      - "&7&l&m================="
+      - "&4&l&m================="
+      - "&6&l&m================="
+
+    someone:
+      header:
+      - "&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================="
+      footer:
+      - "<lines>"
+  # Per server tablist
+  per-server:
+    pvp:
+      header:
+      - "&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&3 Kit&4PvP&9 S&6e&2r&8v&5e&1r&6!"
+      footer:
+      - "&aGo to the PvP server!"
+
+    lobby:
+      per-player:
+        exampleplayer:
+          header:
+          - ""
+          footer:
+          - "&7Website&7: example.org"
+
+      header:
+      - "&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&9 S&6e&2r&8v&5e&1r&6!"
+      footer:
+      - "&7<28>&a Choose a minigame or server and start playing!&7 <28>"
+
+# Plugin messages
+messages:
+  reload-config: "&aThe plugin successfully reloaded!"
+  no-permission: "&cYou don't have permission for this!"
+  toggle:
+    no-console: "&cUsage:&7 /tablist toggle <player/all>"
+    no-player: "&cUsage:&7 /tablist toggle <player>"
+    enabled: "&aThe tab is successfully turned on!"
+    disabled: "&cThe tab is successfully turned off!"
+    no-players-available: "&cThere is no player available on the server."
+  chat-messages:
+  - "&8&l-----------"
+  - "&7/&atablist reload&7 (or rl)&e -&6 Reloads the plugin and config."
+  - "&7/&atablist toggle [player/all]&e -&6 Toggle the tablist."
+  - "&8&l-----------"
+
+# DO NOT CHANGE THIS!
+config-version: 7
