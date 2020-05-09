@@ -34,7 +34,7 @@ public class UpdateDownloader {
 				int currentVersion = 0;
 
 				try {
-					URL githubUrl = new URL("https://raw.githubusercontent.com/montlikadani/TabList/master/plugin.yml");
+					URL githubUrl = new URL("https://raw.githubusercontent.com/montlikadani/TabList/master/src/main/resources/plugin.yml");
 					BufferedReader br = new BufferedReader(new InputStreamReader(githubUrl.openStream()));
 					String s;
 					while ((s = br.readLine()) != null) {
