@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.tablist.fakeplayers;
 
 import java.lang.reflect.Array;
 import java.util.UUID;
@@ -11,7 +11,7 @@ import com.mojang.authlib.GameProfile;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
-public class FakePlayers {
+public class FakePlayers implements IFakePlayers {
 
 	private String name;
 
@@ -23,10 +23,12 @@ public class FakePlayers {
 		this.name = name;
 	}
 
+	@Override
 	public String getName() {
 		return name;
 	}
 
+	@Override
 	public void createFakeplayer(Player p) {
 		try {
 			Class<?> server = ReflectionUtils.Classes.getMinecraftServer();
@@ -74,6 +76,7 @@ public class FakePlayers {
 		}
 	}
 
+	@Override
 	public void removeFakePlayer() {
 		try {
 			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(profile.getName()));

@@ -30,7 +30,7 @@ public class Listeners implements Listener {
 
 		if (plugin.getC().getBoolean("enable-fake-players")) {
 			plugin.getConf().createFakePlayersFile();
-			plugin.loadFakePlayers();
+			plugin.getFakePlayerHandler().load();
 		}
 
 		if (p.isOp()) {

@@ -74,10 +74,9 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				group = null;
 				update = true;
 			}
+
 			return update;
 		}
-
-
 
 		for (final TeamHandler team : plugin.getGroups().getGroupsList()) {
 			String name = team.getTeam();
@@ -86,8 +85,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				if (group != team) {
 					update = true;
 					group = team;
-				}
-				else break;
+				} else break;
 			}
 
 			String perm = team.getPermission();
@@ -98,8 +96,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				if (group != team) {
 					update = true;
 					group = team;
-				}
-				else break;
+				} else break;
 			}
 
 			if (perm.isEmpty() && plugin.isPluginEnabled("Vault")) {
@@ -108,8 +105,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 						if (group != team) {
 							update = true;
 							group = team;
-						}
-						else break;
+						} else break;
 					}
 				}
 			}

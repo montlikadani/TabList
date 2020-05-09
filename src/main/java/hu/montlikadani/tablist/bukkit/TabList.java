@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -30,6 +29,7 @@ import hu.montlikadani.tablist.bukkit.commands.TabNameCmd;
 import hu.montlikadani.tablist.bukkit.listeners.EssAfkStatus;
 import hu.montlikadani.tablist.bukkit.listeners.Listeners;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
+import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler;
 import hu.montlikadani.tablist.bukkit.utils.Metrics;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
@@ -44,19 +44,19 @@ public class TabList extends JavaPlugin {
 
 	private static Permission perm = null;
 
-	private Objects objects = null;
-	private Variables variables = null;
-	private Groups g = null;
-	private ServerVersion mcVersion = null;
-	private Configuration conf = null;
-	private TabManager tabManager = null;
+	private Objects objects;
+	private Variables variables;
+	private Groups g;
+	private ServerVersion mcVersion;
+	private Configuration conf;
+	private TabManager tabManager;
+	private FakePlayerHandler fakePlayerHandler;
 
 	private boolean papi = false;
 	private boolean isSpigot = false;
 
 	private int tabRefreshTime = 0;
 
-	private final Set<FakePlayers> fpList = new HashSet<>();
 	private final Set<AnimCreator> animations = new HashSet<>();
 
 	private final Map<Player, HidePlayers> hidePlayers = new HashMap<>();
@@ -99,7 +99,8 @@ public class TabList extends JavaPlugin {
 				initVaultPerm();
 			}
 
-			loadFakePlayers();
+			fakePlayerHandler.load();
+
 			loadAnimations();
 			loadListeners();
 			registerCommands();
@@ -158,7 +159,9 @@ public class TabList extends JavaPlugin {
 
 			addBackAllHiddenPlayers();
 
-			removeAllFakePlayer();
+			if (fakePlayerHandler != null) {
+				fakePlayerHandler.removeAllFakePlayer();
+			}
 
 			HandlerList.unregisterAll(this);
 
@@ -184,6 +187,7 @@ public class TabList extends JavaPlugin {
 		g = new Groups(this);
 		variables = new Variables(this);
 		tabManager = new TabManager(this);
+		fakePlayerHandler = new FakePlayerHandler(this);
 	}
 
 	private void registerCommands() {
@@ -244,22 +248,6 @@ public class TabList extends JavaPlugin {
 							c.getBoolean(path + "random")));
 				}
 			}
-		}
-	}
-
-	public void loadFakePlayers() {
-		if (!getC().getBoolean("enable-fake-players")) {
-			return;
-		}
-
-		fpList.clear();
-
-		List<String> fpls = conf.getFakeplayers().getStringList("fakeplayers");
-		for (String l : fpls) {
-			FakePlayers fp = new FakePlayers(colorMsg(l));
-			fpList.add(fp);
-
-			getServer().getOnlinePlayers().forEach(fp::createFakeplayer);
 		}
 	}
 
@@ -442,77 +430,6 @@ public class TabList extends JavaPlugin {
 		tabManager.addPlayer(p);
 	}
 
-	public boolean createPlayer(Player p, String name) {
-		if (name == null || name.trim().isEmpty()) {
-			return false;
-		}
-
-		if (name.length() > 16) {
-			name = name.substring(0, 16);
-		}
-
-		if (getFakePlayerByName(name) != null) {
-			return false;
-		}
-
-		List<String> fakepls = conf.getFakeplayers().getStringList("fakeplayers");
-		fakepls.add(name);
-
-		conf.getFakeplayers().set("fakeplayers", fakepls);
-		try {
-			conf.getFakeplayers().save(conf.getFakeplayersFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-
-		name = colorMsg(name);
-
-		FakePlayers fp = new FakePlayers(name);
-		fpList.add(fp);
-
-		fp.createFakeplayer(p);
-		return true;
-	}
-
-	void removeAllFakePlayer() {
-		for (FakePlayers fp : fpList) {
-			if (fp != null) {
-				fp.removeFakePlayer();
-			}
-		}
-
-		fpList.clear();
-	}
-
-	public boolean removePlayer(String name) {
-		if (name == null || name.trim().isEmpty()) {
-			return false;
-		}
-
-		List<String> fakepls = conf.getFakeplayers().getStringList("fakeplayers");
-		fakepls.remove(name);
-
-		conf.getFakeplayers().set("fakeplayers", fakepls);
-		try {
-			conf.getFakeplayers().save(conf.getFakeplayersFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-
-		for (Iterator<FakePlayers> it = fpList.iterator(); it.hasNext();) {
-			FakePlayers fp = it.next();
-			if (fp != null && fp.getName().equalsIgnoreCase(name)) {
-				fp.removeFakePlayer();
-				it.remove();
-				break;
-			}
-		}
-
-		return true;
-	}
-
 	public void onPlayerQuit(Player p) {
 		if (getC().getBoolean("tabname.enable") && getC().getBoolean("tabname.clear-player-tabname-on-quit")
 				&& conf.getNames().contains("players." + p.getName() + ".tabname")) {
@@ -595,16 +512,6 @@ public class TabList extends JavaPlugin {
 		return false;
 	}
 
-	public FakePlayers getFakePlayerByName(String name) {
-		for (FakePlayers fp : fpList) {
-			if (fp.getName().equalsIgnoreCase(name)) {
-				return fp;
-			}
-		}
-
-		return null;
-	}
-
 	public Map<Player, HidePlayers> getHidePlayers() {
 		return hidePlayers;
 	}
@@ -617,12 +524,12 @@ public class TabList extends JavaPlugin {
 		return variables;
 	}
 
-	public Set<FakePlayers> getFakePlayers() {
-		return fpList;
-	}
-
 	public Set<AnimCreator> getAnimations() {
 		return animations;
+	}
+
+	public FakePlayerHandler getFakePlayerHandler() {
+		return fakePlayerHandler;
 	}
 
 	public TabManager getTabManager() {

@@ -128,9 +128,7 @@ public class Groups {
 
 	public void loadGroupForPlayer(final Player p) {
 		removePlayerGroup(p);
-		if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.enable")) {
-			startTask();
-		}
+		startTask();
 	}
 
 	public void setPlayerTeam(Player player, String prefix, String suffix, String name) {
@@ -253,14 +251,19 @@ public class Groups {
 	}
 
 	private void startTask() {
-		final int refreshInt = plugin.getC().getInt("change-prefix-suffix-in-tablist.refresh-interval");
+		String path = "change-prefix-suffix-in-tablist.";
+		if (!plugin.getC().getBoolean(path + "enable")) {
+			return;
+		}
+
+		final int refreshInt = plugin.getC().getInt(path + "refresh-interval");
 
 		if (refreshInt < 1) {
 			updatePlayers();
 			return;
 		}
 
-		if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.enable-animation")) {
+		if (plugin.getC().getBoolean(path + "enable-animation")) {
 			if (animationTask == null) {
 				animationTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
 					if (Bukkit.getOnlinePlayers().isEmpty()) {

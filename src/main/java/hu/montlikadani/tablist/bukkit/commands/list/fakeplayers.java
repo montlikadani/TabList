@@ -58,7 +58,7 @@ public class fakeplayers implements ICommand {
 				return false;
 			}
 
-			if (plugin.createPlayer(p, name)) {
+			if (plugin.getFakePlayerHandler().createPlayer(p, name)) {
 				sendMsg(p, plugin.getMsg("fake-player.added", "%name%", name));
 			}
 		} else if (args[1].equalsIgnoreCase("remove")) {
@@ -78,7 +78,7 @@ public class fakeplayers implements ICommand {
 				return false;
 			}
 
-			if (plugin.removePlayer(name)) {
+			if (plugin.getFakePlayerHandler().removePlayer(name)) {
 				sendMsg(p, plugin.getMsg("fake-player.removed", "%name%", name));
 			}
 		} else if (args[1].equalsIgnoreCase("list")) {

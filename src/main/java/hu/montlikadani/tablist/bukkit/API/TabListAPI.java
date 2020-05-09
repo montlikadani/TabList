@@ -8,11 +8,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import hu.montlikadani.tablist.bukkit.FakePlayers;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.TeamHandler;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 import hu.montlikadani.tablist.bukkit.tablist.TabTitle;
+import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayers;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 
 /**
