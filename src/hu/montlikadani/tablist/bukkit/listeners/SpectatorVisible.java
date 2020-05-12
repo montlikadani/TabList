@@ -13,9 +13,9 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.mojang.authlib.GameProfile;
 
-import hu.montlikadani.ragemode.ServerVersion.Version;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class SpectatorVisible implements Listener {
 
@@ -65,20 +65,23 @@ public class SpectatorVisible implements Listener {
 								List<Object> infoList = (List<Object>) ReflectionUtils
 										.getField(packetPlayOutPlayerInfo, "b").get(packetPlayOutPlayerInfo);
 								for (Object infoData : infoList) {
-									// PlayerInfoData data = (PlayerInfoData) infoData;
-									// TODO: need a new instance declaring of playerinfodata
 									Field c = ReflectionUtils.getField(infoData, "c");
+									Object profile = infoData.getClass().getMethod("a").invoke(infoData);
+									Object id = profile.getClass().getMethod("getId").invoke(profile);
 									if (c.get(infoData).equals(
 											ReflectionUtils.getField(enumGameMode, "SPECTATOR").get(enumGameMode))) {
-										GameProfile profile = new GameProfile(e.getPlayer().getUniqueId(),
-												e.getPlayer().getName());
-										Object d = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData")
-												.getConstructor(profile.getClass(), int.class, enumGameMode,
-														String.class)
-												.newInstance(profile, 0, enumGameMode.newInstance(), ReflectionUtils
-														.getAsIChatBaseComponent(e.getPlayer().getPlayerListName()));
+										Object d = infoData.getClass()
+												.getConstructor(packetPlayOutPlayerInfo.getClass(), profile.getClass(),
+														int.class, enumGameMode,
+														ReflectionUtils.getAsIChatBaseComponent(
+																ev.getPlayer().getPlayerListName()))
+												.newInstance(packetPlayOutPlayerInfo, profile, 1,
+														ReflectionUtils.getField(enumGameMode, "NOT_SET")
+																.get(enumGameMode),
+														ReflectionUtils.getAsIChatBaseComponent(profile.getClass()
+																.getMethod("getName").invoke(profile).toString()));
 										ReflectionUtils.modifyFinalField(c, d,
-												ReflectionUtils.getField(enumGameMode, "SURVIVAL"));
+												ReflectionUtils.getField(enumGameMode, "SURVIVAL").get(enumGameMode));
 									}
 								}
 							}
