@@ -41,7 +41,7 @@ public class Objects {
 		Objective objective = getHealthObject(pl);
 		if (objective == null) {
 			String dName = ChatColor.RED + "\u2665";
-			if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
+			if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
 				objective = board.registerNewObjective("showhealth", "health", dName, RenderType.HEARTS);
 			} else {
 				objective = board.registerNewObjective("showhealth", "health");
@@ -126,7 +126,7 @@ public class Objects {
 				if (obj != null) {
 					obj.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 
-					if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
+					if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
 						obj.setRenderType(RenderType.INTEGER);
 					}
 
