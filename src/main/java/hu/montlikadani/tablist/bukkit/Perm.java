@@ -1,29 +1,30 @@
 package hu.montlikadani.tablist.bukkit;
 
 public enum Perm {
-	ADDFAKEPLAYER("tablist.fakeplayers.add"),
-	FAKEPLAYERS("tablist.fakeplayers"),
-	GET("tablist.get"),
-	GETO("tablist.get.other"),
-	HELP("tablist.help"),
-	LISTFAKEPLAYERS("tablist.fakeplayers.list"),
-	RELOAD("tablist.reload"),
-	REMOVEFAKEPLAYER("tablist.fakeplayers.remove"),
-	RESET("tablist.reset"),
-	RESETOTHERTAB("tablist.reset.other"),
-	SETPREFIX("tablist.setprefix"),
-	SETPRIORITY("tablist.setpriority"),
-	SETSUFFIX("tablist.setsuffix"),
-	REMOVEGROUP("tablist.removegroup"),
-	TABNAME("tablist.tabname"),
-	TABNAMEOTHER("tablist.tabname.other"),
-	TOGGLE("tablist.toggle"),
-	TOGGLEALL("tablist.toggle.all");
+
+	ADDFAKEPLAYER("fakeplayers.add"),
+	FAKEPLAYERS("fakeplayers"),
+	GET("get"),
+	GETO("get.other"),
+	HELP("help"),
+	LISTFAKEPLAYERS("fakeplayers.list"),
+	RELOAD("reload"),
+	REMOVEFAKEPLAYER("fakeplayers.remove"),
+	RESET("reset"),
+	RESETOTHERTAB("reset.other"),
+	SETPREFIX("setprefix"),
+	SETPRIORITY("setpriority"),
+	SETSUFFIX("setsuffix"),
+	REMOVEGROUP("removegroup"),
+	TABNAME("tabname"),
+	TABNAMEOTHER("tabname.other"),
+	TOGGLE("toggle"),
+	TOGGLEALL("toggle.all");
 
 	private String perm;
 
 	Perm(String perm) {
-		this.perm = perm;
+		this.perm = "tablist." + perm;
 	}
 
 	public String getPerm() {

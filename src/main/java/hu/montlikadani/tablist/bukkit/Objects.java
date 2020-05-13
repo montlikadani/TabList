@@ -130,7 +130,15 @@ public class Objects {
 						obj.setRenderType(RenderType.INTEGER);
 					}
 
-					obj.getScore(player.getName()).setScore(score);
+					if (obj.getScore(player.getName()).getScore() != score) {
+						for (Player p : Bukkit.getOnlinePlayers()) {
+							Objective object = type.equals("custom") ? getCustomObject(p)
+									: (type.equals("ping") ? getPingObject(p) : null);
+							if (object != null) {
+								object.getScore(player.getName()).setScore(score);
+							}
+						}
+					}
 				}
 			}
 		}, timer, timer);

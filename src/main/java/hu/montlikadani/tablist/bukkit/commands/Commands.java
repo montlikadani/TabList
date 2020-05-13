@@ -36,7 +36,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 			sendMsg(sender, colorMsg(
 					"&4If you find a bug, send issue here:&e &nhttps://github.com/montlikadani/TabList/issues"));
 			return true;
-		} else if (args[0].equalsIgnoreCase("help")) {
+		}
+
+		if (args[0].equalsIgnoreCase("help")) {
 			if (sender instanceof Player && !sender.hasPermission(Perm.HELP.getPerm())) {
 				sendMsg(sender, plugin.getMsg("no-permission", "%perm%", Perm.HELP.getPerm()));
 				return true;
