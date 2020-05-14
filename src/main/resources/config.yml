@@ -56,6 +56,9 @@ placeholder-format:
     # When the player is not afk
     format-no: ""
 
+    # Sort afk players to the end of the tablist?
+    sort-last: true
+
   time:
     # Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/
     # Or google it: "what is my time zone"

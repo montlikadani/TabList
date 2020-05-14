@@ -15,6 +15,7 @@ public class ConfigValues {
 	private static boolean afkStatusEnabled;
 	private static boolean afkStatusShowInRightLeftSide;
 	private static boolean afkStatusShowPlayerGroup;
+	private static boolean afkSortLast;
 	private static boolean useSystemZone;
 	private static boolean pingFormatEnabled;
 	private static boolean tpsFormatEnabled;
@@ -72,6 +73,7 @@ public class ConfigValues {
 		afkStatusEnabled = c.getBoolean("placeholder-format.afk-status.enable", false);
 		afkStatusShowInRightLeftSide = c.getBoolean("placeholder-format.afk-status.show-in-right-or-left-side", true);
 		afkStatusShowPlayerGroup = c.getBoolean("placeholder-format.afk-status.show-player-group", true);
+		afkSortLast = c.getBoolean("placeholder-format.afk-status.sort-last", true);
 		useSystemZone = c.getBoolean("placeholder-format.time.use-system-zone", false);
 		pingFormatEnabled = c.getBoolean("placeholder-format.ping.enable", true);
 		tpsFormatEnabled = c.getBoolean("placeholder-format.tps.enable", true);
@@ -160,6 +162,8 @@ public class ConfigValues {
 	public static boolean isAfkStatusShowPlayerGroup() {
 		return afkStatusShowPlayerGroup;
 	}
+
+	public static boolean isAfkSortLast() { return afkSortLast; }
 
 	public static String getAfkFormatYes() {
 		return afkFormatYes;

@@ -16,6 +16,8 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 	private TeamHandler group;
 
+	private boolean afk;
+
 	private String nick;
 	private String customPrefix;
 	private String customSuffix;
@@ -42,6 +44,8 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	public Player getPlayer() {
 		return player;
 	}
+
+	public boolean isAfk() { return afk; }
 
 	public void setCustomPrefix(String customPrefix) {
 		this.customPrefix = customPrefix;
@@ -75,6 +79,12 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			}
 
 			return update;
+		}
+
+		boolean afk = plugin.isAfk(this.getPlayer(), false);
+		if (this.afk != afk) {
+			this.afk = afk;
+			update = true;
 		}
 
 		for (final TeamHandler team : plugin.getGroups().getGroupsList()) {
@@ -184,6 +194,10 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 	@Override
 	public int compareTo(TabListPlayer tlp) {
+		if (ConfigValues.isAfkSortLast()) {
+			int comp = Boolean.compare(this.isAfk(), tlp.isAfk());
+			if (comp != 0) return comp;
+		}
 		int ownPriority = this.getPriority();
 		int tlpPriority = tlp.getPriority();
 
