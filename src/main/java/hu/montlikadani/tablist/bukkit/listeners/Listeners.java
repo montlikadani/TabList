@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
+import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
 
@@ -28,7 +29,7 @@ public class Listeners implements Listener {
 		plugin.updateAll(p);
 		plugin.getGroups().loadGroupForPlayer(p);
 
-		if (plugin.getC().getBoolean("enable-fake-players")) {
+		if (ConfigValues.isFakePlayers()) {
 			plugin.getConf().createFakePlayersFile();
 			plugin.getFakePlayerHandler().load();
 		}

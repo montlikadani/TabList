@@ -14,6 +14,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
+import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.Util;
@@ -33,14 +34,14 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
-		if (!plugin.getC().getBoolean("tabname.enable")) {
+		if (!ConfigValues.isTabNameEnabled()) {
 			Util.logConsole(java.util.logging.Level.WARNING, "Tabname option is not enabled in configuration.");
 			return true;
 		}
 
 		plugin.getConf().createNamesFile();
 
-		final int maxlength = plugin.getC().getInt("tabname.max-name-length");
+		final int maxLength = ConfigValues.getTabNameMaxLength();
 
 		if (!(sender instanceof Player)) {
 			if (args.length == 0) {
@@ -97,8 +98,8 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			if (msg.length() > maxlength) {
-				sendMsg(sender, plugin.getMsg("tabname.name-too-long", "%max%", maxlength));
+			if (msg.length() > maxLength) {
+				sendMsg(sender, plugin.getMsg("tabname.name-too-long", "%max%", maxLength));
 				return true;
 			}
 
@@ -177,8 +178,8 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			if (msg.length() > maxlength) {
-				sendMsg(p, plugin.getMsg("tabname.name-too-long", "%max%", maxlength));
+			if (msg.length() > maxLength) {
+				sendMsg(p, plugin.getMsg("tabname.name-too-long", "%max%", maxLength));
 				return true;
 			}
 
@@ -217,8 +218,8 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			if (msg.length() > maxlength) {
-				sendMsg(p, plugin.getMsg("tabname.name-too-long", "%max%", maxlength));
+			if (msg.length() > maxLength) {
+				sendMsg(p, plugin.getMsg("tabname.name-too-long", "%max%", maxLength));
 				return true;
 			}
 

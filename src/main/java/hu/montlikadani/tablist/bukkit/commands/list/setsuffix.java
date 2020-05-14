@@ -9,6 +9,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.Groups;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
@@ -26,7 +27,7 @@ public class setsuffix implements ICommand {
 			return false;
 		}
 
-		if (!plugin.getC().getBoolean("change-prefix-suffix-in-tablist.enable")) {
+		if (!ConfigValues.isPrefixSuffixEnabled()) {
 			Util.logConsole(
 					"The prefix-suffix is not enabled in the TabList configuration. Without not work this function.");
 			return false;

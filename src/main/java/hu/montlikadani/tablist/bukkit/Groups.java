@@ -58,15 +58,14 @@ public class Groups {
 	protected void load() {
 		groupsList.clear();
 
-		if (!plugin.getC().getBoolean("change-prefix-suffix-in-tablist.enable")) {
+		if (!ConfigValues.isPrefixSuffixEnabled()) {
 			return;
 		}
 
 		plugin.getConf().createGroupsFile();
 
 		// Automatically add existing groups to the list for "lazy peoples"
-		if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.sync-plugins-groups-with-tablist", false)
-				&& plugin.isPluginEnabled("Vault")) {
+		if (ConfigValues.isSyncPluginsGroups() && plugin.isPluginEnabled("Vault")) {
 			boolean have = false;
 
 			me: for (String s : plugin.getVaultPerm().getGroups()) {
@@ -141,7 +140,7 @@ public class Groups {
 		}
 
 		Scoreboard tboard = b;
-		if (plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-own-scoreboard", false)) {
+		if (ConfigValues.isUseOwnScoreboard()) {
 			tboard = player.getScoreboard();
 		}
 
@@ -251,19 +250,18 @@ public class Groups {
 	}
 
 	private void startTask() {
-		String path = "change-prefix-suffix-in-tablist.";
-		if (!plugin.getC().getBoolean(path + "enable")) {
+		if (!ConfigValues.isPrefixSuffixEnabled()) {
 			return;
 		}
 
-		final int refreshInt = plugin.getC().getInt(path + "refresh-interval");
+		final int refreshInt = ConfigValues.getGroupsRefreshInterval();
 
 		if (refreshInt < 1) {
 			updatePlayers();
 			return;
 		}
 
-		if (plugin.getC().getBoolean(path + "enable-animation")) {
+		if (ConfigValues.isGroupAnimationEnabled()) {
 			if (animationTask == null) {
 				animationTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
 					if (Bukkit.getOnlinePlayers().isEmpty()) {

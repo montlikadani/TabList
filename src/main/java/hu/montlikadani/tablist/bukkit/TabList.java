@@ -52,7 +52,6 @@ public class TabList extends JavaPlugin {
 	private TabManager tabManager;
 	private FakePlayerHandler fakePlayerHandler;
 
-	private boolean papi = false;
 	private boolean isSpigot = false;
 
 	private int tabRefreshTime = 0;
@@ -90,7 +89,7 @@ public class TabList extends JavaPlugin {
 			conf.loadFiles();
 			loadValues();
 
-			if (papi && isPluginEnabled("PlaceholderAPI")) {
+			if (ConfigValues.isPlaceholderAPI() && isPluginEnabled("PlaceholderAPI")) {
 				logConsole("Hooked PlaceholderAPI version: "
 						+ me.clip.placeholderapi.PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
 			}
@@ -114,19 +113,19 @@ public class TabList extends JavaPlugin {
 
 			Metrics metrics = new Metrics(this, 1479);
 			if (metrics.isEnabled()) {
-				metrics.addCustomChart(new Metrics.SimplePie("using_placeholderapi", () -> String.valueOf(papi)));
+				metrics.addCustomChart(new Metrics.SimplePie("using_placeholderapi",
+						() -> String.valueOf(ConfigValues.isPlaceholderAPI())));
 				metrics.addCustomChart(new Metrics.SimplePie("tab_interval", () -> getTabC().getString("interval")));
 				metrics.addCustomChart(new Metrics.SimplePie("enable_tablist", () -> getTabC().getString("enabled")));
 				metrics.addCustomChart(
-						new Metrics.SimplePie("enable_tabname", () -> getC().getString("tabname.enable")));
-				if (getC().getBoolean("tablist-object-type.enable")) {
-					metrics.addCustomChart(
-							new Metrics.SimplePie("object_type", () -> getC().getString("tablist-object-type.type")));
+						new Metrics.SimplePie("enable_tabname", () -> String.valueOf(ConfigValues.isTabNameEnabled())));
+				if (ConfigValues.isTablistObjectiveEnabled()) {
+					metrics.addCustomChart(new Metrics.SimplePie("object_type", () -> ConfigValues.getObjectType()));
 				}
-				metrics.addCustomChart(
-						new Metrics.SimplePie("enable_fake_players", () -> getC().getString("enable-fake-players")));
+				metrics.addCustomChart(new Metrics.SimplePie("enable_fake_players",
+						() -> String.valueOf(ConfigValues.isFakePlayers())));
 				metrics.addCustomChart(new Metrics.SimplePie("enable_groups",
-						() -> getC().getString("change-prefix-suffix-in-tablist.enable")));
+						() -> String.valueOf(ConfigValues.isPrefixSuffixEnabled())));
 			}
 
 			if (getC().getBoolean("logconsole")) {
@@ -223,9 +222,6 @@ public class TabList extends JavaPlugin {
 	}
 
 	private void loadValues() {
-		this.papi = getC().contains("placeholderapi") ? getC().getBoolean("placeholderapi")
-				: getC().getBoolean("hook.placeholderapi", false);
-
 		this.tabRefreshTime = getTabC().getInt("interval", 4);
 	}
 
@@ -259,14 +255,14 @@ public class TabList extends JavaPlugin {
 	}
 
 	public void setTabName(Player p, String name) {
-		if (!getC().getBoolean("tabname.enable")) {
+		if (!ConfigValues.isTabNameEnabled()) {
 			return;
 		}
 
 		String result = "";
 		String tName = "";
 
-		if (getC().getBoolean("tabname.use-essentials-nickname")) {
+		if (ConfigValues.isTabNameUseEssentialsNickName()) {
 			if (isPluginEnabled("Essentials")) {
 				User user = getPlugin(Essentials.class).getUser(p);
 				if (user.getNickname() != null) {
@@ -278,11 +274,11 @@ public class TabList extends JavaPlugin {
 				return;
 			}
 		} else {
-			if (getC().getBoolean("tabname.default-color.enable")) {
-				result = colorMsg(getC().getString("tabname.default-color.color")
+			if (ConfigValues.isDefaultColorEnabled()) {
+				result = colorMsg(ConfigValues.getDefaultTabNameColor()
 						+ variables.setPlaceholders(p, Global.setSymbols(name)) + "&r");
 			} else {
-				result = getC().getBoolean("tabname.enable-color-code")
+				result = ConfigValues.isTabNameColorCodeEnabled()
 						? colorMsg(variables.setPlaceholders(p, Global.setSymbols(name)) + "&r")
 						: name + "\u00a7r";
 			}
@@ -306,12 +302,12 @@ public class TabList extends JavaPlugin {
 	}
 
 	private void loadTabName(Player p) {
-		if (!getC().getBoolean("tabname.enable")) {
+		if (!ConfigValues.isTabNameEnabled()) {
 			return;
 		}
 
 		String result = "";
-		if (getC().getBoolean("tabname.use-essentials-nickname")) {
+		if (ConfigValues.isTabNameUseEssentialsNickName()) {
 			if (!isPluginEnabled("Essentials")) {
 				logConsole(Level.WARNING, "The Essentials plugin not found. Without the nickname option not work.");
 				return;
@@ -326,14 +322,14 @@ public class TabList extends JavaPlugin {
 			if (!name.isEmpty()) {
 				name = variables.setPlaceholders(p, Global.setSymbols(name));
 
-				if (getC().getBoolean("tabname.default-color.enable")) {
-					result = colorMsg(getC().getString("tabname.default-color.color") + name + "&r");
+				if (ConfigValues.isDefaultColorEnabled()) {
+					result = colorMsg(ConfigValues.getDefaultTabNameColor() + name + "&r");
 				} else {
-					result = getC().getBoolean("tabname.enable-color-code") ? colorMsg(name + "&r") : name + "\u00a7r";
+					result = ConfigValues.isTabNameColorCodeEnabled() ? colorMsg(name + "&r") : name + "\u00a7r";
 				}
 			} else {
-				if (getC().getBoolean("tabname.default-color.enable")) {
-					result = colorMsg(getC().getString("tabname.default-color.color") + p.getName());
+				if (ConfigValues.isDefaultColorEnabled()) {
+					result = colorMsg(ConfigValues.getDefaultTabNameColor() + p.getName());
 				}
 			}
 		}
@@ -344,7 +340,7 @@ public class TabList extends JavaPlugin {
 	}
 
 	public void unTabName(Player p) {
-		if (!getC().getBoolean("tabname.enable")) {
+		if (!ConfigValues.isTabNameEnabled()) {
 			return;
 		}
 
@@ -374,7 +370,7 @@ public class TabList extends JavaPlugin {
 	}
 
 	void updateAll(Player p, boolean reload) {
-		if (!getC().getBoolean("tablist-object-type.enable")) {
+		if (!ConfigValues.isTablistObjectiveEnabled()) {
 			objects.unregisterPingTab();
 			objects.unregisterCustomValue();
 			objects.unregisterHealthObjective();
@@ -382,7 +378,7 @@ public class TabList extends JavaPlugin {
 			objects.unregisterPingTab(p);
 			objects.unregisterCustomValue(p);
 
-			switch (getC().getString("tablist-object-type.type").toLowerCase()) {
+			switch (ConfigValues.getObjectType().toLowerCase()) {
 			case "ping":
 			case "custom":
 				objects.unregisterHealthObjective();
@@ -400,7 +396,7 @@ public class TabList extends JavaPlugin {
 			}
 		}
 
-		if (getC().getBoolean("hide-players-from-tablist")) {
+		if (ConfigValues.isHidePlayersFromTab()) {
 			HidePlayers h = null;
 			if (!hidePlayers.containsKey(p)) {
 				h = new HidePlayers(p);
@@ -418,7 +414,7 @@ public class TabList extends JavaPlugin {
 				hidePlayers.remove(p);
 			}
 
-			if (getC().getBoolean("per-world-player-list")) {
+			if (ConfigValues.isPerWorldPlayerList()) {
 				PlayerList.hideShow(p);
 				PlayerList.hideShow();
 			} else {
@@ -431,12 +427,12 @@ public class TabList extends JavaPlugin {
 	}
 
 	public void onPlayerQuit(Player p) {
-		if (getC().getBoolean("tabname.enable") && getC().getBoolean("tabname.clear-player-tabname-on-quit")
+		if (ConfigValues.isTabNameEnabled() && ConfigValues.isClearTabNameOnQuit()
 				&& conf.getNames().contains("players." + p.getName() + ".tabname")) {
 			unTabName(p);
 		}
 
-		if (!getC().getBoolean("tablist-object-type.enable")) {
+		if (!ConfigValues.isTablistObjectiveEnabled()) {
 			objects.unregisterHealthObjective();
 			objects.unregisterPingTab();
 			objects.unregisterCustomValue();
@@ -572,16 +568,13 @@ public class TabList extends JavaPlugin {
 		return mcVersion;
 	}
 
-	public boolean hasPapi() {
-		return papi;
-	}
-
 	public int getTabRefreshTime() {
 		return tabRefreshTime;
 	}
 
 	/**
 	 * Gets this class instance
+	 * 
 	 * @return {@link TabList}
 	 */
 	public static TabList getInstance() {
@@ -594,7 +587,7 @@ public class TabList extends JavaPlugin {
 	}
 
 	public boolean isHookPreventTask(Player p) {
-		if (isPluginEnabled("RageMode") && getC().getBoolean("hook.RageMode") && GameUtils.isPlayerPlaying(p)
+		if (isPluginEnabled("RageMode") && ConfigValues.isRagemodeHook() && GameUtils.isPlayerPlaying(p)
 				&& GameUtils.getGameByPlayer(p).isGameRunning()) {
 			return true;
 		}

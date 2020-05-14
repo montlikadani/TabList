@@ -40,6 +40,7 @@ public class Configuration {
 
 			config = createFile(config_file, "config.yml", false);
 			config.load(config_file);
+			ConfigValues.loadValues();
 
 			if (!config.isSet("config-version") || !config.get("config-version").equals(cver)) {
 				logConsole(Level.WARNING, "Found outdated configuration (config.yml)! (Your version: "
@@ -61,7 +62,7 @@ public class Configuration {
 			animCreator = createFile(animation_file, "animcreator.yml", false);
 			animCreator.load(animation_file);
 
-			if (config.getBoolean("tabname.enable")) {
+			if (ConfigValues.isTabNameEnabled()) {
 				if (names_file == null) {
 					names_file = new File(folder, "names.yml");
 				}
@@ -70,7 +71,7 @@ public class Configuration {
 				names.save(names_file);
 			}
 
-			if (config.getBoolean("change-prefix-suffix-in-tablist.enable")) {
+			if (ConfigValues.isPrefixSuffixEnabled()) {
 				if (groups_file == null) {
 					groups_file = new File(folder, "groups.yml");
 				}
@@ -79,7 +80,7 @@ public class Configuration {
 				groups.load(groups_file);
 			}
 
-			if (config.getBoolean("enable-fake-players")) {
+			if (ConfigValues.isFakePlayers()) {
 				if (fakeplayers_file == null) {
 					fakeplayers_file = new File(folder, "fakeplayers.yml");
 				}

@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.bukkit.entity.Player;
 
+import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.Configuration;
 import hu.montlikadani.tablist.bukkit.TabList;
 
@@ -38,7 +39,7 @@ public class FakePlayerHandler {
 	}
 
 	public void load() {
-		if (!plugin.getC().getBoolean("enable-fake-players")) {
+		if (!ConfigValues.isFakePlayers()) {
 			return;
 		}
 

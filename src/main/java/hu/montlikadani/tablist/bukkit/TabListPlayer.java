@@ -67,9 +67,8 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	public boolean update() {
 		boolean update = false;
 
-		String phPath = "placeholder-format.afk-status.";
-		if (!isPlayerCanSeeGroup() || plugin.getC().getBoolean(phPath + "enable") && plugin.isAfk(player, false)
-				&& !plugin.getC().getBoolean(phPath + "show-player-group")) {
+		if (!isPlayerCanSeeGroup() || ConfigValues.isAfkStatusEnabled() && plugin.isAfk(player, false)
+				&& !ConfigValues.isAfkStatusShowPlayerGroup()) {
 			if (group != null) {
 				group = null;
 				update = true;
@@ -111,8 +110,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			}
 		}
 
-		if (plugin.isPluginEnabled("Essentials")
-				&& plugin.getC().getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
+		if (plugin.isPluginEnabled("Essentials") && ConfigValues.isUseEssentialsNickName()) {
 			String nick = JavaPlugin.getPlugin(Essentials.class).getUser(player).getNickname();
 			if (nick == null && this.nick != null || nick != null && !nick.equals(this.nick)) {
 				this.nick = nick;
@@ -127,7 +125,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		String path = "change-prefix-suffix-in-tablist.";
 		Player p = this.player;
 
-		if (plugin.getC().getBoolean(path + "disabled-worlds.use-as-whitelist", false)) {
+		if (ConfigValues.isUseDisabledWorldsAsWhiteList()) {
 			if (!plugin.getC().getStringList(path + "disabled-worlds.list").contains(p.getWorld().getName())) {
 				return false;
 			}
@@ -142,12 +140,12 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			return false;
 		}
 
-		if (plugin.getC().getBoolean(path + "hide-group-when-player-vanished") && plugin.isVanished(p, false)) {
+		if (ConfigValues.isHideGroupInVanish() && plugin.isVanished(p, false)) {
 			plugin.getGroups().removePlayerGroup(p);
 			return false;
 		}
 
-		if (plugin.getC().getBoolean(path + "hide-group-when-player-afk") && plugin.isAfk(p, false)) {
+		if (ConfigValues.isHideGroupWhenAfk() && plugin.isAfk(p, false)) {
 			plugin.getGroups().removePlayerGroup(p);
 			return false;
 		}
@@ -158,13 +156,10 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	public String getPrefix() {
 		String prefix = plugin.getPlaceholders().replaceVariables(player,
 				plugin.makeAnim(customPrefix == null ? group == null ? "" : group.getPrefix() : customPrefix));
-		String phPath = "placeholder-format.afk-status.";
 
-		final boolean rightLeft = plugin.getC().getBoolean(phPath + "show-in-right-or-left-side");
-
-		if (plugin.getC().getBoolean(phPath + "enable") && !rightLeft) {
-			prefix = colorMsg(
-					plugin.getC().getString(phPath + "format-" + (plugin.isAfk(player, false) ? "yes" : "no"), ""))
+		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowInRightLeftSide()) {
+			prefix = colorMsg(plugin.getC().getString(
+					"placeholder-format.afk-status.format-" + (plugin.isAfk(player, false) ? "yes" : "no"), ""))
 					+ prefix;
 		}
 
@@ -174,13 +169,10 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	public String getSuffix() {
 		String suffix = plugin.getPlaceholders().replaceVariables(player,
 				plugin.makeAnim(customSuffix == null ? group == null ? "" : group.getSuffix() : customSuffix));
-		String phPath = "placeholder-format.afk-status.";
 
-		final boolean rightLeft = plugin.getC().getBoolean(phPath + "show-in-right-or-left-side");
-
-		if (plugin.getC().getBoolean(phPath + "enable") && rightLeft) {
-			suffix = suffix + colorMsg(
-					plugin.getC().getString(phPath + "format-" + (plugin.isAfk(player, false) ? "yes" : "no"), ""));
+		if (ConfigValues.isAfkStatusEnabled() && ConfigValues.isAfkStatusShowInRightLeftSide()) {
+			suffix = suffix + colorMsg(plugin.getC().getString(
+					"placeholder-format.afk-status.format-" + (plugin.isAfk(player, false) ? "yes" : "no"), ""));
 		}
 
 		return suffix;

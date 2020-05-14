@@ -60,8 +60,7 @@ public class Objects {
 			return;
 		}
 
-		final String main = "tablist-object-type.object-settings.";
-		final int timer = 20 * plugin.getC().getInt(main + "refresh-interval", 3);
+		final int timer = 20 * ConfigValues.getObjectRefreshInterval();
 
 		task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
 			if (Bukkit.getOnlinePlayers().isEmpty()) {
@@ -69,9 +68,9 @@ public class Objects {
 				return;
 			}
 
-			final String type = plugin.getC().getString("tablist-object-type.type", "ping").toLowerCase();
+			final String type = ConfigValues.getObjectType().toLowerCase();
 
-			String path = main + type + ".";
+			String path = "tablist-object-type.object-settings." + type + ".";
 
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				if (plugin.getC().getStringList(path + "disabled-worlds").contains(player.getWorld().getName())) {
@@ -108,8 +107,7 @@ public class Objects {
 						continue;
 					}
 
-					final String value = plugin.getC().getString(path + "value",
-							plugin.getC().getString(path + "custom-value"));
+					final String value = ConfigValues.getCustomObjectSetting();
 					String result = plugin.getPlaceholders().replaceVariables(player, value);
 
 					if (result.contains(".")) {

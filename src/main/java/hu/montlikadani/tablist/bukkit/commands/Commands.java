@@ -15,6 +15,7 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
+import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 
@@ -105,7 +106,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		if (args.length == 2) {
-			if (plugin.getC().getBoolean("enable-fake-players") && args[0].equalsIgnoreCase("fakeplayers")) {
+			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
 				Arrays.asList("add", "remove", "list").forEach(cmds::add);
 				partOfCommand = args[1];
 
@@ -116,7 +117,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		if (args.length == 3) {
-			if (plugin.getC().getBoolean("enable-fake-players") && args[0].equalsIgnoreCase("fakeplayers")) {
+			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
 				if (args[1].equalsIgnoreCase("remove")) {
 					plugin.getConf().getFakeplayers().getStringList("fakeplayers").forEach(cmds::add);
 					partOfCommand = args[2];

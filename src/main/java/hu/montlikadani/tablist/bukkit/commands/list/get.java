@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
@@ -21,7 +22,7 @@ public class get implements ICommand {
 			return false;
 		}
 
-		if (!plugin.getC().getBoolean("tabname.enable")) {
+		if (!ConfigValues.isTabNameEnabled()) {
 			sendMsg(sender, Util.colorMsg("Tabname option is disabled in configuration!"));
 			return false;
 		}

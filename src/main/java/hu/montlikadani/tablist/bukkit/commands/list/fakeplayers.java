@@ -10,6 +10,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
@@ -29,7 +30,7 @@ public class fakeplayers implements ICommand {
 			return false;
 		}
 
-		if (!plugin.getC().getBoolean("enable-fake-players")) {
+		if (!ConfigValues.isFakePlayers()) {
 			sendMsg(p, plugin.getMsg("fake-player.disabled"));
 			return false;
 		}

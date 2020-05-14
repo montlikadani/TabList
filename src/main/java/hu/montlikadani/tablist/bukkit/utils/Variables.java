@@ -16,6 +16,7 @@ import com.earth2me.essentials.Essentials;
 import de.myzelyam.api.vanish.VanishAPI;
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -29,13 +30,12 @@ public class Variables {
 	}
 
 	public String replaceVariables(Player pl, String str) {
-		org.bukkit.configuration.file.FileConfiguration conf = plugin.getC();
 		java.util.Collection<? extends Player> oPls = Bukkit.getOnlinePlayers();
 
-		if (conf.contains("custom-variables")) {
-			for (String custom : conf.getConfigurationSection("custom-variables").getKeys(true)) {
+		if (plugin.getC().contains("custom-variables")) {
+			for (String custom : plugin.getC().getConfigurationSection("custom-variables").getKeys(true)) {
 				if (custom != null && str.contains(custom)) {
-					str = str.replace(custom, conf.getString("custom-variables." + custom));
+					str = str.replace(custom, plugin.getC().getString("custom-variables." + custom));
 				}
 			}
 		}
@@ -47,7 +47,7 @@ public class Variables {
 					continue;
 				}
 
-				if (!conf.getBoolean("count-vanished-staffs")
+				if (!ConfigValues.isCountVanishedStaff()
 						&& ((plugin.isPluginEnabled("SuperVanish") && VanishAPI.isInvisible(all))
 								|| (plugin.isPluginEnabled("Essentials")
 										&& JavaPlugin.getPlugin(Essentials.class).getUser(all).isVanished()))) {
@@ -61,7 +61,7 @@ public class Variables {
 		final int plSize = oPls.size();
 
 		int abc = 0;
-		if (conf.getBoolean("ignore-vanished-players-in-online-players")) {
+		if (ConfigValues.isIgnoreVanishedPlayers()) {
 			if (plugin.isPluginEnabled("SuperVanish")) {
 				abc = VanishAPI.getInvisiblePlayers().isEmpty() ? plSize
 						: plSize - VanishAPI.getInvisiblePlayers().size();
@@ -85,18 +85,16 @@ public class Variables {
 		String t = null;
 		String dt = null;
 		if (str.contains("%server-time%") || str.contains("%date%")) {
-			String path = "placeholder-format.time.";
-			DateTimeFormatter form = !conf.getString(path + "time-format.format").isEmpty()
-					? DateTimeFormatter.ofPattern(conf.getString(path + "time-format.format"))
+			DateTimeFormatter form = !ConfigValues.getTimeFormat().isEmpty()
+					? DateTimeFormatter.ofPattern(ConfigValues.getTimeFormat())
 					: null;
 
-			DateTimeFormatter form2 = !conf.getString(path + "date-format.format").isEmpty()
-					? DateTimeFormatter.ofPattern(conf.getString(path + "date-format.format"))
+			DateTimeFormatter form2 = !ConfigValues.getDateFormat().isEmpty()
+					? DateTimeFormatter.ofPattern(ConfigValues.getDateFormat())
 					: null;
 
-			TimeZone zone = conf.getBoolean(path + "use-system-zone", false)
-					? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
-					: TimeZone.getTimeZone(conf.getString(path + "time-zone", "GMT0"));
+			TimeZone zone = ConfigValues.isUseSystemZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
+					: TimeZone.getTimeZone(ConfigValues.getTimeZone());
 			LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
 
 			Calendar cal = Calendar.getInstance();
@@ -178,7 +176,8 @@ public class Variables {
 
 	@SuppressWarnings("deprecation")
 	public String setPlaceholders(Player p, String s) {
-		if (plugin.hasPapi() && plugin.isPluginEnabled("PlaceholderAPI") && PlaceholderAPI.containsPlaceholders(s)) {
+		if (ConfigValues.isPlaceholderAPI() && plugin.isPluginEnabled("PlaceholderAPI")
+				&& PlaceholderAPI.containsPlaceholders(s)) {
 			s = PlaceholderAPI.setPlaceholders(p, s);
 		}
 
@@ -227,19 +226,17 @@ public class Variables {
 
 	private String formatPing(int ping) {
 		StringBuilder ret;
-		String path = "placeholder-format.ping.";
-
 		StringBuilder sb = new StringBuilder();
 
-		if (plugin.getC().getBoolean(path + "enable")) {
-			if (ping <= plugin.getC().getInt(path + "good-ping.amount")) {
-				ret = sb.append(plugin.getC().getString(path + "good-ping.color").replace('&', '\u00a7')).append(ping)
+		if (ConfigValues.isPingFormatEnabled()) {
+			if (ping <= ConfigValues.getGoodPingAmount()) {
+				ret = sb.append(ConfigValues.getGoodPingColor().replace('&', '\u00a7')).append(ping)
 						.append(ChatColor.RESET);
-			} else if (ping <= plugin.getC().getInt(path + "medium-ping.amount")) {
-				ret = sb.append(plugin.getC().getString(path + "medium-ping.color").replace('&', '\u00a7')).append(ping)
+			} else if (ping <= ConfigValues.getMediumPingAmount()) {
+				ret = sb.append(ConfigValues.getMediumPingColor().replace('&', '\u00a7')).append(ping)
 						.append(ChatColor.RESET);
 			} else {
-				ret = sb.append(plugin.getC().getString(path + "bad-ping").replace('&', '\u00a7')).append(ping)
+				ret = sb.append(ConfigValues.getBadPingColor().replace('&', '\u00a7')).append(ping)
 						.append(ChatColor.RESET);
 			}
 		} else {
@@ -251,19 +248,17 @@ public class Variables {
 
 	private String formatTPS(double tps) {
 		StringBuilder ret;
-		String path = "placeholder-format.tps.";
-
 		StringBuilder sb = new StringBuilder();
 
-		if (plugin.getC().getBoolean(path + "enable")) {
-			if (tps > plugin.getC().getDouble(path + "good-tps.amount")) {
-				ret = sb.append(plugin.getC().getString(path + "good-tps.color").replace('&', '\u00a7')).append(tps)
+		if (ConfigValues.isTpsFormatEnabled()) {
+			if (tps > ConfigValues.getGoodTpsAmount()) {
+				ret = sb.append(ConfigValues.getGoodTpsColor().replace('&', '\u00a7')).append(tps)
 						.append(ChatColor.RESET);
-			} else if (tps > plugin.getC().getDouble(path + "medium-tps.amount")) {
-				ret = sb.append(plugin.getC().getString(path + "medium-tps.color").replace('&', '\u00a7')).append(tps)
+			} else if (tps > ConfigValues.getMediumTpsAmount()) {
+				ret = sb.append(ConfigValues.getMediumTpsColor().replace('&', '\u00a7')).append(tps)
 						.append(ChatColor.RESET);
 			} else {
-				ret = sb.append(plugin.getC().getString(path + "bad-tps").replace('&', '\u00a7')).append(tps)
+				ret = sb.append(ConfigValues.getBadTpsColor().replace('&', '\u00a7')).append(tps)
 						.append(ChatColor.RESET);
 			}
 		} else {
