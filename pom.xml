@@ -11,9 +11,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!--
-		<maven.compiler.release>8</maven.compiler.release>
-		-->
 	</properties>
 
 	<build>
@@ -167,11 +164,10 @@
 			<systemPath>${project.basedir}/lib/PermissionsEx-1.23.4.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>hu.montlikadani.ragemode</groupId>
+			<groupId>com.github.montlikadani</groupId>
 			<artifactId>RageMode</artifactId>
-			<version>1.8.0.000</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/RageMode.jar</systemPath>
+			<version>LATEST</version>
+			<scope>provided</scope>
 		</dependency>
 	</dependencies>
 </project>
