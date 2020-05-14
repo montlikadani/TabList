@@ -73,7 +73,7 @@ public class ConfigValues {
 		afkStatusEnabled = c.getBoolean("placeholder-format.afk-status.enable", false);
 		afkStatusShowInRightLeftSide = c.getBoolean("placeholder-format.afk-status.show-in-right-or-left-side", true);
 		afkStatusShowPlayerGroup = c.getBoolean("placeholder-format.afk-status.show-player-group", true);
-		afkSortLast = c.getBoolean("placeholder-format.afk-status.sort-last", true);
+		afkSortLast = c.getBoolean("placeholder-format.afk-status.sort-last", false);
 		useSystemZone = c.getBoolean("placeholder-format.time.use-system-zone", false);
 		pingFormatEnabled = c.getBoolean("placeholder-format.ping.enable", true);
 		tpsFormatEnabled = c.getBoolean("placeholder-format.tps.enable", true);
