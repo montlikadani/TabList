@@ -81,7 +81,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			return update;
 		}
 
-		boolean afk = plugin.isAfk(this.getPlayer(), false);
+		boolean afk = plugin.isAfk(player, false);
 		if (this.afk != afk) {
 			this.afk = afk;
 			update = true;
@@ -198,6 +198,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			int comp = Boolean.compare(this.isAfk(), tlp.isAfk());
 			if (comp != 0) return comp;
 		}
+
 		int ownPriority = this.getPriority();
 		int tlpPriority = tlp.getPriority();
 
