@@ -1,8 +1,11 @@
-package hu.montlikadani.tablist.bungee;
+package hu.montlikadani.tablist.bungee.tablist.groups;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import hu.montlikadani.tablist.bungee.Misc;
+import hu.montlikadani.tablist.bungee.TabList;
+import hu.montlikadani.tablist.bungee.tablist.ITask;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;

@@ -3,8 +3,12 @@ package hu.montlikadani.tablist.bungee;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import hu.montlikadani.tablist.bungee.tablist.PlayerTab;
+import hu.montlikadani.tablist.bungee.tablist.TabManager;
+import hu.montlikadani.tablist.bungee.tablist.groups.Groups;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -198,24 +202,29 @@ public class TabList extends Plugin implements Listener {
 	}
 
 	/**
-	 * @param e 
+	 * @param e
 	 */
 	@EventHandler
 	public void onLogin(PostLoginEvent e) {
 		tab.start();
-
 		groups.start();
 	}
 
+	@EventHandler
+	public void onServerChange(net.md_5.bungee.api.event.ServerConnectedEvent event) {
+		getProxy().getScheduler().schedule(this,
+				() -> tab.getPlayerTab(event.getPlayer()).ifPresent(PlayerTab::loadTabList), 1, TimeUnit.SECONDS);
+	}
+
 	/**
-	 * @param ev 
+	 * @param ev
 	 */
 	@EventHandler
 	public void onProxyReload(ProxyReloadEvent ev) {
 		reload();
 	}
 
-	BaseComponent[] getComponentBuilder(String s) {
+	public BaseComponent[] getComponentBuilder(String s) {
 		return new ComponentBuilder(s).create();
 	}
 }
