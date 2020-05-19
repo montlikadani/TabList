@@ -186,9 +186,14 @@ public class Groups {
 			return;
 		}
 
+		String uuid = p.getUniqueId().toString();
+
+		if (!tLPlayerMap.containsKey(uuid))
+			return;
+
 		p.setPlayerListName(p.getName());
 
-		TabListPlayer tlp = tLPlayerMap.remove(p.getUniqueId().toString());
+		TabListPlayer tlp = tLPlayerMap.remove(uuid);
 		if (tlp != null) {
 			tlp.removeGroup();
 			sortedTabListPlayers.removeFirstOccurrence(tlp);
