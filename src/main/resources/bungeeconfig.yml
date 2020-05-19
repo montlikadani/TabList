@@ -115,14 +115,14 @@ tablist:
       - "&4&l&m================="
       - "&6&l&m================="
 
-    someone:
+    someone, anotherPlayer:
       header:
       - "&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================="
       footer:
       - "<lines>"
   # Per server tablist
   per-server:
-    pvp:
+    pvp, pvp2: # You can use multiple servers
       header:
       - "&7<93>&3 Welcome&e &l%player-name%&7! <91>&6 to&4 M&ay&3 Kit&4PvP&9 S&6e&2r&8v&5e&1r&6!"
       footer:

@@ -16,7 +16,7 @@ public class Configuration {
 	private FileConfiguration config, messages, names, groups, fakeplayers, animCreator, tablist;
 	private File config_file, messages_file, animation_file, tablist_file, groups_file, names_file, fakeplayers_file;
 
-	private int cver = 18;
+	private int cver = 19;
 
 	public Configuration(TabList plugin) {
 		this.plugin = plugin;

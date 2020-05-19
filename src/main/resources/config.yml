@@ -187,7 +187,8 @@ tablist-object-type:
       - exampleplayer
       - players
 
-    # It only accepts number-ending placeholders, such as player levels (doubled numbers "2.1" do NOT work).
+    # It only accepts number-ending placeholders, like %level%
+    # If it double-number ending, it will replaces the dot "." from the number.
     custom:
       value: "%level%"
 
@@ -236,4 +237,4 @@ download-updates: true
 logconsole: true
 
 # DO NOT CHANGE THIS!
-config-version: 18
+config-version: 19
