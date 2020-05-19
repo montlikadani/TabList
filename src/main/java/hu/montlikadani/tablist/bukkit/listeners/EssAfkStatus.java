@@ -17,6 +17,7 @@ import org.bukkit.scoreboard.Team;
 import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.PlayerList;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.utils.NMS;
 import net.ess3.api.events.AfkStatusChangeEvent;
 
 public class EssAfkStatus implements Listener {
@@ -62,7 +63,7 @@ public class EssAfkStatus implements Listener {
 
 		if (!value && afkPlayers.containsKey(target)) {
 			Scoreboard board = target.getScoreboard();
-			Team team = board.getTeam(afkPlayers.get(target));
+			Team team = NMS.getTeam(target, board, afkPlayers.get(target));
 			if (team != null) {
 				team.unregister();
 				target.setScoreboard(board);
@@ -90,7 +91,7 @@ public class EssAfkStatus implements Listener {
 			}
 
 			Scoreboard board = p.getScoreboard();
-			Team team = board.getTeam(name);
+			Team team = NMS.getTeam(p, board, name);
 			if (team == null) {
 				team = board.registerNewTeam(name);
 			}

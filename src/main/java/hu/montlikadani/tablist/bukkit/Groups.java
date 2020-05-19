@@ -14,9 +14,8 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.utils.NMS;
 
-@SuppressWarnings("deprecation")
 public class Groups {
 
 	private TabList plugin;
@@ -144,21 +143,14 @@ public class Groups {
 			tboard = player.getScoreboard();
 		}
 
-		Team team = tboard.getTeam(name);
+		Team team = NMS.getTeam(player, tboard, name);
 		if (team == null) {
 			team = tboard.registerNewTeam(name);
 		}
 
-		if (Version.isCurrentLower(Version.v1_9_R1)) {
-			if (!team.hasPlayer(player)) {
-				team.addPlayer(player);
-			}
-		} else if (!team.hasEntry(player.getName())) {
-			team.addEntry(player.getName());
-		}
+		NMS.addEntry(player, team);
 
 		player.setPlayerListName(prefix + playerName + suffix);
-
 		player.setScoreboard(tboard);
 	}
 
@@ -203,15 +195,7 @@ public class Groups {
 		}
 
 		Scoreboard tboard = p.getScoreboard();
-		if (Version.isCurrentLower(Version.v1_9_R1)) {
-			Team team = tboard.getPlayerTeam(p);
-			if (team != null)
-				team.removePlayer(p);
-		} else {
-			Team team = tboard.getEntryTeam(p.getName());
-			if (team != null)
-				team.removeEntry(p.getName());
-		}
+		NMS.removeEntry(p, tboard);
 
 		// team.unregister();
 
