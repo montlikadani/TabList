@@ -96,8 +96,8 @@ public class ConfigValues {
 		afkFormatYes = c.getString("placeholder-format.afk-status.format-yes", "&7 [AFK]&r ");
 		afkFormatNo = c.getString("placeholder-format.afk-status.format-no", "");
 		timeZone = c.getString("placeholder-format.time.time-zone", "GMT0");
-		timeFormat = c.getString("placeholder-format.time.time-format", "mm:HH");
-		dateFormat = c.getString("placeholder-format.time.date-format", "dd/MM/yyyy");
+		timeFormat = c.getString("placeholder-format.time.time-format.format", "mm:HH");
+		dateFormat = c.getString("placeholder-format.time.date-format.format", "dd/MM/yyyy");
 		goodPingColor = c.getString("placeholder-format.ping.good-ping.color", "&a");
 		mediumPingColor = c.getString("placeholder-format.ping.medium-ping.color", "&6");
 		badPingColor = c.getString("placeholder-format.ping.bad-ping", "&c");
