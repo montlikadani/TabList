@@ -27,6 +27,7 @@ public class ConfigValues {
 	private static boolean hideGroupInVanish;
 	private static boolean hideGroupWhenAfk;
 	private static boolean useEssentialsNickName;
+	private static boolean preferPrimaryVaultGroup;
 	private static boolean tablistObjectiveEnabled;
 	private static boolean tabNameEnabled;
 	private static boolean tabNameUseEssentialsNickName;
@@ -86,6 +87,7 @@ public class ConfigValues {
 		hideGroupInVanish = c.getBoolean("change-prefix-suffix-in-tablist.hide-group-when-player-vanished", false);
 		hideGroupWhenAfk = c.getBoolean("change-prefix-suffix-in-tablist.hide-group-when-player-afk", false);
 		useEssentialsNickName = c.getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname", false);
+		preferPrimaryVaultGroup = c.getBoolean("change-prefix-suffix-in-tablist.prefer-primary-vault-group", false);
 		tablistObjectiveEnabled = c.getBoolean("tablist-object-type.enable", false);
 		tabNameEnabled = c.getBoolean("tabname.enable", false);
 		tabNameUseEssentialsNickName = c.getBoolean("tabname.use-essentials-nickname", false);
@@ -272,6 +274,8 @@ public class ConfigValues {
 	public static boolean isUseEssentialsNickName() {
 		return useEssentialsNickName;
 	}
+
+	public static boolean isPreferPrimaryVaultGroup() { return preferPrimaryVaultGroup;}
 
 	public static boolean isTablistObjectiveEnabled() {
 		return tablistObjectiveEnabled;

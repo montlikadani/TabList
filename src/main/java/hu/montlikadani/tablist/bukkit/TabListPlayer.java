@@ -6,6 +6,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 
 public class TabListPlayer implements Comparable<TabListPlayer> {
@@ -86,35 +89,50 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			this.afk = afk;
 			update = true;
 		}
+		List<TeamHandler> groupsList = plugin.getGroups().getGroupsList();
 
-		for (final TeamHandler team : plugin.getGroups().getGroupsList()) {
-			String name = team.getTeam();
-
-			if (name.equalsIgnoreCase(player.getName())) {
+		List<TeamHandler> playerNameGroups = groupsList.parallelStream().filter( (group) -> group.getTeam().equals(player.getName()) ).collect(Collectors.toList());
+		if (playerNameGroups.size() > 0) { // can there be more than 1? probably doesn't matter
+			TeamHandler team = playerNameGroups.get(0);
+			if (group != team) {
+				update = true;
+				group = team;
+			}
+		}
+		else {
+			List<TeamHandler> playerPrimaryVaultGroups;
+			if (plugin.isPluginEnabled("Vault") && ConfigValues.isPreferPrimaryVaultGroup() && (playerPrimaryVaultGroups = groupsList.parallelStream().filter( (group) -> group.getTeam().equals(plugin.getVaultPerm().getPrimaryGroup(player)) ).collect(Collectors.toList())).size() > 0) { // can there be more than 1? probably doesn't matter
+				TeamHandler team = playerPrimaryVaultGroups.get(0);
 				if (group != team) {
 					update = true;
 					group = team;
-				} else break;
+				}
 			}
+			else {
+				for (final TeamHandler team : plugin.getGroups().getGroupsList()) {
+					String name = team.getTeam();
+					String perm = team.getPermission();
 
-			String perm = team.getPermission();
-
-			if (!perm.isEmpty() && ((plugin.isPluginEnabled("PermissionsEx")
-					&& PermissionsEx.getPermissionManager().has(player, perm))
-					|| (player.isPermissionSet(perm) && player.hasPermission(perm)))) {
-				if (group != team) {
-					update = true;
-					group = team;
-				} else break;
-			}
-
-			if (perm.isEmpty() && plugin.isPluginEnabled("Vault")) {
-				for (String groups : plugin.getVaultPerm().getPlayerGroups(player)) {
-					if (groups.equalsIgnoreCase(name)) {
+					if (!perm.isEmpty() && ((plugin.isPluginEnabled("PermissionsEx")
+							&& PermissionsEx.getPermissionManager().has(player, perm))
+							|| (player.isPermissionSet(perm) && player.hasPermission(perm)))) {
 						if (group != team) {
 							update = true;
 							group = team;
-						} else break;
+						}
+						break;
+					}
+
+					if (perm.isEmpty() && plugin.isPluginEnabled("Vault")) {
+						for (String groups : plugin.getVaultPerm().getPlayerGroups(player)) {
+							if (groups.equalsIgnoreCase(name)) {
+								if (group != team) {
+									update = true;
+									group = team;
+								}
+								break;
+							}
+						}
 					}
 				}
 			}

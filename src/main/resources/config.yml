@@ -158,6 +158,11 @@ change-prefix-suffix-in-tablist:
   # false - Using this format: "prefix playerOriginalName suffix"
   use-essentials-nickname: false
 
+  # Prefer using the players primary Vault group for choosing the groups.yml group?
+  # true - player will be assigned their primary vault group where possible, after that groups from groups.yml will be applied in descending order
+  # false - groups from groups.yml will be applied in descending order
+  prefer-primary-vault-group: false
+
 # Tablist objective types
 # Shows your current health (with life indicator), shows your current ping or a custom placeholder
 # that shows number.
