@@ -201,9 +201,15 @@ public class TabList extends JavaPlugin {
 
 	void loadListeners() {
 		HandlerList.unregisterAll(this);
+
 		getServer().getPluginManager().registerEvents(new Listeners(this), this);
+
 		if (isPluginEnabled("Essentials")) {
 			getServer().getPluginManager().registerEvents(new EssAfkStatus(), this);
+		}
+
+		if (isPluginEnabled("ProtocolLib")) {
+			getServer().getPluginManager().registerEvents(new SpectatorVisible(), this);
 		}
 	}
 
