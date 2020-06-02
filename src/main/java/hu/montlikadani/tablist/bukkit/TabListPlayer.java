@@ -48,7 +48,9 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		return player;
 	}
 
-	public boolean isAfk() { return afk; }
+	public boolean isAfk() {
+		return afk;
+	}
 
 	public void setCustomPrefix(String customPrefix) {
 		this.customPrefix = customPrefix;
@@ -89,26 +91,28 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			this.afk = afk;
 			update = true;
 		}
-		List<TeamHandler> groupsList = plugin.getGroups().getGroupsList();
 
-		List<TeamHandler> playerNameGroups = groupsList.parallelStream().filter( (group) -> group.getTeam().equals(player.getName()) ).collect(Collectors.toList());
+		List<TeamHandler> groupsList = plugin.getGroups().getGroupsList();
+		List<TeamHandler> playerNameGroups = groupsList.parallelStream()
+				.filter((group) -> group.getTeam().equals(player.getName())).collect(Collectors.toList());
 		if (playerNameGroups.size() > 0) { // can there be more than 1? probably doesn't matter
 			TeamHandler team = playerNameGroups.get(0);
 			if (group != team) {
 				update = true;
 				group = team;
 			}
-		}
-		else {
+		} else {
 			List<TeamHandler> playerPrimaryVaultGroups;
-			if (plugin.isPluginEnabled("Vault") && ConfigValues.isPreferPrimaryVaultGroup() && (playerPrimaryVaultGroups = groupsList.parallelStream().filter( (group) -> group.getTeam().equals(plugin.getVaultPerm().getPrimaryGroup(player)) ).collect(Collectors.toList())).size() > 0) { // can there be more than 1? probably doesn't matter
+			if (plugin.isPluginEnabled("Vault") && ConfigValues.isPreferPrimaryVaultGroup()
+					&& (playerPrimaryVaultGroups = groupsList.parallelStream()
+							.filter((group) -> group.getTeam().equals(plugin.getVaultPerm().getPrimaryGroup(player)))
+							.collect(Collectors.toList())).size() > 0) { // can there be more than 1? probably doesn't matter
 				TeamHandler team = playerPrimaryVaultGroups.get(0);
 				if (group != team) {
 					update = true;
 					group = team;
 				}
-			}
-			else {
+			} else {
 				for (final TeamHandler team : plugin.getGroups().getGroupsList()) {
 					String name = team.getTeam();
 					String perm = team.getPermission();
@@ -120,6 +124,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 							update = true;
 							group = team;
 						}
+
 						break;
 					}
 
@@ -130,6 +135,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 									update = true;
 									group = team;
 								}
+
 								break;
 							}
 						}

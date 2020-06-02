@@ -116,7 +116,10 @@ public class TabList extends JavaPlugin {
 			if (metrics.isEnabled()) {
 				metrics.addCustomChart(new Metrics.SimplePie("using_placeholderapi",
 						() -> String.valueOf(ConfigValues.isPlaceholderAPI())));
-				metrics.addCustomChart(new Metrics.SimplePie("tab_interval", () -> getTabC().getString("interval")));
+				if (getTabC().getBoolean("enabled")) {
+					metrics.addCustomChart(
+							new Metrics.SimplePie("tab_interval", () -> getTabC().getString("interval")));
+				}
 				metrics.addCustomChart(new Metrics.SimplePie("enable_tablist", () -> getTabC().getString("enabled")));
 				metrics.addCustomChart(
 						new Metrics.SimplePie("enable_tabname", () -> String.valueOf(ConfigValues.isTabNameEnabled())));
@@ -404,7 +407,7 @@ public class TabList extends JavaPlugin {
 		}
 
 		if (ConfigValues.isHidePlayersFromTab()) {
-			HidePlayers h = null;
+			HidePlayers h;
 			if (!hidePlayers.containsKey(p)) {
 				h = new HidePlayers(p);
 				hidePlayers.put(p, h);

@@ -45,11 +45,11 @@ public class toggle implements ICommand {
 
 			if (changed) {
 				TabManager.TABENABLED.put(uuid, true);
-				plugin.getTabManager().getPlayerTab(p).unregisterTab();
+				plugin.getTabManager().getPlayerTab(p).get().unregisterTab();
 				sendMsg(p, plugin.getMsg("toggle.disabled"));
 			} else {
 				TabManager.TABENABLED.remove(uuid);
-				plugin.getTabManager().getPlayerTab(p).updateTab();
+				plugin.getTabManager().getPlayerTab(p).get().updateTab();
 				sendMsg(p, plugin.getMsg("toggle.enabled"));
 			}
 
@@ -84,10 +84,10 @@ public class toggle implements ICommand {
 
 					if (changed) {
 						TabManager.TABENABLED.put(uuid, true);
-						plugin.getTabManager().getPlayerTab(pl).unregisterTab();
+						plugin.getTabManager().getPlayerTab(pl).get().unregisterTab();
 					} else {
 						TabManager.TABENABLED.remove(uuid);
-						plugin.getTabManager().getPlayerTab(pl).updateTab();
+						plugin.getTabManager().getPlayerTab(pl).get().updateTab();
 					}
 				}
 
@@ -115,11 +115,11 @@ public class toggle implements ICommand {
 
 			if (changed) {
 				TabManager.TABENABLED.put(uuid, true);
-				plugin.getTabManager().getPlayerTab(pl).unregisterTab();
+				plugin.getTabManager().getPlayerTab(pl).get().unregisterTab();
 				sendMsg(pl, plugin.getMsg("toggle.disabled"));
 			} else {
 				TabManager.TABENABLED.remove(uuid);
-				plugin.getTabManager().getPlayerTab(pl).updateTab();
+				plugin.getTabManager().getPlayerTab(pl).get().updateTab();
 				sendMsg(pl, plugin.getMsg("toggle.enabled"));
 			}
 		}

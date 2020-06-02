@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.Map.Entry;
@@ -38,17 +39,15 @@ public class TabManager {
 
 		TabHandler tabHandler = new TabHandler(plugin, p);
 		tabHandler.updateTab();
+		tabHandler.updateEntries();
 		tabPlayers.add(tabHandler);
 	}
 
 	public void removePlayer(Player player) {
-		if (!isPlayerInTab(player)) {
-			return;
-		}
-
-		TabHandler tabHandler = getPlayerTab(player);
-		tabHandler.unregisterTab();
-		tabPlayers.remove(tabHandler);
+		getPlayerTab(player).ifPresent(tabHandler -> {
+			tabHandler.unregisterTab();
+			tabPlayers.remove(tabHandler);
+		});
 	}
 
 	public void removePlayer() {
@@ -57,21 +56,21 @@ public class TabManager {
 	}
 
 	public boolean isPlayerInTab(Player player) {
-		return getPlayerTab(player) != null;
+		return getPlayerTab(player).isPresent();
 	}
 
-	public TabHandler getPlayerTab(Player player) {
+	public Optional<TabHandler> getPlayerTab(Player player) {
 		if (player == null) {
-			return null;
+			return Optional.empty();
 		}
 
 		for (TabHandler tab : tabPlayers) {
 			if (tab.getPlayer().equals(player)) {
-				return tab;
+				return Optional.ofNullable(tab);
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	public void loadToggledTabs() {
