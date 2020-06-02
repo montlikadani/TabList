@@ -8,6 +8,7 @@ public class ConfigValues {
 	private static boolean ragemodeHook;
 	private static boolean perWorldPlayerList;
 	private static boolean fakePlayers;
+	private static boolean removeGrayColorFromTabInSpec;
 	private static boolean ignoreVanishedPlayers;
 	private static boolean countVanishedStaff;
 	private static boolean hidePlayerFromTabAfk;
@@ -67,6 +68,7 @@ public class ConfigValues {
 		ragemodeHook = c.getBoolean("hook.RageMode", false);
 		perWorldPlayerList = c.getBoolean("per-world-player-list", false);
 		fakePlayers = c.getBoolean("enable-fake-players", false);
+		removeGrayColorFromTabInSpec = c.getBoolean("remove-gray-color-from-tab-in-spectator", false);
 		ignoreVanishedPlayers = c.getBoolean("ignore-vanished-players-in-online-players", false);
 		countVanishedStaff = c.getBoolean("count-vanished-staffs", true);
 		hidePlayerFromTabAfk = c.getBoolean("hide-player-from-tab-when-afk", false);
@@ -135,6 +137,10 @@ public class ConfigValues {
 
 	public static boolean isFakePlayers() {
 		return fakePlayers;
+	}
+
+	public static boolean isRemoveGrayColorFromTabInSpec() {
+		return removeGrayColorFromTabInSpec;
 	}
 
 	public static boolean isIgnoreVanishedPlayers() {

@@ -14,6 +14,10 @@ per-world-player-list: false
 # Fake players that are on the tab.
 enable-fake-players: false
 
+# If enabled, the gray color will not appear to other players when the player's game mode is spectator.
+# The gray color will only show for the spectator player.
+remove-gray-color-from-tab-in-spectator: false
+
 # Ignoring vanished players in %online-players% placeholder.
 # true - does not count the vanished players to placeholder.
 # Requires Essentials or SuperVanish plugin!
