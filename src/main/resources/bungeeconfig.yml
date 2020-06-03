@@ -67,8 +67,8 @@ tablist:
   disabled-servers:
   #- serverName
 
-  # Blacklisted players, where the player not see the tab.
-  blacklisted-players:
+  # Restricted players, where the player not see the tab.
+  restricted-players:
   #- playerName
 
   # How often to refresh the tablist (in milliseconds).

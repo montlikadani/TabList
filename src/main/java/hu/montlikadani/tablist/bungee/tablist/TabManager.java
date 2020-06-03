@@ -1,6 +1,7 @@
 package hu.montlikadani.tablist.bungee.tablist;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -93,7 +94,12 @@ public class TabManager implements ITask {
 			return;
 		}
 
-		if (plugin.getConf().getStringList("tablist.blacklisted-players").contains(pl.getName())) {
+		List<String> restrictedPlayers = plugin.getConf().getStringList("tablist.blacklisted-players");
+		if (restrictedPlayers.isEmpty()) {
+			restrictedPlayers = plugin.getConf().getStringList("tablist.restricted-players");
+		}
+
+		if (restrictedPlayers.contains(pl.getName())) {
 			pl.resetTabHeader();
 			return;
 		}

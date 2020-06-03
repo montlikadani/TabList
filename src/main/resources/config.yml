@@ -16,6 +16,7 @@ enable-fake-players: false
 
 # If enabled, the gray color will not appear to other players when the player's game mode is spectator.
 # The gray color will only show for the spectator player.
+# Requires ProtocolLib
 remove-gray-color-from-tab-in-spectator: false
 
 # Ignoring vanished players in %online-players% placeholder.
@@ -163,7 +164,8 @@ change-prefix-suffix-in-tablist:
   use-essentials-nickname: false
 
   # Prefer using the players primary Vault group for choosing the groups.yml group?
-  # true - player will be assigned their primary vault group where possible, after that groups from groups.yml will be applied in descending order
+  # true - player will be assigned their primary vault group where possible, after that
+  # groups from groups.yml will be applied in descending order
   # false - groups from groups.yml will be applied in descending order
   prefer-primary-vault-group: false
 
@@ -191,8 +193,8 @@ tablist-object-type:
   object-settings:
     # The player health (life) the player's name indicates the right side.
     health:
-      # Blacklisted players who do not show the health in tab.
-      blacklisted-players:
+      # Restricted players who do not show the health in tab.
+      restricted-players:
       - exampleplayer
       - players
 
@@ -229,7 +231,7 @@ tabname:
   #- myworld
 
   # Which names can not be used?
-  blacklist-names:
+  restricted-names:
   - tabname
 
 #=========================================#

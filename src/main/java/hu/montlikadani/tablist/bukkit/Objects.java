@@ -1,5 +1,7 @@
 package hu.montlikadani.tablist.bukkit;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -26,7 +28,13 @@ public class Objects {
 			return;
 		}
 
-		if (plugin.getC().getStringList(path + "blacklisted-players").contains(pl.getName())) {
+		// For better understand and rule changes
+		List<String> restrictedPlayers = plugin.getC().getStringList(path + "blacklisted-players");
+		if (restrictedPlayers.isEmpty()) {
+			restrictedPlayers = plugin.getC().getStringList(path + "restricted-players");
+		}
+
+		if (restrictedPlayers.contains(pl.getName())) {
 			unregisterHealthObjective(pl);
 			return;
 		}

@@ -235,7 +235,12 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 
 	private boolean isNameDisabled(String arg) {
 		String text = Util.stripColor(arg.trim());
-		for (String b : plugin.getC().getStringList("tabname.blacklist-names")) {
+		List<String> restrictedNames = plugin.getC().getStringList("tabname.blacklist-names");
+		if (restrictedNames.isEmpty()) {
+			restrictedNames = plugin.getC().getStringList("tabname.restricted-names");
+		}
+
+		for (String b : restrictedNames) {
 			if (b.equalsIgnoreCase(text)) {
 				return true;
 			}
