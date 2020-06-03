@@ -85,3 +85,33 @@ per-group:
   vaultGroup:
     header: "%anim:perGroupHead%"
     footer: "%anim:perGroupFoot%"
+
+default-row:
+  text: '                            '
+  ping: 420
+
+rows:
+  0:
+    text: 'yah'
+    ping: 15
+  20:
+    text: 'y'
+    ping: 120
+  40:
+    text: 'b'
+  60:
+    text: 'h'
+  22:
+    text: '&aUsing TabList plugin!'
+  24:
+    text: ''
+  44:
+    text: '&ag'
+  19:
+    text: 'oi'
+  39:
+    text: 'qwe'
+  59:
+    text: 'jk'
+  80:
+    text: 'hj'
