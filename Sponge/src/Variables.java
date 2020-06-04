@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.Sponge.src;
+package hu.montlikadani.tablist.sponge;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -12,19 +12,10 @@ import org.spongepowered.api.text.serializer.TextSerializers;
 
 public class Variables {
 
-	private TabList plugin;
-
-	public Variables(TabList plugin) {
-		this.plugin = plugin;
-	}
-
 	public Text replaceVariables(Player p, String str) {
-		ConfigManager conf = plugin.getC().getConfig();
-		java.util.Collection<? extends Player> oPls = Sponge.getServer().getOnlinePlayers();
-
 		int staffs = 0;
 		if (str.contains("%staff-online%")) {
-			for (Player all : oPls) {
+			for (Player all : Sponge.getServer().getOnlinePlayers()) {
 				if (all.hasPermission("tablist.onlinestaff")) {
 					staffs++;
 				}
@@ -40,18 +31,10 @@ public class Variables {
 		String t = null;
 		String dt = null;
 		if (str.contains("%server-time%") || str.contains("%date%")) {
-			Object path = new Object[] { "placeholder-format", "time" };
-			DateTimeFormatter form = conf.isExistsAndNotEmpty(path, "time-format", "format")
-					? DateTimeFormatter.ofPattern(conf.getString(path, "time-format", "format"))
-					: null;
-
-			DateTimeFormatter form2 = conf.isExistsAndNotEmpty(path, "date-format", "format")
-					? DateTimeFormatter.ofPattern(conf.getString(path, "date-format", "format"))
-					: null;
-
-			TimeZone zone = conf.getBoolean(path, "time-zone", "use-system-zone")
-					? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
-					: TimeZone.getTimeZone(conf.getString(path, "time-zone", "time-zone"));
+			DateTimeFormatter form = DateTimeFormatter.ofPattern(ConfigValues.getTimeFormat());
+			DateTimeFormatter form2 = DateTimeFormatter.ofPattern(ConfigValues.getDateFormat());
+			TimeZone zone = ConfigValues.isUseSystemZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
+					: TimeZone.getTimeZone(ConfigValues.getTimeZone());
 			LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
 
 			Calendar cal = Calendar.getInstance();
@@ -80,11 +63,11 @@ public class Variables {
 		}
 
 		if (str.contains("%player-health%")) {
-			str = str.replace("%player-health%", String.valueOf(p.getHealthData().health()));
+			str = str.replace("%player-health%", String.valueOf(p.getHealthData().health().get()));
 		}
 
 		if (str.contains("%player-max-health%")) {
-			str = str.replace("%player-max-health%", String.valueOf(p.getHealthData().maxHealth()));
+			str = str.replace("%player-max-health%", String.valueOf(p.getHealthData().maxHealth().get()));
 		}
 
 		if (t != null)
@@ -103,7 +86,7 @@ public class Variables {
 			str = str.replace("%server-ram-used%", Long.toString(uram.longValue()));
 
 		if (str.contains("%online-players%"))
-			str = str.replace("%online-players%", Integer.toString(oPls.size()));
+			str = str.replace("%online-players%", Integer.toString(Sponge.getServer().getOnlinePlayers().size()));
 
 		if (str.contains("%max-players%"))
 			str = str.replace("%max-players%", Integer.toString(Sponge.getServer().getMaxPlayers()));

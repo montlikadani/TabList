@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.Sponge.src;
+package hu.montlikadani.tablist.sponge;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,16 +20,12 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 
 	private TabList plugin;
 
-	private CommandCallable reloadCmd;
 	private CommandCallable toggleCmd;
 
 	public static final Map<UUID, Boolean> TABENABLED = new HashMap<>();
 
 	public SpongeCommands(TabList plugin) {
 		this.plugin = plugin;
-
-		reloadCmd = CommandSpec.builder().description(Text.of("Reloads the plugin")).arguments(GenericArguments.none())
-				.permission("tablist.reload").executor(this::reloadCommand).build();
 
 		toggleCmd = CommandSpec.builder().description(Text.of("Toggle on/off the tablist."))
 				.arguments(GenericArguments.optional(GenericArguments.firstParsing(
@@ -40,12 +36,6 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 
 	public void init() {
 		Sponge.getCommandManager().register(plugin, get(), "tablist", "tl");
-	}
-
-	private CommandResult reloadCommand(CommandSource src, CommandContext args) {
-		plugin.reload();
-		sendMsg(src, "&aPlugin has been reloaded.");
-		return CommandResult.success();
 	}
 
 	private CommandResult toggleCommand(CommandSource src, CommandContext args) {
@@ -126,7 +116,7 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 
 	@Override
 	public CommandCallable get() {
-		return CommandSpec.builder().child(reloadCmd, "reload", "rl").child(toggleCmd, "toggle").build();
+		return CommandSpec.builder().child(toggleCmd, "toggle").build();
 	}
 
 	private boolean hasPerm(CommandSource src, String perm) {

@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.Sponge.src.tablist;
+package hu.montlikadani.tablist.sponge.tablist;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -13,10 +13,11 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.text.Text;
 
-import hu.montlikadani.tablist.Sponge.src.ConfigManager;
-import hu.montlikadani.tablist.Sponge.src.SpongeCommands;
-import hu.montlikadani.tablist.Sponge.src.TabList;
-import hu.montlikadani.tablist.Sponge.src.Variables;
+import hu.montlikadani.tablist.sponge.ConfigManager;
+import hu.montlikadani.tablist.sponge.ConfigValues;
+import hu.montlikadani.tablist.sponge.SpongeCommands;
+import hu.montlikadani.tablist.sponge.TabList;
+import hu.montlikadani.tablist.sponge.Variables;
 
 public class TabListManager {
 
@@ -54,8 +55,7 @@ public class TabListManager {
 	}
 
 	public void loadTab(Player p) {
-		ConfigManager conf = plugin.getC().getConfig();
-		if (!conf.getBoolean(true, "tablist", "enabled")) {
+		if (!ConfigValues.isTablistEnabled()) {
 			return;
 		}
 
@@ -71,11 +71,11 @@ public class TabListManager {
 			return;
 		}
 
+		final ConfigManager conf = plugin.getC().getConfig();
 		final String world = p.getWorld().getName();
 		final String pName = p.getName();
 
-		List<String> header = null;
-		List<String> footer = null;
+		List<String> header = null, footer = null;
 
 		header = conf.isList("tablist", "header") ? conf.getStringList("tablist", "header")
 				: conf.isString("tablist", "header")
@@ -89,7 +89,7 @@ public class TabListManager {
 		setHeader(header);
 		setFooter(footer);
 
-		final int refreshTime = conf.getInt("tablist", "update-time");
+		final int refreshTime = ConfigValues.getTablistUpdateTime();
 
 		if (refreshTime < 1) {
 			cancelTab(p);
@@ -125,7 +125,7 @@ public class TabListManager {
 		int r = 0;
 
 		if (getHeader().isPresent()) {
-			if (plugin.getC().getConfig().getBoolean("tablist", "random")) {
+			if (ConfigValues.isRandomTablist()) {
 				he = header.get(ThreadLocalRandom.current().nextInt(header.size()));
 			}
 
@@ -145,8 +145,8 @@ public class TabListManager {
 		String fo = "";
 
 		if (getFooter().isPresent()) {
-			if (plugin.getC().getConfig().getBoolean("tablist", "random")) {
-				he = footer.get(ThreadLocalRandom.current().nextInt(footer.size()));
+			if (ConfigValues.isRandomTablist()) {
+				fo = footer.get(ThreadLocalRandom.current().nextInt(footer.size()));
 			}
 
 			if (fo.isEmpty()) {

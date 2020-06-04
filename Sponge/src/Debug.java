@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.Sponge.src;
+package hu.montlikadani.tablist.sponge;
 
 import org.slf4j.Logger;
 
