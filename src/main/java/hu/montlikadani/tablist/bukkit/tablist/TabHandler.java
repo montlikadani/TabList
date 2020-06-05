@@ -25,7 +25,6 @@ import hu.montlikadani.tablist.bukkit.tablist.tabEntry.Rows;
 import hu.montlikadani.tablist.bukkit.tablist.tabEntry.TabEntry;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 import hu.montlikadani.tablist.bukkit.utils.Variables;
-import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class TabHandler implements ITabHandler {
 
@@ -107,30 +106,8 @@ public class TabHandler implements ITabHandler {
 
 			infoData.setAccessible(true);
 
-			Class<?> server = ReflectionUtils.Classes.getMinecraftServer();
-			Object serverIns = ReflectionUtils.Classes.getServer(server);
 			GameProfile profile = new GameProfile(UUID.randomUUID(), player.getName());
-			Class<?> manager = ReflectionUtils.getNMSClass("PlayerInteractManager");
-
-			Object managerIns = null;
-			Object world;
-			if (Version.isCurrentEqualOrHigher(Version.v1_14_R1)) {
-				world = ReflectionUtils.getHandle(player.getWorld());
-				managerIns = manager.getConstructor(world.getClass()).newInstance(world);
-			} else if (Version.isCurrentEqual(Version.v1_13_R1) || Version.isCurrentEqual(Version.v1_13_R2)) {
-				world = ReflectionUtils.getHandle(player.getWorld());
-			} else {
-				world = server.getDeclaredMethod("getWorldServer", int.class).invoke(serverIns, 0);
-			}
-
-			if (managerIns == null) {
-				managerIns = manager.getConstructors()[0].newInstance(world);
-			}
-
-			Object constPlayer = ReflectionUtils.getHandle(player).getClass()
-					.getConstructor(server, world.getClass(), profile.getClass(), manager)
-					.newInstance(serverIns, world, profile, managerIns);
-
+			Object constPlayer = ReflectionUtils.Classes.getPlayerContructor(player, profile);
 			Class<?> enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
 
 			Object entityPlayerArray = Array.newInstance(constPlayer.getClass(), 1);
