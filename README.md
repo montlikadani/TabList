@@ -12,8 +12,6 @@ A fully configurable plugin that allows all online players that are one the serv
 * [MCMarket](https://www.mc-market.org/resources/6127/)
 
 ### Other
-If you find a bug about the plugin, please send a issue here: https://github.com/montlikadani/TabList/issues
+If you find a bug about the plugin, please send an issue here: https://github.com/montlikadani/TabList/issues
 
 Wiki: https://github.com/montlikadani/TabList/wiki
-
-Changelog: https://github.com/montlikadani/TabList/blob/master/Changelog.txt

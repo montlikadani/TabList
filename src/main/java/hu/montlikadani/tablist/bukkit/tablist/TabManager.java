@@ -39,7 +39,6 @@ public class TabManager {
 
 		TabHandler tabHandler = new TabHandler(plugin, p);
 		tabHandler.updateTab();
-		tabHandler.updateEntries();
 		tabPlayers.add(tabHandler);
 	}
 
