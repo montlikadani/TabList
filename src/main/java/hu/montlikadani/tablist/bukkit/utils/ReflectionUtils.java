@@ -8,6 +8,8 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import com.mojang.authlib.GameProfile;
+
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class ReflectionUtils {
@@ -113,6 +115,37 @@ public class ReflectionUtils {
 	}
 
 	public static class Classes {
+
+		public static Object getPlayerContructor(Player player, GameProfile profile) {
+			Class<?> server = getMinecraftServer();
+			Object serverIns = getServer(server);
+
+			try {
+				Class<?> manager = getNMSClass("PlayerInteractManager");
+				Object managerIns = null;
+				Object world = null;
+				if (Version.isCurrentEqualOrHigher(Version.v1_14_R1)) {
+					world = getHandle(player.getWorld());
+					managerIns = manager.getConstructor(world.getClass()).newInstance(world);
+				} else if (Version.isCurrentEqual(Version.v1_13_R1) || Version.isCurrentEqual(Version.v1_13_R2)) {
+					world = getHandle(player.getWorld());
+				} else {
+					world = server.getDeclaredMethod("getWorldServer", int.class).invoke(serverIns, 0);
+				}
+
+				if (managerIns == null) {
+					managerIns = manager.getConstructors()[0].newInstance(world);
+				}
+
+				Object playerHandle = getHandle(player);
+				return playerHandle.getClass().getConstructor(server, world.getClass(), profile.getClass(), manager)
+						.newInstance(serverIns, world, profile, managerIns);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return null;
+		}
 
 		public static Class<?> getMinecraftServer() {
 			Class<?> server = null;

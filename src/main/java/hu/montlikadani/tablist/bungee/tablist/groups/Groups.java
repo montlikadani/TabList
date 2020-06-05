@@ -42,8 +42,7 @@ public class Groups implements ITask {
 		}
 
 		task = plugin.getProxy().getScheduler().schedule(plugin, () -> {
-			if (plugin.getProxy().getPlayers().isEmpty() || !plugin.getConf().getBoolean("tablist-groups.enabled")
-					|| !plugin.getConf().contains("groups")) {
+			if (plugin.getProxy().getPlayers().isEmpty() || !plugin.getConf().contains("groups")) {
 				cancel();
 				return;
 			}

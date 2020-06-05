@@ -207,7 +207,10 @@ public class TabList extends Plugin implements Listener {
 	@EventHandler
 	public void onLogin(PostLoginEvent e) {
 		tab.start();
-		groups.start();
+
+		if (groups.getTask() == null) {
+			groups.start();
+		}
 	}
 
 	@EventHandler

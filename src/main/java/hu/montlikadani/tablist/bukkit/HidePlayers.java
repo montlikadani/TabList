@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import com.mojang.authlib.GameProfile;
 
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
-import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class HidePlayers {
 
@@ -59,30 +58,8 @@ public class HidePlayers {
 
 	private void r(Player p, Player to) {
 		try {
-			Class<?> server = ReflectionUtils.Classes.getMinecraftServer();
-			Object serverIns = ReflectionUtils.Classes.getServer(server);
-
 			profile = new GameProfile(p.getUniqueId(), p.getName());
-
-			Class<?> manager = ReflectionUtils.getNMSClass("PlayerInteractManager");
-			Object managerIns = null;
-			Object world = null;
-			if (Version.isCurrentEqualOrHigher(Version.v1_14_R1)) {
-				world = ReflectionUtils.getHandle(p.getWorld());
-				managerIns = manager.getConstructor(world.getClass()).newInstance(world);
-			} else if (Version.isCurrentEqual(Version.v1_13_R1) || Version.isCurrentEqual(Version.v1_13_R2)) {
-				world = ReflectionUtils.getHandle(p.getWorld());
-			} else {
-				world = server.getDeclaredMethod("getWorldServer", int.class).invoke(serverIns, 0);
-			}
-
-			if (managerIns == null) {
-				managerIns = manager.getConstructors()[0].newInstance(world);
-			}
-
-			Object playerHandle = ReflectionUtils.getHandle(p);
-			playerConst = playerHandle.getClass().getConstructor(server, world.getClass(), profile.getClass(), manager)
-					.newInstance(serverIns, world, profile, managerIns);
+			playerConst = ReflectionUtils.Classes.getPlayerContructor(p, profile);
 
 			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
 
