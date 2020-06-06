@@ -19,17 +19,16 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.earth2me.essentials.Essentials;
-import com.earth2me.essentials.User;
 
 import hu.montlikadani.ragemode.gameUtils.GameUtils;
 import hu.montlikadani.tablist.AnimCreator;
-import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.bukkit.commands.Commands;
 import hu.montlikadani.tablist.bukkit.commands.TabNameCmd;
 import hu.montlikadani.tablist.bukkit.listeners.EssAfkStatus;
 import hu.montlikadani.tablist.bukkit.listeners.Listeners;
 import hu.montlikadani.tablist.bukkit.listeners.SpectatorVisible;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
+import hu.montlikadani.tablist.bukkit.tablist.TabNameHandler;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler;
 import hu.montlikadani.tablist.bukkit.utils.Metrics;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
@@ -52,6 +51,7 @@ public class TabList extends JavaPlugin {
 	private Configuration conf;
 	private TabManager tabManager;
 	private FakePlayerHandler fakePlayerHandler;
+	private TabNameHandler tabNameHandler;
 
 	private boolean isSpigot = false;
 
@@ -191,6 +191,7 @@ public class TabList extends JavaPlugin {
 		variables = new Variables(this);
 		tabManager = new TabManager(this);
 		fakePlayerHandler = new FakePlayerHandler(this);
+		tabNameHandler = new TabNameHandler(this);
 	}
 
 	private void registerCommands() {
@@ -264,108 +265,6 @@ public class TabList extends JavaPlugin {
 		return perm != null;
 	}
 
-	public void setTabName(Player p, String name) {
-		if (!ConfigValues.isTabNameEnabled()) {
-			return;
-		}
-
-		String result = "";
-		String tName = "";
-
-		if (ConfigValues.isTabNameUseEssentialsNickName()) {
-			if (isPluginEnabled("Essentials")) {
-				User user = getPlugin(Essentials.class).getUser(p);
-				if (user.getNickname() != null) {
-					result = colorMsg(user.getNickname());
-					tName = user.getNickname();
-				}
-			} else {
-				logConsole(Level.WARNING, "The Essentials plugin not found. Without the nickname option not work.");
-				return;
-			}
-		} else {
-			if (ConfigValues.isDefaultColorEnabled()) {
-				result = colorMsg(ConfigValues.getDefaultTabNameColor()
-						+ variables.setPlaceholders(p, Global.setSymbols(name)) + "&r");
-			} else {
-				result = ConfigValues.isTabNameColorCodeEnabled()
-						? colorMsg(variables.setPlaceholders(p, Global.setSymbols(name)) + "&r")
-						: name + "\u00a7r";
-			}
-
-			tName = name;
-		}
-
-		if (!result.isEmpty()) {
-			p.setPlayerListName(result);
-		}
-
-		if (!tName.isEmpty()) {
-			conf.getNames().set("players." + p.getName() + ".tabname", tName);
-
-			try {
-				conf.getNames().save(conf.getNamesFile());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	private void loadTabName(Player p) {
-		if (!ConfigValues.isTabNameEnabled()) {
-			return;
-		}
-
-		String result = "";
-		if (ConfigValues.isTabNameUseEssentialsNickName()) {
-			if (!isPluginEnabled("Essentials")) {
-				logConsole(Level.WARNING, "The Essentials plugin not found. Without the nickname option not work.");
-				return;
-			}
-
-			User user = getPlugin(Essentials.class).getUser(p);
-			if (user.getNickname() != null) {
-				result = colorMsg(user.getNickname() + "&r");
-			}
-		} else {
-			String name = conf.getNames().getString("players." + p.getName() + ".tabname", "");
-			if (!name.isEmpty()) {
-				name = variables.setPlaceholders(p, Global.setSymbols(name));
-
-				if (ConfigValues.isDefaultColorEnabled()) {
-					result = colorMsg(ConfigValues.getDefaultTabNameColor() + name + "&r");
-				} else {
-					result = ConfigValues.isTabNameColorCodeEnabled() ? colorMsg(name + "&r") : name + "\u00a7r";
-				}
-			} else {
-				if (ConfigValues.isDefaultColorEnabled()) {
-					result = colorMsg(ConfigValues.getDefaultTabNameColor() + p.getName());
-				}
-			}
-		}
-
-		if (!result.isEmpty()) {
-			p.setPlayerListName(result);
-		}
-	}
-
-	public void unTabName(Player p) {
-		if (!ConfigValues.isTabNameEnabled()) {
-			return;
-		}
-
-		p.setPlayerListName(p.getName());
-
-		conf.getNames().set("players." + p.getName() + ".tabname", null);
-		conf.getNames().set("players." + p.getName(), null);
-
-		try {
-			conf.getNames().save(conf.getNamesFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public String makeAnim(String name) {
 		for (AnimCreator ac : animations) {
 			name = name.replace("%anim:" + ac.getAnimName() + "%",
@@ -432,14 +331,14 @@ public class TabList extends JavaPlugin {
 			}
 		}
 
-		loadTabName(p);
+		tabNameHandler.loadTabName(p);
 		tabManager.addPlayer(p);
 	}
 
 	public void onPlayerQuit(Player p) {
 		if (ConfigValues.isTabNameEnabled() && ConfigValues.isClearTabNameOnQuit()
 				&& conf.getNames().contains("players." + p.getName() + ".tabname")) {
-			unTabName(p);
+			tabNameHandler.unTabName(p);
 		}
 
 		if (!ConfigValues.isTablistObjectiveEnabled()) {
@@ -540,6 +439,10 @@ public class TabList extends JavaPlugin {
 
 	public TabManager getTabManager() {
 		return tabManager;
+	}
+
+	public TabNameHandler getTabNameHandler() {
+		return tabNameHandler;
 	}
 
 	public Groups getGroups() {

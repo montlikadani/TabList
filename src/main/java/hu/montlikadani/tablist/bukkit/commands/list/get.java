@@ -46,7 +46,7 @@ public class get implements ICommand {
 				}
 
 				sendMsg(sender, plugin.getMsg("tabname.get-name.result", "%target%", nam, "%name%",
-						plugin.getConf().getNames().getString("players." + nam + ".tabname")));
+						plugin.getTabNameHandler().getTabName(nam)));
 			}
 
 			return true;
@@ -59,8 +59,7 @@ public class get implements ICommand {
 				return false;
 			}
 
-			sendMsg(p, plugin.getMsg("tabname.get-name.result", "%name%",
-					plugin.getConf().getNames().getString("players." + p.getName() + ".tabname")));
+			sendMsg(p, plugin.getMsg("tabname.get-name.result", "%name%", plugin.getTabNameHandler().getTabName(p)));
 		} else if (args.length == 2) {
 			if (!p.hasPermission(Perm.GETO.getPerm())) {
 				sendMsg(p, plugin.getMsg("no-permission", "%perm%", Perm.GETO.getPerm()));
@@ -80,7 +79,7 @@ public class get implements ICommand {
 			}
 
 			sendMsg(p, plugin.getMsg("tabname.get-name.target-result", "%target%", nam, "%name%",
-					plugin.getConf().getNames().getString("players." + nam + ".tabname")));
+					plugin.getTabNameHandler().getTabName(nam)));
 		}
 
 		return true;

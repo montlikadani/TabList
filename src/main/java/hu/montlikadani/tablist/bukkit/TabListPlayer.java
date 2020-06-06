@@ -22,6 +22,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	private boolean afk;
 
 	private String nick;
+	private String tabName;
 	private String customPrefix;
 	private String customSuffix;
 
@@ -66,6 +67,10 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 	public void setNick(String nick) {
 		this.nick = nick;
+	}
+
+	public void setTabName(String tabName) {
+		this.tabName = tabName;
 	}
 
 	public int getPriority() {
@@ -152,6 +157,14 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			}
 		}
 
+		if (ConfigValues.isTabNameEnabled() && ConfigValues.isUseTabName()) {
+			String tabName = plugin.getTabNameHandler().getTabName(player);
+			if (!tabName.isEmpty()) {
+				this.tabName = tabName;
+				update = true;
+			}
+		}
+
 		return update;
 	}
 
@@ -213,7 +226,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	}
 
 	public String getPlayerName() {
-		return nick == null ? player.getName() : nick;
+		return nick == null ? tabName == null ? player.getName() : tabName : nick;
 	}
 
 	@Override
