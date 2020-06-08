@@ -18,6 +18,7 @@ import com.google.inject.Inject;
 import hu.montlikadani.tablist.sponge.tablist.TabListManager;
 import hu.montlikadani.tablist.sponge.tablist.groups.GroupTask;
 import hu.montlikadani.tablist.sponge.tablist.groups.TabGroup;
+import hu.montlikadani.tablist.sponge.tablist.objects.ObjectType;
 import hu.montlikadani.tablist.sponge.tablist.objects.TabListObjects;
 
 import java.util.ArrayList;
@@ -215,7 +216,11 @@ public class TabList {
 			objects = new TabListObjects(this);
 		}
 
-		objects.unregisterAllObjective(player);
+		for (ObjectType t : ObjectType.values()) {
+			if (t != ObjectType.HEARTH) {
+				objects.unregisterObjective(player, t.getName());
+			}
+		}
 
 		if (objects.isCancelled()) {
 			objects.loadObjects();

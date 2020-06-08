@@ -25,8 +25,6 @@ public class TabListObjects {
 	private Task task;
 	private ObjectType type;
 
-	private final Scoreboard board = Sponge.getServer().getServerScoreboard().orElse(Scoreboard.builder().build());
-
 	public TabListObjects(TabList plugin) {
 		this.plugin = plugin;
 	}
@@ -63,7 +61,7 @@ public class TabListObjects {
 	}
 
 	public void unregisterObjective(String objectName) {
-		getObjective(objectName).ifPresent(board::removeObjective);
+		getObjective(objectName).ifPresent(TabList.BOARD::removeObjective);
 	}
 
 	public void unregisterObjective(Player player, String objectName) {
@@ -72,7 +70,7 @@ public class TabListObjects {
 	}
 
 	public Optional<Objective> getObjective(String name) {
-		return board.getObjective(name);
+		return TabList.BOARD.getObjective(name);
 	}
 
 	public void loadObjects() {
@@ -131,29 +129,29 @@ public class TabListObjects {
 						.orElse(Objective.builder().displayName(Text.of("tabObjects")).name(objName)
 								.objectiveDisplayMode(ObjectiveDisplayModes.INTEGER).criterion(Criteria.DUMMY).build());
 
-				if (!board.getObjective(objName).isPresent()) {
-					board.addObjective(object);
+				if (!TabList.BOARD.getObjective(objName).isPresent()) {
+					TabList.BOARD.addObjective(object);
 				}
 
-				board.updateDisplaySlot(object, DisplaySlots.LIST);
+				TabList.BOARD.updateDisplaySlot(object, DisplaySlots.LIST);
 
 				object.getOrCreateScore(Text.of(all.getName())).setScore(score);
-				all.setScoreboard(board);
+				all.setScoreboard(TabList.BOARD);
 			});
 		}).submit(plugin);
 	}
 
 	public void loadHealthObject(Player p) {
 		String objName = ObjectType.HEARTH.getName();
-		Objective object = getObjective(objName).orElse(
-				Objective.builder().displayName(Text.of(TextColors.RED, "\u2665")).name(objName)
+		Objective object = getObjective(objName)
+				.orElse(Objective.builder().displayName(Text.of(TextColors.RED, "\u2665")).name(objName)
 						.objectiveDisplayMode(ObjectiveDisplayModes.HEARTS).criterion(Criteria.HEALTH).build());
 
-		if (!board.getObjective(objName).isPresent()) {
-			board.addObjective(object);
+		if (!TabList.BOARD.getObjective(objName).isPresent()) {
+			TabList.BOARD.addObjective(object);
 		}
 
-		board.updateDisplaySlot(object, DisplaySlots.LIST);
-		p.setScoreboard(board);
+		TabList.BOARD.updateDisplaySlot(object, DisplaySlots.LIST);
+		p.setScoreboard(TabList.BOARD);
 	}
 }
