@@ -39,16 +39,13 @@ public class TabManager implements ITask {
 	}
 
 	public Optional<PlayerTab> getPlayerTab(ProxiedPlayer player) {
-		PlayerTab tab = null;
-
 		for (PlayerTab tabs : playerTabs) {
 			if (tabs.getPlayer() == player) {
-				tab = tabs;
-				break;
+				return Optional.ofNullable(tabs);
 			}
 		}
 
-		return Optional.ofNullable(tab);
+		return Optional.empty();
 	}
 
 	@Override
@@ -113,11 +110,7 @@ public class TabManager implements ITask {
 
 	private String[] getTablist(ProxiedPlayer p) {
 		Optional<PlayerTab> tab = getPlayerTab(p);
-		if (tab.isPresent()) {
-			return new String[] { tab.get().getNextHeader(), tab.get().getNextFooter() };
-		}
-
-		return new String[0];
+		return tab.isPresent() ? new String[] { tab.get().getNextHeader(), tab.get().getNextFooter() } : new String[0];
 	}
 
 	@Override

@@ -170,11 +170,6 @@ public class TabList extends JavaPlugin {
 
 			getServer().getScheduler().cancelTasks(this);
 
-			if (getC().getBoolean("logconsole")) {
-				String msg = "&6&l[&5&lTab&c&lList&6&l]&7&l >&c The plugin successfully disabled!";
-				Util.sendMsg(getServer().getConsoleSender(), colorMsg(msg));
-			}
-
 			instance = null;
 		} catch (Exception e) {
 			e.printStackTrace();

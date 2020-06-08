@@ -53,7 +53,7 @@ public class Groups implements ITask {
 
 	@Override
 	public void update(final ProxiedPlayer pl) {
-		Configuration c = plugin.getConf();
+		final Configuration c = plugin.getConf();
 
 		String name = "";
 		for (String num : c.getSection("groups").getKeys()) {
@@ -72,8 +72,8 @@ public class Groups implements ITask {
 				}
 
 				name = list.get(y);
-			} else if (c.getString("groups." + num + ".name") != null) {
-				name = c.getString("groups." + num + ".name");
+			} else {
+				name = c.getString("groups." + num + ".name", "");
 			}
 
 			break;
@@ -111,6 +111,7 @@ public class Groups implements ITask {
 				ComponentSerializer.toString(TextComponent.fromLegacyText(Misc.replaceVariables(name, p))));
 
 		listItem.setItems(new Item[] { items });
+
 		for (ProxiedPlayer pl : plugin.getProxy().getPlayers()) {
 			pl.unsafe().sendPacket(listItem);
 		}

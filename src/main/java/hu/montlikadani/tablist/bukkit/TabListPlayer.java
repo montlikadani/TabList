@@ -159,7 +159,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 		if (ConfigValues.isTabNameEnabled() && ConfigValues.isUseTabName()) {
 			String tabName = plugin.getTabNameHandler().getTabName(player);
-			if (!tabName.isEmpty()) {
+			if (tabName.isEmpty() && this.tabName != null || !tabName.isEmpty() && !tabName.equals(this.tabName)) {
 				this.tabName = tabName;
 				update = true;
 			}

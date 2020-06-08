@@ -77,10 +77,17 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/lib/spigot-1.15.2.jar</systemPath>
 		</dependency>
+		<!-- Paper is using cubekrowd-repo instead of own...
 		<dependency>
 			<groupId>com.destroystokyo.paper</groupId>
 			<artifactId>paper-api</artifactId>
 			<version>1.13.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>-->
+		<dependency>
+			<groupId>net.md-5</groupId>
+			<artifactId>bungeecord-proxy</artifactId>
+			<version>1.15-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
@@ -167,7 +174,7 @@
 		<dependency>
 			<groupId>com.github.montlikadani</groupId>
 			<artifactId>RageMode</artifactId>
-			<version>LATEST</version>
+			<version>1.8.3</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>

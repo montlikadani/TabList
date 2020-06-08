@@ -50,7 +50,6 @@ toggle:
   player-not-found: "&cThis player&7 %player%&c not found!"
 
 fake-player:
-  usage: "&cUse: '&7/%command% fakeplayers <add/remove/list> [<name>]&c'."
   added: "&aThe fake player&7 %name%&a successfully added!"
   removed: "&cThe fake player&7 %name%&c successfully removed!"
   already-added: "&cThe fake player&7 %name%&c already added."

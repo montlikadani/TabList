@@ -23,7 +23,7 @@ public class get implements ICommand {
 		}
 
 		if (!ConfigValues.isTabNameEnabled()) {
-			sendMsg(sender, Util.colorMsg("Tabname option is disabled in configuration!"));
+			sendMsg(sender, Util.colorMsg("&cTabname option is disabled in configuration!"));
 			return false;
 		}
 

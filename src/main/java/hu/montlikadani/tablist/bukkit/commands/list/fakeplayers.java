@@ -6,6 +6,7 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.sendMsg;
 import java.util.Collections;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,7 +39,12 @@ public class fakeplayers implements ICommand {
 		plugin.getConf().createFakePlayersFile();
 
 		if (args.length < 2) {
-			sendMsg(p, plugin.getMsg("fake-player.usage", "%command%", label));
+			if (sender instanceof Player) {
+				((Player) sender).performCommand("tl help");
+			} else {
+				Bukkit.dispatchCommand(sender, "tl help");
+			}
+
 			return false;
 		}
 
@@ -49,7 +55,12 @@ public class fakeplayers implements ICommand {
 			}
 
 			if (args.length < 3) {
-				sendMsg(p, plugin.getMsg("fake-player.usage", "%command%", label));
+				if (sender instanceof Player) {
+					((Player) sender).performCommand("tl help");
+				} else {
+					Bukkit.dispatchCommand(sender, "tl help");
+				}
+
 				return false;
 			}
 
@@ -69,7 +80,12 @@ public class fakeplayers implements ICommand {
 			}
 
 			if (args.length < 3) {
-				sendMsg(p, plugin.getMsg("fake-player.usage", "%command%", label));
+				if (sender instanceof Player) {
+					((Player) sender).performCommand("tl help");
+				} else {
+					Bukkit.dispatchCommand(sender, "tl help");
+				}
+
 				return false;
 			}
 

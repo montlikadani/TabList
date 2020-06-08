@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -85,8 +86,8 @@ public class Misc {
 
 		try {
 			if (str.contains("%max-players%")) {
-				str = str.replace("%max-players%", Integer.toString(TabList.getInstance().getProxy()
-						.getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()));
+				str = str.replace("%max-players%", Integer.toString(BungeeCord.getInstance().getConfigurationAdapter()
+						.getListeners().iterator().next().getMaxPlayers()));
 			}
 		} catch (Exception e) {
 			// Ignore unknown errors
@@ -131,10 +132,10 @@ public class Misc {
 			str = str.replace("%player-uuid%", p.getUniqueId().toString());
 
 		if (str.contains("%game-version%"))
-			str = str.replace("%game-version%", TabList.getInstance().getProxy().getGameVersion());
+			str = str.replace("%game-version%", BungeeCord.getInstance().getGameVersion());
 
 		if (str.contains("%bungee-online%"))
-			str = str.replace("%bungee-online%", Integer.toString(TabList.getInstance().getProxy().getOnlineCount()));
+			str = str.replace("%bungee-online%", Integer.toString(BungeeCord.getInstance().getOnlineCount()));
 
 		if (str.contains("%bungee-motd%") && info != null)
 			str = str.replace("%bungee-motd%", info.getMotd());
