@@ -7,8 +7,12 @@ public class ConfigValues {
 	private static String timeFormat;
 	private static String dateFormat;
 	private static String timeZone;
+	private static String goodPingColor;
+	private static String mediumPingColor;
+	private static String badPingColor;
 
 	private static boolean useSystemZone;
+	private static boolean pingFormatEnabled;
 	private static boolean tablistEnabled;
 	private static boolean randomTablist;
 	private static boolean tablistGroups;
@@ -16,6 +20,8 @@ public class ConfigValues {
 
 	private static int tablistUpdateTime;
 	private static int objectsRefreshInterval;
+	private static int goodPingAmount;
+	private static int mediumPingAmount;
 
 	public static void loadValues() {
 		ConfigManager c = TabList.get().getC().getConfig();
@@ -32,6 +38,13 @@ public class ConfigValues {
 		c.setComment("Use system default time zone instead of searching for that?", "placeholder-format", "time",
 				"time-zone", "use-system-zone");
 		useSystemZone = c.getBoolean(false, "placeholder-format", "time", "time-zone", "use-system-zone");
+		c.setComment("Ping color format for %player-ping% placeholder.", "placeholder-format", "ping");
+		pingFormatEnabled = c.getBoolean(true, "placeholder-format", "ping", "enabled");
+		goodPingColor = c.getString("&a", "placeholder-format", "ping", "good-ping", "color");
+		goodPingAmount = c.getInt(200, "placeholder-format", "ping", "good-ping", "amount");
+		mediumPingColor = c.getString("&6", "placeholder-format", "ping", "medium-ping", "color");
+		mediumPingAmount = c.getInt(200, "placeholder-format", "ping", "medium-ping", "amount");
+		badPingColor = c.getString("&c", "placeholder-format", "ping", "bad-ping");
 
 		c.setComment("Tablist, header & footer with animation.\n"
 				+ "Use %anim:animationName% placeholder to make an animation.\n"
@@ -115,5 +128,29 @@ public class ConfigValues {
 
 	public static boolean isUseSystemZone() {
 		return useSystemZone;
+	}
+
+	public static boolean isPingFormatEnabled() {
+		return pingFormatEnabled;
+	}
+
+	public static int getGoodPingAmount() {
+		return goodPingAmount;
+	}
+
+	public static String getGoodPingColor() {
+		return goodPingColor;
+	}
+
+	public static String getMediumPingColor() {
+		return mediumPingColor;
+	}
+
+	public static int getMediumPingAmount() {
+		return mediumPingAmount;
+	}
+
+	public static String getBadPingColor() {
+		return badPingColor;
 	}
 }

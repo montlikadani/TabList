@@ -116,7 +116,7 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 
 	@Override
 	public CommandCallable get() {
-		return CommandSpec.builder().child(toggleCmd, "toggle").build();
+		return CommandSpec.builder().child(toggleCmd, "toggle").description(Text.of("Tablist modifier")).build();
 	}
 
 	private boolean hasPerm(CommandSource src, String perm) {

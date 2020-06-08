@@ -115,6 +115,14 @@ public class TabList {
 			tManager = new TabListManager(this);
 		}
 
+		tManager.cancelTabForAll();
+
+		if (groupTask != null) {
+			groupTask.cancel();
+		}
+
+		Sponge.getScheduler().getScheduledTasks(this).forEach(Task::cancel);
+
 		initConfigs();
 		loadAnimations();
 		loadGroups();

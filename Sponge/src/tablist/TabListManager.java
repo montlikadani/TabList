@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.sponge.tablist;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -55,11 +56,7 @@ public class TabListManager {
 	}
 
 	public void loadTab(Player p) {
-		if (!ConfigValues.isTablistEnabled()) {
-			return;
-		}
-
-		if (p == null) {
+		if (!ConfigValues.isTablistEnabled() || p == null) {
 			return;
 		}
 
@@ -77,6 +74,8 @@ public class TabListManager {
 
 		List<String> header = null, footer = null;
 
+		final List<String> worldList = new ArrayList<>();
+
 		header = conf.isList("tablist", "header") ? conf.getStringList("tablist", "header")
 				: conf.isString("tablist", "header")
 						? Arrays.asList(conf.getString(new Object[] { "tablist", "header" }))
@@ -85,6 +84,30 @@ public class TabListManager {
 				: conf.isString("tablist", "footer")
 						? Arrays.asList(conf.getString(new Object[] { "tablist", "footer" }))
 						: null;
+
+		if (conf.contains("tablist", "per-world")
+				&& plugin.getC().getConfig().get("tablist", "per-world").hasMapChildren()) {
+			t: for (Object w : plugin.getC().getConfig().get("tablist", "per-world").getChildrenMap().keySet()) {
+				for (String split : w.toString().split(", ")) {
+					if (world.equals(split)) {
+						header = conf.isList("tablist", "per-world", w, "header")
+								? conf.getStringList("tablist", "per-world", w, "header")
+								: conf.isString("tablist", "per-world", w, "header")
+										? Arrays.asList(
+												conf.getString(new Object[] { "tablist", "per-world", w, "header" }))
+										: null;
+						footer = conf.isList("tablist", "per-world", w, "footer")
+								? conf.getStringList("tablist", "per-world", w, "footer")
+								: conf.isString("tablist", "per-world", w, "footer")
+										? Arrays.asList(
+												conf.getString(new Object[] { "tablist", "per-world", w, "footer" }))
+										: null;
+						worldList.add(split);
+						break t;
+					}
+				}
+			}
+		}
 
 		setHeader(header);
 		setFooter(footer);
@@ -95,11 +118,11 @@ public class TabListManager {
 			cancelTab(p);
 
 			if (conf.getStringList("tablist", "disabled-worlds").contains(world)
-					|| conf.getStringList("tablist", "blacklisted-players").contains(pName)) {
+					|| conf.getStringList("tablist", "restricted-players").contains(pName)) {
 				return;
 			}
 
-			updateTab(p);
+			updateTab(p, worldList);
 			return;
 		}
 
@@ -110,17 +133,17 @@ public class TabListManager {
 			}
 
 			if (conf.getStringList("tablist", "disabled-worlds").contains(world)
-					|| conf.getStringList("tablist", "blacklisted-players").contains(pName)
+					|| conf.getStringList("tablist", "restricted-players").contains(pName)
 					|| (SpongeCommands.TABENABLED.containsKey(uuid) && SpongeCommands.TABENABLED.get(uuid))) {
 				cancelTab(p);
 				return;
 			}
 
-			updateTab(p);
+			updateTab(p, worldList);
 		}).submit(plugin));
 	}
 
-	private void updateTab(Player p) {
+	private void updateTab(final Player p, final List<String> worlds) {
 		String he = "";
 		int r = 0;
 
@@ -172,7 +195,19 @@ public class TabListManager {
 			fo = plugin.makeAnim(fo);
 		}
 
-		Variables v = plugin.getVariables();
+		final Variables v = plugin.getVariables();
+		if (!worlds.isEmpty()) {
+			for (String l : worlds) {
+				if (Sponge.getServer().getWorld(l).isPresent()) {
+					for (Player player : Sponge.getServer().getWorld(l).get().getPlayers()) {
+						sendTabList(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
+					}
+				}
+			}
+
+			return;
+		}
+
 		sendTabList(p, v.replaceVariables(p, he), v.replaceVariables(p, fo));
 	}
 

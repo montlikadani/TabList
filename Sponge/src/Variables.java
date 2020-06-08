@@ -54,6 +54,10 @@ public class Variables {
 			str = str.replace("%player%", p.getName());
 		}
 
+		if (str.contains("%player-ping%")) {
+			str = str.replace("%player-ping%", formatPing(p.getConnection().getLatency()));
+		}
+
 		if (str.contains("%player-uuid%")) {
 			str = str.replace("%player-uuid%", p.getUniqueId().toString());
 		}
@@ -109,6 +113,25 @@ public class Variables {
 
 		str = str.replace("\n", "\n");
 		return TextSerializers.FORMATTING_CODE.deserialize(str);
+	}
+
+	private String formatPing(int ping) {
+		StringBuilder ret;
+		StringBuilder sb = new StringBuilder();
+
+		if (ConfigValues.isPingFormatEnabled()) {
+			if (ping <= ConfigValues.getGoodPingAmount()) {
+				ret = sb.append(ConfigValues.getGoodPingColor().replace('&', '\u00a7')).append(ping);
+			} else if (ping <= ConfigValues.getMediumPingAmount()) {
+				ret = sb.append(ConfigValues.getMediumPingColor().replace('&', '\u00a7')).append(ping);
+			} else {
+				ret = sb.append(ConfigValues.getBadPingColor().replace('&', '\u00a7')).append(ping);
+			}
+		} else {
+			ret = sb.append(ping);
+		}
+
+		return ret.toString();
 	}
 
 	public String setSymbols(String s) {
