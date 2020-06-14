@@ -10,6 +10,7 @@ A fully configurable plugin that allows all online players that are one the serv
 * [Spigot](https://www.spigotmc.org/resources/46229/)
 * [Bukkit](https://dev.bukkit.org/projects/animated-tab-tablist)
 * [MCMarket](https://www.mc-market.org/resources/6127/)
+* [Sponge](https://ore.spongepowered.org/montlikadani/%5BAnimated-Tab%5D---TabList)
 
 ### Other
 If you find a bug about the plugin, please send an issue here: https://github.com/montlikadani/TabList/issues

@@ -119,7 +119,7 @@ public class Objects {
 					String result = plugin.getPlaceholders().replaceVariables(player, value);
 
 					if (result.contains(".")) {
-						result = result.replace(".", "");
+						result = result.replaceAll("[^\\d]", "");
 					}
 
 					try {

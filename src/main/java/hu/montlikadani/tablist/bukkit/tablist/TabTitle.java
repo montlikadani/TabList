@@ -18,9 +18,11 @@ public class TabTitle {
 		try {
 			java.lang.reflect.Constructor<?> titleConstructor = null;
 			try {
-				Object tabHeader = ReflectionUtils.getAsIChatBaseComponent(header);
-				Object tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);
+				Object tabHeader = ReflectionUtils.getAsIChatBaseComponent(header),
+						tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);
+
 				titleConstructor = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter").getConstructor();
+
 				Object packet = titleConstructor.newInstance();
 				if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
 					ReflectionUtils.setField(packet, "header", tabHeader);

@@ -110,9 +110,9 @@ public class Groups {
 
 				String path = "groups." + g + ".";
 
-				String prefix = plugin.getGS().getString(path + "prefix", "");
-				String suffix = plugin.getGS().getString(path + "suffix", "");
-				String perm = plugin.getGS().getString(path + "permission", "");
+				String prefix = plugin.getGS().getString(path + "prefix", ""),
+						suffix = plugin.getGS().getString(path + "suffix", ""),
+						perm = plugin.getGS().getString(path + "permission", "");
 				int priority = plugin.getGS().getInt(path + "sort-priority", last + 1);
 
 				groupsList.add(new TeamHandler(g, prefix, suffix, perm, priority));

@@ -251,8 +251,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> completionList = new ArrayList<>();
-		List<String> cmds = new ArrayList<>();
+		List<String> completionList = new ArrayList<>(), cmds = new ArrayList<>();
 		String partOfCommand = "";
 
 		if (sender.hasPermission(Perm.TABNAME.getPerm())) {

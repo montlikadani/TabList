@@ -114,7 +114,7 @@ public class TabListObjects {
 							.serialize(plugin.getVariables().replaceVariables(all, ConfigValues.getCustomObject()));
 
 					if (result.contains(".")) {
-						result = result.replace(".", "");
+						result = result.replaceAll("[^\\d]", "");
 					}
 
 					try {

@@ -60,7 +60,6 @@ public class HidePlayers {
 		try {
 			profile = new GameProfile(p.getUniqueId(), p.getName());
 			playerConst = ReflectionUtils.Classes.getPlayerContructor(p, profile);
-
 			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
 
 			ReflectionUtils.setField(playerConst, "listName", ReflectionUtils.getAsIChatBaseComponent(profile.getName()));

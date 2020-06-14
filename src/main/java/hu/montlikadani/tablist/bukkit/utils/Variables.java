@@ -82,8 +82,7 @@ public class Variables {
 			address = address.replaceAll("/", "");
 		}
 
-		String t = null;
-		String dt = null;
+		String t = null, dt = null;
 		if (str.contains("%server-time%") || str.contains("%date%")) {
 			DateTimeFormatter form = !ConfigValues.getTimeFormat().isEmpty()
 					? DateTimeFormatter.ofPattern(ConfigValues.getTimeFormat())
@@ -104,9 +103,9 @@ public class Variables {
 		}
 
 		Runtime r = Runtime.getRuntime();
-		Long fram = Long.valueOf(r.freeMemory() / 1048576L);
-		Long mram = Long.valueOf(r.maxMemory() / 1048576L);
-		Long uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
+		Long fram = Long.valueOf(r.freeMemory() / 1048576L),
+				mram = Long.valueOf(r.maxMemory() / 1048576L),
+				uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
 
 		str = setPlaceholders(pl, str);
 		str = Global.setSymbols(str);
@@ -225,8 +224,7 @@ public class Variables {
 	}
 
 	private String formatPing(int ping) {
-		StringBuilder ret;
-		StringBuilder sb = new StringBuilder();
+		StringBuilder ret, sb = new StringBuilder();
 
 		if (ConfigValues.isPingFormatEnabled()) {
 			if (ping <= ConfigValues.getGoodPingAmount()) {
@@ -247,8 +245,7 @@ public class Variables {
 	}
 
 	private String formatTPS(double tps) {
-		StringBuilder ret;
-		StringBuilder sb = new StringBuilder();
+		StringBuilder ret, sb = new StringBuilder();
 
 		if (ConfigValues.isTpsFormatEnabled()) {
 			if (tps > ConfigValues.getGoodTpsAmount()) {

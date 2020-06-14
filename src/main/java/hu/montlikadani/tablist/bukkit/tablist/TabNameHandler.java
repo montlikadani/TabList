@@ -77,8 +77,7 @@ public class TabNameHandler {
 			return;
 		}
 
-		String result = "";
-		String tName = "";
+		String result = "", tName = "";
 
 		if (ConfigValues.isTabNameUseEssentialsNickName()) {
 			if (plugin.isPluginEnabled("Essentials")) {

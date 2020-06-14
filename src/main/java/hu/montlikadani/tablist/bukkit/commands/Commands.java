@@ -92,8 +92,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		List<String> completionList = new ArrayList<>();
-		List<String> cmds = new ArrayList<>();
+		List<String> completionList = new ArrayList<>(), cmds = new ArrayList<>();
 		String partOfCommand = "";
 
 		if (args.length == 1) {
