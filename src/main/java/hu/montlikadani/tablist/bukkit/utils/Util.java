@@ -64,35 +64,10 @@ public class Util {
 		if (str.contains("&f"))
 			str = str.replace("&f", "");
 
-		if (str.contains("&1"))
-			str = str.replace("&1", "");
-
-		if (str.contains("&2"))
-			str = str.replace("&2", "");
-
-		if (str.contains("&3"))
-			str = str.replace("&3", "");
-
-		if (str.contains("&4"))
-			str = str.replace("&4", "");
-
-		if (str.contains("&5"))
-			str = str.replace("&5", "");
-
-		if (str.contains("&6"))
-			str = str.replace("&6", "");
-
-		if (str.contains("&7"))
-			str = str.replace("&7", "");
-
-		if (str.contains("&8"))
-			str = str.replace("&8", "");
-
-		if (str.contains("&9"))
-			str = str.replace("&9", "");
-
-		if (str.contains("&0"))
-			str = str.replace("&0", "");
+		for (int i = 0; i < 10; i++) {
+			if (str.contains("&" + i))
+				str = str.replace("&" + i, "");
+		}
 
 		if (str.contains("&n"))
 			str = str.replace("&n", "");

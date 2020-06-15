@@ -19,7 +19,8 @@ public enum Perm {
 	TABNAME("tabname"),
 	TABNAMEOTHER("tabname.other"),
 	TOGGLE("toggle"),
-	TOGGLEALL("toggle.all");
+	TOGGLEALL("toggle.all"),
+	SEESPECTATOR("seespectators");
 
 	private String perm;
 

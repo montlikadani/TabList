@@ -209,7 +209,7 @@ public class TabList extends JavaPlugin {
 		}
 
 		if (isPluginEnabled("ProtocolLib")) {
-			getServer().getPluginManager().registerEvents(new SpectatorVisible(), this);
+			new SpectatorVisible().onSpectatorChange();
 		}
 	}
 
