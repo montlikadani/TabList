@@ -9,7 +9,6 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 
 import hu.montlikadani.tablist.bukkit.ConfigValues;
-import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
@@ -17,21 +16,22 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 public class SpectatorVisible {
 
 	public void onSpectatorChange() {
+		ProtocolLibrary.getProtocolManager().removePacketListeners(TabList.getInstance());
+
 		if (!ConfigValues.isRemoveGrayColorFromTabInSpec()) {
 			return;
 		}
 
 		ProtocolLibrary.getProtocolManager()
 				.addPacketListener(new PacketAdapter(TabList.getInstance(), PacketType.Play.Server.PLAYER_INFO) {
-					@SuppressWarnings("unchecked")
 					@Override
-					public void onPacketSending(PacketEvent ev) {
-						if (ev.getPlayer().hasPermission(Perm.SEESPECTATOR.getPerm())) {
+					public void onPacketSending(PacketEvent event) {
+						/*if (event.getPlayer().hasPermission(Perm.SEESPECTATOR.getPerm())) {
 							return;
-						}
+						}*/
 
 						try {
-							Object packetPlayOutPlayerInfo = ev.getPacket().getHandle();
+							Object packetPlayOutPlayerInfo = event.getPacket().getHandle();
 							Class<?> enumPlayerInfoAction = null;
 							if (Version.isCurrentLower(Version.v1_9_R1)) {
 								enumPlayerInfoAction = ReflectionUtils.getNMSClass("EnumPlayerInfoAction");
@@ -55,6 +55,7 @@ public class SpectatorVisible {
 									.get(enumPlayerInfoAction)
 									|| action == ReflectionUtils.getField(enumPlayerInfoAction, "ADD_PLAYER")
 											.get(enumPlayerInfoAction)) {
+								@SuppressWarnings("unchecked")
 								List<Object> infoList = (List<Object>) ReflectionUtils
 										.getField(packetPlayOutPlayerInfo, "b").get(packetPlayOutPlayerInfo);
 								for (Object infoData : infoList) {
@@ -63,7 +64,7 @@ public class SpectatorVisible {
 									Object id = ReflectionUtils.invokeMethod(profile, "getId");
 									if (c.get(infoData).equals(
 											ReflectionUtils.getField(enumGameMode, "SPECTATOR").get(enumGameMode))
-											&& !(id.equals(ev.getPlayer().getUniqueId()))) {
+											&& !(id.equals(event.getPlayer().getUniqueId()))) {
 										ReflectionUtils.modifyFinalField(c, infoData,
 												ReflectionUtils.getField(enumGameMode, "SURVIVAL").get(enumGameMode));
 									}

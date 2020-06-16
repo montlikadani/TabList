@@ -117,10 +117,7 @@ public class Objects {
 
 					final String value = ConfigValues.getCustomObjectSetting();
 					String result = plugin.getPlaceholders().replaceVariables(player, value);
-
-					if (result.contains(".")) {
-						result = result.replaceAll("[^\\d]", "");
-					}
+					result = result.replaceAll("[^\\d]", "");
 
 					try {
 						score = Integer.parseInt(result);
