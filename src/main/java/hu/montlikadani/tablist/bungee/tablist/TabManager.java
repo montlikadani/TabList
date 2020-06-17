@@ -1,13 +1,11 @@
 package hu.montlikadani.tablist.bungee.tablist;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import hu.montlikadani.tablist.bungee.Misc;
 import hu.montlikadani.tablist.bungee.TabList;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
@@ -38,21 +36,30 @@ public class TabManager implements ITask {
 		return playerTabs;
 	}
 
-	public Optional<PlayerTab> getPlayerTab(ProxiedPlayer player) {
-		for (PlayerTab tabs : playerTabs) {
-			if (tabs.getPlayer() == player) {
-				return Optional.ofNullable(tabs);
-			}
+	public void addPlayer(ProxiedPlayer player) {
+		if (getPlayerTab(player).isPresent()) {
+			return;
 		}
 
-		return Optional.empty();
+		PlayerTab tab = new PlayerTab(player);
+		playerTabs.add(tab);
+		tab.loadTabList();
+	}
+
+	public void removePlayer(ProxiedPlayer player) {
+		getPlayerTab(player).ifPresent(playerTabs::remove);
+	}
+
+	public Optional<PlayerTab> getPlayerTab(ProxiedPlayer player) {
+		return Optional
+				.ofNullable(playerTabs.stream().filter(g -> g.getPlayer().equals(player)).findFirst().orElse(null));
 	}
 
 	@Override
 	public void start() {
 		cancel();
 
-		if (!plugin.getConf().getBoolean("tablist.enable", false)) {
+		if (!plugin.getConf().getBoolean("tablist.enable", false) || plugin.getProxy().getPlayers().isEmpty()) {
 			return;
 		}
 
@@ -62,55 +69,15 @@ public class TabManager implements ITask {
 				return;
 			}
 
-			plugin.getProxy().getPlayers().forEach(this::update);
+			playerTabs.stream().filter(t -> {
+				if (!tabenable.contains(t.getPlayer().getUniqueId())) {
+					return true;
+				}
+
+				t.getPlayer().resetTabHeader();
+				return false;
+			}).forEach(PlayerTab::update);
 		}, 0L, plugin.getConf().getInt("tablist.refresh-interval"), TimeUnit.MILLISECONDS);
-	}
-
-	@Override
-	public void update(final ProxiedPlayer pl) {
-		// To make sure the task is cancelled
-		if (!plugin.getConf().getBoolean("tablist.enable", false)) {
-			cancel();
-			return;
-		}
-
-		if (!getPlayerTab(pl).isPresent()) {
-			PlayerTab tab = new PlayerTab(pl);
-			playerTabs.add(tab);
-			tab.loadTabList();
-		}
-
-		if (tabenable.contains(pl.getUniqueId())) {
-			pl.resetTabHeader();
-			return;
-		}
-
-		if (pl.getServer() != null && plugin.getConf().getStringList("tablist.disabled-servers")
-				.contains(pl.getServer().getInfo().getName())) {
-			pl.resetTabHeader();
-			return;
-		}
-
-		List<String> restrictedPlayers = plugin.getConf().getStringList("tablist.blacklisted-players");
-		if (restrictedPlayers.isEmpty()) {
-			restrictedPlayers = plugin.getConf().getStringList("tablist.restricted-players");
-		}
-
-		if (restrictedPlayers.contains(pl.getName())) {
-			pl.resetTabHeader();
-			return;
-		}
-
-		String[] t = getTablist(pl);
-		if (t != null) {
-			pl.setTabHeader(plugin.getComponentBuilder(Misc.replaceVariables(t[0], pl)),
-					plugin.getComponentBuilder(Misc.replaceVariables(t[1], pl)));
-		}
-	}
-
-	private String[] getTablist(ProxiedPlayer p) {
-		Optional<PlayerTab> tab = getPlayerTab(p);
-		return tab.isPresent() ? new String[] { tab.get().getNextHeader(), tab.get().getNextFooter() } : new String[0];
 	}
 
 	@Override

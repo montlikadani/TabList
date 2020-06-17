@@ -3,6 +3,7 @@ package hu.montlikadani.tablist.bungee.tablist;
 import java.util.ArrayList;
 import java.util.List;
 
+import hu.montlikadani.tablist.bungee.Misc;
 import hu.montlikadani.tablist.bungee.TabList;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
@@ -13,8 +14,7 @@ public class PlayerTab {
 
 	private int i = 0, i2 = 0;
 
-	private final List<String> header = new ArrayList<>();
-	private final List<String> footer = new ArrayList<>();
+	private final List<String> header = new ArrayList<>(), footer = new ArrayList<>();
 
 	public PlayerTab(ProxiedPlayer player) {
 		this.player = player;
@@ -41,7 +41,7 @@ public class PlayerTab {
 			i = 0;
 		}
 
-		return header.get(i);
+		return i < 0 || i >= header.size() ? "" : header.get(i);
 	}
 
 	public String getNextFooter() {
@@ -53,7 +53,7 @@ public class PlayerTab {
 			i2 = 0;
 		}
 
-		return footer.get(i2);
+		return i2 < 0 || i2 >= footer.size() ? "" : footer.get(i2);
 	}
 
 	public void clearAll() {
@@ -129,5 +129,27 @@ public class PlayerTab {
 
 		if (footer.isEmpty())
 			footer.addAll(conf.getStringList(path + "footer"));
+	}
+
+	public void update() {
+		if (player.getServer() != null && TabList.getInstance().getConf().getStringList("tablist.disabled-servers")
+				.contains(player.getServer().getInfo().getName())) {
+			player.resetTabHeader();
+			return;
+		}
+
+		List<String> restrictedPlayers = TabList.getInstance().getConf().getStringList("tablist.blacklisted-players");
+		if (restrictedPlayers.isEmpty()) {
+			restrictedPlayers = TabList.getInstance().getConf().getStringList("tablist.restricted-players");
+		}
+
+		if (restrictedPlayers.contains(player.getName())) {
+			player.resetTabHeader();
+			return;
+		}
+
+		String[] t = { getNextHeader(), getNextFooter() };
+		player.setTabHeader(TabList.getInstance().getComponentBuilder(Misc.replaceVariables(t[0], player)),
+				TabList.getInstance().getComponentBuilder(Misc.replaceVariables(t[1], player)));
 	}
 }

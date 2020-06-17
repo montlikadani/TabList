@@ -58,18 +58,13 @@ public class TabManager {
 		return getPlayerTab(player).isPresent();
 	}
 
-	public Optional<TabHandler> getPlayerTab(Player player) {
+	public Optional<TabHandler> getPlayerTab(final Player player) {
 		if (player == null) {
 			return Optional.empty();
 		}
 
-		for (TabHandler tab : tabPlayers) {
-			if (tab.getPlayer().equals(player)) {
-				return Optional.ofNullable(tab);
-			}
-		}
-
-		return Optional.empty();
+		return Optional
+				.ofNullable(tabPlayers.stream().filter(tab -> tab.getPlayer().equals(player)).findFirst().orElse(null));
 	}
 
 	public void loadToggledTabs() {

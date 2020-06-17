@@ -15,6 +15,8 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ProxyReloadEvent;
+import net.md_5.bungee.api.event.ServerDisconnectEvent;
+import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -77,6 +79,11 @@ public class TabList extends Plugin implements Listener {
 
 		tab.start();
 		groups.start();
+
+		getProxy().getPlayers().forEach(pl -> {
+			tab.addPlayer(pl);
+			groups.addPlayer(pl);
+		});
 	}
 
 	private void loadFile() {
@@ -206,11 +213,28 @@ public class TabList extends Plugin implements Listener {
 	 */
 	@EventHandler
 	public void onLogin(PostLoginEvent e) {
-		tab.start();
+		if (tab.getTask() == null) {
+			tab.start();
+		}
 
 		if (groups.getTask() == null) {
 			groups.start();
 		}
+
+		tab.addPlayer(e.getPlayer());
+		groups.addPlayer(e.getPlayer());
+	}
+
+	@EventHandler
+	public void onLeave(ServerDisconnectEvent event) {
+		tab.removePlayer(event.getPlayer());
+		groups.removePlayer(event.getPlayer());
+	}
+
+	@EventHandler
+	public void onKick(ServerKickEvent event) {
+		tab.removePlayer(event.getPlayer());
+		groups.removePlayer(event.getPlayer());
 	}
 
 	@EventHandler
