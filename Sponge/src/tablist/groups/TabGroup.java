@@ -71,9 +71,9 @@ public class TabGroup implements Cloneable {
 	}
 
 	public void setTeam(final Player player) {
-		final String pref = TabList.get().makeAnim(prefix);
-		final String suf = TabList.get().makeAnim(suffix);
-		final String teamName = getFullGroupName();
+		final String pref = TabList.get().makeAnim(prefix),
+				suf = TabList.get().makeAnim(suffix),
+				teamName = getFullGroupName();
 		final Scoreboard b = getScoreboard(player);
 
 		Team team = b.getTeam(teamName).orElse(Team.builder().name(teamName).build());
@@ -82,8 +82,9 @@ public class TabGroup implements Cloneable {
 			b.registerTeam(team);
 		}
 
-		if (!team.getMembers().contains(player.getTeamRepresentation())) {
-			team.addMember(player.getTeamRepresentation());
+		Text representationName = player.getTeamRepresentation();
+		if (!team.getMembers().contains(representationName)) {
+			team.addMember(representationName);
 		}
 
 		final Text name = TabList.get().getVariables().replaceVariables(player, pref + player.getName() + suf);

@@ -145,9 +145,9 @@ public class TabList {
 				continue;
 			}
 
-			String prefix = groupsFile.getConfig().getString("", "groups", name, "prefix");
-			String suffix = groupsFile.getConfig().getString("", "groups", name, "suffix");
-			String permission = groupsFile.getConfig().getString("tablist." + name, "groups", name, "permission");
+			String prefix = groupsFile.getConfig().getString("", "groups", name, "prefix"),
+					suffix = groupsFile.getConfig().getString("", "groups", name, "suffix"),
+					permission = groupsFile.getConfig().getString("tablist." + name, "groups", name, "permission");
 
 			int priority = groupsFile.getConfig().getInt(last + 1, "groups", name, "priority");
 

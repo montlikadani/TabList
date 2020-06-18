@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
@@ -28,11 +29,10 @@ public class Variables {
 			address = address.replaceAll("/", "");
 		}
 
-		String t = null;
-		String dt = null;
+		String t = null, dt = null;
 		if (str.contains("%server-time%") || str.contains("%date%")) {
-			DateTimeFormatter form = DateTimeFormatter.ofPattern(ConfigValues.getTimeFormat());
-			DateTimeFormatter form2 = DateTimeFormatter.ofPattern(ConfigValues.getDateFormat());
+			DateTimeFormatter form = DateTimeFormatter.ofPattern(ConfigValues.getTimeFormat()),
+					form2 = DateTimeFormatter.ofPattern(ConfigValues.getDateFormat());
 			TimeZone zone = ConfigValues.isUseSystemZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
 					: TimeZone.getTimeZone(ConfigValues.getTimeZone());
 			LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
@@ -44,9 +44,9 @@ public class Variables {
 		}
 
 		Runtime r = Runtime.getRuntime();
-		Long fram = Long.valueOf(r.freeMemory() / 1048576L);
-		Long mram = Long.valueOf(r.maxMemory() / 1048576L);
-		Long uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
+		Long fram = Long.valueOf(r.freeMemory() / 1048576L),
+				mram = Long.valueOf(r.maxMemory() / 1048576L),
+				uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
 
 		str = setSymbols(str);
 
@@ -60,6 +60,14 @@ public class Variables {
 
 		if (str.contains("%player-uuid%")) {
 			str = str.replace("%player-uuid%", p.getUniqueId().toString());
+		}
+
+		if (str.contains("%player-level%")) {
+			str = str.replace("%player-level%", String.valueOf(p.get(Keys.EXPERIENCE_LEVEL).get()));
+		}
+
+		if (str.contains("%player-total-level%")) {
+			str = str.replace("%player-total-level%", String.valueOf(p.get(Keys.TOTAL_EXPERIENCE).get()));
 		}
 
 		if (str.contains("%world%")) {
@@ -116,8 +124,7 @@ public class Variables {
 	}
 
 	private String formatPing(int ping) {
-		StringBuilder ret;
-		StringBuilder sb = new StringBuilder();
+		StringBuilder ret, sb = new StringBuilder();
 
 		if (ConfigValues.isPingFormatEnabled()) {
 			if (ping <= ConfigValues.getGoodPingAmount()) {

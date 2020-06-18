@@ -113,9 +113,7 @@ public class TabListObjects {
 					String result = TextSerializers.PLAIN
 							.serialize(plugin.getVariables().replaceVariables(all, ConfigValues.getCustomObject()));
 
-					if (result.contains(".")) {
-						result = result.replaceAll("[^\\d]", "");
-					}
+					result = result.replaceAll("[^\\d]", "");
 
 					try {
 						score = Integer.parseInt(result);

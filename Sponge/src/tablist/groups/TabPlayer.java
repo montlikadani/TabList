@@ -28,19 +28,21 @@ public class TabPlayer {
 	}
 
 	public boolean update() {
-		boolean update = false;
-		// player.getSubjectData().getPermissions(player.getActiveContexts()).containsKey(permission)
+		boolean update = true;
 
 		for (TabGroup group : TabList.get().getGroupsList()) {
-			if (player.hasPermission(player.getActiveContexts(), group.getPermission())) {
-				update = true;
-
-				if (this.group == group) {
-					break;
+			if (!group.getPermission().isEmpty()
+					&& player.hasPermission(player.getActiveContexts(), group.getPermission())) {
+				if (this.group != group) {
+					setGroup(group);
 				}
 
-				setGroup(group);
+				break;
 			}
+		}
+
+		if (group == null) {
+			update = false;
 		}
 
 		return update;
