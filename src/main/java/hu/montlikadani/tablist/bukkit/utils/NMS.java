@@ -9,14 +9,6 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 @SuppressWarnings("deprecation")
 public class NMS {
 
-	public static Team getTeam(Player player, Scoreboard board) {
-		return getTeam(player, board, player.getName());
-	}
-
-	public static Team getTeam(Player player, Scoreboard board, String teamName) {
-		return Version.isCurrentLower(Version.v1_9_R1) ? board.getPlayerTeam(player) : board.getTeam(teamName);
-	}
-
 	public static void addEntry(Player player, Team team) {
 		if (Version.isCurrentLower(Version.v1_9_R1)) {
 			if (!team.hasPlayer(player)) {

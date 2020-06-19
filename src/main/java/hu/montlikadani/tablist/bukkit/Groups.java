@@ -139,7 +139,7 @@ public class Groups {
 		}
 
 		Scoreboard tboard = ConfigValues.isUseOwnScoreboard() ? player.getScoreboard() : b;
-		Team team = NMS.getTeam(player, tboard, name);
+		Team team = tboard.getTeam(name);
 		if (team == null) {
 			team = tboard.registerNewTeam(name);
 		}

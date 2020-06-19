@@ -11,7 +11,6 @@ import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 
 public class HidePlayers {
 
-	private GameProfile profile;
 	private Object playerConst;
 	private Class<?> enumPlayerInfoAction;
 	private Object entityPlayerArray;
@@ -58,7 +57,7 @@ public class HidePlayers {
 
 	private void r(Player p, Player to) {
 		try {
-			profile = new GameProfile(p.getUniqueId(), p.getName());
+			GameProfile profile = new GameProfile(p.getUniqueId(), p.getName());
 			playerConst = ReflectionUtils.Classes.getPlayerContructor(p, profile);
 			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
 

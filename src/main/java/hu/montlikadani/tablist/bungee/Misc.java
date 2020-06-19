@@ -29,9 +29,9 @@ public class Misc {
 	@SuppressWarnings("deprecation")
 	public static String replaceVariables(String str, ProxiedPlayer p) {
 		Runtime r = Runtime.getRuntime();
-		Long fram = Long.valueOf(r.freeMemory() / 1048576L);
-		Long mram = Long.valueOf(r.maxMemory() / 1048576L);
-		Long uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
+		Long fram = Long.valueOf(r.freeMemory() / 1048576L),
+				mram = Long.valueOf(r.maxMemory() / 1048576L),
+				uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
 
 		Configuration conf = TabList.getInstance().getConf();
 
@@ -43,8 +43,7 @@ public class Misc {
 			}
 		}
 
-		String t = null;
-		String dt = null;
+		String t = null, dt = null;
 		if (str.contains("%time%") || str.contains("%date%")) {
 			String path = "placeholder-format.time.";
 			DateTimeFormatter form = !conf.getString(path + "time-format", "").isEmpty()
