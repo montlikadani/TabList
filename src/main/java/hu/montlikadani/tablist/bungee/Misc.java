@@ -4,8 +4,12 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ChatColor;
@@ -17,7 +21,29 @@ import net.md_5.bungee.config.Configuration;
 public class Misc {
 
 	public static String colorMsg(String s) {
+		if (s == null) {
+			return "";
+		}
+
+		if (s.contains("#")) {
+			for (String m : matchColorRegex(s)) {
+				s = s.replace("<" + m + ">", net.md_5.bungee.api.ChatColor.of(m).toString());
+			}
+		}
+
 		return ChatColor.translateAlternateColorCodes('&', s);
+	}
+
+	private static List<String> matchColorRegex(String s) {
+		List<String> matches = new ArrayList<>();
+		Matcher matcher = Pattern.compile("<(.*?)>").matcher(s);
+		while (matcher.find()) {
+			for (int i = 1; i <= matcher.groupCount(); i++) {
+				matches.add(matcher.group(i));
+			}
+		}
+
+		return matches;
 	}
 
 	public static void sendMessage(CommandSender s, String path) {
