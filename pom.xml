@@ -73,9 +73,9 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.15.2-R0.1-SNAPSHOT</version>
+			<version>1.16.1-R0.1-SNAPSHOT</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/spigot-1.15.2.jar</systemPath>
+			<systemPath>${project.basedir}/lib/spigot-1.16.1.jar</systemPath>
 		</dependency>
 		<!-- Paper is using cubekrowd-repo instead of own...
 		<dependency>
@@ -87,13 +87,13 @@
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-proxy</artifactId>
-			<version>1.15-SNAPSHOT</version>
+			<version>1.16-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-api</artifactId>
-			<version>1.15-SNAPSHOT</version>
+			<version>1.16-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
