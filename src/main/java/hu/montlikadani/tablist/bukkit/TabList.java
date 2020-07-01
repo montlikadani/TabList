@@ -54,11 +54,9 @@ public class TabList extends JavaPlugin {
 	private TabNameHandler tabNameHandler;
 
 	private boolean isSpigot = false;
-
 	private int tabRefreshTime = 0;
 
 	private final Set<AnimCreator> animations = new HashSet<>();
-
 	private final Map<Player, HidePlayers> hidePlayers = new HashMap<>();
 
 	@Override

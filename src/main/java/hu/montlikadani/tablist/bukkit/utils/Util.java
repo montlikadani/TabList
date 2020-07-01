@@ -1,12 +1,17 @@
 package hu.montlikadani.tablist.bukkit.utils;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class Util {
 
@@ -30,7 +35,29 @@ public class Util {
 	}
 
 	public static String colorMsg(String msg) {
-		return msg == null ? "" : ChatColor.translateAlternateColorCodes('&', msg);
+		if (msg == null) {
+			return "";
+		}
+
+		if (msg.contains("#") && Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
+			for (String s : matchColorRegex(msg)) {
+				msg = msg.replace("<" + s + ">", net.md_5.bungee.api.ChatColor.of(s).toString());
+			}
+		}
+
+		return ChatColor.translateAlternateColorCodes('&', msg);
+	}
+
+	private static List<String> matchColorRegex(String s) {
+		List<String> matches = new ArrayList<>();
+		Matcher matcher = Pattern.compile("<(.*?)>").matcher(s);
+		while (matcher.find()) {
+			for (int i = 1; i <= matcher.groupCount(); i++) {
+				matches.add(matcher.group(i));
+			}
+		}
+
+		return matches;
 	}
 
 	public static void sendMsg(CommandSender sender, String s) {

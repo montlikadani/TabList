@@ -95,9 +95,6 @@ public class TabHandler implements ITabHandler {
 			return;
 		}
 
-		List<String> header = null;
-		List<String> footer = null;
-
 		boolean worldEnable = false;
 
 		final List<String> worldList = new ArrayList<>();
@@ -115,8 +112,23 @@ public class TabHandler implements ITabHandler {
 
 			if (header == null && footer == null) {
 				if (c.isConfigurationSection("per-world")) {
-					for (String s : c.getConfigurationSection("per-world").getKeys(false)) {
-						worldList.add(s);
+					t: for (String s : c.getConfigurationSection("per-world").getKeys(false)) {
+						for (String split : s.split(", ")) {
+							if (world.equals(split)) {
+								String path = "per-world." + s + ".";
+
+								header = c.isList(path + "header") ? c.getStringList(path + "header")
+										: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header"))
+												: null;
+								footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
+										: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer"))
+												: null;
+
+								worldList.add(split);
+								worldEnable = true;
+								break t;
+							}
+						}
 					}
 				}
 
@@ -129,24 +141,6 @@ public class TabHandler implements ITabHandler {
 								: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
 
 						worldEnable = true;
-					}
-				} else {
-					t: for (String w : worldList) {
-						for (String split : w.split(", ")) {
-							if (world.equals(split)) {
-								String path = "per-world." + w + ".";
-
-								header = c.isList(path + "header") ? c.getStringList(path + "header")
-										: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header"))
-												: null;
-								footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
-										: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer"))
-												: null;
-
-								worldEnable = true;
-								break t;
-							}
-						}
 					}
 				}
 			}
@@ -215,20 +209,7 @@ public class TabHandler implements ITabHandler {
 					: c.isString("footer") ? Arrays.asList(c.getString("footer")) : null;
 		}
 
-		setHeader(header);
-		setFooter(footer);
-
-		// Splitting the ", " from names
-		List<String> newWorlds = worldList;
-		worldList.clear();
-		for (String w : newWorlds) {
-			for (String split : w.split(", ")) {
-				worldList.add(split);
-			}
-		}
-
 		final int refreshTime = plugin.getTabRefreshTime();
-
 		if (refreshTime < 1) {
 			cancelTask();
 			sendTab(worldEnable, worldList);

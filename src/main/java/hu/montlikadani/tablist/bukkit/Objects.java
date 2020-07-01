@@ -78,10 +78,9 @@ public class Objects {
 
 			final String type = ConfigValues.getObjectType().toLowerCase();
 
-			String path = "tablist-object-type.object-settings." + type + ".";
-
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				if (plugin.getC().getStringList(path + "disabled-worlds").contains(player.getWorld().getName())) {
+				if (plugin.getC().getStringList("tablist-object-type.object-settings." + type + ".disabled-worlds")
+						.contains(player.getWorld().getName())) {
 					continue;
 				}
 

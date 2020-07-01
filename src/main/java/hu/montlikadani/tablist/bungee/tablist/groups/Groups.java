@@ -27,11 +27,9 @@ public class Groups implements ITask {
 	}
 
 	public void addPlayer(ProxiedPlayer player) {
-		if (getPlayerGroup(player).isPresent()) {
-			return;
+		if (!getPlayerGroup(player).isPresent()) {
+			playersGroup.add(new PlayerGroup(player));
 		}
-
-		playersGroup.add(new PlayerGroup(player));
 	}
 
 	public void removePlayer(ProxiedPlayer player) {

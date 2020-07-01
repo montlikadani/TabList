@@ -108,9 +108,8 @@ public class Groups {
 					continue;
 				}
 
-				String path = "groups." + g + ".";
-
-				String prefix = plugin.getGS().getString(path + "prefix", ""),
+				String path = "groups." + g + ".",
+						prefix = plugin.getGS().getString(path + "prefix", ""),
 						suffix = plugin.getGS().getString(path + "suffix", ""),
 						perm = plugin.getGS().getString(path + "permission", "");
 				int priority = plugin.getGS().getInt(path + "sort-priority", last + 1);
@@ -235,12 +234,11 @@ public class Groups {
 	}
 
 	private void startTask() {
-		if (!ConfigValues.isPrefixSuffixEnabled()) {
+		if (!ConfigValues.isPrefixSuffixEnabled() || Bukkit.getOnlinePlayers().isEmpty()) {
 			return;
 		}
 
 		final int refreshInt = ConfigValues.getGroupsRefreshInterval();
-
 		if (refreshInt < 1) {
 			updatePlayers();
 			return;
@@ -260,17 +258,14 @@ public class Groups {
 			}
 		} else {
 			if (simpleTask == -1) {
-				simpleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
-					@Override
-					public void run() {
-						if (Bukkit.getOnlinePlayers().isEmpty()) {
-							Bukkit.getServer().getScheduler().cancelTask(simpleTask);
-							simpleTask = -1;
-							return;
-						}
-
-						updatePlayers();
+				simpleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
+					if (Bukkit.getOnlinePlayers().isEmpty()) {
+						Bukkit.getServer().getScheduler().cancelTask(simpleTask);
+						simpleTask = -1;
+						return;
 					}
+
+					updatePlayers();
 				}, 0L, refreshInt * 20L);
 			}
 		}
