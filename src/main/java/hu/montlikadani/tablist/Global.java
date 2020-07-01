@@ -1,6 +1,23 @@
 package hu.montlikadani.tablist;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Global {
+
+	public static List<String> matchColorRegex(String s) {
+		List<String> matches = new ArrayList<>();
+		Matcher matcher = Pattern.compile("<(.*?)>").matcher(s);
+		while (matcher.find()) {
+			for (int i = 1; i <= matcher.groupCount(); i++) {
+				matches.add(matcher.group(i));
+			}
+		}
+
+		return matches;
+	}
 
 	public static String setSymbols(String s) {
 		s = s.replace("<0>", "•");

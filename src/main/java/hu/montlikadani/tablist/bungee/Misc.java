@@ -4,13 +4,10 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.TimeZone;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
+import hu.montlikadani.tablist.Global;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
@@ -26,24 +23,12 @@ public class Misc {
 		}
 
 		if (s.contains("#")) {
-			for (String m : matchColorRegex(s)) {
-				s = s.replace("<" + m + ">", net.md_5.bungee.api.ChatColor.of(m).toString());
+			for (String m : Global.matchColorRegex(s)) {
+				s = s.replace("<" + m + ">", ChatColor.of(m).toString());
 			}
 		}
 
 		return ChatColor.translateAlternateColorCodes('&', s);
-	}
-
-	private static List<String> matchColorRegex(String s) {
-		List<String> matches = new ArrayList<>();
-		Matcher matcher = Pattern.compile("<(.*?)>").matcher(s);
-		while (matcher.find()) {
-			for (int i = 1; i <= matcher.groupCount(); i++) {
-				matches.add(matcher.group(i));
-			}
-		}
-
-		return matches;
 	}
 
 	public static void sendMessage(CommandSender s, String path) {
@@ -64,7 +49,7 @@ public class Misc {
 		if (conf.contains("custom-variables")) {
 			for (String custom : conf.getSection("custom-variables").getKeys()) {
 				if (custom != null && str.contains(custom)) {
-					str = str.replaceAll(custom, conf.getString("custom-variables." + custom));
+					str = str.replace(custom, conf.getString("custom-variables." + custom));
 				}
 			}
 		}
