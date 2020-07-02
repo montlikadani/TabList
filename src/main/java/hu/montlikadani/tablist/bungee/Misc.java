@@ -11,6 +11,8 @@ import hu.montlikadani.tablist.Global;
 import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
@@ -24,7 +26,11 @@ public class Misc {
 
 		if (s.contains("#")) {
 			for (String m : Global.matchColorRegex(s)) {
-				s = s.replace("<" + m + ">", ChatColor.of(m).toString());
+				try {
+					s = s.replace("<" + m + ">", ChatColor.of(m).toString());
+				} catch (IllegalArgumentException e) {
+					break;
+				}
 			}
 		}
 
@@ -33,8 +39,12 @@ public class Misc {
 
 	public static void sendMessage(CommandSender s, String path) {
 		if (s != null && path != null && !path.trim().isEmpty()) {
-			s.sendMessage(TabList.getInstance().getComponentBuilder(colorMsg(path)));
+			s.sendMessage(getComponentBuilder(colorMsg(path)));
 		}
+	}
+
+	public static BaseComponent[] getComponentBuilder(String s) {
+		return new ComponentBuilder(s).create();
 	}
 
 	@SuppressWarnings("deprecation")
@@ -155,7 +165,7 @@ public class Misc {
 					p.getLocale() == null ? "unknown" : p.getLocale().getDisplayCountry());
 
 		str = str.replace("\\n", "\n");
-		str = hu.montlikadani.tablist.Global.setSymbols(str);
+		str = Global.setSymbols(str);
 
 		return colorMsg(str);
 	}

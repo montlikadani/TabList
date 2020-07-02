@@ -10,8 +10,6 @@ import hu.montlikadani.tablist.bungee.tablist.PlayerTab;
 import hu.montlikadani.tablist.bungee.tablist.TabManager;
 import hu.montlikadani.tablist.bungee.tablist.groups.Groups;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ProxyReloadEvent;
@@ -249,9 +247,5 @@ public class TabList extends Plugin implements Listener {
 	@EventHandler
 	public void onProxyReload(ProxyReloadEvent ev) {
 		reload();
-	}
-
-	public BaseComponent[] getComponentBuilder(String s) {
-		return new ComponentBuilder(s).create();
 	}
 }

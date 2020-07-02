@@ -149,7 +149,7 @@ public class PlayerTab {
 		}
 
 		String[] t = { getNextHeader(), getNextFooter() };
-		player.setTabHeader(TabList.getInstance().getComponentBuilder(Misc.replaceVariables(t[0], player)),
-				TabList.getInstance().getComponentBuilder(Misc.replaceVariables(t[1], player)));
+		player.setTabHeader(Misc.getComponentBuilder(Misc.replaceVariables(t[0], player)),
+				Misc.getComponentBuilder(Misc.replaceVariables(t[1], player)));
 	}
 }
