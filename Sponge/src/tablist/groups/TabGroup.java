@@ -67,7 +67,12 @@ public class TabGroup implements Cloneable {
 	}
 
 	public String getFullGroupName() {
-		return priority + groupName;
+		String name = priority + groupName;
+		if (name.length() > 16) {
+			name = name.substring(0, 16);
+		}
+
+		return name;
 	}
 
 	public void setTeam(final Player player) {
@@ -92,7 +97,7 @@ public class TabGroup implements Cloneable {
 		Sponge.getServer().getOnlinePlayers().forEach(all -> {
 			all.getTabList().getEntry(player.getUniqueId()).ifPresent(te -> {
 				te.setDisplayName(name);
-				setScoreboard(all);
+				all.setScoreboard(b);
 			});
 		});
 	}
@@ -100,12 +105,8 @@ public class TabGroup implements Cloneable {
 	public void removeTeam(final Player player) {
 		getScoreboard(player).getTeam(getFullGroupName()).ifPresent(t -> {
 			t.removeMember(player.getTeamRepresentation());
-			setScoreboard(player);
+			player.setScoreboard(t.getScoreboard().get());
 		});
-	}
-
-	public void setScoreboard(Player player) {
-		player.setScoreboard(getScoreboard(player));
 	}
 
 	public Scoreboard getScoreboard(Player player) {

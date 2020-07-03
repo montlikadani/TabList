@@ -72,8 +72,6 @@ public class TabListManager {
 		final String world = p.getWorld().getName();
 		final String pName = p.getName();
 
-		List<String> header = null, footer = null;
-
 		final List<String> worldList = new ArrayList<>();
 
 		header = conf.isList("tablist", "header") ? conf.getStringList("tablist", "header")
@@ -108,9 +106,6 @@ public class TabListManager {
 				}
 			}
 		}
-
-		setHeader(header);
-		setFooter(footer);
 
 		final int refreshTime = ConfigValues.getTablistUpdateTime();
 
