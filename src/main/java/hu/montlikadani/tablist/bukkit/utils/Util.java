@@ -37,9 +37,7 @@ public class Util {
 		}
 
 		if (msg.contains("#") && Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
-			for (String s : Global.matchColorRegex(msg)) {
-				msg = msg.replace("<" + s + ">", net.md_5.bungee.api.ChatColor.of(s).toString());
-			}
+			msg = Global.matchColorRegex(msg);
 		}
 
 		return ChatColor.translateAlternateColorCodes('&', msg);

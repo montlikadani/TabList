@@ -1,22 +1,25 @@
 package hu.montlikadani.tablist;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Global {
 
-	public static List<String> matchColorRegex(String s) {
-		List<String> matches = new ArrayList<>();
-		Matcher matcher = Pattern.compile("<(.*?)>").matcher(s);
+	public static String matchColorRegex(String s) {
+		String regex = "&?#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})";
+		Matcher matcher = Pattern.compile(regex).matcher(s);
 		while (matcher.find()) {
-			for (int i = 1; i <= matcher.groupCount(); i++) {
-				matches.add(matcher.group(i));
+			String group = matcher.group(0);
+			String group2 = matcher.group(1);
+
+			try {
+				s = s.replace(group, net.md_5.bungee.api.ChatColor.of("#" + group2) + "");
+			} catch (Exception e) {
+				System.out.println("[TabList] Bad hex color: " + group);
 			}
 		}
 
-		return matches;
+		return s;
 	}
 
 	public static String setSymbols(String s) {

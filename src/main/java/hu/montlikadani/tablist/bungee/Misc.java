@@ -25,13 +25,7 @@ public class Misc {
 		}
 
 		if (s.contains("#")) {
-			for (String m : Global.matchColorRegex(s)) {
-				try {
-					s = s.replace("<" + m + ">", ChatColor.of(m).toString());
-				} catch (IllegalArgumentException e) {
-					break;
-				}
-			}
+			s = Global.matchColorRegex(s);
 		}
 
 		return ChatColor.translateAlternateColorCodes('&', s);
