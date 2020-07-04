@@ -61,14 +61,14 @@ public class TabListObjects {
 	}
 
 	public void unregisterObjective(String objectName) {
-		getObjective(objectName).ifPresent(TabList.BOARD::removeObjective);
 		TabList.BOARD.clearSlot(DisplaySlots.LIST);
+		getObjective(objectName).ifPresent(TabList.BOARD::removeObjective);
 	}
 
 	public void unregisterObjective(Player player, String objectName) {
 		Scoreboard b = player.getScoreboard();
-		b.getObjective(objectName).ifPresent(b::removeObjective);
 		b.clearSlot(DisplaySlots.LIST);
+		b.getObjective(objectName).ifPresent(b::removeObjective);
 	}
 
 	public Optional<Objective> getObjective(String name) {
