@@ -242,9 +242,9 @@ public class TabList extends JavaPlugin {
 			List<String> t = c.getStringList(path + "texts");
 			if (!t.isEmpty()) {
 				if (c.getInt(path + "interval", 200) < 0) {
-					animations.add(new AnimCreator(ac, new ArrayList<String>(t), c.getBoolean(path + "random")));
+					animations.add(new AnimCreator(ac, new ArrayList<>(t), c.getBoolean(path + "random")));
 				} else {
-					animations.add(new AnimCreator(ac, new ArrayList<String>(t), c.getInt(path + "interval"),
+					animations.add(new AnimCreator(ac, new ArrayList<>(t), c.getInt(path + "interval"),
 							c.getBoolean(path + "random")));
 				}
 			}
@@ -259,6 +259,10 @@ public class TabList extends JavaPlugin {
 	}
 
 	public String makeAnim(String name) {
+		if (name == null) {
+			return "";
+		}
+
 		for (AnimCreator ac : animations) {
 			name = name.replace("%anim:" + ac.getAnimName() + "%",
 					ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());

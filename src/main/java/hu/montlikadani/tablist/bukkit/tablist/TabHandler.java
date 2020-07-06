@@ -99,6 +99,8 @@ public class TabHandler implements ITabHandler {
 
 		final List<String> worldList = new ArrayList<>();
 
+		List<String> header = null, footer = null;
+
 		if (c.contains("per-world")) {
 			if (c.contains("per-world." + world + ".per-player." + pName)) {
 				String path = "per-world." + world + ".per-player." + pName + ".";
@@ -209,6 +211,10 @@ public class TabHandler implements ITabHandler {
 					: c.isString("footer") ? Arrays.asList(c.getString("footer")) : null;
 		}
 
+		// Using to have more animations
+		setHeader(header);
+		setFooter(footer);
+
 		final int refreshTime = plugin.getTabRefreshTime();
 		if (refreshTime < 1) {
 			cancelTask();
@@ -289,13 +295,8 @@ public class TabHandler implements ITabHandler {
 			}
 		}
 
-		if (!he.trim().isEmpty()) {
-			he = plugin.makeAnim(he);
-		}
-
-		if (!fo.trim().isEmpty()) {
-			fo = plugin.makeAnim(fo);
-		}
+		he = plugin.makeAnim(he);
+		fo = plugin.makeAnim(fo);
 
 		Variables v = plugin.getPlaceholders();
 
