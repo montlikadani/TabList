@@ -4,7 +4,6 @@ import com.earth2me.essentials.Essentials;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -122,9 +121,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 					String name = team.getTeam();
 					String perm = team.getPermission();
 
-					if (!perm.isEmpty() && ((plugin.isPluginEnabled("PermissionsEx")
-							&& PermissionsEx.getPermissionManager().has(player, perm))
-							|| (player.isPermissionSet(perm) && player.hasPermission(perm)))) {
+					if (plugin.hasPermission(player, perm)) {
 						if (group != team) {
 							update = true;
 							group = team;

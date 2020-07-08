@@ -20,6 +20,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.earth2me.essentials.Essentials;
 
+import ca.stellardrift.permissionsex.bukkit.PermissionsExPlugin;
 import hu.montlikadani.ragemode.gameUtils.GameUtils;
 import hu.montlikadani.tablist.AnimCreator;
 import hu.montlikadani.tablist.bukkit.commands.Commands;
@@ -37,6 +38,7 @@ import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.Variables;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 import net.milkbowl.vault.permission.Permission;
+import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class TabList extends JavaPlugin {
 
@@ -412,6 +414,22 @@ public class TabList extends JavaPlugin {
 		}
 
 		return false;
+	}
+
+	public boolean hasPermission(Player player, String perm) {
+		if (perm.isEmpty())
+			return false;
+
+		if (isPluginEnabled("PermissionsEx")) {
+			try {
+				return PermissionsEx.getPermissionManager().has(player, perm);
+			} catch (Exception e) {
+				return getPlugin(PermissionsExPlugin.class).getUserSubjects().get(player.getUniqueId().toString())
+						.thenAccept(u -> u.hasPermission(perm)).completeExceptionally(e.getCause());
+			}
+		}
+
+		return player.isPermissionSet(perm) && player.hasPermission(perm);
 	}
 
 	public Map<Player, HidePlayers> getHidePlayers() {

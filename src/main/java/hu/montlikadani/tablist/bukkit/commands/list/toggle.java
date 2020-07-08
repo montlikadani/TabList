@@ -30,19 +30,12 @@ public class toggle implements ICommand {
 			}
 
 			Player p = (Player) sender;
-			UUID uuid = p.getUniqueId();
-
-			boolean changed = false;
-			if (TabManager.TABENABLED.containsKey(uuid)) {
-				changed = !TabManager.TABENABLED.get(uuid) ? true : false;
-			} else {
-				changed = true;
-			}
-
 			if (!plugin.getTabManager().isPlayerInTab(p)) {
 				return true;
 			}
 
+			UUID uuid = p.getUniqueId();
+			boolean changed = TabManager.TABENABLED.containsKey(uuid) ? !TabManager.TABENABLED.get(uuid) : true;
 			if (changed) {
 				TabManager.TABENABLED.put(uuid, true);
 				plugin.getTabManager().getPlayerTab(p).get().unregisterTab();
@@ -69,19 +62,12 @@ public class toggle implements ICommand {
 				}
 
 				for (Player pl : Bukkit.getOnlinePlayers()) {
-					UUID uuid = pl.getUniqueId();
-					boolean changed = false;
-
-					if (TabManager.TABENABLED.containsKey(uuid)) {
-						changed = !TabManager.TABENABLED.get(uuid) ? true : false;
-					} else {
-						changed = true;
-					}
-
 					if (!plugin.getTabManager().isPlayerInTab(pl)) {
 						continue;
 					}
 
+					UUID uuid = pl.getUniqueId();
+					boolean changed = TabManager.TABENABLED.containsKey(uuid) ? !TabManager.TABENABLED.get(uuid) : true;
 					if (changed) {
 						TabManager.TABENABLED.put(uuid, true);
 						plugin.getTabManager().getPlayerTab(pl).get().unregisterTab();
@@ -100,19 +86,12 @@ public class toggle implements ICommand {
 				return false;
 			}
 
-			UUID uuid = pl.getUniqueId();
-			boolean changed = false;
-
-			if (TabManager.TABENABLED.containsKey(uuid)) {
-				changed = !TabManager.TABENABLED.get(uuid) ? true : false;
-			} else {
-				changed = true;
-			}
-
 			if (!plugin.getTabManager().isPlayerInTab(pl)) {
 				return true;
 			}
 
+			UUID uuid = pl.getUniqueId();
+			boolean changed = TabManager.TABENABLED.containsKey(uuid) ? !TabManager.TABENABLED.get(uuid) : true;
 			if (changed) {
 				TabManager.TABENABLED.put(uuid, true);
 				plugin.getTabManager().getPlayerTab(pl).get().unregisterTab();

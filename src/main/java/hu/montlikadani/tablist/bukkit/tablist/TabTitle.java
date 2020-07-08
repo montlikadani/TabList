@@ -15,6 +15,13 @@ public class TabTitle {
 		header = Util.colorMsg(header);
 		footer = Util.colorMsg(footer);
 
+		// not going to figure out whats the issue in ichatbasecomponent
+		// temporary fix
+		if (Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
+			player.setPlayerListHeaderFooter(header, footer);
+			return;
+		}
+
 		try {
 			java.lang.reflect.Constructor<?> titleConstructor = null;
 			try {
@@ -39,7 +46,7 @@ public class TabTitle {
 				} else {
 					Object tabHeader = ReflectionUtils.getAsIChatBaseComponent(header);
 					titleConstructor = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter")
-							.getConstructor(new Class[] { tabHeader.getClass() });
+							.getConstructor(tabHeader.getClass());
 				}
 
 				Object tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);

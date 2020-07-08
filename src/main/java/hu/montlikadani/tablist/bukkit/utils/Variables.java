@@ -169,7 +169,10 @@ public class Variables {
 			str = str.replace("%light-level%", Byte.toString(pl.getLocation().getBlock().getLightLevel()));
 		}
 
-		str = str.replace("\n", "\n");
+		if (str.contains("\n")) {
+			str = str.replace("\n", "\n");
+		}
+
 		return Util.colorMsg(str);
 	}
 

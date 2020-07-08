@@ -87,6 +87,13 @@ public class TabManager {
 		for (String uuid : t.getConfigurationSection("tablists").getKeys(false)) {
 			TABENABLED.put(UUID.fromString(uuid), t.getConfigurationSection("tablists").getBoolean(uuid));
 		}
+
+		t.set("tablists", null);
+		try {
+			t.save(f);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void saveToggledTabs() {
