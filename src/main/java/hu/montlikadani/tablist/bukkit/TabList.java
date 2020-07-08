@@ -18,16 +18,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.earth2me.essentials.Essentials;
-
-import ca.stellardrift.permissionsex.bukkit.PermissionsExPlugin;
 import hu.montlikadani.ragemode.gameUtils.GameUtils;
 import hu.montlikadani.tablist.AnimCreator;
 import hu.montlikadani.tablist.bukkit.commands.Commands;
 import hu.montlikadani.tablist.bukkit.commands.TabNameCmd;
-import hu.montlikadani.tablist.bukkit.listeners.EssAfkStatus;
 import hu.montlikadani.tablist.bukkit.listeners.Listeners;
 import hu.montlikadani.tablist.bukkit.listeners.SpectatorVisible;
+import hu.montlikadani.tablist.bukkit.listeners.plugins.CMIAfkStatus;
+import hu.montlikadani.tablist.bukkit.listeners.plugins.EssAfkStatus;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 import hu.montlikadani.tablist.bukkit.tablist.TabNameHandler;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler;
@@ -38,7 +36,6 @@ import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.Variables;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 import net.milkbowl.vault.permission.Permission;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class TabList extends JavaPlugin {
 
@@ -206,6 +203,10 @@ public class TabList extends JavaPlugin {
 
 		if (isPluginEnabled("Essentials")) {
 			getServer().getPluginManager().registerEvents(new EssAfkStatus(), this);
+		}
+
+		if (isPluginEnabled("CMI")) {
+			getServer().getPluginManager().registerEvents(new CMIAfkStatus(), this);
 		}
 
 		if (isPluginEnabled("ProtocolLib")) {
@@ -390,46 +391,6 @@ public class TabList extends JavaPlugin {
 		}
 
 		return msg;
-	}
-
-	public boolean isAfk(Player p, boolean log) {
-		if (isPluginEnabled("Essentials")) {
-			return getPlugin(Essentials.class).getUser(p).isAfk();
-		}
-
-		if (log) {
-			logConsole(Level.WARNING, "The Essentials plugin not found.");
-		}
-
-		return false;
-	}
-
-	public boolean isVanished(Player p, boolean log) {
-		if (isPluginEnabled("Essentials")) {
-			return getPlugin(Essentials.class).getUser(p).isVanished();
-		}
-
-		if (log) {
-			logConsole(Level.WARNING, "The Essentials plugin not found.");
-		}
-
-		return false;
-	}
-
-	public boolean hasPermission(Player player, String perm) {
-		if (perm.isEmpty())
-			return false;
-
-		if (isPluginEnabled("PermissionsEx")) {
-			try {
-				return PermissionsEx.getPermissionManager().has(player, perm);
-			} catch (Exception e) {
-				return getPlugin(PermissionsExPlugin.class).getUserSubjects().get(player.getUniqueId().toString())
-						.thenAccept(u -> u.hasPermission(perm)).completeExceptionally(e.getCause());
-			}
-		}
-
-		return player.isPermissionSet(perm) && player.hasPermission(perm);
 	}
 
 	public Map<Player, HidePlayers> getHidePlayers() {

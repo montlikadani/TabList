@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.bukkit.listeners;
+package hu.montlikadani.tablist.bukkit.listeners.plugins;
 
 import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 
@@ -9,25 +9,18 @@ import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.PlayerList;
 import hu.montlikadani.tablist.bukkit.TabList;
-import net.ess3.api.events.AfkStatusChangeEvent;
 
-public class EssAfkStatus implements Listener {
+public class AfkPlayers {
 
-	private final Map<Player, String> afkPlayers = new HashMap<>();
+	protected final Map<Player, String> afkPlayers = new HashMap<>();
 
-	@EventHandler
-	public void onAfkChange(AfkStatusChangeEvent event) {
-		Player p = event.getAffected().getBase();
-		boolean value = event.getValue();
-
+	protected void goAfk(Player player, boolean value) {
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowPlayerGroup()) {
 			boolean rightLeft = ConfigValues.isAfkStatusShowInRightLeftSide();
 
@@ -36,26 +29,27 @@ public class EssAfkStatus implements Listener {
 			String result = "";
 
 			if (conf.contains(path)) {
-				result = colorMsg(rightLeft ? p.getName() + conf.getString(path) : conf.getString(path) + p.getName());
+				result = colorMsg(
+						rightLeft ? player.getName() + conf.getString(path) : conf.getString(path) + player.getName());
 			}
 
-			sortAfkPlayers(p, value);
+			sortAfkPlayers(player, value);
 
 			if (!result.isEmpty()) {
-				p.setPlayerListName(result);
+				player.setPlayerListName(result);
 			}
 		}
 
 		if (ConfigValues.isHidePlayerFromTabAfk()) {
 			if (value) {
-				PlayerList.hidePlayer(p);
+				PlayerList.hidePlayer(player);
 			} else {
-				PlayerList.showPlayer(p);
+				PlayerList.showPlayer(player);
 			}
 		}
 	}
 
-	private void sortAfkPlayers(Player target, boolean value) {
+	protected void sortAfkPlayers(Player target, boolean value) {
 		if (!ConfigValues.isAfkSortLast()) {
 			return;
 		}

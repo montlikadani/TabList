@@ -1,9 +1,8 @@
 package hu.montlikadani.tablist.bukkit;
 
-import com.earth2me.essentials.Essentials;
+import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,7 +79,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	public boolean update() {
 		boolean update = false;
 
-		if (!isPlayerCanSeeGroup() || ConfigValues.isAfkStatusEnabled() && plugin.isAfk(player, false)
+		if (!isPlayerCanSeeGroup() || ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(player)
 				&& !ConfigValues.isAfkStatusShowPlayerGroup()) {
 			if (group != null) {
 				group = null;
@@ -90,7 +89,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			return update;
 		}
 
-		boolean afk = plugin.isAfk(player, false);
+		boolean afk = PluginUtils.isAfk(player);
 		if (this.afk != afk) {
 			this.afk = afk;
 			update = true;
@@ -121,7 +120,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 					String name = team.getTeam();
 					String perm = team.getPermission();
 
-					if (plugin.hasPermission(player, perm)) {
+					if (PluginUtils.hasPermission(player, perm)) {
 						if (group != team) {
 							update = true;
 							group = team;
@@ -146,8 +145,8 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			}
 		}
 
-		if (plugin.isPluginEnabled("Essentials") && ConfigValues.isUseEssentialsNickName()) {
-			String nick = JavaPlugin.getPlugin(Essentials.class).getUser(player).getNickname();
+		if (ConfigValues.isUsePluginNickName()) {
+			String nick = PluginUtils.getNickName(player);
 			if (nick == null && this.nick != null || nick != null && !nick.equals(this.nick)) {
 				this.nick = nick;
 				update = true;
@@ -184,12 +183,12 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			return false;
 		}
 
-		if (ConfigValues.isHideGroupInVanish() && plugin.isVanished(p, false)) {
+		if (ConfigValues.isHideGroupInVanish() && PluginUtils.isVanished(p)) {
 			plugin.getGroups().removePlayerGroup(p);
 			return false;
 		}
 
-		if (ConfigValues.isHideGroupWhenAfk() && plugin.isAfk(p, false)) {
+		if (ConfigValues.isHideGroupWhenAfk() && PluginUtils.isAfk(p)) {
 			plugin.getGroups().removePlayerGroup(p);
 			return false;
 		}
@@ -203,8 +202,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowInRightLeftSide()) {
 			prefix = colorMsg(plugin.getC().getString(
-					"placeholder-format.afk-status.format-" + (plugin.isAfk(player, false) ? "yes" : "no"), ""))
-					+ prefix;
+					"placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), "")) + prefix;
 		}
 
 		return prefix;
@@ -216,7 +214,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 		if (ConfigValues.isAfkStatusEnabled() && ConfigValues.isAfkStatusShowInRightLeftSide()) {
 			suffix = suffix + colorMsg(plugin.getC().getString(
-					"placeholder-format.afk-status.format-" + (plugin.isAfk(player, false) ? "yes" : "no"), ""));
+					"placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), ""));
 		}
 
 		return suffix;

@@ -16,7 +16,7 @@ enabled: true
 remember-toggled-tablist-to-file: true
 
 # Hide tab when the player is vanished?
-# Required Essentials plugin!
+# Requires Essentials, CMI or SuperVanish plugin!
 hide-tab-when-player-vanished: false
 
 # What world does not display the tab?

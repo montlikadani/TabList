@@ -21,18 +21,18 @@ remove-gray-color-from-tab-in-spectator: false
 
 # Ignoring vanished players in %online-players% placeholder.
 # true - does not count the vanished players to placeholder.
-# Requires Essentials or SuperVanish plugin!
+# Requires Essentials, SuperVanish or CMI plugin!
 ignore-vanished-players-in-online-players: false
 
 # true - it counts vanished staffs to %staff-online% placeholder that
 # have "tablist.onlinestaff" permission set.
 # false - will not count vanished staff in the %staff-online% placeholder
 # even if you have permission or not
-# Requires Essentials or SuperVanish plugin!
+# Requires Essentials, SuperVanish or CMI plugin!
 count-vanished-staffs: true
 
 # Hides player from tab when afk status.
-# Requires Essentials plugin!
+# Requires Essentials or CMI plugin!
 hide-player-from-tab-when-afk: false
 
 # Hides all players from the player list (tab).
@@ -151,17 +151,18 @@ change-prefix-suffix-in-tablist:
   use-own-scoreboard: false
 
   # Hide player group in tablist when the player is vanished?
-  # Required Essentials plugin!
+  # Requires Essentials, SuperVanish or CMI plugin!
   hide-group-when-player-vanished: false
 
   # Hide player group in tablist when the player is afk?
-  # Required Essentials plugin!
+  # Requires Essentials or CMI plugin!
   hide-group-when-player-afk: false
 
-  # Use the essentials nickname instead of player original name?
+  # Use plugin nickname instead of player original name?
   # true - Using this format: "prefix playerNickName suffix"
   # false - Using this format: "prefix playerOriginalName suffix"
-  use-essentials-nickname: false
+  # Requires Essentials or CMI plugin!
+  use-plugin-nickname: false
 
   # Use tab name instead of player original name?
   # true - Using the set of tab name

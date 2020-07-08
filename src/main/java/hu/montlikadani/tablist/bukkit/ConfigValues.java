@@ -27,7 +27,7 @@ public class ConfigValues {
 	private static boolean useOwnScoreboard;
 	private static boolean hideGroupInVanish;
 	private static boolean hideGroupWhenAfk;
-	private static boolean useEssentialsNickName;
+	private static boolean usePluginNickName;
 	private static boolean useTabName;
 	private static boolean preferPrimaryVaultGroup;
 	private static boolean tablistObjectiveEnabled;
@@ -89,7 +89,11 @@ public class ConfigValues {
 		useOwnScoreboard = c.getBoolean("change-prefix-suffix-in-tablist.use-own-scoreboard", false);
 		hideGroupInVanish = c.getBoolean("change-prefix-suffix-in-tablist.hide-group-when-player-vanished", false);
 		hideGroupWhenAfk = c.getBoolean("change-prefix-suffix-in-tablist.hide-group-when-player-afk", false);
-		useEssentialsNickName = c.getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname", false);
+		if (c.contains("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
+			usePluginNickName = c.getBoolean("change-prefix-suffix-in-tablist.use-essentials-nickname", false);
+		} else {
+			usePluginNickName = c.getBoolean("change-prefix-suffix-in-tablist.use-plugin-nickname", false);
+		}
 		useTabName = c.getBoolean("change-prefix-suffix-in-tablist.use-tab-name", false);
 		preferPrimaryVaultGroup = c.getBoolean("change-prefix-suffix-in-tablist.prefer-primary-vault-group", true);
 		tablistObjectiveEnabled = c.getBoolean("tablist-object-type.enable", false);
@@ -279,8 +283,8 @@ public class ConfigValues {
 		return hideGroupWhenAfk;
 	}
 
-	public static boolean isUseEssentialsNickName() {
-		return useEssentialsNickName;
+	public static boolean isUsePluginNickName() {
+		return usePluginNickName;
 	}
 
 	public static boolean isUseTabName() {

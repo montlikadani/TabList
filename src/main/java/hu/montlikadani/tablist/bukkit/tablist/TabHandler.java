@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import hu.montlikadani.tablist.bukkit.utils.Variables;
 
 public class TabHandler implements ITabHandler {
@@ -247,7 +248,7 @@ public class TabHandler implements ITabHandler {
 	}
 
 	private void sendTab(boolean yesWorld, List<String> otherWorlds) {
-		if (plugin.isVanished(player, false) && plugin.getTabC().getBoolean("hide-tab-when-player-vanished")) {
+		if (PluginUtils.isVanished(player) && plugin.getTabC().getBoolean("hide-tab-when-player-vanished")) {
 			TabTitle.sendTabTitle(player, "", "");
 			return;
 		}

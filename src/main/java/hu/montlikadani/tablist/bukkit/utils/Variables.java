@@ -9,11 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
-import com.earth2me.essentials.Essentials;
-
-import de.myzelyam.api.vanish.VanishAPI;
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.ConfigValues;
@@ -30,8 +26,6 @@ public class Variables {
 	}
 
 	public String replaceVariables(Player pl, String str) {
-		java.util.Collection<? extends Player> oPls = Bukkit.getOnlinePlayers();
-
 		if (plugin.getC().contains("custom-variables")) {
 			for (String custom : plugin.getC().getConfigurationSection("custom-variables").getKeys(true)) {
 				if (custom != null && str.contains(custom)) {
@@ -42,38 +36,14 @@ public class Variables {
 
 		int staffs = 0;
 		if (str.contains("%staff-online%")) {
-			for (Player all : oPls) {
-				if (!all.hasPermission("tablist.onlinestaff")) {
-					continue;
-				}
-
-				if (!ConfigValues.isCountVanishedStaff()
-						&& ((plugin.isPluginEnabled("SuperVanish") && VanishAPI.isInvisible(all))
-								|| (plugin.isPluginEnabled("Essentials")
-										&& JavaPlugin.getPlugin(Essentials.class).getUser(all).isVanished()))) {
+			for (Player all : Bukkit.getOnlinePlayers()) {
+				if (!all.hasPermission("tablist.onlinestaff")
+						|| (!ConfigValues.isCountVanishedStaff() && PluginUtils.isVanished(all))) {
 					continue;
 				}
 
 				staffs++;
 			}
-		}
-
-		final int plSize = oPls.size();
-
-		int abc = 0;
-		if (ConfigValues.isIgnoreVanishedPlayers()) {
-			if (plugin.isPluginEnabled("SuperVanish")) {
-				abc = VanishAPI.getInvisiblePlayers().isEmpty() ? plSize
-						: plSize - VanishAPI.getInvisiblePlayers().size();
-			} else if (plugin.isPluginEnabled("Essentials")) {
-				Essentials ess = JavaPlugin.getPlugin(Essentials.class);
-				abc = ess.getVanishedPlayers().isEmpty() ? ess.getOnlinePlayers().size()
-						: ess.getOnlinePlayers().size() - ess.getVanishedPlayers().size();
-			} else {
-				abc = plSize;
-			}
-		} else {
-			abc = plSize;
 		}
 
 		String address = null;
@@ -125,7 +95,7 @@ public class Variables {
 			str = str.replace("%server-ram-used%", Long.toString(uram.longValue()));
 
 		if (str.contains("%online-players%"))
-			str = str.replace("%online-players%", Integer.toString(abc));
+			str = str.replace("%online-players%", Integer.toString(PluginUtils.countVanishedPlayers()));
 
 		if (str.contains("%max-players%"))
 			str = str.replace("%max-players%", Integer.toString(Bukkit.getMaxPlayers()));
@@ -133,9 +103,8 @@ public class Variables {
 		if (str.contains("%servertype%"))
 			str = str.replace("%servertype%", Bukkit.getServer().getName());
 
-		if (plugin.isPluginEnabled("Essentials") && str.contains("%vanished-players%"))
-			str = str.replace("%vanished-players%",
-					Integer.toString(JavaPlugin.getPlugin(Essentials.class).getVanishedPlayers().size()));
+		if (str.contains("%vanished-players%"))
+			str = str.replace("%vanished-players%", Integer.toString(PluginUtils.getVanishedPlayers()));
 
 		if (str.contains("%ping%"))
 			str = str.replace("%ping%", formatPing(TabListAPI.getPing(pl)));
