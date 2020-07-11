@@ -97,7 +97,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 		List<TeamHandler> groupsList = plugin.getGroups().getGroupsList();
 		List<TeamHandler> playerNameGroups = groupsList.parallelStream()
-				.filter((group) -> group.getTeam().equals(player.getName())).collect(Collectors.toList());
+				.filter(group -> group.getTeam().equals(player.getName())).collect(Collectors.toList());
 		if (playerNameGroups.size() > 0) { // can there be more than 1? probably doesn't matter
 			TeamHandler team = playerNameGroups.get(0);
 			if (group != team) {
@@ -108,7 +108,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			List<TeamHandler> playerPrimaryVaultGroups;
 			if (plugin.isPluginEnabled("Vault") && ConfigValues.isPreferPrimaryVaultGroup()
 					&& (playerPrimaryVaultGroups = groupsList.parallelStream()
-							.filter((group) -> group.getTeam().equals(plugin.getVaultPerm().getPrimaryGroup(player)))
+							.filter(group -> group.getTeam().equals(plugin.getVaultPerm().getPrimaryGroup(player)))
 							.collect(Collectors.toList())).size() > 0) { // can there be more than 1? probably doesn't matter
 				TeamHandler team = playerPrimaryVaultGroups.get(0);
 				if (group != team) {
@@ -116,7 +116,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 					group = team;
 				}
 			} else {
-				for (final TeamHandler team : plugin.getGroups().getGroupsList()) {
+				for (final TeamHandler team : groupsList) {
 					String name = team.getTeam();
 					String perm = team.getPermission();
 
@@ -166,30 +166,29 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 	private boolean isPlayerCanSeeGroup() {
 		String path = "change-prefix-suffix-in-tablist.";
-		Player p = this.player;
 
 		if (ConfigValues.isUseDisabledWorldsAsWhiteList()) {
-			if (!plugin.getC().getStringList(path + "disabled-worlds.list").contains(p.getWorld().getName())) {
+			if (!plugin.getC().getStringList(path + "disabled-worlds.list").contains(player.getWorld().getName())) {
 				return false;
 			}
 		} else {
-			if (plugin.getC().getStringList(path + "disabled-worlds.list").contains(p.getWorld().getName())) {
+			if (plugin.getC().getStringList(path + "disabled-worlds.list").contains(player.getWorld().getName())) {
 				nick = null;
 				return false;
 			}
 		}
 
-		if (plugin.isHookPreventTask(p)) {
+		if (plugin.isHookPreventTask(player)) {
 			return false;
 		}
 
-		if (ConfigValues.isHideGroupInVanish() && PluginUtils.isVanished(p)) {
-			plugin.getGroups().removePlayerGroup(p);
+		if (ConfigValues.isHideGroupInVanish() && PluginUtils.isVanished(player)) {
+			plugin.getGroups().removePlayerGroup(player);
 			return false;
 		}
 
-		if (ConfigValues.isHideGroupWhenAfk() && PluginUtils.isAfk(p)) {
-			plugin.getGroups().removePlayerGroup(p);
+		if (ConfigValues.isHideGroupWhenAfk() && PluginUtils.isAfk(player)) {
+			plugin.getGroups().removePlayerGroup(player);
 			return false;
 		}
 

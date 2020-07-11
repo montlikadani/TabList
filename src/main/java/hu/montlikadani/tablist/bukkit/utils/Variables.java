@@ -188,8 +188,8 @@ public class Variables {
 	private String tpsDot(double d) {
 		String ds = formatTPS(d);
 		if (ds.contains(".")) {
-			// TODO: Do we need to configure the tps size?
-			ds = ds.substring(0, ds.indexOf(".") + 2);
+			int size = ConfigValues.getTpsSize();
+			ds = ds.substring(0, (size == 1 ? 3 : ds.indexOf(".")) + (size < 1 ? 2 : size));
 		}
 
 		return ds;

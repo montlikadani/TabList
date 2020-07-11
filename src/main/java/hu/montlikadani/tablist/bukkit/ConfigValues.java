@@ -4,59 +4,20 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 public class ConfigValues {
 
-	private static boolean placeholderAPI;
-	private static boolean ragemodeHook;
-	private static boolean perWorldPlayerList;
-	private static boolean fakePlayers;
-	private static boolean removeGrayColorFromTabInSpec;
-	private static boolean ignoreVanishedPlayers;
-	private static boolean countVanishedStaff;
-	private static boolean hidePlayerFromTabAfk;
-	private static boolean hidePlayersFromTab;
-	private static boolean afkStatusEnabled;
-	private static boolean afkStatusShowInRightLeftSide;
-	private static boolean afkStatusShowPlayerGroup;
-	private static boolean afkSortLast;
-	private static boolean useSystemZone;
-	private static boolean pingFormatEnabled;
-	private static boolean tpsFormatEnabled;
-	private static boolean prefixSuffixEnabled;
-	private static boolean groupAnimationEnabled;
-	private static boolean useDisabledWorldsAsWhiteList;
-	private static boolean syncPluginsGroups;
-	private static boolean useOwnScoreboard;
-	private static boolean hideGroupInVanish;
-	private static boolean hideGroupWhenAfk;
-	private static boolean usePluginNickName;
-	private static boolean useTabName;
-	private static boolean preferPrimaryVaultGroup;
-	private static boolean tablistObjectiveEnabled;
-	private static boolean tabNameEnabled;
-	private static boolean tabNameUseEssentialsNickName;
-	private static boolean clearTabNameOnQuit;
-	private static boolean tabNameColorCodeEnabled;
-	private static boolean defaultColorEnabled;
+	private static boolean placeholderAPI, ragemodeHook, perWorldPlayerList, fakePlayers, removeGrayColorFromTabInSpec,
+			ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled,
+			afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone, pingFormatEnabled,
+			tpsFormatEnabled, prefixSuffixEnabled, groupAnimationEnabled, useDisabledWorldsAsWhiteList,
+			syncPluginsGroups, useOwnScoreboard, hideGroupInVanish, hideGroupWhenAfk, usePluginNickName, useTabName,
+			preferPrimaryVaultGroup, tablistObjectiveEnabled, tabNameEnabled, tabNameUseEssentialsNickName,
+			clearTabNameOnQuit, tabNameColorCodeEnabled, defaultColorEnabled;
 
-	private static String afkFormatYes;
-	private static String afkFormatNo;
-	private static String timeZone;
-	private static String timeFormat;
-	private static String dateFormat;
-	private static String goodPingColor;
-	private static String mediumPingColor;
-	private static String badPingColor;
-	private static String goodTpsColor;
-	private static String mediumTpsColor;
-	private static String badTpsColor;
-	private static String objectType;
-	private static String customObjectSetting;
-	private static String defaultTabNameColor;
+	private static String afkFormatYes, afkFormatNo, timeZone, timeFormat, dateFormat, goodPingColor, mediumPingColor,
+			badPingColor, goodTpsColor, mediumTpsColor, badTpsColor, objectType, customObjectSetting,
+			defaultTabNameColor;
 
-	private static int goodPingAmount;
-	private static int mediumPingAmount;
-	private static int groupsRefreshInterval;
-	private static int objectRefreshInterval;
-	private static int tabNameMaxLength;
+	private static int goodPingAmount, mediumPingAmount, tpsSize, groupsRefreshInterval, objectRefreshInterval,
+			tabNameMaxLength;
 
 	private static double goodTpsAmount;
 	private static double mediumTpsAmount;
@@ -121,6 +82,7 @@ public class ConfigValues {
 
 		goodPingAmount = c.getInt("placeholder-format.ping.good-ping.amount", 200);
 		mediumPingAmount = c.getInt("placeholder-format.ping.medium-ping.amount", 500);
+		tpsSize = c.getInt("placeholder-format.tps.size", 2);
 		groupsRefreshInterval = c.getInt("change-prefix-suffix-in-tablist.refresh-interval", 30);
 		objectRefreshInterval = c.getInt("tablist-object-type.refresh-interval", 3);
 		tabNameMaxLength = c.getInt("tabname.max-name-length", 200);
@@ -335,5 +297,9 @@ public class ConfigValues {
 
 	public static String getDefaultTabNameColor() {
 		return defaultTabNameColor;
+	}
+
+	public static int getTpsSize() {
+		return tpsSize;
 	}
 }

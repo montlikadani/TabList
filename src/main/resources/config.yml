@@ -83,8 +83,6 @@ placeholder-format:
   # Ping color format for %ping% placeholder.
   ping:
     enable: true
-
-    # Use color coding "&" for color.
     good-ping:
       color: "&a"
       amount: 200
@@ -95,9 +93,12 @@ placeholder-format:
 
   # TPS color format for %tps% placeholder.
   tps:
-    enable: true
+    # Ticks per second size to display how many numbers you want to display after "."
+    # The number should be higher than 0.
+    # Example: 3 = 20.14
+    size: 2
 
-    # Use color coding "&" for color.
+    enable: true
     good-tps:
       color: "&a"
       amount: 18.0
