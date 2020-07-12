@@ -1,6 +1,9 @@
 package hu.montlikadani.tablist.sponge.tablist.groups;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.spongepowered.api.entity.living.player.Player;
 
@@ -28,21 +31,30 @@ public class TabPlayer {
 	}
 
 	public boolean update() {
-		boolean update = true;
+		boolean update = false;
 
-		for (TabGroup group : TabList.get().getGroupsList()) {
-			if (!group.getPermission().isEmpty()
-					&& player.hasPermission(player.getActiveContexts(), group.getPermission())) {
+		Set<TabGroup> groupsList = TabList.get().getGroupsList();
+		List<TabGroup> playerNameGroups = groupsList.parallelStream()
+				.filter(group -> group.getGroupName().equals(player.getName())).collect(Collectors.toList());
+		if (!playerNameGroups.isEmpty()) {
+			TabGroup group = playerNameGroups.get(0);
+			if (this.group != group) {
+				update = true;
+				setGroup(group);
+			}
+
+			return update;
+		}
+
+		for (TabGroup group : groupsList) {
+			if (!group.getPermission().isEmpty() && player.hasPermission(group.getPermission())) {
 				if (this.group != group) {
+					update = true;
 					setGroup(group);
 				}
 
 				break;
 			}
-		}
-
-		if (group == null) {
-			update = false;
 		}
 
 		return update;

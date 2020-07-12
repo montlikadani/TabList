@@ -8,7 +8,7 @@ public class EventListeners {
 
 	@Listener
 	public void onJoin(ClientConnectionEvent.Join event) {
-		Task.builder().delayTicks(15L).execute(t -> TabList.get().updateAll(event.getTargetEntity()))
+		Task.builder().delayTicks(2L).execute(t -> TabList.get().updateAll(event.getTargetEntity()))
 				.submit(TabList.get());
 	}
 

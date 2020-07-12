@@ -1,7 +1,6 @@
 package hu.montlikadani.tablist.sponge.tablist.groups;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.HashMap;
 import java.util.function.Consumer;
 
 import org.spongepowered.api.Sponge;
@@ -12,7 +11,7 @@ import hu.montlikadani.tablist.sponge.TabList;
 
 public class GroupTask implements Consumer<Task> {
 
-	private final ConcurrentHashMap<String, TabPlayer> tabPlayers = new ConcurrentHashMap<>();
+	private final HashMap<String, TabPlayer> tabPlayers = new HashMap<>();
 
 	private Task task;
 
@@ -20,7 +19,7 @@ public class GroupTask implements Consumer<Task> {
 		return task;
 	}
 
-	public ConcurrentHashMap<String, TabPlayer> getTabPlayers() {
+	public HashMap<String, TabPlayer> getTabPlayers() {
 		return tabPlayers;
 	}
 
@@ -70,11 +69,17 @@ public class GroupTask implements Consumer<Task> {
 			return;
 		}
 
-		for (Map.Entry<String, TabPlayer> map : tabPlayers.entrySet()) {
-			TabPlayer v = map.getValue();
-			if (v.update()) {
-				v.getGroup().ifPresent(g -> g.setTeam(v.getPlayer()));
+		for (Player pl : Sponge.getServer().getOnlinePlayers()) {
+			if (!tabPlayers.containsKey(pl.getUniqueId().toString())) {
+				continue;
 			}
+
+			TabPlayer tabPlayer = tabPlayers.get(pl.getUniqueId().toString());
+			if (tabPlayer == null)
+				continue; // double check when the player left
+
+			tabPlayer.update();
+			tabPlayer.getGroup().ifPresent(g -> g.setTeam(tabPlayer.getPlayer()));
 		}
 	}
 }

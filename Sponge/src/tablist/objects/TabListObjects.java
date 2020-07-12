@@ -97,8 +97,8 @@ public class TabListObjects {
 		}
 
 		int interval = ConfigValues.getObjectsRefreshInterval();
-		if (interval < 0) {
-			interval = 0;
+		if (interval < 1) {
+			return;
 		}
 
 		task = Task.builder().async().interval(interval, TimeUnit.SECONDS).execute(() -> {

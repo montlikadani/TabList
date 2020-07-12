@@ -11,7 +11,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.release>8</maven.compiler.release>
 	</properties>
 
 	<build>
@@ -32,7 +31,7 @@
 
 	<repositories>
 		<repository>
-			<id>sponge</id>
+			<id>sponge-repo</id>
 			<url>https://repo.spongepowered.org/maven</url>
 		</repository>
 	</repositories>
