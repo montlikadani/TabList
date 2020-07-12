@@ -2,7 +2,7 @@
     {
         "modid": "tablist",
         "name": "TabList",
-        "version": "1.0.0",
+        "version": "1.0.1",
         "description": "An ultimate animated tablist",
         "authors": [
             "montlikadani"

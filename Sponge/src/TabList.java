@@ -26,7 +26,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Plugin(id = "tablist", name = "TabList", version = "1.0.0", description = "An ultimate animated tablist", authors = "montlikadani")
+@Plugin(id = "tablist", name = "TabList", version = "1.0.1", description = "An ultimate animated tablist", authors = "montlikadani")
 public class TabList {
 
 	private static TabList instance = null;
