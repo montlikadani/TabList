@@ -3,10 +3,8 @@ package hu.montlikadani.tablist.bungee;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import hu.montlikadani.tablist.bungee.tablist.PlayerTab;
 import hu.montlikadani.tablist.bungee.tablist.TabManager;
 import hu.montlikadani.tablist.bungee.tablist.groups.Groups;
 import net.md_5.bungee.api.CommandSender;
@@ -236,9 +234,19 @@ public class TabList extends Plugin implements Listener {
 	}
 
 	@EventHandler
-	public void onServerChange(net.md_5.bungee.api.event.ServerConnectedEvent event) {
-		getProxy().getScheduler().schedule(this,
-				() -> tab.getPlayerTab(event.getPlayer()).ifPresent(PlayerTab::loadTabList), 1, TimeUnit.SECONDS);
+	public void onServerSwitch(net.md_5.bungee.api.event.ServerSwitchEvent event) {
+		getProxy().getScheduler().schedule(this, () -> {
+			if (tab.getTask() == null) {
+				tab.start();
+			}
+
+			if (groups.getTask() == null) {
+				groups.start();
+			}
+
+			tab.addPlayer(event.getPlayer());
+			groups.addPlayer(event.getPlayer());
+		}, 5L, java.util.concurrent.TimeUnit.MILLISECONDS);
 	}
 
 	/**
