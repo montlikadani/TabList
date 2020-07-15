@@ -24,20 +24,17 @@ public class TabHandler implements ITabHandler {
 
 	private Player player;
 
-	private List<String> header;
-	private List<String> footer;
-
 	private BukkitTask task;
+	private TabBuilder builder;
 
 	public TabHandler(TabList plugin, Player player) {
-		this(plugin, player, null, null);
+		this(plugin, player, null);
 	}
 
-	public TabHandler(TabList plugin, Player player, List<String> header, List<String> footer) {
+	public TabHandler(TabList plugin, Player player, TabBuilder builder) {
 		this.plugin = plugin;
 		this.player = player;
-		this.header = header;
-		this.footer = footer;
+		this.builder = builder == null ? TabBuilder.builder().build() : builder;
 	}
 
 	@Override
@@ -46,23 +43,8 @@ public class TabHandler implements ITabHandler {
 	}
 
 	@Override
-	public List<String> getHeader() {
-		return header;
-	}
-
-	@Override
-	public void setHeader(List<String> header) {
-		this.header = header;
-	}
-
-	@Override
-	public List<String> getFooter() {
-		return footer;
-	}
-
-	@Override
-	public void setFooter(List<String> footer) {
-		this.footer = footer;
+	public TabBuilder getBuilder() {
+		return builder;
 	}
 
 	@Override
@@ -212,9 +194,8 @@ public class TabHandler implements ITabHandler {
 					: c.isString("footer") ? Arrays.asList(c.getString("footer")) : null;
 		}
 
-		// Using to have more animations
-		setHeader(header);
-		setFooter(footer);
+		this.builder = TabBuilder.builder().header(header).footer(footer)
+				.random(plugin.getTabC().getBoolean("random", false)).build();
 
 		final int refreshTime = plugin.getTabRefreshTime();
 		if (refreshTime < 1) {
@@ -248,51 +229,44 @@ public class TabHandler implements ITabHandler {
 	}
 
 	private void sendTab(boolean yesWorld, List<String> otherWorlds) {
-		if (PluginUtils.isVanished(player) && plugin.getTabC().getBoolean("hide-tab-when-player-vanished")) {
+		if (plugin.getTabC().getBoolean("hide-tab-when-player-vanished") && PluginUtils.isVanished(player)) {
 			TabTitle.sendTabTitle(player, "", "");
 			return;
 		}
 
-		int r = 0;
 		String he = "";
+		String fo = "";
 
-		if (header != null) {
-			if (plugin.getTabC().getBoolean("random", false)) {
-				he = header.get(ThreadLocalRandom.current().nextInt(header.size()));
-			}
+		if (builder.isRandom()) {
+			he = builder.getHeader().get(ThreadLocalRandom.current().nextInt(builder.getHeader().size()));
+			fo = builder.getFooter().get(ThreadLocalRandom.current().nextInt(builder.getFooter().size()));
+		}
 
-			if (he.isEmpty()) {
-				for (String line : header) {
-					r++;
+		int r = 0;
 
-					if (r > 1) {
-						he = he + "\n\u00a7r";
-					}
+		if (he.isEmpty()) {
+			for (String line : builder.getHeader()) {
+				r++;
 
-					he = he + line;
+				if (r > 1) {
+					he += "\n\u00a7r";
 				}
+
+				he += line;
 			}
 		}
 
-		String fo = "";
+		if (fo.isEmpty()) {
+			r = 0;
 
-		if (footer != null) {
-			if (plugin.getTabC().getBoolean("random", false)) {
-				fo = footer.get(ThreadLocalRandom.current().nextInt(footer.size()));
-			}
+			for (String line : builder.getFooter()) {
+				r++;
 
-			if (fo.isEmpty()) {
-				r = 0;
-
-				for (String line : footer) {
-					r++;
-
-					if (r > 1) {
-						fo = fo + "\n\u00a7r";
-					}
-
-					fo = fo + line;
+				if (r > 1) {
+					fo += "\n\u00a7r";
 				}
+
+				fo += line;
 			}
 		}
 
@@ -307,7 +281,7 @@ public class TabHandler implements ITabHandler {
 		}
 
 		if (otherWorlds.isEmpty()) {
-			for (Player player : player.getWorld().getPlayers()) {
+			for (Player player : this.player.getWorld().getPlayers()) {
 				TabTitle.sendTabTitle(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
 			}
 

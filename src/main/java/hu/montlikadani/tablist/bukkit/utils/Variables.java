@@ -28,7 +28,7 @@ public class Variables {
 	public String replaceVariables(Player pl, String str) {
 		if (plugin.getC().contains("custom-variables")) {
 			for (String custom : plugin.getC().getConfigurationSection("custom-variables").getKeys(true)) {
-				if (custom != null && str.contains(custom)) {
+				if (str.contains(custom)) {
 					str = str.replace(custom, plugin.getC().getString("custom-variables." + custom));
 				}
 			}
