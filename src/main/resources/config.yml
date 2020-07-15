@@ -214,8 +214,9 @@ tabname:
   # Allow to change player tab name.
   enable: false
 
-  # Use the Essentials nickname instead of tab name?
-  use-essentials-nickname: false
+  # Use plugin nickname instead of tab name?
+  # Requires Essentials or CMI plugin!
+  use-plugin-nickname: false
 
   # How many letters should be allowed?
   max-name-length: 200

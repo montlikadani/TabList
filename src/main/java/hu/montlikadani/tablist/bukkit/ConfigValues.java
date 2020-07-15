@@ -9,7 +9,7 @@ public class ConfigValues {
 			afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone, pingFormatEnabled,
 			tpsFormatEnabled, prefixSuffixEnabled, groupAnimationEnabled, useDisabledWorldsAsWhiteList,
 			syncPluginsGroups, useOwnScoreboard, hideGroupInVanish, hideGroupWhenAfk, usePluginNickName, useTabName,
-			preferPrimaryVaultGroup, tablistObjectiveEnabled, tabNameEnabled, tabNameUseEssentialsNickName,
+			preferPrimaryVaultGroup, tablistObjectiveEnabled, tabNameEnabled, tabNameUsePluginNickName,
 			clearTabNameOnQuit, tabNameColorCodeEnabled, defaultColorEnabled;
 
 	private static String afkFormatYes, afkFormatNo, timeZone, timeFormat, dateFormat, goodPingColor, mediumPingColor,
@@ -59,7 +59,9 @@ public class ConfigValues {
 		preferPrimaryVaultGroup = c.getBoolean("change-prefix-suffix-in-tablist.prefer-primary-vault-group", true);
 		tablistObjectiveEnabled = c.getBoolean("tablist-object-type.enable", false);
 		tabNameEnabled = c.getBoolean("tabname.enable", false);
-		tabNameUseEssentialsNickName = c.getBoolean("tabname.use-essentials-nickname", false);
+		tabNameUsePluginNickName = c
+				.getBoolean(c.contains("tabname.use-essentials-nickname") ? "tabname.use-essentials-nickname"
+						: "tabname.use-plugin-nickname", false);
 		clearTabNameOnQuit = c.getBoolean("tabname.clear-player-tabname-on-quit", false);
 		tabNameColorCodeEnabled = c.getBoolean("tabname.enable-color-code", false);
 		defaultColorEnabled = c.getBoolean("tabname.default-color.enable", false);
@@ -275,8 +277,13 @@ public class ConfigValues {
 		return tabNameEnabled;
 	}
 
+	@Deprecated
 	public static boolean isTabNameUseEssentialsNickName() {
-		return tabNameUseEssentialsNickName;
+		return tabNameUsePluginNickName;
+	}
+
+	public static boolean isTabNameUsePluginNickName() {
+		return tabNameUsePluginNickName;
 	}
 
 	public static int getTabNameMaxLength() {

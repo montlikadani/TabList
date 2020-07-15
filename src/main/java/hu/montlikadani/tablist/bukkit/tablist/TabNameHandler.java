@@ -30,7 +30,7 @@ public class TabNameHandler {
 		}
 
 		String result = "";
-		if (ConfigValues.isTabNameUseEssentialsNickName()) {
+		if (ConfigValues.isTabNameUsePluginNickName()) {
 			if (!plugin.isPluginEnabled("Essentials")) {
 				logConsole(Level.WARNING, "The Essentials plugin not found. Without the nickname option not work.");
 				return;
@@ -79,7 +79,7 @@ public class TabNameHandler {
 
 		String result = "", tName = "";
 
-		if (ConfigValues.isTabNameUseEssentialsNickName()) {
+		if (ConfigValues.isTabNameUsePluginNickName()) {
 			if (plugin.isPluginEnabled("Essentials")) {
 				User user = JavaPlugin.getPlugin(Essentials.class).getUser(p);
 				if (user.getNickname() != null) {
