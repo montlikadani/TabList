@@ -107,13 +107,6 @@ placeholder-format:
       amount: 16.0
     bad-tps: "&c"
 
-# Custom variables that will be replaced in tablist.
-# This useful when we are creating a lot of lines with the same name.
-# Usage: <nameOfPlaceholder>: "&6Text..."
-custom-variables:
-  <name>: "&5&o%player%"
-  <lines>: "&5&m======================"
-
 # Enables to change prefix & suffix in player tablist.
 # WARNING! Overwrites the tabname function.
 change-prefix-suffix-in-tablist:

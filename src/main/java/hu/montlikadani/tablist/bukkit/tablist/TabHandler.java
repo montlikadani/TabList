@@ -234,18 +234,20 @@ public class TabHandler implements ITabHandler {
 			return;
 		}
 
+		List<String> header = builder.getHeader(), footer = builder.getFooter();
+
 		String he = "";
 		String fo = "";
 
 		if (builder.isRandom()) {
-			he = builder.getHeader().get(ThreadLocalRandom.current().nextInt(builder.getHeader().size()));
-			fo = builder.getFooter().get(ThreadLocalRandom.current().nextInt(builder.getFooter().size()));
+			he = header.get(ThreadLocalRandom.current().nextInt(header.size()));
+			fo = footer.get(ThreadLocalRandom.current().nextInt(footer.size()));
 		}
 
 		int r = 0;
 
 		if (he.isEmpty()) {
-			for (String line : builder.getHeader()) {
+			for (String line : header) {
 				r++;
 
 				if (r > 1) {

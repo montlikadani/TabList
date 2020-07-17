@@ -136,7 +136,7 @@ public class TabListAPI {
 
 		int pingInt = 0;
 		try {
-			Object nmsPlayer = ReflectionUtils.getNMSPlayer(p);
+			Object nmsPlayer = ReflectionUtils.getHandle(p);
 			Field ping = ReflectionUtils.getField(nmsPlayer, "ping", false);
 			pingInt = ping.getInt(nmsPlayer);
 		} catch (Throwable t) {

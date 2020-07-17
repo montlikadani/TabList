@@ -34,6 +34,14 @@ public class Variables {
 			}
 		}
 
+		if (plugin.getTabC().contains("custom-variables")) {
+			for (String custom : plugin.getTabC().getConfigurationSection("custom-variables").getKeys(true)) {
+				if (str.contains(custom)) {
+					str = str.replace(custom, plugin.getTabC().getString("custom-variables." + custom));
+				}
+			}
+		}
+
 		int staffs = 0;
 		if (str.contains("%staff-online%")) {
 			for (Player all : Bukkit.getOnlinePlayers()) {

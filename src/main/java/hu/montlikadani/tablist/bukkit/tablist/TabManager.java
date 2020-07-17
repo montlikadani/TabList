@@ -59,10 +59,6 @@ public class TabManager {
 	}
 
 	public Optional<TabHandler> getPlayerTab(final Player player) {
-		if (player == null) {
-			return Optional.empty();
-		}
-
 		return Optional
 				.ofNullable(tabPlayers.stream().filter(tab -> tab.getPlayer().equals(player)).findFirst().orElse(null));
 	}

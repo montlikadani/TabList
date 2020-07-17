@@ -31,13 +31,14 @@ public class TabTitle {
 				titleConstructor = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter").getConstructor();
 
 				Object packet = titleConstructor.newInstance();
-				if (Version.isCurrentEqualOrHigher(Version.v1_13_R1)) {
+				if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
 					ReflectionUtils.setField(packet, "header", tabHeader);
 					ReflectionUtils.setField(packet, "footer", tabFooter);
 				} else {
 					ReflectionUtils.setField(packet, "a", tabHeader);
 					ReflectionUtils.setField(packet, "b", tabFooter);
 				}
+
 				ReflectionUtils.sendPacket(player, packet);
 			} catch (Exception f) {
 				if (Version.isCurrentEqualOrHigher(Version.v1_12_R1)) {

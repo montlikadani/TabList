@@ -45,10 +45,6 @@ public class ReflectionUtils {
 		return met.invoke(obj);
 	}
 
-	public static Object getNMSPlayer(Player p) throws Exception {
-		return getHandle(p);
-	}
-
 	public static Class<?> getNMSClass(String name) throws ClassNotFoundException {
 		return Class.forName("net.minecraft.server." + getPackageVersion() + "." + name);
 	}
@@ -96,7 +92,7 @@ public class ReflectionUtils {
 
 	public static void sendPacket(Player player, Object packet) {
 		try {
-			Object playerHandle = getNMSPlayer(player);
+			Object playerHandle = getHandle(player);
 			Object playerConnection = getFieldObject(playerHandle, getField(playerHandle, "playerConnection"));
 
 			playerConnection.getClass().getDeclaredMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection,
