@@ -1,67 +1,65 @@
-# Hook plugins
+# Hooks to another plugins
 hook:
-  # Hooks into PlaceholderAPI to use custom placeholders.
+  # Hook to PlaceholderAPI to use custom placeholders.
   placeholderapi: true
 
-  # Hooking to my RageMode plugin. (https://www.spigotmc.org/resources/69169/)
-  # If true, will disable the tablist, groups and the tablist objects, while
+  # Hook to my RageMode plugin. (https://www.spigotmc.org/resources/69169/)
+  # If true, then tablist, groups and tablist objects will be disabled while
   # running a game.
   RageMode: false
 
-# Different playerlist in different world.
+# Different player list in different world.
 per-world-player-list: false
 
-# Fake players that are on the tab.
+# Fake players that can be added to the player list.
 enable-fake-players: false
 
 # If enabled, the gray color will not appear to other players when the player's game mode is spectator.
 # The gray color will only show for the spectator player.
-# Requires ProtocolLib
+# Requires ProtocolLib!
 remove-gray-color-from-tab-in-spectator: false
 
-# Ignoring vanished players in %online-players% placeholder.
-# true - does not count the vanished players to placeholder.
+# true - does not count vanished players in %online-players% placeholder.
 # Requires Essentials, SuperVanish or CMI plugin!
 ignore-vanished-players-in-online-players: false
 
-# true - it counts vanished staffs to %staff-online% placeholder that
-# have "tablist.onlinestaff" permission set.
-# false - will not count vanished staff in the %staff-online% placeholder
-# even if you have permission or not
+# true - count vanished staff in %staff-online% placeholder,
+# but they need to have "tablist.onlinestaff" permission set.
+# false - does not count vanished staff in the %staff-online% placeholder
 # Requires Essentials, SuperVanish or CMI plugin!
 count-vanished-staffs: true
 
-# Hides player from tab when afk status.
+# Hide player from player list when he is AFK?
 # Requires Essentials or CMI plugin!
 hide-player-from-tab-when-afk: false
 
-# Hides all players from the player list (tab).
-# This removes all players from the tab list, but the player that has the
+# Hide all players from the player list?
+# This removes all players from the player list, but the player that has the
 # group set is retained as it is not changed during removal, so your group
 # will be restored if this option is disabled.
-# The "per-world-player-list" will not works if this enabled.
+# The "per-world-player-list" will not work if this is enabled.
 hide-players-from-tablist: false
 
-# Placeholder formatting
+# Placeholders formatting
 placeholder-format:
-  # When the player changes the afk status, changes the tablist name format.
+  # When the player changes the AFK status, change his tablist name format?
   afk-status:
     enable: false
 
-    # Should show the afk format in right or left side?
+    # Should the AFK format display in right or left side?
     # true - displays in right side
     # false - displays in left side
     show-in-right-or-left-side: true
 
-    # Show the player group if the player afk?
+    # Show player's group if the player is AFK?
     show-player-group: true
 
-    # When the player is afk
+    # Format when the player is AFK.
     format-yes: "&7 [AFK]&r "
-    # When the player is not afk
+    # Format when the player is not AFK.
     format-no: ""
 
-    # Sort afk players to the end of the tablist?
+    # Sort AFK players to the bottom of the player list?
     sort-last: false
 
   time:
@@ -73,10 +71,10 @@ placeholder-format:
     use-system-zone: false
 
     # Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
-    # Used for %server-time% placeholder.
+    # Format of %server-time% placeholder.
     time-format:
       format: "mm:HH"
-    # Used for %date% placeholder.
+    # Format of %date% placeholder.
     date-format:
       format: "dd/MM/yyyy"
 
@@ -93,7 +91,7 @@ placeholder-format:
 
   # TPS color format for %tps% placeholder.
   tps:
-    # Ticks per second size to display how many numbers you want to display after "."
+    # How many numbers do you want to display after "." in %tps% placeholder?
     # The number should be higher than 0.
     # Example: 3 = 20.14
     size: 2
@@ -107,126 +105,119 @@ placeholder-format:
       amount: 16.0
     bad-tps: "&c"
 
-# Enables to change prefix & suffix in player tablist.
-# WARNING! Overwrites the tabname function.
+# Enable changing of prefix & suffix in player list?
+# This option generates the groups.yml file.
 change-prefix-suffix-in-tablist:
   enable: false
 
-  # Refresh interval in seconds, if using animation then counts in ticks.
+  # Refresh interval in seconds, if using animation then it counts in ticks.
   # Set to 0 if you don't want to refresh the groups.
-  # If 0 you will required to execute the /tl rl command, to reload the groups.
+  # If 0, then you will need to execute the /tl reload command to refresh the groups.
   refresh-interval: 30
 
   # Do you want to use animation in groups?
-  # This creates a new task scheduler when this enabled.
-  # If this true, then you need to change the refresh interval such as 4, because counting in ticks.
-  # If this false, then back to seconds interval.
+  # If true, you need to change the refresh-interval such as 4, because it will count in ticks.
+  # If false, interval counts in seconds.
   enable-animation: false
 
-  # Disable groups in the given worlds.
+  # Disable groups in these worlds.
   disabled-worlds:
-    # Use the list as white list or not?
-    # If true - Using the white list option and all worlds should be given to the list
-    # to show in the specified worlds.
-    # If false (default) - Using the disabled list option and if a world is given in the list
-    # the groups will be disabled in that world.
+    # Use the list as whitelist?
     use-as-whitelist: false
     list:
     #- myWorld
 
-  # This for lazy users is designed to automatically add groups to the list of tablists every time
-  # there is a reload, so the user has less to do.
+  # Automatically add groups from another plugins to the tablist groups.yml on every reload?
   # If a plugin does not support Vault, it will not be added.
   sync-plugins-groups-with-tablist: true
 
-  # This option allows you to use a different scoreboard to run groups if there is a problem
+  # This option allows plugin to use a different scoreboard to run groups if there is a conflict
   # with other scoreboard plugins. If it doesn’t happen that the scoreboard disappears,
-  # you don’t need to change it.
+  # you don’t need to enable this.
   use-own-scoreboard: false
 
-  # Hide player group in tablist when the player is vanished?
+  # Hide player's group in player list when the player is vanished?
   # Requires Essentials, SuperVanish or CMI plugin!
   hide-group-when-player-vanished: false
 
-  # Hide player group in tablist when the player is afk?
+  # Hide player's group in player list when the player is AFK?
   # Requires Essentials or CMI plugin!
   hide-group-when-player-afk: false
 
-  # Use plugin nickname instead of player original name?
+  # Use another plugin nickname instead of player's original name?
   # true - Using this format: "prefix playerNickName suffix"
   # false - Using this format: "prefix playerOriginalName suffix"
   # Requires Essentials or CMI plugin!
   use-plugin-nickname: false
 
-  # Use tab name instead of player original name?
-  # true - Using the set of tab name
+  # Use tab name instead of player's original name?
   use-tab-name: false
 
-  # Prefer using the players primary Vault group for choosing the groups.yml group?
+  # Prefer player's primary Vault group when assigning tablist group from groups.yml?
   # true - player will be assigned their primary vault group where possible, after that
-  # groups from groups.yml will be applied in descending order
-  # false - groups from groups.yml will be applied in descending order
+  # groups from groups.yml will be applied in descending order.
+  # false - groups from groups.yml will be applied in descending order.
   prefer-primary-vault-group: true
 
 # Tablist objective types
-# Shows your current health (with life indicator), shows your current ping or a custom placeholder
-# that shows number.
+# Shows your current health (with life indicator), your current ping or any NUMBER placeholder
+# after the player's name (before the ping indicator).
 tablist-object-type:
   enable: true
 
   # Types:
-  # ping - ping of player
-  # health - health of player
-  # custom - custom value
+  # ping - player's ping
+  # health - player's health
+  # custom - custom placeholder
   type: ping
 
-  # The refresh interval when the objects are refreshing.
+  # Interval for objects refreshing. In seconds.
   # Note: The health is not updating auto due to display issues.
   refresh-interval: 3
 
-  # In which worlds not to display the object? (world names)?
+  # In these worlds the objects will not be displayed
   disabled-worlds:
   #- testingWorld
 
   # Objective settings
   object-settings:
-    # The player health (life) the player's name indicates the right side.
+    # The player's health - displayed after the player's name.
     health:
-      # Restricted players who do not show the health in tab.
+      # For these players the health will not be displayed
       restricted-players:
       - exampleplayer
       - players
 
-    # It only accepts number-ending placeholders, like %level%
-    # If it double-number ending, it will replaces the dot "." from the number.
+    # Custom placeholder - accepts only number-ending placeholders, like %level%.
+    # If it is double-number ending, it will remove the dot "." from the number.
     custom:
       value: "%level%"
 
-# Changing player tablist name with unlimited characters.
+# Changing player's tablist name with unlimited characters.
 tabname:
-  # Allow to change player tab name.
+  # Allow to change player's tab name?
   enable: false
 
-  # Use plugin nickname instead of tab name?
+  # Use another plugin nickname instead of tab name?
   # Requires Essentials or CMI plugin!
   use-plugin-nickname: false
 
-  # How many letters should be allowed?
+  # How many characters should be allowed?
   max-name-length: 200
 
-  # When the player left the server, delete the tab name?
+  # When the player lefts the server, delete his tab name?
   clear-player-tabname-on-quit: false
 
-  # Enables color coding for tab names. ("&")
-  # false - disables all placeholders, symbols, and color codes.
+  # Enable color codes in tab names?
+  # false - disables all placeholders, symbols and color codes.
   enable-color-code: true
 
-  # Enable the default color. (If the player has not written a color code, this color will be given by default.)
+  # Enable default color? (If the player has not written a color code, this color will be given by default.)
   default-color:
     enable: false
     color: "&6"
 
-  # Which worlds can not be change the tab name?
+  # In these worlds you can't change the tab name
   disabled-worlds:
   #- myworld
 
@@ -237,14 +228,14 @@ tabname:
 #=========================================#
 #             Plugin Settings             #
 #=========================================#
-# Check for updates.
+# Check for updates?
 check-update: true
 
-# Download releases to \releases folder
+# Download releases to \releases folder?
 # This only works if the "check-update" is true.
 download-updates: true
 
-# Log plugin messages into console.
+# Log plugin messages to console?
 logconsole: true
 
 # DO NOT CHANGE THIS!

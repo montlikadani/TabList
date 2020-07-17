@@ -8,18 +8,19 @@ placeholder-format:
     use-system-zone: false
 
     # Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
-    # Used for %time% placeholder.
+    # Format of %time% placeholder.
     time-format: "mm:HH"
-    # Used for %date% placeholder.
+    # Format of %date% placeholder.
     date-format: "dd/MM/yyyy"
 
-# Custom variables with unlimited variables.
-# Use: <something>: "&6Message...'
+# Custom variables that will be replaced in tablist.
+# This is useful when creating a lot of lines with the same content.
+# Usage: <NameOfPlaceholder>: "&6Text..."
 custom-variables:
   <name>: "&7&o%player-name%"
   <lines>: "&5&m======================"
 
-# Should enable the tablist groups?
+# Enable the tablist groups?
 tablist-groups:
   enabled: false
 
@@ -27,8 +28,8 @@ tablist-groups:
   # If you want animation just decrease the value.
   refresh-time: 160
 
-# Group list
-# NOTE: If the permissions are not works correctly then you should use
+# Groups list
+# NOTE: If the permissions do not work correctly then you should use
 # a permission manager plugin such as LuckPerms.
 groups:
   admin:
@@ -51,27 +52,27 @@ groups:
     - "&a[&cAdmin&a]&c %player-name%"
     - "&a[&cAdmin&a]&b %player-name%"
     - "&a[&cAdmin&a]&9 %player-name%"
-    permission: groups.admin # any permission name are accepted
+    permission: groups.admin # any permission name is accepted
   default:
     name: "&7 %player-name%"
     permission: tablist.default
 
-# TabList, header & footer
-# Current plugin placeholders: https://github.com/montlikadani/TabList/wiki/Placeholders#bungee
-# Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
+# TabList header & footer
+# Available placeholders: https://github.com/montlikadani/TabList/wiki/Plugin-placeholders#bungee
+# Available symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 tablist:
   # Enable tablist header & footer?
   enable: true
 
-  # Disabled servers, where you can not see the tab.
+  # In these servers you can not see the tab
   disabled-servers:
   #- serverName
 
-  # Restricted players, where the player not see the tab.
+  # These players will not see the tab
   restricted-players:
   #- playerName
 
-  # How often to refresh the tablist (in milliseconds).
+  # How often the tablist is refreshed (in milliseconds).
   refresh-interval: 180
 
   header:
@@ -120,6 +121,7 @@ tablist:
       - "&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================="
       footer:
       - "<lines>"
+      
   # Per server tablist
   per-server:
     pvp, pvp2: # You can use multiple servers
