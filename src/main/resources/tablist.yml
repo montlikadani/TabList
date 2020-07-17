@@ -1,17 +1,16 @@
-# Tablist, header & footer with animation.
+# Tablist header & footer with animations.
 
-# Current plugin placeholders: https://github.com/montlikadani/TabList/wiki/Placeholders
-# Use placeholders: https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders
-# Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
+# Available placeholders: https://github.com/montlikadani/TabList/wiki/Placeholders
+# Available symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 
-# Use %anim:animationName% placeholder to make an animation.
+# Use %anim:animationName% placeholder to make an animation. Must be firstly created in animcreator.yml file!
 
 # How do I use this tab section? Usage: https://github.com/montlikadani/TabList/wiki/TabList-Usage
 
 # Enable the tab? (Header & footer)
 enabled: true
 
-# Save the toggled tablists to a file to load after server restart.
+# Save the toggled tablists to a file and load them after server restart.
 # If this false, if the file is exists, it will be deleted automatically at server restart.
 remember-toggled-tablist-to-file: true
 
@@ -19,24 +18,24 @@ remember-toggled-tablist-to-file: true
 # Requires Essentials, CMI or SuperVanish plugin!
 hide-tab-when-player-vanished: false
 
-# What world does not display the tab?
+# In these worlds tab will NOT be displayed
 disabled-worlds:
 - "world1"
 - "worldTest"
 
-# Blacklisted players, where the player not see the tab.
+# For these players tab will NOT be displayed
 blacklisted-players:
 #- myname
 
 # Custom variables that will be replaced in tablist.
-# This useful when we are creating a lot of lines with the same name.
-# Usage: nameOfPlaceholder: "&6Text..."
+# This is useful when creating a lot of lines with the same content.
+# Usage: <NameOfPlaceholder>: "&6Text..."
 custom-variables:
   <name>: "&5&o%player%"
   <lines>: "&5&m======================"
 
 # Tab update time interval. (In ticks!)
-# Set 0 to disable the tab refresh.
+# Set to 0 to disable tab refreshing.
 interval: 4
 
 # Define if the header & footer should be randomized.
