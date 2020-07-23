@@ -45,12 +45,6 @@ public class setsuffix implements ICommand {
 			return false;
 		}
 
-		Player target = Bukkit.getPlayer(args[1]);
-		if (target == null) {
-			sendMsg(sender, plugin.getMsg("set-prefix-suffix.player-not-found", "%target%", args[1]));
-			return false;
-		}
-
 		StringBuilder builder = new StringBuilder();
 		for (int i = (args.length == 4 ? 3 : 2); i < args.length; i++) {
 			builder.append(args[i]);
@@ -62,7 +56,7 @@ public class setsuffix implements ICommand {
 			return false;
 		}
 
-		String name = args.length > 3 ? args[2] : target.getName();
+		String name = args[1];
 
 		plugin.getGS().set("groups." + name + ".suffix", suffix);
 		try {
@@ -72,8 +66,6 @@ public class setsuffix implements ICommand {
 		}
 
 		Groups groups = plugin.getGroups();
-		groups.removePlayerGroup(target);
-
 		String prefix = plugin.getGS().getString("groups." + name + ".prefix", "");
 		int priority = plugin.getGS().getInt("groups." + name + ".sort-priority", 0);
 
@@ -82,17 +74,22 @@ public class setsuffix implements ICommand {
 			team = new TeamHandler(name, prefix, suffix, priority);
 		}
 
-		if (!prefix.isEmpty()) {
-			prefix = plugin.getPlaceholders().replaceVariables(target, prefix);
-		}
-		suffix = plugin.getPlaceholders().replaceVariables(target, suffix);
+		Player target = Bukkit.getPlayer(name);
+		if (target != null) {
+			groups.removePlayerGroup(target);
 
-		TabListPlayer tabPlayer = groups.addPlayer(target);
-		tabPlayer.setCustomPrefix(prefix);
-		tabPlayer.setCustomSuffix(suffix);
-		tabPlayer.setCustomPriority(priority);
-		groups.setPlayerTeam(target, prefix, suffix, Integer.toString(100000 + priority)
-				+ (tabPlayer.getGroup() == null ? target.getName() : tabPlayer.getGroup().getTeam()));
+			if (!prefix.isEmpty()) {
+				prefix = plugin.getPlaceholders().replaceVariables(target, prefix);
+			}
+			suffix = plugin.getPlaceholders().replaceVariables(target, suffix);
+
+			TabListPlayer tabPlayer = groups.addPlayer(target);
+			tabPlayer.setCustomPrefix(prefix);
+			tabPlayer.setCustomSuffix(suffix);
+			tabPlayer.setCustomPriority(priority);
+			groups.setPlayerTeam(target, prefix, suffix, Integer.toString(100000 + priority)
+					+ (tabPlayer.getGroup() == null ? target.getName() : tabPlayer.getGroup().getTeam()));
+		}
 
 		java.util.List<TeamHandler> teams = groups.getGroupsList();
 		teams.add(team);

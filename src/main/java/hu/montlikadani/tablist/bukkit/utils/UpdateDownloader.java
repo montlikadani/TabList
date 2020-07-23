@@ -56,11 +56,9 @@ public class UpdateDownloader {
 
 					String msg = "";
 					if (sender instanceof Player) {
-						msg = Util.colorMsg("&8&m&l---------------------------------------------\n"
-								+ "&aA new update for TabList is available!&4 Version:&7 " + versionString
+						msg = Util.colorMsg("&aA new update for TabList is available!&4 Version:&7 " + versionString
 								+ (TabList.getInstance().getC().getBoolean("download-updates", false) ? ""
-										: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/")
-								+ "\n&8&m&l---------------------------------------------");
+										: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/"));
 					} else {
 						msg = "New version (" + versionString
 								+ ") is available at https://www.spigotmc.org/resources/46229/";

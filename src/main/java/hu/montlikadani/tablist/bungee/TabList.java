@@ -246,7 +246,7 @@ public class TabList extends Plugin implements Listener {
 
 			tab.addPlayer(event.getPlayer());
 			groups.addPlayer(event.getPlayer());
-		}, 5L, java.util.concurrent.TimeUnit.MILLISECONDS);
+		}, 1, java.util.concurrent.TimeUnit.SECONDS);
 	}
 
 	/**

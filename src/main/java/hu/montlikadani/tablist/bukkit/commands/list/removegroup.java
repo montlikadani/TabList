@@ -42,13 +42,7 @@ public class removegroup implements ICommand {
 			return false;
 		}
 
-		Player target = Bukkit.getPlayer(args[1]);
-		if (target == null) {
-			sendMsg(sender, plugin.getMsg("set-prefix-suffix.player-not-found", "%target%", args[1]));
-			return false;
-		}
-
-		String name = args.length > 2 ? args[2] : target.getName();
+		String name = args[2];
 
 		if (!plugin.getGS().contains("groups." + name)) {
 			sendMsg(sender, plugin.getMsg("set-prefix-suffix.remove-group.not-found-in-database", "%group%", name));
@@ -62,7 +56,11 @@ public class removegroup implements ICommand {
 			e.printStackTrace();
 		}
 
-		plugin.getGroups().removePlayerGroup(target);
+		Player target = Bukkit.getPlayer(args[1]);
+		if (target != null) {
+			plugin.getGroups().removePlayerGroup(target);
+		}
+
 		plugin.getGroups().removeGroup(name);
 
 		sendMsg(sender, plugin.getMsg("set-prefix-suffix.remove-group.successfully-removed", "%group%", name));
