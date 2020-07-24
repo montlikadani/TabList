@@ -23,8 +23,8 @@ Send the console error if you have it.
 
 ### Configuration file(s)
 <!--Send the configuration file(s) to [pastebin.com](pastebin.com) or [hastebin.com](hastebin.com) or to other sites.-->
-config.yml: 
-<!--Or if you using bungee then send the bungeeConfig.-->
+configuration file: 
+<!--Or if you using bungee or sponge then insert here the main config-->
 
 ### Screenshots (optional)
 <!--Send a few pictures about the problem if you can.-->
