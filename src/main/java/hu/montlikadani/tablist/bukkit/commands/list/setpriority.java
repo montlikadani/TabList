@@ -45,7 +45,7 @@ public class setpriority implements ICommand {
 			return false;
 		}
 
-		String match = args[args.length == 4 ? 3 : 2];
+		String match = args[2];
 		if (!match.matches("[0-9]+")) {
 			sendMsg(sender, plugin.getMsg("set-prefix-suffix.set-priority.priority-must-be-number"));
 			return false;

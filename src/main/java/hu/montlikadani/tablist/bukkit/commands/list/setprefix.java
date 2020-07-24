@@ -45,11 +45,9 @@ public class setprefix implements ICommand {
 			return false;
 		}
 
-		String name = args[1];
-
 		StringBuilder builder = new StringBuilder();
-		for (int i = (args.length == 4 ? 3 : 2); i < args.length; i++) {
-			builder.append(args[i]);
+		for (int i = 2; i < args.length; i++) {
+			builder.append(args[i] + " ");
 		}
 
 		String prefix = builder.toString();
@@ -57,6 +55,8 @@ public class setprefix implements ICommand {
 			sendMsg(sender, plugin.getMsg("set-prefix-suffix.prefix.could-not-be-empty"));
 			return false;
 		}
+
+		String name = args[1];
 
 		plugin.getGS().set("groups." + name + ".prefix", prefix);
 		try {

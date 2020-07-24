@@ -108,27 +108,29 @@ public class Commands implements CommandExecutor, TabCompleter {
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
 				Arrays.asList("add", "remove", "list").forEach(cmds::add);
 				partOfCommand = args[1];
+
+				StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
+				Collections.sort(completionList);
+				return completionList;
 			} else if (args[0].equalsIgnoreCase("toggle")) {
 				cmds.add("all");
 				partOfCommand = args[1];
-			}
-
-			StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
-			Collections.sort(completionList);
-			return completionList;
-		}
-
-		if (args.length == 3) {
-			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
-				if (args[1].equalsIgnoreCase("remove")) {
-					plugin.getConf().getFakeplayers().getStringList("fakeplayers").forEach(cmds::add);
-					partOfCommand = args[2];
-				}
 
 				StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
 				Collections.sort(completionList);
 				return completionList;
 			}
+		}
+
+		if (args.length == 3 && ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
+			if (args[1].equalsIgnoreCase("remove")) {
+				plugin.getConf().getFakeplayers().getStringList("fakeplayers").forEach(cmds::add);
+				partOfCommand = args[2];
+			}
+
+			StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
+			Collections.sort(completionList);
+			return completionList;
 		}
 
 		return null;

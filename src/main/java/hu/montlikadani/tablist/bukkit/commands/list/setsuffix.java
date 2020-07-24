@@ -46,8 +46,8 @@ public class setsuffix implements ICommand {
 		}
 
 		StringBuilder builder = new StringBuilder();
-		for (int i = (args.length == 4 ? 3 : 2); i < args.length; i++) {
-			builder.append(args[i]);
+		for (int i = 2; i < args.length; i++) {
+			builder.append(args[i] + " ");
 		}
 
 		String suffix = builder.toString();
