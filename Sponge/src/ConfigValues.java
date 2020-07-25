@@ -2,26 +2,13 @@ package hu.montlikadani.tablist.sponge;
 
 public class ConfigValues {
 
-	private static String tablistObjectsType;
-	private static String customObject;
-	private static String timeFormat;
-	private static String dateFormat;
-	private static String timeZone;
-	private static String goodPingColor;
-	private static String mediumPingColor;
-	private static String badPingColor;
+	private static String tablistObjectsType, customObject, timeFormat, dateFormat, timeZone, goodPingColor,
+			mediumPingColor, badPingColor;
 
-	private static boolean useSystemZone;
-	private static boolean pingFormatEnabled;
-	private static boolean tablistEnabled;
-	private static boolean randomTablist;
-	private static boolean tablistGroups;
-	private static boolean useOwnScoreboard;
+	private static boolean useSystemZone, pingFormatEnabled, tablistEnabled, randomTablist, tablistGroups,
+			useOwnScoreboard;
 
-	private static int tablistUpdateTime;
-	private static int objectsRefreshInterval;
-	private static int goodPingAmount;
-	private static int mediumPingAmount;
+	private static int tablistUpdateTime, objectsRefreshInterval, goodPingAmount, mediumPingAmount;
 
 	public static void loadValues() {
 		ConfigManager c = TabList.get().getC().getConfig();

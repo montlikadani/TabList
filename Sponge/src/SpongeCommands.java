@@ -47,13 +47,7 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 			for (Player pl : Sponge.getServer().getOnlinePlayers()) {
 				UUID uuid = pl.getUniqueId();
 
-				boolean changed = false;
-				if (TABENABLED.containsKey(uuid)) {
-					changed = !TABENABLED.get(uuid) ? true : false;
-				} else {
-					changed = true;
-				}
-
+				boolean changed = TABENABLED.containsKey(uuid) ? !TABENABLED.get(uuid) : true;
 				if (changed) {
 					TABENABLED.put(uuid, true);
 				} else {
@@ -69,13 +63,7 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 			Player p = args.<Player>getOne("player").get();
 			UUID uuid = p.getUniqueId();
 
-			boolean changed = false;
-			if (TABENABLED.containsKey(uuid)) {
-				changed = !TABENABLED.get(uuid) ? true : false;
-			} else {
-				changed = true;
-			}
-
+			boolean changed = TABENABLED.containsKey(uuid) ? !TABENABLED.get(uuid) : true;
 			if (changed) {
 				TABENABLED.put(uuid, true);
 				sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
@@ -92,13 +80,7 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 			Player p = (Player) src;
 			UUID uuid = p.getUniqueId();
 
-			boolean changed = false;
-			if (TABENABLED.containsKey(uuid)) {
-				changed = !TABENABLED.get(uuid) ? true : false;
-			} else {
-				changed = true;
-			}
-
+			boolean changed = TABENABLED.containsKey(uuid) ? !TABENABLED.get(uuid) : true;
 			if (changed) {
 				TABENABLED.put(uuid, true);
 				sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");

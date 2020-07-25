@@ -1,6 +1,7 @@
 package hu.montlikadani.tablist.sponge.tablist.groups;
 
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.function.Consumer;
 
 import org.spongepowered.api.Sponge;
@@ -12,6 +13,7 @@ import hu.montlikadani.tablist.sponge.TabList;
 public class GroupTask implements Consumer<Task> {
 
 	private final HashMap<String, TabPlayer> tabPlayers = new HashMap<>();
+	private final LinkedList<TabPlayer> sortedTabPlayers = new LinkedList<>();
 
 	private Task task;
 
@@ -30,16 +32,44 @@ public class GroupTask implements Consumer<Task> {
 			return tabPlayers.get(uuid);
 		}
 
-		TabPlayer tabPlayer = new TabPlayer(player);
+		TabPlayer tabPlayer = new TabPlayer(player.getUniqueId());
 		tabPlayers.put(uuid, tabPlayer);
+		addToTabListPlayerList(tabPlayer);
+
+		int priority = 0;
+		for (TabPlayer tabPl : sortedTabPlayers) {
+			if (!tabPl.getGroup().isPresent())
+				continue;
+
+			String groupName = Integer.toString(100000 + priority) + tabPl.getGroup().get().getGroupName();
+
+			tabPl.getGroup().get().setTeam(tabPl.getPlayerUUID(), groupName);
+			priority++;
+		}
+
 		return tabPlayer;
 	}
 
 	public void removePlayer(Player player) {
-		String uuid = player.getUniqueId().toString();
-		if (tabPlayers.containsKey(uuid)) {
-			tabPlayers.get(uuid).getGroup().ifPresent(g -> g.removeTeam(player));
-			tabPlayers.remove(uuid);
+		TabPlayer tabPlayer = tabPlayers.remove(player.getUniqueId().toString());
+		if (tabPlayer != null) {
+			tabPlayer.getGroup().ifPresent(g -> g.removeTeam(player));
+			sortedTabPlayers.removeFirstOccurrence(tabPlayer);
+		}
+	}
+
+	private void addToTabListPlayerList(TabPlayer tlp) {
+		int pos = 0;
+
+		for (TabPlayer p : sortedTabPlayers) {
+			if (tlp.compareTo(p) < 0)
+				break;
+
+			pos++;
+		}
+
+		if (pos >= 0 && pos <= sortedTabPlayers.size()) {
+			sortedTabPlayers.add(pos, tlp);
 		}
 	}
 
@@ -70,16 +100,29 @@ public class GroupTask implements Consumer<Task> {
 		}
 
 		for (Player pl : Sponge.getServer().getOnlinePlayers()) {
-			if (!tabPlayers.containsKey(pl.getUniqueId().toString())) {
-				continue;
+			TabPlayer tp = tabPlayers.get(pl.getUniqueId().toString());
+			if (tp == null) {
+				tp = new TabPlayer(pl.getUniqueId());
+
+				tabPlayers.put(pl.getUniqueId().toString(), tp);
+
+				tp.update();
+				addToTabListPlayerList(tp);
+			} else if (tp.update()) {
+				sortedTabPlayers.removeFirstOccurrence(tp);
+				addToTabListPlayerList(tp);
 			}
+		}
 
-			TabPlayer tabPlayer = tabPlayers.get(pl.getUniqueId().toString());
-			if (tabPlayer == null)
-				continue; // double check when the player left
+		int priority = 0;
+		for (TabPlayer tabPl : sortedTabPlayers) {
+			if (!tabPl.getGroup().isPresent())
+				continue;
 
-			tabPlayer.update();
-			tabPlayer.getGroup().ifPresent(g -> g.setTeam(tabPlayer.getPlayer()));
+			String groupName = Integer.toString(100000 + priority) + tabPl.getGroup().get().getGroupName();
+
+			tabPl.getGroup().get().setTeam(tabPl.getPlayerUUID(), groupName);
+			priority++;
 		}
 	}
 }

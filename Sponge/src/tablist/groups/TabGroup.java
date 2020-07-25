@@ -1,5 +1,7 @@
 package hu.montlikadani.tablist.sponge.tablist.groups;
 
+import java.util.UUID;
+
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scoreboard.Scoreboard;
@@ -47,7 +49,7 @@ public class TabGroup implements Cloneable {
 	}
 
 	public int getPriority() {
-		return priority;
+		return 100000 + priority;
 	}
 
 	public void setPrefix(String prefix) {
@@ -75,29 +77,40 @@ public class TabGroup implements Cloneable {
 		return name;
 	}
 
-	public void setTeam(final Player player) {
-		final String pref = TabList.get().makeAnim(prefix),
-				suf = TabList.get().makeAnim(suffix),
-				teamName = getFullGroupName();
-		final Scoreboard b = getScoreboard(player);
+	public void setTeam(final UUID playerUUID) {
+		setTeam(playerUUID, getFullGroupName());
+	}
 
-		Team team = b.getTeam(teamName).orElse(Team.builder().name(teamName).build());
-
-		if (!b.getTeam(teamName).isPresent()) {
-			b.registerTeam(team);
+	public void setTeam(final UUID playerUUID, String teamName) {
+		if (teamName.length() > 16) {
+			teamName = teamName.substring(0, 16);
 		}
 
-		Text representationName = player.getTeamRepresentation();
-		if (!team.getMembers().contains(representationName)) {
-			team.addMember(representationName);
-		}
+		final String name = teamName;
 
-		final Text name = TabList.get().getVariables().replaceVariables(player, pref + player.getName() + suf);
+		Sponge.getServer().getPlayer(playerUUID).ifPresent(player -> {
+			final String pref = TabList.get().makeAnim(prefix), suf = TabList.get().makeAnim(suffix);
+			final Scoreboard b = getScoreboard(player);
 
-		Sponge.getServer().getOnlinePlayers().forEach(all -> {
-			all.getTabList().getEntry(player.getUniqueId()).ifPresent(te -> {
-				te.setDisplayName(name);
-				all.setScoreboard(b);
+			Team team = b.getTeam(name).orElse(Team.builder().name(name).build());
+
+			if (!b.getTeam(name).isPresent()) {
+				b.registerTeam(team);
+			}
+
+			Text representationName = player.getTeamRepresentation();
+			if (!team.getMembers().contains(representationName)) {
+				team.addMember(representationName);
+			}
+
+			final Text resultName = TabList.get().getVariables().replaceVariables(player,
+					pref + player.getName() + suf);
+
+			Sponge.getServer().getOnlinePlayers().forEach(all -> {
+				all.getTabList().getEntry(player.getUniqueId()).ifPresent(te -> {
+					te.setDisplayName(resultName);
+					all.setScoreboard(b);
+				});
 			});
 		});
 	}

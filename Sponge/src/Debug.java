@@ -4,21 +4,21 @@ import org.slf4j.Logger;
 
 public class Debug {
 
-	private static Logger log = TabList.get().getPluginContainer().getLogger();
+	private static final Logger LOG = TabList.get().getPluginContainer().getLogger();
 
 	public static void debug(String msg) {
-		log.debug(msg);
+		LOG.debug(msg);
 	}
 
 	public static void error(String msg) {
-		log.error(msg);
+		LOG.error(msg);
 	}
 
 	public static void warn(String msg) {
-		log.warn(msg);
+		LOG.warn(msg);
 	}
 
 	public static void info(String msg) {
-		log.info(msg);
+		LOG.info(msg);
 	}
 }

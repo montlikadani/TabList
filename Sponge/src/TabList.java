@@ -179,9 +179,9 @@ public class TabList {
 			boolean random = c.getBoolean(false, "animations", name, "random");
 			int time = c.getInt(200, "animations", name, "interval");
 			if (time < 0) {
-				animations.add(new AnimCreator(name, new ArrayList<String>(texts), random));
+				animations.add(new AnimCreator(name, new ArrayList<>(texts), random));
 			} else {
-				animations.add(new AnimCreator(name, new ArrayList<String>(texts), time, random));
+				animations.add(new AnimCreator(name, new ArrayList<>(texts), time, random));
 			}
 		}
 	}
@@ -200,7 +200,7 @@ public class TabList {
 	}
 
 	public void updateAll(final Player player) {
-		tManager.cancelTab(player);
+		tManager.cancelTab(player.getUniqueId());
 		tManager.loadTab(player);
 
 		if (groupTask != null) {
@@ -228,7 +228,7 @@ public class TabList {
 	}
 
 	public void onQuit(Player player) {
-		tManager.cancelTab(player);
+		tManager.cancelTab(player.getUniqueId());
 
 		if (groupTask != null) {
 			groupTask.removePlayer(player);
