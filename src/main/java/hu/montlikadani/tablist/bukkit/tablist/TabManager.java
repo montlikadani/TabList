@@ -50,7 +50,14 @@ public class TabManager {
 	}
 
 	public void removePlayer() {
-		tabPlayers.forEach(TabHandler::unregisterTab);
+		tabPlayers.forEach(pl -> {
+			pl.unregisterTab();
+
+			if (pl.getTask() != null) {
+				plugin.getServer().getScheduler().cancelTask(pl.getTask().getTaskId());
+			}
+		});
+
 		tabPlayers.clear();
 	}
 

@@ -50,10 +50,8 @@ public class TabNameHandler {
 				} else {
 					result = ConfigValues.isTabNameColorCodeEnabled() ? colorMsg(name + "&r") : name + "\u00a7r";
 				}
-			} else {
-				if (ConfigValues.isDefaultColorEnabled()) {
-					result = colorMsg(ConfigValues.getDefaultTabNameColor() + p.getName());
-				}
+			} else if (ConfigValues.isDefaultColorEnabled()) {
+				result = colorMsg(ConfigValues.getDefaultTabNameColor() + p.getName());
 			}
 		}
 

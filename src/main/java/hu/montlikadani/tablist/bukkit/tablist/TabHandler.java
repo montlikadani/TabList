@@ -261,7 +261,7 @@ public class TabHandler implements ITabHandler {
 		if (fo.isEmpty()) {
 			r = 0;
 
-			for (String line : builder.getFooter()) {
+			for (String line : footer) {
 				r++;
 
 				if (r > 1) {
@@ -291,6 +291,9 @@ public class TabHandler implements ITabHandler {
 		}
 
 		for (String l : otherWorlds) {
+			if (Bukkit.getWorld(l) == null)
+				continue;
+
 			for (Player player : Bukkit.getWorld(l).getPlayers()) {
 				TabTitle.sendTabTitle(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
 			}

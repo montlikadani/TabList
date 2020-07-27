@@ -56,43 +56,11 @@ public class Util {
 	}
 
 	public static String stripColor(String str) {
-		if (str.contains("&a"))
-			str = str.replace("&a", "");
-
-		if (str.contains("&b"))
-			str = str.replace("&b", "");
-
-		if (str.contains("&c"))
-			str = str.replace("&c", "");
-
-		if (str.contains("&d"))
-			str = str.replace("&d", "");
-
-		if (str.contains("&e"))
-			str = str.replace("&e", "");
-
-		if (str.contains("&f"))
-			str = str.replace("&f", "");
-
-		for (int i = 0; i < 10; i++) {
-			if (str.contains("&" + i))
-				str = str.replace("&" + i, "");
+		for (ChatColor color : ChatColor.values()) {
+			if (str.contains(("&" + color.getChar()))) {
+				str = str.replace("&" + color.getChar(), "");
+			}
 		}
-
-		if (str.contains("&n"))
-			str = str.replace("&n", "");
-
-		if (str.contains("&o"))
-			str = str.replace("&o", "");
-
-		if (str.contains("&m"))
-			str = str.replace("&m", "");
-
-		if (str.contains("&k"))
-			str = str.replace("&k", "");
-
-		if (str.contains("&l"))
-			str = str.replace("&l", "");
 
 		str = ChatColor.stripColor(str);
 		return str;
