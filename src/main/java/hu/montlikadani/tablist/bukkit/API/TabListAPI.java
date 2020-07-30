@@ -49,8 +49,7 @@ public class TabListAPI {
 	 * @return true if toggled
 	 */
 	public static boolean isTabListToggled(String uuid) {
-		Validate.notNull(uuid, "Player UUID can't be null!");
-		Validate.notEmpty(uuid, "Player UUID can't be empty!");
+		Validate.notEmpty(uuid, "Player UUID can't be empty/null");
 
 		return isTabListToggled(UUID.fromString(uuid));
 	}
@@ -62,7 +61,7 @@ public class TabListAPI {
 	 * @return true if toggled
 	 */
 	public static boolean isTabListToggled(Player player) {
-		Validate.notNull(player, "Player can't be null!");
+		Validate.notNull(player, "Player can't be null");
 
 		return isTabListToggled(player.getUniqueId());
 	}
@@ -74,7 +73,7 @@ public class TabListAPI {
 	 * @return true if toggled
 	 */
 	public static boolean isTabListToggled(UUID uuid) {
-		Validate.notNull(uuid, "Player UUID can't be null!");
+		Validate.notNull(uuid, "Player UUID can't be null");
 
 		return TabManager.TABENABLED.containsKey(uuid) && TabManager.TABENABLED.get(uuid);
 	}
@@ -87,7 +86,7 @@ public class TabListAPI {
 	 * @param string Footer
 	 */
 	public static void sendTabList(Player p, String header, String footer) {
-		Validate.notNull(p, "Player can't be null!");
+		Validate.notNull(p, "Player can't be null");
 
 		TabTitle.sendTabTitle(p, header, footer);
 	}
@@ -132,7 +131,7 @@ public class TabListAPI {
 	 * @return Ping integer
 	 */
 	public static int getPing(Player p) {
-		Validate.notNull(p, "Player can't be null!");
+		Validate.notNull(p, "Player can't be null");
 
 		int pingInt = 0;
 		try {

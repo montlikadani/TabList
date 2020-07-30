@@ -8,9 +8,9 @@ softdepend:
 - Essentials
 - Vault
 - SuperVanish
-- RageMode
 - Multiverse-Core # Load this plugin before tablist to prevent issues
 - ProtocolLib
+- PermissionsEx
 - CMI
 api-version: 1.13
 # DO NOT EDIT ANYTHING ABOVE THIS LINE!

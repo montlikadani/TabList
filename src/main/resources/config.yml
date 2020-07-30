@@ -108,7 +108,7 @@ placeholder-format:
 # Enable changing of prefix & suffix in player list?
 # This option generates the groups.yml file.
 change-prefix-suffix-in-tablist:
-  enable: false
+  enable: true
 
   # Refresh interval in seconds, if using animation then it counts in ticks.
   # Set to 0 if you don't want to refresh the groups.

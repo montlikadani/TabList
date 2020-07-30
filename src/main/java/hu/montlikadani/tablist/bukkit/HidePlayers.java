@@ -11,7 +11,6 @@ import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 
 public class HidePlayers {
 
-	private Object playerConst;
 	private Class<?> enumPlayerInfoAction;
 	private Object entityPlayerArray;
 
@@ -26,9 +25,7 @@ public class HidePlayers {
 	}
 
 	public void addPlayerToTab() {
-		for (Player pl : Bukkit.getOnlinePlayers()) {
-			addPlayerToTab(pl);
-		}
+		Bukkit.getOnlinePlayers().forEach(this::addPlayerToTab);
 	}
 
 	public void removePlayerFromTab() {
@@ -58,10 +55,11 @@ public class HidePlayers {
 	private void r(Player p, Player to) {
 		try {
 			GameProfile profile = new GameProfile(p.getUniqueId(), p.getName());
-			playerConst = ReflectionUtils.Classes.getPlayerContructor(p, profile);
+			Object playerConst = ReflectionUtils.Classes.getPlayerContructor(p, profile);
 			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
 
-			ReflectionUtils.setField(playerConst, "listName", ReflectionUtils.getAsIChatBaseComponent(profile.getName()));
+			ReflectionUtils.setField(playerConst, "listName",
+					ReflectionUtils.getAsIChatBaseComponent(profile.getName()));
 
 			entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
 			Array.set(entityPlayerArray, 0, playerConst);

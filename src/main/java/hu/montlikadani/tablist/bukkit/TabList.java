@@ -53,6 +53,7 @@ public class TabList extends JavaPlugin {
 	private TabNameHandler tabNameHandler;
 
 	private boolean isSpigot = false;
+	private boolean isUsingOldPapi = false;
 	private int tabRefreshTime = 0;
 
 	private final Set<AnimCreator> animations = new HashSet<>();
@@ -88,8 +89,13 @@ public class TabList extends JavaPlugin {
 			loadValues();
 
 			if (ConfigValues.isPlaceholderAPI() && isPluginEnabled("PlaceholderAPI")) {
-				logConsole("Hooked PlaceholderAPI version: "
-						+ me.clip.placeholderapi.PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
+				String version = me.clip.placeholderapi.PlaceholderAPIPlugin.getInstance().getDescription()
+						.getVersion();
+				if (Integer.parseInt(version.replaceAll("[^\\d]", "")) < 2107) {
+					isUsingOldPapi = true;
+				}
+
+				logConsole("Hooked PlaceholderAPI version: " + version + (isUsingOldPapi ? " (oldest)" : ""));
 			}
 
 			if (isPluginEnabled("Vault")) {
@@ -121,7 +127,18 @@ public class TabList extends JavaPlugin {
 				metrics.addCustomChart(
 						new Metrics.SimplePie("enable_tabname", () -> String.valueOf(ConfigValues.isTabNameEnabled())));
 				if (ConfigValues.isTablistObjectiveEnabled()) {
-					metrics.addCustomChart(new Metrics.SimplePie("object_type", () -> ConfigValues.getObjectType()));
+					metrics.addCustomChart(new Metrics.SimplePie("object_type", () -> {
+						switch (ConfigValues.getObjectType()) {
+						case "ping":
+							return "ping";
+						case "health":
+							return "health";
+						case "custom":
+							return "custom";
+						default:
+							return "";
+						}
+					}));
 				}
 				metrics.addCustomChart(new Metrics.SimplePie("enable_fake_players",
 						() -> String.valueOf(ConfigValues.isFakePlayers())));
@@ -399,6 +416,10 @@ public class TabList extends JavaPlugin {
 
 	public boolean isSpigot() {
 		return isSpigot;
+	}
+
+	public boolean isUsingOldPapi() {
+		return isUsingOldPapi;
 	}
 
 	public Variables getPlaceholders() {

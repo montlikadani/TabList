@@ -13,14 +13,25 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 
+	<build>
+		<pluginManagement>
+			<plugins>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
+	</build>
+
 	<repositories>
 		<repository>
 			<id>spigot-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-		</repository>
-		<repository>
-			<id>papermc</id>
-			<url>https://papermc.io/repo/repository/maven-public/</url>
 		</repository>
 		<repository>
 			<id>ess-repo</id>
@@ -33,10 +44,6 @@
 		<repository>
 			<id>bungeecord-repo</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
-		<repository>
-			<id>cubekrowd-repo</id>
-			<url>https://mavenrepo.cubekrowd.net/artifactory/repo/</url>
 		</repository>
 		<repository>
 			<id>codemc-repo</id>
@@ -75,29 +82,23 @@
 			<version>1.16.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- Paper is using cubekrowd-repo instead of own...
-		<dependency>
-			<groupId>com.destroystokyo.paper</groupId>
-			<artifactId>paper-api</artifactId>
-			<version>1.13.2-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>-->
+		<!-- BungeeCord -->
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-proxy</artifactId>
-			<version>1.16-R0.1-SNAPSHOT</version>
+			<version>1.16-R0.4-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-api</artifactId>
-			<version>1.16-R0.1-SNAPSHOT</version>
+			<version>1.16-R0.4-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>net.ess3</groupId>
 			<artifactId>EssentialsX</artifactId>
-			<version>2.17.2</version>
+			<version>2.18.0</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -132,13 +133,23 @@
 					<groupId>io.papermc</groupId>
 					<artifactId>paperlib</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>1_8Provider</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
-			<version>2.10.6</version>
+			<version>2.10.7</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>me.rayzr522</groupId>
+					<artifactId>jsonmessage</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.github.MilkBowl</groupId>
@@ -157,9 +168,9 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>de.myzelyam</groupId>
+			<groupId>com.github.MyzelYam</groupId>
 			<artifactId>SuperVanish</artifactId>
-			<version>6.1.3</version>
+			<version>master-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- New PEX -->
