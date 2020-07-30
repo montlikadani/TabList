@@ -239,4 +239,4 @@ download-updates: true
 logconsole: true
 
 # DO NOT CHANGE THIS!
-config-version: 20
+config-version: 21
