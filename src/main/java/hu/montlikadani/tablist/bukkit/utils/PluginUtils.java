@@ -16,12 +16,14 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class PluginUtils {
 
+	private static TabList plugin = TabList.getInstance();
+
 	public static boolean isAfk(Player p) {
-		if (TabList.getInstance().isPluginEnabled("Essentials")) {
+		if (plugin.isPluginEnabled("Essentials")) {
 			return JavaPlugin.getPlugin(Essentials.class).getUser(p).isAfk();
 		}
 
-		if (TabList.getInstance().isPluginEnabled("CMI")) {
+		if (plugin.isPluginEnabled("CMI")) {
 			CMIUser user = CMI.getInstance().getPlayerManager().getUser(p);
 			return user != null && user.isVanished();
 		}
@@ -30,15 +32,15 @@ public class PluginUtils {
 	}
 
 	public static boolean isVanished(Player p) {
-		if (TabList.getInstance().isPluginEnabled("SuperVanish")) {
+		if (plugin.isPluginEnabled("SuperVanish")) {
 			return VanishAPI.isInvisible(p);
 		}
 
-		if (TabList.getInstance().isPluginEnabled("Essentials")) {
+		if (plugin.isPluginEnabled("Essentials")) {
 			return JavaPlugin.getPlugin(Essentials.class).getUser(p).isVanished();
 		}
 
-		if (TabList.getInstance().isPluginEnabled("CMI")) {
+		if (plugin.isPluginEnabled("CMI")) {
 			CMIUser user = CMI.getInstance().getPlayerManager().getUser(p);
 			return user != null && user.isAfk();
 		}
@@ -53,17 +55,17 @@ public class PluginUtils {
 			return plSize;
 		}
 
-		if (TabList.getInstance().isPluginEnabled("SuperVanish")) {
+		if (plugin.isPluginEnabled("SuperVanish")) {
 			return VanishAPI.getInvisiblePlayers().isEmpty() ? plSize : plSize - VanishAPI.getInvisiblePlayers().size();
 		}
 
-		if (TabList.getInstance().isPluginEnabled("Essentials")) {
+		if (plugin.isPluginEnabled("Essentials")) {
 			Essentials ess = JavaPlugin.getPlugin(Essentials.class);
 			return ess.getVanishedPlayers().isEmpty() ? ess.getOnlinePlayers().size()
 					: ess.getOnlinePlayers().size() - ess.getVanishedPlayers().size();
 		}
 
-		if (TabList.getInstance().isPluginEnabled("CMI") && CMI.getInstance() != null) {
+		if (plugin.isPluginEnabled("CMI") && CMI.getInstance() != null) {
 			CMI cmi = CMI.getInstance();
 			return cmi.getVanishManager().getAllVanished().isEmpty() ? plSize
 					: plSize - cmi.getVanishManager().getAllVanished().size();
@@ -73,15 +75,15 @@ public class PluginUtils {
 	}
 
 	public static int getVanishedPlayers() {
-		if (TabList.getInstance().isPluginEnabled("Essentials")) {
+		if (plugin.isPluginEnabled("Essentials")) {
 			return JavaPlugin.getPlugin(Essentials.class).getVanishedPlayers().size();
 		}
 
-		if (TabList.getInstance().isPluginEnabled("SuperVanish")) {
+		if (plugin.isPluginEnabled("SuperVanish")) {
 			return VanishAPI.getInvisiblePlayers().size();
 		}
 
-		if (TabList.getInstance().isPluginEnabled("CMI") && CMI.getInstance() != null) {
+		if (plugin.isPluginEnabled("CMI") && CMI.getInstance() != null) {
 			return CMI.getInstance().getVanishManager().getAllVanished().size();
 		}
 
@@ -89,11 +91,11 @@ public class PluginUtils {
 	}
 
 	public static String getNickName(Player player) {
-		if (TabList.getInstance().isPluginEnabled("Essentials")) {
+		if (plugin.isPluginEnabled("Essentials")) {
 			return JavaPlugin.getPlugin(Essentials.class).getUser(player).getNickname();
 		}
 
-		if (TabList.getInstance().isPluginEnabled("CMI") && CMI.getInstance() != null) {
+		if (plugin.isPluginEnabled("CMI") && CMI.getInstance() != null) {
 			return CMI.getInstance().getNickNameManager().getNickNameFormat();
 		}
 
@@ -104,7 +106,7 @@ public class PluginUtils {
 		if (perm.isEmpty())
 			return false;
 
-		if (TabList.getInstance().isPluginEnabled("PermissionsEx")) {
+		if (plugin.isPluginEnabled("PermissionsEx")) {
 			try {
 				return PermissionsEx.getPermissionManager().has(player, perm);
 			} catch (Exception e) {

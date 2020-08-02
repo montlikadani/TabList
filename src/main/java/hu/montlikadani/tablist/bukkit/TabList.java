@@ -156,7 +156,6 @@ public class TabList extends JavaPlugin {
 			logConsole(Level.WARNING,
 					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues",
 					false);
-			instance = null;
 		}
 	}
 
