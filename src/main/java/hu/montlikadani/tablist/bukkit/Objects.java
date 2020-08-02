@@ -1,6 +1,7 @@
 package hu.montlikadani.tablist.bukkit;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -46,7 +47,7 @@ public class Objects {
 		// TODO Fix not show correctly the health when reload
 
 		org.bukkit.scoreboard.Scoreboard board = pl.getScoreboard();
-		Objective objective = getHealthObject(pl);
+		Objective objective = getHealthObject(pl).orElse(null);
 		if (objective == null) {
 			String dName = ChatColor.RED + "\u2665";
 			if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
@@ -88,29 +89,29 @@ public class Objects {
 					continue;
 				}
 
-				Objective obj = null;
+				Optional<Objective> obj = Optional.empty();
 				int score = 0;
 
 				if (type.equals("ping")) {
 					obj = getPingObject(player);
-					if (obj == null) {
-						obj = player.getScoreboard().registerNewObjective("PingTab", "dummy");
+					if (!obj.isPresent()) {
+						obj = Optional.ofNullable(player.getScoreboard().registerNewObjective("PingTab", "dummy"));
 					}
 
-					if (obj == null) {
+					if (!obj.isPresent()) {
 						continue;
 					}
 
-					obj.setDisplayName("ms");
+					obj.get().setDisplayName("ms");
 
 					score = TabListAPI.getPing(player);
 				} else if (type.equals("custom")) {
 					obj = getCustomObject(player);
-					if (obj == null) {
-						obj = player.getScoreboard().registerNewObjective("customObj", "dummy");
+					if (!obj.isPresent()) {
+						obj = Optional.ofNullable(player.getScoreboard().registerNewObjective("customObj", "dummy"));
 					}
 
-					if (obj == null) {
+					if (!obj.isPresent()) {
 						continue;
 					}
 
@@ -125,20 +126,20 @@ public class Objects {
 					}
 				}
 
-				if (obj != null) {
-					obj.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+				if (obj.isPresent()) {
+					Objective object = obj.get();
+					object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 
 					if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
-						obj.setRenderType(RenderType.INTEGER);
+						object.setRenderType(RenderType.INTEGER);
 					}
 
-					if (obj.getScore(player.getName()).getScore() != score) {
+					final int s = score;
+					if (object.getScore(player.getName()).getScore() != s) {
 						for (Player p : Bukkit.getOnlinePlayers()) {
-							Objective object = type.equals("custom") ? getCustomObject(p)
-									: (type.equals("ping") ? getPingObject(p) : null);
-							if (object != null) {
-								object.getScore(player.getName()).setScore(score);
-							}
+							(type.equals("custom") ? getCustomObject(p)
+									: (type.equals("ping") ? getPingObject(p) : Optional.empty()))
+											.ifPresent(o -> ((Objective) o).getScore(player.getName()).setScore(s));
 						}
 					}
 				}
@@ -160,28 +161,20 @@ public class Objects {
 
 	public void unregisterPingTab() {
 		Bukkit.getOnlinePlayers().forEach(this::unregisterPingTab);
-
 		cancelTask();
 	}
 
 	public void unregisterPingTab(Player p) {
-		Objective obj = getPingObject(p);
-		if (obj != null) {
-			obj.unregister();
-		}
+		getPingObject(p).ifPresent(Objective::unregister);
 	}
 
 	public void unregisterCustomValue() {
 		Bukkit.getOnlinePlayers().forEach(this::unregisterCustomValue);
-
 		cancelTask();
 	}
 
 	public void unregisterCustomValue(Player p) {
-		Objective obj = getCustomObject(p);
-		if (obj != null) {
-			obj.unregister();
-		}
+		getCustomObject(p).ifPresent(Objective::unregister);
 	}
 
 	public void unregisterHealthObjective() {
@@ -189,20 +182,18 @@ public class Objects {
 	}
 
 	public void unregisterHealthObjective(Player player) {
-		if (getHealthObject(player) != null) {
-			getHealthObject(player).unregister();
-		}
+		getHealthObject(player).ifPresent(Objective::unregister);
 	}
 
-	public Objective getHealthObject(Player p) {
-		return p.getScoreboard().getObjective("showhealth");
+	public Optional<Objective> getHealthObject(Player p) {
+		return Optional.ofNullable(p.getScoreboard().getObjective("showhealth"));
 	}
 
-	public Objective getPingObject(Player p) {
-		return p.getScoreboard().getObjective("PingTab");
+	public Optional<Objective> getPingObject(Player p) {
+		return Optional.ofNullable(p.getScoreboard().getObjective("PingTab"));
 	}
 
-	public Objective getCustomObject(Player p) {
-		return p.getScoreboard().getObjective("customObj");
+	public Optional<Objective> getCustomObject(Player p) {
+		return Optional.ofNullable(p.getScoreboard().getObjective("customObj"));
 	}
 }

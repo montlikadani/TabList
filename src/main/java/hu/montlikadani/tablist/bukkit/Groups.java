@@ -123,7 +123,7 @@ public class Groups {
 		startTask();
 	}
 
-	public void loadGroupForPlayer(final Player p) {
+	public void loadGroupForPlayer(Player p) {
 		removePlayerGroup(p);
 		startTask();
 	}
