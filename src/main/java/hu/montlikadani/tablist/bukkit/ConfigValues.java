@@ -78,8 +78,7 @@ public class ConfigValues {
 		mediumTpsColor = c.getString("placeholder-format.tps.medium-tps.color", "&6");
 		badTpsColor = c.getString("placeholder-format.tps.bad-ping", "&c");
 		objectType = c.getString("tablist-object-type.type", "ping");
-		customObjectSetting = c.getString("object-settings.custom.value",
-				c.getString("object-settings.custom.custom-value", "%level%"));
+		customObjectSetting = c.getString("tablist-object-type.object-settings.custom.value", "%level%");
 		defaultTabNameColor = c.getString("tabname.default-color.color", "&6");
 
 		goodPingAmount = c.getInt("placeholder-format.ping.good-ping.amount", 200);
