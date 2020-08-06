@@ -155,12 +155,9 @@ public class Variables {
 
 	@SuppressWarnings("deprecation")
 	public String setPlaceholders(Player p, String s) {
-		if (ConfigValues.isPlaceholderAPI() && plugin.isPluginEnabled("PlaceholderAPI")) {
-			if (plugin.isUsingOldPapi() && PlaceholderAPI.containsPlaceholders(s)) {
-				s = PlaceholderAPI.setPlaceholders(p, s);
-			} else {
-				s = PlaceholderAPI.setPlaceholders((org.bukkit.OfflinePlayer) p, s);
-			}
+		if (ConfigValues.isPlaceholderAPI() && plugin.isPluginEnabled("PlaceholderAPI")
+				&& PlaceholderAPI.containsPlaceholders(s)) {
+			s = PlaceholderAPI.setPlaceholders(p, s);
 		}
 
 		if (s.contains("%player%")) {

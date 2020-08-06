@@ -40,6 +40,10 @@ public class HidePlayers {
 	}
 
 	public void addPlayerToTab(Player to) {
+		if (enumPlayerInfoAction == null || entityPlayerArray == null) {
+			return;
+		}
+
 		try {
 			Object packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
 					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(ReflectionUtils

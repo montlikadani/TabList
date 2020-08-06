@@ -23,7 +23,6 @@ import hu.montlikadani.tablist.AnimCreator;
 import hu.montlikadani.tablist.bukkit.commands.Commands;
 import hu.montlikadani.tablist.bukkit.commands.TabNameCmd;
 import hu.montlikadani.tablist.bukkit.listeners.Listeners;
-import hu.montlikadani.tablist.bukkit.listeners.SpectatorVisible;
 import hu.montlikadani.tablist.bukkit.listeners.plugins.CMIAfkStatus;
 import hu.montlikadani.tablist.bukkit.listeners.plugins.EssAfkStatus;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
@@ -89,13 +88,8 @@ public class TabList extends JavaPlugin {
 			loadValues();
 
 			if (ConfigValues.isPlaceholderAPI() && isPluginEnabled("PlaceholderAPI")) {
-				String version = me.clip.placeholderapi.PlaceholderAPIPlugin.getInstance().getDescription()
-						.getVersion();
-				if (Integer.parseInt(version.replaceAll("[^\\d]", "")) < 2107) {
-					isUsingOldPapi = true;
-				}
-
-				logConsole("Hooked PlaceholderAPI version: " + version + (isUsingOldPapi ? " (oldest)" : ""));
+				logConsole("Hooked PlaceholderAPI version: "
+						+ me.clip.placeholderapi.PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
 			}
 
 			if (isPluginEnabled("Vault")) {
@@ -226,7 +220,7 @@ public class TabList extends JavaPlugin {
 		}
 
 		if (isPluginEnabled("ProtocolLib")) {
-			new SpectatorVisible().onSpectatorChange();
+			ProtocolPackets.onSpectatorChange();
 		}
 	}
 
@@ -373,7 +367,7 @@ public class TabList extends JavaPlugin {
 	}
 
 	void addBackAllHiddenPlayers() {
-		hidePlayers.entrySet().forEach(e -> e.getValue().addPlayerToTab());
+		hidePlayers.values().forEach(HidePlayers::addPlayerToTab);
 		hidePlayers.clear();
 	}
 

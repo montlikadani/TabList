@@ -38,6 +38,7 @@ hide-player-from-tab-when-afk: false
 # group set is retained as it is not changed during removal, so your group
 # will be restored if this option is disabled.
 # The "per-world-player-list" will not work if this is enabled.
+# Requires ProtocolLib to fix view distance issue! (https://github.com/montlikadani/TabList/issues/147)
 hide-players-from-tablist: false
 
 # Placeholders formatting
