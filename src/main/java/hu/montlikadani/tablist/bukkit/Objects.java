@@ -13,6 +13,7 @@ import org.bukkit.scoreboard.RenderType;
 
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.utils.Util;
+import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class Objects {
@@ -40,7 +41,7 @@ public class Objects {
 			return;
 		}
 
-		if (plugin.isHookPreventTask(pl)) {
+		if (PluginUtils.isInGame(pl)) {
 			return;
 		}
 
@@ -85,7 +86,7 @@ public class Objects {
 					continue;
 				}
 
-				if (plugin.isHookPreventTask(player)) {
+				if (PluginUtils.isInGame(player)) {
 					continue;
 				}
 

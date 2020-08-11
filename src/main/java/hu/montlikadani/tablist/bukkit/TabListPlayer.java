@@ -117,6 +117,15 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				}
 			} else {
 				for (final TeamHandler team : groupsList) {
+					if (team.isGlobal()) {
+						if (group != team) {
+							update = true;
+							group = team;
+						}
+
+						break;
+					}
+
 					String name = team.getTeam();
 					String perm = team.getPermission();
 
@@ -178,7 +187,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			}
 		}
 
-		if (plugin.isHookPreventTask(player)) {
+		if (PluginUtils.isInGame(player)) {
 			return false;
 		}
 
@@ -212,7 +221,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				plugin.makeAnim(customSuffix == null ? group == null ? "" : group.getSuffix() : customSuffix));
 
 		if (ConfigValues.isAfkStatusEnabled() && ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			suffix = suffix + colorMsg(plugin.getC().getString(
+			suffix += colorMsg(plugin.getC().getString(
 					"placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), ""));
 		}
 

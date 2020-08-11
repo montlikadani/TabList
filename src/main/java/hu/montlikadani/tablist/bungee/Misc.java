@@ -52,7 +52,7 @@ public class Misc {
 
 		if (conf.contains("custom-variables")) {
 			for (String custom : conf.getSection("custom-variables").getKeys()) {
-				if (custom != null && str.contains(custom)) {
+				if (str.contains(custom)) {
 					str = str.replace(custom, conf.getString("custom-variables." + custom));
 				}
 			}

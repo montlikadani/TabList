@@ -42,8 +42,7 @@ public class Groups {
 	}
 
 	public TeamHandler getTeam(String name) {
-		Validate.notNull(name, "The team name can't be null!");
-		Validate.notEmpty(name, "The team name can't be empty!");
+		Validate.notEmpty(name, "The team name can't be empty/null");
 
 		for (TeamHandler handler : groupsList) {
 			if (handler.getTeam().equalsIgnoreCase(name)) {
@@ -63,6 +62,20 @@ public class Groups {
 
 		plugin.getConf().createGroupsFile();
 
+		String globPrefix = plugin.getGS().getString("globalGroup.prefix", "");
+		String globSuffix = plugin.getGS().getString("globalGroup.suffix", "");
+		if (!globPrefix.isEmpty() || !globSuffix.isEmpty()) {
+			TeamHandler team = new TeamHandler("global", globPrefix, globSuffix);
+			team.setGlobal(true);
+			groupsList.add(team);
+			startTask();
+			return;
+		}
+
+		if (!plugin.getGS().isConfigurationSection("groups")) {
+			return;
+		}
+
 		// Automatically add existing groups to the list for "lazy peoples"
 		if (ConfigValues.isSyncPluginsGroups() && plugin.isPluginEnabled("Vault")) {
 			boolean have = false;
@@ -80,14 +93,11 @@ public class Groups {
 				ChatColor[] colors = ChatColor.values();
 				ChatColor c = colors[ThreadLocalRandom.current().nextInt(colors.length)];
 
-				String cResult = "&" + c.getChar();
-				plugin.getGS().set(path + "prefix", cResult);
+				plugin.getGS().set(path + "prefix", "&" + c.getChar());
 
 				c = colors[ThreadLocalRandom.current().nextInt(colors.length)];
 
-				cResult = "&" + c.getChar();
-				plugin.getGS().set(path + "suffix", cResult);
-
+				plugin.getGS().set(path + "suffix", "&" + c.getChar());
 				have = true;
 			}
 
@@ -100,24 +110,20 @@ public class Groups {
 			}
 		}
 
-		if (plugin.getGS().contains("groups")) {
-			int last = 0;
-
-			for (String g : plugin.getGS().getConfigurationSection("groups").getKeys(false)) {
-				if (g.equalsIgnoreCase("exampleGroup")) {
-					continue;
-				}
-
-				String path = "groups." + g + ".",
-						prefix = plugin.getGS().getString(path + "prefix", ""),
-						suffix = plugin.getGS().getString(path + "suffix", ""),
-						perm = plugin.getGS().getString(path + "permission", "");
-				int priority = plugin.getGS().getInt(path + "sort-priority", last + 1);
-
-				groupsList.add(new TeamHandler(g, prefix, suffix, perm, priority));
-
-				last = priority;
+		int last = 0;
+		for (String g : plugin.getGS().getConfigurationSection("groups").getKeys(false)) {
+			if (g.equalsIgnoreCase("exampleGroup")) {
+				continue;
 			}
+
+			String path = "groups." + g + ".", prefix = plugin.getGS().getString(path + "prefix", ""),
+					suffix = plugin.getGS().getString(path + "suffix", ""),
+					perm = plugin.getGS().getString(path + "permission", "");
+			int priority = plugin.getGS().getInt(path + "sort-priority", last + 1);
+
+			groupsList.add(new TeamHandler(g, prefix, suffix, perm, priority));
+
+			last = priority;
 		}
 
 		startTask();
@@ -143,7 +149,7 @@ public class Groups {
 			team = tboard.registerNewTeam(name);
 		}
 
-		NMS.addEntry(player, team);
+		//NMS.addEntry(player, team);
 
 		player.setPlayerListName(prefix + playerName + suffix);
 		player.setScoreboard(tboard);
@@ -203,17 +209,7 @@ public class Groups {
 	}
 
 	public void removeGroup(String teamName) {
-		TeamHandler th = null;
-
-		// We using "simply for loop" because Iterator breaks in some cases
-		for (TeamHandler team : groupsList) {
-			// Use contains because of priority numbers
-			if (team.getTeam().contains(teamName)) {
-				th = team;
-				break;
-			}
-		}
-
+		TeamHandler th = getTeam(teamName);
 		if (th != null) {
 			groupsList.remove(th);
 		}

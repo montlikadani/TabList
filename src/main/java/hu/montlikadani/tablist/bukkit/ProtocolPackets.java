@@ -28,7 +28,7 @@ public class ProtocolPackets extends PacketAdapter {
 		}
 	}
 
-	public ProtocolPackets() {
+	ProtocolPackets() {
 		super(TabList.getInstance(), PacketType.Play.Server.PLAYER_INFO);
 	}
 
@@ -41,9 +41,9 @@ public class ProtocolPackets extends PacketAdapter {
 		try {
 			Object packetPlayOutPlayerInfo = event.getPacket().getHandle();
 			Class<?> enumPlayerInfoAction = null;
-			if (Version.isCurrentLower(Version.v1_9_R1)) {
+			if (Version.isCurrentEqual(Version.v1_8_R1)) {
 				enumPlayerInfoAction = ReflectionUtils.getNMSClass("EnumPlayerInfoAction");
-			} else {
+			} else if (Version.isCurrentEqualOrHigher(Version.v1_11_R1)) {
 				enumPlayerInfoAction = packetPlayOutPlayerInfo.getClass().getDeclaredClasses()[1];
 			}
 
@@ -89,8 +89,8 @@ public class ProtocolPackets extends PacketAdapter {
 		@Override
 		public void onPacketSending(PacketEvent event) {
 			for (org.bukkit.entity.Player pl : org.bukkit.Bukkit.getOnlinePlayers()) {
-				HidePlayers hp = TabList.getInstance().getHidePlayers().get(pl);
-				if (hp != null) {
+				if (TabList.getInstance().getHidePlayers().containsKey(pl)) {
+					HidePlayers hp = TabList.getInstance().getHidePlayers().get(pl);
 					hp.addPlayerToTab(pl);
 					hp.addPlayerToTab(event.getPlayer());
 					hp.removePlayerFromTab(event.getPlayer(), pl);

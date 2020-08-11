@@ -74,7 +74,7 @@ public class TabHandler implements ITabHandler {
 
 		if (c.getStringList("disabled-worlds").contains(world) || c.getStringList("blacklisted-players").contains(pName)
 				|| (TabManager.TABENABLED.containsKey(uuid) && TabManager.TABENABLED.get(uuid))
-				|| plugin.isHookPreventTask(player)) {
+				|| PluginUtils.isInGame(player)) {
 			return;
 		}
 
@@ -213,7 +213,7 @@ public class TabHandler implements ITabHandler {
 			}
 
 			if (c.getStringList("disabled-worlds").contains(world)
-					|| c.getStringList("blacklisted-players").contains(pName) || plugin.isHookPreventTask(player)
+					|| c.getStringList("blacklisted-players").contains(pName) || PluginUtils.isInGame(player)
 					|| (TabManager.TABENABLED.containsKey(uuid) && TabManager.TABENABLED.get(uuid))) {
 				unregisterTab();
 				return;

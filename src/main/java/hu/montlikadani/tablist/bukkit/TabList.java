@@ -18,7 +18,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import hu.montlikadani.ragemode.gameUtils.GameUtils;
 import hu.montlikadani.tablist.AnimCreator;
 import hu.montlikadani.tablist.bukkit.commands.Commands;
 import hu.montlikadani.tablist.bukkit.commands.TabNameCmd;
@@ -487,15 +486,6 @@ public class TabList extends JavaPlugin {
 	public boolean isPluginEnabled(String name) {
 		return getServer().getPluginManager().getPlugin(name) != null
 				&& getServer().getPluginManager().isPluginEnabled(name);
-	}
-
-	public boolean isHookPreventTask(Player p) {
-		if (isPluginEnabled("RageMode") && ConfigValues.isRagemodeHook() && GameUtils.isPlayerPlaying(p)
-				&& GameUtils.getGameByPlayer(p).isGameRunning()) {
-			return true;
-		}
-
-		return false;
 	}
 
 	public File getFolder() {

@@ -7,6 +7,8 @@ public class TeamHandler implements Cloneable {
 	private String suffix;
 	private String permission;
 
+	private boolean global = false;
+
 	private int priority;
 
 	public TeamHandler(String team, String prefix, String suffix) {
@@ -47,6 +49,14 @@ public class TeamHandler implements Cloneable {
 
 	public void setPriority(int priority) {
 		this.priority = priority;
+	}
+
+	public void setGlobal(boolean global) {
+		this.global = global;
+	}
+
+	public boolean isGlobal() {
+		return global;
 	}
 
 	public String getTeam() {

@@ -276,11 +276,6 @@ public class ConfigValues {
 		return tabNameEnabled;
 	}
 
-	@Deprecated
-	public static boolean isTabNameUseEssentialsNickName() {
-		return tabNameUsePluginNickName;
-	}
-
 	public static boolean isTabNameUsePluginNickName() {
 		return tabNameUsePluginNickName;
 	}

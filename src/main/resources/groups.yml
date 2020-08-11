@@ -1,3 +1,9 @@
+# Global group to display for all players
+# Leave it empty or remove it, if you don't want to use
+globalGroup:
+  prefix: ""
+  suffix: ""
+
 groups:
   # Group name, you can write anything in here.
   # If you use a player name instead, it will apply only for the player.
