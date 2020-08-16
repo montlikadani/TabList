@@ -25,5 +25,5 @@ jobs:
       run: mvn package --file pom.xml
     - uses: actions/upload-artifact@master
       with:
-        name: TabList
-        path: TabList.jar
+        name: ${{ env.name }}-name	
+        path: ${{ github.workspace }}/artifact/**/*
