@@ -1,0 +1,9 @@
+# IDE files
+*.classpath
+*.project
+*.settings/
+
+# Build files
+target/
+jars/
+out/
