@@ -64,8 +64,8 @@ public class PlayerGroup {
 	}
 
 	void sendPacket(ProxiedPlayer p, String name) {
-		if (listItem.getAction() != Action.UPDATE_DISPLAY_NAME) {
-			listItem.setAction(Action.UPDATE_DISPLAY_NAME);
+		if (!items.getUsername().equals(p.getName())) {
+			items.setUsername(p.getName());
 		}
 
 		if (!p.getUniqueId().equals(items.getUuid())) {
@@ -76,6 +76,10 @@ public class PlayerGroup {
 				ComponentSerializer.toString(TextComponent.fromLegacyText(Misc.replaceVariables(name, p))));
 
 		listItem.setItems(new Item[] { items });
+
+		if (listItem.getAction() != Action.UPDATE_DISPLAY_NAME) {
+			listItem.setAction(Action.UPDATE_DISPLAY_NAME);
+		}
 
 		for (ProxiedPlayer pl : TabList.getInstance().getProxy().getPlayers()) {
 			pl.unsafe().sendPacket(listItem);

@@ -2,6 +2,7 @@ package hu.montlikadani.tablist.bukkit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -168,9 +169,12 @@ public class Groups {
 		addToTabListPlayerList(tabPlayer);
 
 		int priority = 0;
-		for (TabListPlayer tlp : sortedTabListPlayers) {
+		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
+		while (it.hasNext()) {
+			TabListPlayer tlp = it.next();
 			String group = Integer.toString(100000 + priority)
 					+ (tlp.getGroup() == null ? tlp.getPlayer().getName() : tlp.getGroup().getTeam());
+
 			setPlayerTeam(tlp.getPlayer(), tlp.getPrefix(), tlp.getSuffix(), group, tlp.getPlayerName());
 			priority++;
 		}
@@ -284,9 +288,12 @@ public class Groups {
 		}
 
 		int priority = 0;
-		for (TabListPlayer tlp : sortedTabListPlayers) {
+		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
+		while (it.hasNext()) {
+			TabListPlayer tlp = it.next();
 			String group = Integer.toString(100000 + priority)
 					+ (tlp.getGroup() == null ? tlp.getPlayer().getName() : tlp.getGroup().getTeam());
+
 			setPlayerTeam(tlp.getPlayer(), tlp.getPrefix(), tlp.getSuffix(), group, tlp.getPlayerName());
 			priority++;
 		}
@@ -295,7 +302,9 @@ public class Groups {
 	private void addToTabListPlayerList(TabListPlayer tlp) {
 		int pos = 0;
 
-		for (TabListPlayer p : sortedTabListPlayers) {
+		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
+		while (it.hasNext()) {
+			TabListPlayer p = it.next();
 			if (tlp.compareTo(p) < 0)
 				break;
 

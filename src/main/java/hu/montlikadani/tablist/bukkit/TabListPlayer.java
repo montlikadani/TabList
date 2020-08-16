@@ -2,6 +2,7 @@ package hu.montlikadani.tablist.bukkit;
 
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -96,8 +97,8 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		}
 
 		List<TeamHandler> groupsList = plugin.getGroups().getGroupsList();
-		List<TeamHandler> playerNameGroups = groupsList.parallelStream()
-				.filter(group -> group.getTeam().equals(player.getName())).collect(Collectors.toList());
+		List<TeamHandler> playerNameGroups = groupsList.stream()
+				.filter(group -> group.getTeam().equalsIgnoreCase(player.getName())).collect(Collectors.toList());
 		if (playerNameGroups.size() > 0) { // can there be more than 1? probably doesn't matter
 			TeamHandler team = playerNameGroups.get(0);
 			if (group != team) {
@@ -107,9 +108,13 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		} else {
 			List<TeamHandler> playerPrimaryVaultGroups;
 			if (plugin.isPluginEnabled("Vault") && ConfigValues.isPreferPrimaryVaultGroup()
-					&& (playerPrimaryVaultGroups = groupsList.parallelStream()
-							.filter(group -> group.getTeam().equals(plugin.getVaultPerm().getPrimaryGroup(player)))
-							.collect(Collectors.toList())).size() > 0) { // can there be more than 1? probably doesn't matter
+					&& (playerPrimaryVaultGroups = groupsList.stream().filter(
+							group -> group.getTeam().equalsIgnoreCase(plugin.getVaultPerm().getPrimaryGroup(player)))
+							.collect(Collectors.toList())).size() > 0
+					|| (playerPrimaryVaultGroups = groupsList.stream()
+							.filter(group -> StringUtils.containsIgnoreCase(group.getTeam(),
+									plugin.getVaultPerm().getPrimaryGroup(player)))
+							.collect(Collectors.toList())).size() > 0) {
 				TeamHandler team = playerPrimaryVaultGroups.get(0);
 				if (group != team) {
 					update = true;

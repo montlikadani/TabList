@@ -131,13 +131,13 @@ public class Variables {
 			str = str.replace("%motd%", Bukkit.getServer().getMotd());
 
 		if (str.contains("%exp-to-level%"))
-			str = str.replace("%exp-to-level%", pl.getExpToLevel() + "");
+			str = str.replace("%exp-to-level%", Integer.toString(pl.getExpToLevel()));
 
 		if (str.contains("%level%"))
-			str = str.replace("%level%", pl.getLevel() + "");
+			str = str.replace("%level%", Integer.toString(pl.getLevel()));
 
 		if (str.contains("%xp%"))
-			str = str.replace("%xp%", pl.getExp() + "");
+			str = str.replace("%xp%", Float.toString(pl.getExp()));
 
 		if (str.contains("%tps%"))
 			str = str.replace("%tps%", tpsDot(TabListAPI.getTPS()));
@@ -181,13 +181,13 @@ public class Variables {
 		}
 
 		if (s.contains("%player-health%")) {
-			s = s.replace("%player-health%", String.valueOf(p.getHealth()));
+			s = s.replace("%player-health%", Double.toString(p.getHealth()));
 		}
 
 		if (s.contains("%player-max-health%")) {
 			s = s.replace("%player-max-health%",
-					Version.isCurrentLower(Version.v1_9_R1) ? String.valueOf(p.getMaxHealth())
-							: String.valueOf(p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue()));
+					Double.toString(Version.isCurrentLower(Version.v1_9_R1) ? p.getMaxHealth()
+							: p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue()));
 		}
 
 		return s;
