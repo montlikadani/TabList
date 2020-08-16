@@ -30,7 +30,7 @@ jobs:
     - name: Build with Maven
       run: mvn package --file pom.xml
     - name: Copy artifacts
-      run: mkdir -p ./out/ && cp -t ./out/ **/target/TabList*.jar
+      run: mkdir -p ./out/ && cp -t ./out/ ./target/TabList*.jar
     - uses: actions/upload-artifact@master
       with:
         name: Plugin
