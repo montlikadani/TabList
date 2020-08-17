@@ -191,21 +191,23 @@ public class TabListManager {
 			fo = plugin.makeAnim(fo);
 		}
 
+		final String resultHeader = he;
+		final String resultFooter = fo;
+
 		final Variables v = plugin.getVariables();
+
 		if (!worlds.isEmpty()) {
 			for (String l : worlds) {
-				if (Sponge.getServer().getWorld(l).isPresent()) {
-					for (Player player : Sponge.getServer().getWorld(l).get().getPlayers()) {
-						sendTabList(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
+				Sponge.getServer().getWorld(l).ifPresent(w -> {
+					for (Player player : w.getPlayers()) {
+						sendTabList(player, v.replaceVariables(player, resultHeader),
+								v.replaceVariables(player, resultFooter));
 					}
-				}
+				});
 			}
 
 			return;
 		}
-
-		final String resultHeader = he;
-		final String resultFooter = fo;
 
 		Sponge.getServer().getPlayer(playerUUID).ifPresent(
 				p -> sendTabList(p, v.replaceVariables(p, resultHeader), v.replaceVariables(p, resultFooter)));

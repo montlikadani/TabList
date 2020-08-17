@@ -37,12 +37,12 @@ public class TabPlayer implements Comparable<TabPlayer> {
 
 		Optional<Player> p = Sponge.getServer().getPlayer(playerUUID);
 		if (!p.isPresent()) {
-			return false;
+			return update;
 		}
 
 		Set<TabGroup> groupsList = TabList.get().getGroupsList();
-		List<TabGroup> playerNameGroups = groupsList.parallelStream()
-				.filter(group -> group.getGroupName().equals(p.get().getName())).collect(Collectors.toList());
+		List<TabGroup> playerNameGroups = groupsList.stream()
+				.filter(group -> group.getGroupName().equalsIgnoreCase(p.get().getName())).collect(Collectors.toList());
 		if (!playerNameGroups.isEmpty()) {
 			TabGroup group = playerNameGroups.get(0);
 			if (this.group != group) {

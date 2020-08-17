@@ -29,6 +29,7 @@ public class Variables {
 			address = p.getConnection().getAddress().getAddress().toString();
 			address = address.replaceAll("/", "");
 		}
+
 		DecimalFormat tpsformat = new DecimalFormat("#0.00");
 		if (str.contains("%tps%")) {
 			str = str.replace("%tps%", tpsformat.format(Sponge.getServer().getTicksPerSecond()));

@@ -53,15 +53,15 @@ public class TabGroup implements Cloneable {
 	}
 
 	public void setPrefix(String prefix) {
-		this.prefix = prefix;
+		this.prefix = prefix == null ? "" : prefix;
 	}
 
 	public void setSuffix(String suffix) {
-		this.suffix = suffix;
+		this.suffix = suffix == null ? "" : suffix;
 	}
 
 	public void setPermission(String permission) {
-		this.permission = permission;
+		this.permission = permission == null ? "" : permission;
 	}
 
 	public void setPriority(int priority) {
