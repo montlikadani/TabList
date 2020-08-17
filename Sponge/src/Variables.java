@@ -31,7 +31,7 @@ public class Variables {
 		}
 		DecimalFormat tpsformat = new DecimalFormat("#0.00");
 		if (str.contains("%tps%")) {
-			str = str.replace("%tps%", String.valueOf(tpsformat.format(Sponge.getServer().getTicksPerSecond())));
+			str = str.replace("%tps%", tpsformat.format(Sponge.getServer().getTicksPerSecond()));
 		}
 
 		String t = null, dt = null;
