@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.sponge;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -27,6 +28,10 @@ public class Variables {
 		if (str.contains("%ip-address%")) {
 			address = p.getConnection().getAddress().getAddress().toString();
 			address = address.replaceAll("/", "");
+		}
+		DecimalFormat tpsformat = new DecimalFormat("#0.00");
+		if (str.contains("%tps%")) {
+			str = str.replace("%tps%", tpsformat.format(Sponge.getServer().getTicksPerSecond()));
 		}
 
 		String t = null, dt = null;
@@ -140,6 +145,7 @@ public class Variables {
 
 		return ret.toString();
 	}
+
 
 	public String setSymbols(String s) {
 		s = s.replace("<0>", "•");
