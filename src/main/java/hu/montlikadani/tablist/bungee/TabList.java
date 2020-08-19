@@ -209,13 +209,8 @@ public class TabList extends Plugin implements Listener {
 	 */
 	@EventHandler
 	public void onLogin(PostLoginEvent e) {
-		if (tab.getTask() == null) {
-			tab.start();
-		}
-
-		if (groups.getTask() == null) {
-			groups.start();
-		}
+		tab.start();
+		groups.start();
 
 		tab.addPlayer(e.getPlayer());
 		groups.addPlayer(e.getPlayer());
@@ -235,18 +230,11 @@ public class TabList extends Plugin implements Listener {
 
 	@EventHandler
 	public void onServerSwitch(net.md_5.bungee.api.event.ServerSwitchEvent event) {
-		getProxy().getScheduler().schedule(this, () -> {
-			if (tab.getTask() == null) {
-				tab.start();
-			}
+		tab.addPlayer(event.getPlayer());
+		groups.addPlayer(event.getPlayer());
 
-			if (groups.getTask() == null) {
-				groups.start();
-			}
-
-			tab.addPlayer(event.getPlayer());
-			groups.addPlayer(event.getPlayer());
-		}, 1, java.util.concurrent.TimeUnit.SECONDS);
+		tab.start();
+		groups.start();
 	}
 
 	/**

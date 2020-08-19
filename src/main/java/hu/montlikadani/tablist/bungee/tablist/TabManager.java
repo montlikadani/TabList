@@ -37,7 +37,7 @@ public class TabManager implements ITask {
 	}
 
 	public void addPlayer(ProxiedPlayer player) {
-		if (getPlayerTab(player).isPresent()) {
+		if (!plugin.getConf().getBoolean("tablist.enable", false) || getPlayerTab(player).isPresent()) {
 			return;
 		}
 
@@ -51,15 +51,17 @@ public class TabManager implements ITask {
 	}
 
 	public Optional<PlayerTab> getPlayerTab(ProxiedPlayer player) {
-		return Optional
-				.ofNullable(playerTabs.stream().filter(g -> g.getPlayer().equals(player)).findFirst().orElse(null));
+		return playerTabs.stream().filter(g -> g.getPlayer().equals(player)).findFirst();
 	}
 
 	@Override
 	public void start() {
-		cancel();
-
 		if (!plugin.getConf().getBoolean("tablist.enable", false) || plugin.getProxy().getPlayers().isEmpty()) {
+			cancel();
+			return;
+		}
+
+		if (task != null) {
 			return;
 		}
 
@@ -77,7 +79,7 @@ public class TabManager implements ITask {
 				t.getPlayer().resetTabHeader();
 				return false;
 			}).forEach(PlayerTab::update);
-		}, 0L, plugin.getConf().getInt("tablist.refresh-interval"), TimeUnit.MILLISECONDS);
+		}, 10L, plugin.getConf().getInt("tablist.refresh-interval"), TimeUnit.MILLISECONDS);
 	}
 
 	@Override

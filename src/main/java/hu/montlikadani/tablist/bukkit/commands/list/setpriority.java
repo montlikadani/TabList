@@ -86,8 +86,7 @@ public class setpriority implements ICommand {
 			tabPlayer.setCustomPrefix(prefix);
 			tabPlayer.setCustomSuffix(suffix);
 			tabPlayer.setCustomPriority(priority);
-			groups.setPlayerTeam(target, prefix, suffix, Integer.toString(100000 + priority)
-					+ (tabPlayer.getGroup() == null ? target.getName() : tabPlayer.getGroup().getTeam()));
+			groups.setPlayerTeam(tabPlayer, priority);
 		}
 
 		java.util.List<TeamHandler> teams = groups.getGroupsList();

@@ -135,11 +135,15 @@ public class Groups {
 		startTask();
 	}
 
-	public void setPlayerTeam(Player player, String prefix, String suffix, String name) {
-		setPlayerTeam(player, prefix, suffix, name, player.getName());
-	}
+	public void setPlayerTeam(TabListPlayer tabPlayer, int priority) {
+		if (tabPlayer == null) {
+			return;
+		}
 
-	public void setPlayerTeam(Player player, String prefix, String suffix, String name, String playerName) {
+		Player player = tabPlayer.getPlayer();
+
+		String name = Integer.toString(100000 + priority)
+				+ (tabPlayer.getGroup() == null ? player.getName() : tabPlayer.getGroup().getTeam());
 		if (name.length() > 16) {
 			name = name.substring(0, 16);
 		}
@@ -152,7 +156,7 @@ public class Groups {
 
 		//NMS.addEntry(player, team);
 
-		player.setPlayerListName(prefix + playerName + suffix);
+		player.setPlayerListName(tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix());
 		player.setScoreboard(tboard);
 	}
 
@@ -171,11 +175,7 @@ public class Groups {
 		int priority = 0;
 		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
 		while (it.hasNext()) {
-			TabListPlayer tlp = it.next();
-			String group = Integer.toString(100000 + priority)
-					+ (tlp.getGroup() == null ? tlp.getPlayer().getName() : tlp.getGroup().getTeam());
-
-			setPlayerTeam(tlp.getPlayer(), tlp.getPrefix(), tlp.getSuffix(), group, tlp.getPlayerName());
+			setPlayerTeam(it.next(), priority);
 			priority++;
 		}
 
@@ -290,11 +290,7 @@ public class Groups {
 		int priority = 0;
 		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
 		while (it.hasNext()) {
-			TabListPlayer tlp = it.next();
-			String group = Integer.toString(100000 + priority)
-					+ (tlp.getGroup() == null ? tlp.getPlayer().getName() : tlp.getGroup().getTeam());
-
-			setPlayerTeam(tlp.getPlayer(), tlp.getPrefix(), tlp.getSuffix(), group, tlp.getPlayerName());
+			setPlayerTeam(it.next(), priority);
 			priority++;
 		}
 	}

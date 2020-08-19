@@ -22,12 +22,11 @@ public class Groups implements ITask {
 	}
 
 	public Optional<PlayerGroup> getPlayerGroup(ProxiedPlayer player) {
-		return Optional
-				.ofNullable(playersGroup.stream().filter(g -> g.getPlayer().equals(player)).findFirst().orElse(null));
+		return playersGroup.stream().filter(g -> g.getPlayer().equals(player)).findFirst();
 	}
 
 	public void addPlayer(ProxiedPlayer player) {
-		if (!getPlayerGroup(player).isPresent()) {
+		if (!plugin.getConf().getBoolean("tablist-groups.enabled", false) || !getPlayerGroup(player).isPresent()) {
 			playersGroup.add(new PlayerGroup(player));
 		}
 	}
@@ -38,9 +37,12 @@ public class Groups implements ITask {
 
 	@Override
 	public void start() {
-		cancel();
-
 		if (!plugin.getConf().getBoolean("tablist-groups.enabled", false) || plugin.getProxy().getPlayers().isEmpty()) {
+			cancel();
+			return;
+		}
+
+		if (task != null) {
 			return;
 		}
 
@@ -51,7 +53,7 @@ public class Groups implements ITask {
 			}
 
 			playersGroup.forEach(PlayerGroup::update);
-		}, 0L, plugin.getConf().getInt("tablist-groups.refresh-time"), TimeUnit.MILLISECONDS);
+		}, 10L, plugin.getConf().getInt("tablist-groups.refresh-time"), TimeUnit.MILLISECONDS);
 	}
 
 	@Override
