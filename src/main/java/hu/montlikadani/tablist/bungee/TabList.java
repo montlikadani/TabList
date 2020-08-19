@@ -13,6 +13,7 @@ import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ProxyReloadEvent;
 import net.md_5.bungee.api.event.ServerDisconnectEvent;
 import net.md_5.bungee.api.event.ServerKickEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -38,16 +39,19 @@ public class TabList extends Plugin implements Listener {
 		tab = new TabManager(this);
 		groups = new Groups(this);
 
-		newCommand();
-		reload();
-
 		getProxy().getPluginManager().registerListener(this, this);
+		newCommand();
+
+		reload();
 	}
 
 	@Override
 	public void onDisable() {
 		if (instance == null)
 			return;
+
+		getProxy().getPluginManager().unregisterCommands(this);
+		getProxy().getPluginManager().unregisterListeners(this);
 
 		tab.cancel();
 		groups.cancel();
@@ -229,12 +233,14 @@ public class TabList extends Plugin implements Listener {
 	}
 
 	@EventHandler
-	public void onServerSwitch(net.md_5.bungee.api.event.ServerSwitchEvent event) {
-		tab.addPlayer(event.getPlayer());
-		groups.addPlayer(event.getPlayer());
+	public void onServerSwitch(ServerSwitchEvent ev) {
+		getProxy().getScheduler().schedule(this, () -> {
+			tab.addPlayer(ev.getPlayer());
+			groups.addPlayer(ev.getPlayer());
 
-		tab.start();
-		groups.start();
+			tab.start();
+			groups.start();
+		}, 20L, java.util.concurrent.TimeUnit.MILLISECONDS);
 	}
 
 	/**
