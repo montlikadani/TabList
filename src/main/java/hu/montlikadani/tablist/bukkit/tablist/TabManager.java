@@ -53,6 +53,7 @@ public class TabManager {
 		tabPlayers.forEach(pl -> {
 			pl.unregisterTab();
 
+			// We should call this again due to AsyncCatch from spigot
 			if (pl.getTask() != null) {
 				plugin.getServer().getScheduler().cancelTask(pl.getTask().getTaskId());
 			}
@@ -66,8 +67,7 @@ public class TabManager {
 	}
 
 	public Optional<TabHandler> getPlayerTab(final Player player) {
-		return Optional
-				.ofNullable(tabPlayers.stream().filter(tab -> tab.getPlayer().equals(player)).findFirst().orElse(null));
+		return tabPlayers.stream().filter(tab -> tab.getPlayer().equals(player)).findFirst();
 	}
 
 	public void loadToggledTabs() {
@@ -83,7 +83,7 @@ public class TabManager {
 		}
 
 		FileConfiguration t = YamlConfiguration.loadConfiguration(f);
-		if (!t.contains("tablists")) {
+		if (!t.isConfigurationSection("tablists")) {
 			return;
 		}
 

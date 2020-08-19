@@ -65,7 +65,7 @@ public class Misc {
 					? DateTimeFormatter.ofPattern(conf.getString(path + "time-format"))
 					: null;
 
-			DateTimeFormatter form2 = !conf.getString(path + "date-format").isEmpty()
+			DateTimeFormatter form2 = !conf.getString(path + "date-format", "").isEmpty()
 					? DateTimeFormatter.ofPattern(conf.getString(path + "date-format"))
 					: null;
 

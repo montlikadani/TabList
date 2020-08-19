@@ -37,12 +37,15 @@ public class TabManager implements ITask {
 	}
 
 	public void addPlayer(ProxiedPlayer player) {
-		if (!plugin.getConf().getBoolean("tablist.enable", false) || getPlayerTab(player).isPresent()) {
+		if (!plugin.getConf().getBoolean("tablist.enable", false)) {
 			return;
 		}
 
-		PlayerTab tab = new PlayerTab(player);
-		playerTabs.add(tab);
+		PlayerTab tab = getPlayerTab(player).orElse(new PlayerTab(player));
+		if (!playerTabs.contains(tab)) {
+			playerTabs.add(tab);
+		}
+
 		tab.loadTabList();
 	}
 

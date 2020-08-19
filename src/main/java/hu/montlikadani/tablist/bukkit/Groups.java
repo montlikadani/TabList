@@ -1,6 +1,7 @@
 package hu.montlikadani.tablist.bukkit;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -26,7 +27,8 @@ public class Groups {
 
 	private final List<TeamHandler> groupsList = new ArrayList<>();
 	private final HashMap<String, TabListPlayer> tLPlayerMap = new HashMap<>();
-	private final LinkedList<TabListPlayer> sortedTabListPlayers = new LinkedList<>();
+	private final List<TabListPlayer> sortedTabListPlayers = Collections
+			.synchronizedList(new LinkedList<TabListPlayer>());
 
 	private final Scoreboard b = Bukkit.getScoreboardManager().getNewScoreboard();
 
@@ -154,7 +156,7 @@ public class Groups {
 			team = tboard.registerNewTeam(name);
 		}
 
-		//NMS.addEntry(player, team);
+		NMS.addEntry(player, team);
 
 		player.setPlayerListName(tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix());
 		player.setScoreboard(tboard);
@@ -172,11 +174,13 @@ public class Groups {
 		tabPlayer.update();
 		addToTabListPlayerList(tabPlayer);
 
-		int priority = 0;
-		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
-		while (it.hasNext()) {
-			setPlayerTeam(it.next(), priority);
-			priority++;
+		synchronized (sortedTabListPlayers) {
+			int priority = 0;
+			Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
+			while (it.hasNext()) {
+				setPlayerTeam(it.next(), priority);
+				priority++;
+			}
 		}
 
 		return tabPlayer;
@@ -201,7 +205,7 @@ public class Groups {
 		TabListPlayer tlp = tLPlayerMap.remove(uuid);
 		if (tlp != null) {
 			tlp.removeGroup();
-			sortedTabListPlayers.removeFirstOccurrence(tlp);
+			sortedTabListPlayers.remove(tlp);
 		}
 
 		Scoreboard tboard = p.getScoreboard();
@@ -282,29 +286,32 @@ public class Groups {
 				tlp.update();
 				addToTabListPlayerList(tlp);
 			} else if (tlp.update()) {
-				sortedTabListPlayers.removeFirstOccurrence(tlp);
+				sortedTabListPlayers.remove(tlp);
 				addToTabListPlayerList(tlp);
 			}
 		}
 
-		int priority = 0;
-		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
-		while (it.hasNext()) {
-			setPlayerTeam(it.next(), priority);
-			priority++;
+		synchronized (sortedTabListPlayers) {
+			int priority = 0;
+			Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
+			while (it.hasNext()) {
+				setPlayerTeam(it.next(), priority);
+				priority++;
+			}
 		}
 	}
 
 	private void addToTabListPlayerList(TabListPlayer tlp) {
 		int pos = 0;
 
-		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
-		while (it.hasNext()) {
-			TabListPlayer p = it.next();
-			if (tlp.compareTo(p) < 0)
-				break;
+		synchronized (sortedTabListPlayers) {
+			Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
+			while (it.hasNext()) {
+				if (tlp.compareTo(it.next()) < 0)
+					break;
 
-			pos++;
+				pos++;
+			}
 		}
 
 		sortedTabListPlayers.add(pos, tlp);
