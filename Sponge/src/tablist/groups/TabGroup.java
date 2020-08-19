@@ -69,7 +69,7 @@ public class TabGroup implements Cloneable {
 	}
 
 	public String getFullGroupName() {
-		String name = priority + groupName;
+		String name = Integer.toString(getPriority()) + groupName;
 		if (name.length() > 16) {
 			name = name.substring(0, 16);
 		}
@@ -77,11 +77,8 @@ public class TabGroup implements Cloneable {
 		return name;
 	}
 
-	public void setTeam(final UUID playerUUID) {
-		setTeam(playerUUID, getFullGroupName());
-	}
-
-	public void setTeam(final UUID playerUUID, String teamName) {
+	public void setTeam(final UUID playerUUID, int priority) {
+		String teamName = Integer.toString(100000 + priority) + groupName;
 		if (teamName.length() > 16) {
 			teamName = teamName.substring(0, 16);
 		}

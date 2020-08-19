@@ -1,9 +1,11 @@
 package hu.montlikadani.tablist.sponge;
 
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.spongepowered.api.Sponge;
@@ -30,9 +32,10 @@ public class Variables {
 			address = address.replaceAll("/", "");
 		}
 
-		DecimalFormat tpsformat = new DecimalFormat("#0.00");
 		if (str.contains("%tps%")) {
-			str = str.replace("%tps%", tpsformat.format(Sponge.getServer().getTicksPerSecond()));
+			DecimalFormat df = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
+			df.applyPattern("#0.00");
+			str = str.replace("%tps%", df.format(Sponge.getServer().getTicksPerSecond()));
 		}
 
 		String t = null, dt = null;
@@ -69,11 +72,11 @@ public class Variables {
 		}
 
 		if (str.contains("%player-level%")) {
-			str = str.replace("%player-level%", String.valueOf(p.get(Keys.EXPERIENCE_LEVEL).get()));
+			str = str.replace("%player-level%", Integer.toString(p.get(Keys.EXPERIENCE_LEVEL).get()));
 		}
 
 		if (str.contains("%player-total-level%")) {
-			str = str.replace("%player-total-level%", String.valueOf(p.get(Keys.TOTAL_EXPERIENCE).get()));
+			str = str.replace("%player-total-level%", Integer.toString(p.get(Keys.TOTAL_EXPERIENCE).get()));
 		}
 
 		if (str.contains("%world%")) {
@@ -81,11 +84,13 @@ public class Variables {
 		}
 
 		if (str.contains("%player-health%")) {
-			str = str.replace("%player-health%", String.valueOf(p.getHealthData().health().get()));
+			DecimalFormat df = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
+			df.applyPattern("#0.0");
+			str = str.replace("%player-health%", df.format(p.getHealthData().health().get()));
 		}
 
 		if (str.contains("%player-max-health%")) {
-			str = str.replace("%player-max-health%", String.valueOf(p.getHealthData().maxHealth().get()));
+			str = str.replace("%player-max-health%", Double.toString(p.getHealthData().maxHealth().get()));
 		}
 
 		if (t != null)
@@ -146,7 +151,6 @@ public class Variables {
 
 		return ret.toString();
 	}
-
 
 	public String setSymbols(String s) {
 		s = s.replace("<0>", "•");

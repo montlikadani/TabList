@@ -41,9 +41,7 @@ public class GroupTask implements Consumer<Task> {
 			if (!tabPl.getGroup().isPresent())
 				continue;
 
-			String groupName = Integer.toString(100000 + priority) + tabPl.getGroup().get().getGroupName();
-
-			tabPl.getGroup().get().setTeam(tabPl.getPlayerUUID(), groupName);
+			tabPl.getGroup().get().setTeam(tabPl.getPlayerUUID(), priority);
 			priority++;
 		}
 
@@ -54,7 +52,7 @@ public class GroupTask implements Consumer<Task> {
 		TabPlayer tabPlayer = tabPlayers.remove(player.getUniqueId().toString());
 		if (tabPlayer != null) {
 			tabPlayer.getGroup().ifPresent(g -> g.removeTeam(player));
-			sortedTabPlayers.removeFirstOccurrence(tabPlayer);
+			sortedTabPlayers.remove(tabPlayer);
 		}
 	}
 
@@ -68,9 +66,9 @@ public class GroupTask implements Consumer<Task> {
 			pos++;
 		}
 
-		if (pos >= 0 && pos <= sortedTabPlayers.size()) {
+		//if (pos >= 0 && pos <= sortedTabPlayers.size()) {
 			sortedTabPlayers.add(pos, tlp);
-		}
+		//}
 	}
 
 	public void runTask() {
@@ -109,7 +107,7 @@ public class GroupTask implements Consumer<Task> {
 				tp.update();
 				addToTabListPlayerList(tp);
 			} else if (tp.update()) {
-				sortedTabPlayers.removeFirstOccurrence(tp);
+				sortedTabPlayers.remove(tp);
 				addToTabListPlayerList(tp);
 			}
 		}
@@ -119,9 +117,7 @@ public class GroupTask implements Consumer<Task> {
 			if (!tabPl.getGroup().isPresent())
 				continue;
 
-			String groupName = Integer.toString(100000 + priority) + tabPl.getGroup().get().getGroupName();
-
-			tabPl.getGroup().get().setTeam(tabPl.getPlayerUUID(), groupName);
+			tabPl.getGroup().get().setTeam(tabPl.getPlayerUUID(), priority);
 			priority++;
 		}
 	}
