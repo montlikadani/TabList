@@ -1,6 +1,7 @@
 package hu.montlikadani.tablist.bungee.tablist.groups;
 
 import java.util.List;
+import java.util.UUID;
 
 import hu.montlikadani.tablist.bungee.Misc;
 import hu.montlikadani.tablist.bungee.TabList;
@@ -14,23 +15,24 @@ import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 
 public class PlayerGroup {
 
-	private ProxiedPlayer player;
+	private UUID playerUUID;
 
 	private int y = 0;
 
 	private final Item items = new Item();
 	private final PlayerListItem listItem = new PlayerListItem();
 
-	public PlayerGroup(ProxiedPlayer player) {
-		this.player = player;
+	public PlayerGroup(UUID playerUUID) {
+		this.playerUUID = playerUUID;
 	}
 
-	public ProxiedPlayer getPlayer() {
-		return player;
+	public UUID getPlayerUUID() {
+		return playerUUID;
 	}
 
 	public void update() {
 		final Configuration c = TabList.getInstance().getConf();
+		final ProxiedPlayer player = TabList.getInstance().getProxy().getPlayer(playerUUID);
 
 		String name = "";
 		for (String num : c.getSection("groups").getKeys()) {

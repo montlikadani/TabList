@@ -22,12 +22,12 @@ public class Groups implements ITask {
 	}
 
 	public Optional<PlayerGroup> getPlayerGroup(ProxiedPlayer player) {
-		return playersGroup.stream().filter(g -> g.getPlayer().equals(player)).findFirst();
+		return playersGroup.stream().filter(g -> g.getPlayerUUID().equals(player.getUniqueId())).findFirst();
 	}
 
 	public void addPlayer(ProxiedPlayer player) {
 		if (!plugin.getConf().getBoolean("tablist-groups.enabled", false) || !getPlayerGroup(player).isPresent()) {
-			playersGroup.add(new PlayerGroup(player));
+			playersGroup.add(new PlayerGroup(player.getUniqueId()));
 		}
 	}
 
@@ -68,7 +68,11 @@ public class Groups implements ITask {
 			task = null;
 		}
 
-		playersGroup.forEach(g -> g.sendPacket(g.getPlayer(), g.getPlayer().getName()));
+		playersGroup.forEach(g -> {
+			ProxiedPlayer player = plugin.getProxy().getPlayer(g.getPlayerUUID());
+			g.sendPacket(player, player.getName());
+		});
+
 		playersGroup.clear();
 	}
 }
