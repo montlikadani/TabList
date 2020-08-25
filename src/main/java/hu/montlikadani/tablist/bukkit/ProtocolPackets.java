@@ -14,7 +14,7 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class ProtocolPackets extends PacketAdapter {
 
-	public static void onSpectatorChange() {
+	static void onSpectatorChange() {
 		ProtocolLibrary.getProtocolManager().removePacketListeners(TabList.getInstance());
 
 		ProtocolPackets s = new ProtocolPackets();
@@ -28,7 +28,7 @@ public class ProtocolPackets extends PacketAdapter {
 		}
 	}
 
-	ProtocolPackets() {
+	private ProtocolPackets() {
 		super(TabList.getInstance(), PacketType.Play.Server.PLAYER_INFO);
 	}
 
@@ -71,7 +71,7 @@ public class ProtocolPackets extends PacketAdapter {
 					if (c.get(infoData).equals(ReflectionUtils.getField(enumGameMode, "SPECTATOR").get(enumGameMode))
 							&& !(id.equals(event.getPlayer().getUniqueId()))) {
 						ReflectionUtils.modifyFinalField(c, infoData,
-								ReflectionUtils.getField(enumGameMode, "SURVIVAL").get(enumGameMode));
+								ReflectionUtils.getField(enumGameMode, "CREATIVE").get(enumGameMode));
 					}
 				}
 			}

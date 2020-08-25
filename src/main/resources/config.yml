@@ -132,11 +132,6 @@ change-prefix-suffix-in-tablist:
   # If a plugin does not support Vault, it will not be added.
   sync-plugins-groups-with-tablist: true
 
-  # This option allows plugin to use a different scoreboard to run groups if there is a conflict
-  # with other scoreboard plugins. If it doesn’t happen that the scoreboard disappears,
-  # you don’t need to enable this.
-  use-own-scoreboard: false
-
   # Hide player's group in player list when the player is vanished?
   # Requires Essentials, SuperVanish or CMI plugin!
   hide-group-when-player-vanished: false

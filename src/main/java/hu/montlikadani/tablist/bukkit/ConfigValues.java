@@ -8,7 +8,7 @@ public class ConfigValues {
 			ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled,
 			afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone, pingFormatEnabled,
 			tpsFormatEnabled, prefixSuffixEnabled, groupAnimationEnabled, useDisabledWorldsAsWhiteList,
-			syncPluginsGroups, useOwnScoreboard, hideGroupInVanish, hideGroupWhenAfk, usePluginNickName, useTabName,
+			syncPluginsGroups/*, useOwnScoreboard*/, hideGroupInVanish, hideGroupWhenAfk, usePluginNickName, useTabName,
 			preferPrimaryVaultGroup, tablistObjectiveEnabled, tabNameEnabled, tabNameUsePluginNickName,
 			clearTabNameOnQuit, tabNameColorCodeEnabled, defaultColorEnabled;
 
@@ -47,7 +47,7 @@ public class ConfigValues {
 		useDisabledWorldsAsWhiteList = c.getBoolean("change-prefix-suffix-in-tablist.disabled-worlds.use-as-whitelist",
 				false);
 		syncPluginsGroups = c.getBoolean("change-prefix-suffix-in-tablist.sync-plugins-groups-with-tablist", true);
-		useOwnScoreboard = c.getBoolean("change-prefix-suffix-in-tablist.use-own-scoreboard", false);
+		//useOwnScoreboard = c.getBoolean("change-prefix-suffix-in-tablist.use-own-scoreboard", false);
 		hideGroupInVanish = c.getBoolean("change-prefix-suffix-in-tablist.hide-group-when-player-vanished", false);
 		hideGroupWhenAfk = c.getBoolean("change-prefix-suffix-in-tablist.hide-group-when-player-afk", false);
 		if (c.contains("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
@@ -234,8 +234,9 @@ public class ConfigValues {
 		return syncPluginsGroups;
 	}
 
+	@Deprecated
 	public static boolean isUseOwnScoreboard() {
-		return useOwnScoreboard;
+		return false;
 	}
 
 	public static boolean isHideGroupInVanish() {

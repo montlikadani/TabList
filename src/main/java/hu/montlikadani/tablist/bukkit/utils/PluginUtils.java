@@ -110,7 +110,7 @@ public class PluginUtils {
 		if (plugin.isPluginEnabled("PermissionsEx")) {
 			try {
 				return PermissionsEx.getPermissionManager().has(player, perm);
-			} catch (Exception e) {
+			} catch (Throwable e) {
 				return JavaPlugin.getPlugin(PermissionsExPlugin.class).getUserSubjects()
 						.get(player.getUniqueId().toString()).thenAccept(u -> u.hasPermission(perm))
 						.completeExceptionally(e.getCause());

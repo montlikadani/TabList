@@ -204,44 +204,40 @@ public class Variables {
 	}
 
 	private String formatPing(int ping) {
-		StringBuilder ret, sb = new StringBuilder();
+		StringBuilder sb2 = new StringBuilder();
 
 		if (ConfigValues.isPingFormatEnabled()) {
 			if (ping <= ConfigValues.getGoodPingAmount()) {
-				ret = sb.append(ConfigValues.getGoodPingColor().replace('&', '\u00a7')).append(ping)
-						.append(ChatColor.RESET);
+				return sb2.append(ConfigValues.getGoodPingColor().replace('&', '\u00a7')).append(ping)
+						.append(ChatColor.RESET).toString();
 			} else if (ping <= ConfigValues.getMediumPingAmount()) {
-				ret = sb.append(ConfigValues.getMediumPingColor().replace('&', '\u00a7')).append(ping)
-						.append(ChatColor.RESET);
+				return sb2.append(ConfigValues.getMediumPingColor().replace('&', '\u00a7')).append(ping)
+						.append(ChatColor.RESET).toString();
 			} else {
-				ret = sb.append(ConfigValues.getBadPingColor().replace('&', '\u00a7')).append(ping)
-						.append(ChatColor.RESET);
+				return sb2.append(ConfigValues.getBadPingColor().replace('&', '\u00a7')).append(ping)
+						.append(ChatColor.RESET).toString();
 			}
-		} else {
-			ret = sb.append(ping);
 		}
 
-		return ret.toString();
+		return sb2.append(ping).toString();
 	}
 
 	private String formatTPS(double tps) {
-		StringBuilder ret, sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder();
 
 		if (ConfigValues.isTpsFormatEnabled()) {
 			if (tps > ConfigValues.getGoodTpsAmount()) {
-				ret = sb.append(ConfigValues.getGoodTpsColor().replace('&', '\u00a7')).append(tps)
-						.append(ChatColor.RESET);
+				return sb.append(ConfigValues.getGoodTpsColor().replace('&', '\u00a7')).append(tps)
+						.append(ChatColor.RESET).toString();
 			} else if (tps > ConfigValues.getMediumTpsAmount()) {
-				ret = sb.append(ConfigValues.getMediumTpsColor().replace('&', '\u00a7')).append(tps)
-						.append(ChatColor.RESET);
+				return sb.append(ConfigValues.getMediumTpsColor().replace('&', '\u00a7')).append(tps)
+						.append(ChatColor.RESET).toString();
 			} else {
-				ret = sb.append(ConfigValues.getBadTpsColor().replace('&', '\u00a7')).append(tps)
-						.append(ChatColor.RESET);
+				return sb.append(ConfigValues.getBadTpsColor().replace('&', '\u00a7')).append(tps)
+						.append(ChatColor.RESET).toString();
 			}
-		} else {
-			ret = sb.append(tps);
 		}
 
-		return ret.toString();
+		return sb.append(tps).toString();
 	}
 }

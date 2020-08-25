@@ -1,5 +1,7 @@
 package hu.montlikadani.tablist.bukkit;
 
+import hu.montlikadani.tablist.bukkit.tablist.groups.ITabScoreboard;
+import hu.montlikadani.tablist.bukkit.tablist.groups.ReflectionHandled;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 
 import org.apache.commons.lang.StringUtils;
@@ -27,9 +29,17 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 	private int customPriority = Integer.MIN_VALUE;
 
+	private ITabScoreboard tabTeam;
+
 	TabListPlayer(TabList plugin, Player player) {
 		this.plugin = plugin;
 		this.player = player;
+
+		tabTeam = new ReflectionHandled(this);
+	}
+
+	public ITabScoreboard getTabTeam() {
+		return tabTeam;
 	}
 
 	public void setGroup(TeamHandler group) {

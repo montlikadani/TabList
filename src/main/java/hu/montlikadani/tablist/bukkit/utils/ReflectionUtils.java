@@ -14,6 +14,9 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class ReflectionUtils {
 
+	private ReflectionUtils() {
+	}
+
 	public static Object getHandle(Object obj) throws Exception {
 		Method method = obj.getClass().getDeclaredMethod("getHandle");
 		if (!method.isAccessible()) {
@@ -75,7 +78,10 @@ public class ReflectionUtils {
 	}
 
 	public static void modifyFinalField(Field field, Object target, Object newValue) throws Exception {
-		field.setAccessible(true);
+		if (!field.isAccessible()) {
+			field.setAccessible(true);
+		}
+
 		getField(Field.class, "modifiers").setInt(field, field.getModifiers() & ~Modifier.FINAL);
 		field.set(target, newValue);
 	}

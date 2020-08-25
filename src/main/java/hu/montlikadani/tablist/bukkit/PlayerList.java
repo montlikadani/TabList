@@ -52,7 +52,7 @@ public class PlayerList {
 	}
 
 	@SuppressWarnings("deprecation")
-	static void hide(Player to, Player pls) {
+	public static void hide(Player to, Player pls) {
 		if (Version.isCurrentEqualOrHigher(Version.v1_12_R1)) {
 			to.hidePlayer(TabList.getInstance(), pls);
 		} else {
@@ -61,7 +61,7 @@ public class PlayerList {
 	}
 
 	@SuppressWarnings("deprecation")
-	static void show(Player to, Player pls) {
+	public static void show(Player to, Player pls) {
 		if (Version.isCurrentEqualOrHigher(Version.v1_12_R1)) {
 			to.showPlayer(TabList.getInstance(), pls);
 		} else {

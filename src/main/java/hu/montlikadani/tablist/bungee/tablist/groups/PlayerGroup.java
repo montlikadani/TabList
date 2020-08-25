@@ -31,8 +31,12 @@ public class PlayerGroup {
 	}
 
 	public void update() {
-		final Configuration c = TabList.getInstance().getConf();
 		final ProxiedPlayer player = TabList.getInstance().getProxy().getPlayer(playerUUID);
+		if (player == null) {
+			return;
+		}
+
+		final Configuration c = TabList.getInstance().getConf();
 
 		String name = "";
 		for (String num : c.getSection("groups").getKeys()) {

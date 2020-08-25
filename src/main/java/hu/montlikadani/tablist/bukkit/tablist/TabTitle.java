@@ -8,7 +8,14 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class TabTitle {
 
+	private TabTitle() {
+	}
+
 	public static void sendTabTitle(Player player, String header, String footer) {
+		if (player == null) {
+			return;
+		}
+
 		if (header == null) header = "";
 		if (footer == null) footer = "";
 

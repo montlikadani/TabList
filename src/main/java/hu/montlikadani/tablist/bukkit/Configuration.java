@@ -47,14 +47,12 @@ public class Configuration {
 						+ config.getInt("config-version") + " | Newest version: " + cver + ")");
 			}
 
-			if (!config.contains("tablist")) {
-				if (tablist_file == null) {
-					tablist_file = new File(folder, "tablist.yml");
-				}
-
-				tablist = createFile(tablist_file, "tablist.yml", false);
-				tablist.load(tablist_file);
+			if (tablist_file == null) {
+				tablist_file = new File(folder, "tablist.yml");
 			}
+
+			tablist = createFile(tablist_file, "tablist.yml", false);
+			tablist.load(tablist_file);
 
 			messages = createFile(messages_file, "messages.yml", false);
 			messages.save(messages_file);

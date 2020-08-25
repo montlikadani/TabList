@@ -124,6 +124,7 @@ public class Objects {
 						score = Integer.parseInt(result);
 					} catch (NumberFormatException e) {
 						Util.logConsole("Not correct custom objective: " + value);
+						continue;
 					}
 				}
 

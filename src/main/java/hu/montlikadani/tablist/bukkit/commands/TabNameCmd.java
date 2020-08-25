@@ -66,7 +66,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 					return true;
 				}
 
-				plugin.getTabNameHandler().unTabName(target);
+				plugin.getTabNameHandler().unSetTabName(target);
 				sendMsg(sender, plugin.getMsg("tabname.reset.target-name-reseted", "%target%", target.getName()));
 				return true;
 			}
@@ -135,7 +135,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 					return true;
 				}
 
-				plugin.getTabNameHandler().unTabName(p);
+				plugin.getTabNameHandler().unSetTabName(p);
 				sendMsg(p, plugin.getMsg("tabname.reset.name-reseted"));
 			} else {
 				if (!p.hasPermission(Perm.RESETOTHERTAB.getPerm())) {
@@ -154,7 +154,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 					return true;
 				}
 
-				plugin.getTabNameHandler().unTabName(target);
+				plugin.getTabNameHandler().unSetTabName(target);
 				sendMsg(p, plugin.getMsg("tabname.reset.target-name-reseted", "%target%", target.getName()));
 			}
 

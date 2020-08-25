@@ -347,7 +347,7 @@ public class TabList extends JavaPlugin {
 	public void onPlayerQuit(Player p) {
 		if (ConfigValues.isTabNameEnabled() && ConfigValues.isClearTabNameOnQuit()
 				&& conf.getNames().contains("players." + p.getName() + ".tabname")) {
-			tabNameHandler.unTabName(p);
+			tabNameHandler.unSetTabName(p);
 		}
 
 		if (!ConfigValues.isTablistObjectiveEnabled()) {

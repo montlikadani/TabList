@@ -33,11 +33,11 @@ public class TabManager {
 	}
 
 	public void addPlayer(Player p) {
-		if (isPlayerInTab(p)) {
+		if (p == null || isPlayerInTab(p)) {
 			return;
 		}
 
-		TabHandler tabHandler = new TabHandler(plugin, p);
+		TabHandler tabHandler = new TabHandler(plugin, p.getUniqueId());
 		tabHandler.updateTab();
 		tabPlayers.add(tabHandler);
 	}

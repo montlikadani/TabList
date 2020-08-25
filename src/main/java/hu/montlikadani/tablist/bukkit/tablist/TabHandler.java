@@ -22,24 +22,39 @@ public class TabHandler implements ITabHandler {
 
 	private final TabList plugin;
 
-	private Player player;
+	private UUID playerUUID;
 
 	private BukkitTask task;
 	private TabBuilder builder;
 
+	@Deprecated
 	public TabHandler(TabList plugin, Player player) {
-		this(plugin, player, null);
+		this(plugin, player.getUniqueId(), null);
 	}
 
+	public TabHandler(TabList plugin, UUID playerUUID) {
+		this(plugin, playerUUID, null);
+	}
+
+	@Deprecated
 	public TabHandler(TabList plugin, Player player, TabBuilder builder) {
+		this(plugin, player.getUniqueId(), builder);
+	}
+
+	public TabHandler(TabList plugin, UUID playerUUID, TabBuilder builder) {
 		this.plugin = plugin;
-		this.player = player;
+		this.playerUUID = playerUUID;
 		this.builder = builder == null ? TabBuilder.builder().build() : builder;
 	}
 
 	@Override
 	public Player getPlayer() {
-		return player;
+		return Bukkit.getPlayer(playerUUID);
+	}
+
+	@Override
+	public UUID getPlayerUUID() {
+		return playerUUID;
 	}
 
 	@Override
@@ -53,18 +68,19 @@ public class TabHandler implements ITabHandler {
 	}
 
 	public void updateTab() {
+		Player player = getPlayer();
 		if (player == null || !player.isOnline()) {
 			return;
 		}
 
 		unregisterTab();
 
-		if (plugin.getConf().getTablistFile() == null || !plugin.getConf().getTablistFile().exists()) {
+		if (!plugin.getConf().getTablistFile().exists()) {
 			return;
 		}
 
 		final FileConfiguration c = plugin.getTabC();
-		if (c == null || !c.getBoolean("enabled")) {
+		if (!c.getBoolean("enabled")) {
 			return;
 		}
 
@@ -207,7 +223,7 @@ public class TabHandler implements ITabHandler {
 		final boolean enableW = worldEnable;
 
 		task = createTask(() -> {
-			if (player == null || !player.isOnline()) {
+			if (!player.isOnline()) {
 				unregisterTab();
 				return;
 			}
@@ -229,12 +245,14 @@ public class TabHandler implements ITabHandler {
 	}
 
 	private void sendTab(boolean yesWorld, List<String> otherWorlds) {
+		final Player player = getPlayer();
+
 		if (plugin.getTabC().getBoolean("hide-tab-when-player-vanished") && PluginUtils.isVanished(player)) {
 			TabTitle.sendTabTitle(player, "", "");
 			return;
 		}
 
-		List<String> header = builder.getHeader(), footer = builder.getFooter();
+		final List<String> header = builder.getHeader(), footer = builder.getFooter();
 
 		String he = "";
 		String fo = "";
@@ -283,8 +301,8 @@ public class TabHandler implements ITabHandler {
 		}
 
 		if (otherWorlds.isEmpty()) {
-			for (Player player : this.player.getWorld().getPlayers()) {
-				TabTitle.sendTabTitle(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
+			for (Player all : player.getWorld().getPlayers()) {
+				TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));
 			}
 
 			return;
@@ -294,8 +312,8 @@ public class TabHandler implements ITabHandler {
 			if (Bukkit.getWorld(l) == null)
 				continue;
 
-			for (Player player : Bukkit.getWorld(l).getPlayers()) {
-				TabTitle.sendTabTitle(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
+			for (Player all : Bukkit.getWorld(l).getPlayers()) {
+				TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));
 			}
 		}
 	}
@@ -303,7 +321,7 @@ public class TabHandler implements ITabHandler {
 	public void unregisterTab() {
 		cancelTask();
 
-		TabTitle.sendTabTitle(player, "", "");
+		TabTitle.sendTabTitle(getPlayer(), "", "");
 	}
 
 	public void cancelTask() {

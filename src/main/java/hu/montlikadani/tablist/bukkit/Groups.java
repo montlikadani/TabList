@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang.Validate;
@@ -13,10 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
-
-import hu.montlikadani.tablist.bukkit.utils.NMS;
 
 public class Groups {
 
@@ -30,7 +27,7 @@ public class Groups {
 	private final List<TabListPlayer> sortedTabListPlayers = Collections
 			.synchronizedList(new LinkedList<TabListPlayer>());
 
-	private final Scoreboard b = Bukkit.getScoreboardManager().getNewScoreboard();
+	//private final Scoreboard b = Bukkit.getScoreboardManager().getNewScoreboard();
 
 	public Groups(TabList plugin) {
 		this.plugin = plugin;
@@ -133,8 +130,7 @@ public class Groups {
 	}
 
 	public void loadGroupForPlayer(Player p) {
-		removePlayerGroup(p);
-		startTask();
+		removePlayerGroup(p).thenAccept(e -> startTask());
 	}
 
 	public void setPlayerTeam(TabListPlayer tabPlayer, int priority) {
@@ -143,6 +139,9 @@ public class Groups {
 		}
 
 		Player player = tabPlayer.getPlayer();
+		if (plugin.getHidePlayers().containsKey(player)) {
+			return;
+		}
 
 		String name = Integer.toString(100000 + priority)
 				+ (tabPlayer.getGroup() == null ? player.getName() : tabPlayer.getGroup().getTeam());
@@ -150,16 +149,13 @@ public class Groups {
 			name = name.substring(0, 16);
 		}
 
-		Scoreboard tboard = ConfigValues.isUseOwnScoreboard() ? player.getScoreboard() : b;
-		Team team = tboard.getTeam(name);
-		if (team == null) {
-			team = tboard.registerNewTeam(name);
-		}
+		/*Scoreboard tboard = ConfigValues.isUseOwnScoreboard() ? player.getScoreboard() : b;
+		if (tabPlayer.getTabTeam().getScoreboard() != tboard) {
+			tabPlayer.getTabTeam().setScoreboard(tboard);
+		}*/
 
-		NMS.addEntry(player, team);
-
-		player.setPlayerListName(tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix());
-		player.setScoreboard(tboard);
+		tabPlayer.getTabTeam().registerTeam(name);
+		tabPlayer.getTabTeam().setTeam(name);
 	}
 
 	public TabListPlayer addPlayer(Player player) {
@@ -190,30 +186,26 @@ public class Groups {
 		Bukkit.getOnlinePlayers().forEach(this::removePlayerGroup);
 	}
 
-	public void removePlayerGroup(Player p) {
+	public CompletableFuture<Boolean> removePlayerGroup(Player p) {
 		if (p == null) {
-			return;
+			return CompletableFuture.completedFuture(false);
 		}
 
-		String uuid = p.getUniqueId().toString();
-
-		if (!tLPlayerMap.containsKey(uuid))
-			return;
-
-		p.setPlayerListName(p.getName());
-
-		TabListPlayer tlp = tLPlayerMap.remove(uuid);
-		if (tlp != null) {
-			tlp.removeGroup();
-			sortedTabListPlayers.remove(tlp);
+		TabListPlayer tlp = tLPlayerMap.remove(p.getUniqueId().toString());
+		if (tlp == null) {
+			return CompletableFuture.completedFuture(false);
 		}
 
-		Scoreboard tboard = p.getScoreboard();
-		NMS.removeEntry(p, tboard);
+		String name = Integer.toString(100000 + tlp.getPriority())
+				+ (tlp.getGroup() == null ? p.getName() : tlp.getGroup().getTeam());
+		if (name.length() > 16) {
+			name = name.substring(0, 16);
+		}
 
-		// team.unregister();
-
-		p.setScoreboard(tboard);
+		tlp.getTabTeam().unregisterTeam(name);
+		tlp.removeGroup();
+		sortedTabListPlayers.remove(tlp);
+		return CompletableFuture.completedFuture(true);
 	}
 
 	public void removeGroup(String teamName) {

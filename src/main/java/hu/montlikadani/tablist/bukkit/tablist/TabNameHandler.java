@@ -116,7 +116,7 @@ public class TabNameHandler {
 		}
 	}
 
-	public void unTabName(Player p) {
+	public void unSetTabName(Player p) {
 		if (!ConfigValues.isTabNameEnabled()) {
 			return;
 		}

@@ -12,6 +12,9 @@ public class TabBuilder {
 
 	private boolean random;
 
+	private TabBuilder() {
+	}
+
 	static Builder builder() {
 		return new Builder();
 	}
