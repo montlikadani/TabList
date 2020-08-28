@@ -7,7 +7,7 @@ public class ConfigValues {
 	private static boolean placeholderAPI, ragemodeHook, perWorldPlayerList, fakePlayers, removeGrayColorFromTabInSpec,
 			ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled,
 			afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone, pingFormatEnabled,
-			tpsFormatEnabled, prefixSuffixEnabled, groupAnimationEnabled, useDisabledWorldsAsWhiteList,
+			tpsFormatEnabled, prefixSuffixEnabled/*, groupAnimationEnabled*/, useDisabledWorldsAsWhiteList,
 			syncPluginsGroups/*, useOwnScoreboard*/, hideGroupInVanish, hideGroupWhenAfk, usePluginNickName, useTabName,
 			preferPrimaryVaultGroup, tablistObjectiveEnabled, tabNameEnabled, tabNameUsePluginNickName,
 			clearTabNameOnQuit, tabNameColorCodeEnabled, defaultColorEnabled;
@@ -43,7 +43,7 @@ public class ConfigValues {
 		pingFormatEnabled = c.getBoolean("placeholder-format.ping.enable", true);
 		tpsFormatEnabled = c.getBoolean("placeholder-format.tps.enable", true);
 		prefixSuffixEnabled = c.getBoolean("change-prefix-suffix-in-tablist.enable", false);
-		groupAnimationEnabled = c.getBoolean("change-prefix-suffix-in-tablist.enable-animation", false);
+		//groupAnimationEnabled = c.getBoolean("change-prefix-suffix-in-tablist.enable-animation", false);
 		useDisabledWorldsAsWhiteList = c.getBoolean("change-prefix-suffix-in-tablist.disabled-worlds.use-as-whitelist",
 				false);
 		syncPluginsGroups = c.getBoolean("change-prefix-suffix-in-tablist.sync-plugins-groups-with-tablist", true);
@@ -222,8 +222,9 @@ public class ConfigValues {
 		return groupsRefreshInterval;
 	}
 
+	@Deprecated
 	public static boolean isGroupAnimationEnabled() {
-		return groupAnimationEnabled;
+		return true;
 	}
 
 	public static boolean isUseDisabledWorldsAsWhiteList() {

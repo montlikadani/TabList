@@ -90,7 +90,7 @@ public class FakePlayerHandler {
 	}
 
 	public void removeAllFakePlayer() {
-		fakePlayers.stream().filter(fp -> fp != null).forEach(IFakePlayers::removeFakePlayer);
+		fakePlayers.forEach(IFakePlayers::removeFakePlayer);
 		fakePlayers.clear();
 	}
 
@@ -114,7 +114,7 @@ public class FakePlayerHandler {
 
 		for (Iterator<IFakePlayers> it = fakePlayers.iterator(); it.hasNext();) {
 			IFakePlayers fp = it.next();
-			if (fp != null && fp.getName().equalsIgnoreCase(name)) {
+			if (fp.getName().equalsIgnoreCase(name)) {
 				fp.removeFakePlayer();
 				it.remove();
 				break;

@@ -19,8 +19,7 @@ public class Groups {
 
 	private TabList plugin;
 
-	private BukkitTask animationTask = null;
-	private Integer simpleTask = -1;
+	private BukkitTask animationTask;
 
 	private final List<TeamHandler> groupsList = new ArrayList<>();
 	private final HashMap<String, TabListPlayer> tLPlayerMap = new HashMap<>();
@@ -130,7 +129,10 @@ public class Groups {
 	}
 
 	public void loadGroupForPlayer(Player p) {
-		removePlayerGroup(p).thenAccept(e -> startTask());
+		removePlayerGroup(p).thenAccept(e -> {
+			startTask();
+			addPlayer(p);
+		});
 	}
 
 	public void setPlayerTeam(TabListPlayer tabPlayer, int priority) {
@@ -161,12 +163,12 @@ public class Groups {
 	public TabListPlayer addPlayer(Player player) {
 		String uuid = player.getUniqueId().toString();
 
-		if (tLPlayerMap.containsKey(uuid)) {
-			return tLPlayerMap.get(uuid);
+		TabListPlayer tabPlayer = tLPlayerMap.get(uuid);
+		if (tabPlayer == null) {
+			tabPlayer = new TabListPlayer(plugin, player);
+			tLPlayerMap.put(uuid, tabPlayer);
 		}
 
-		TabListPlayer tabPlayer = new TabListPlayer(plugin, player);
-		tLPlayerMap.put(uuid, tabPlayer);
 		tabPlayer.update();
 		addToTabListPlayerList(tabPlayer);
 
@@ -216,11 +218,6 @@ public class Groups {
 	}
 
 	public void cancelUpdate() {
-		if (simpleTask != -1) {
-			Bukkit.getServer().getScheduler().cancelTask(simpleTask);
-			simpleTask = -1;
-		}
-
 		if (animationTask != null) {
 			animationTask.cancel();
 			animationTask = null;
@@ -240,30 +237,16 @@ public class Groups {
 			return;
 		}
 
-		if (ConfigValues.isGroupAnimationEnabled()) {
-			if (animationTask == null) {
-				animationTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-					if (Bukkit.getOnlinePlayers().isEmpty()) {
-						animationTask.cancel();
-						animationTask = null;
-						return;
-					}
+		if (animationTask == null) {
+			animationTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+				if (Bukkit.getOnlinePlayers().isEmpty()) {
+					animationTask.cancel();
+					animationTask = null;
+					return;
+				}
 
-					updatePlayers();
-				}, refreshInt, refreshInt);
-			}
-		} else {
-			if (simpleTask == -1) {
-				simpleTask = Bukkit.getScheduler().scheduleSyncRepeatingTask(plugin, () -> {
-					if (Bukkit.getOnlinePlayers().isEmpty()) {
-						Bukkit.getServer().getScheduler().cancelTask(simpleTask);
-						simpleTask = -1;
-						return;
-					}
-
-					updatePlayers();
-				}, 0L, refreshInt * 20L);
-			}
+				updatePlayers();
+			}, refreshInt, refreshInt);
 		}
 	}
 

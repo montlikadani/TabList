@@ -6,10 +6,7 @@ import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
-public class TabTitle {
-
-	private TabTitle() {
-	}
+public abstract class TabTitle {
 
 	public static void sendTabTitle(Player player, String header, String footer) {
 		if (player == null) {

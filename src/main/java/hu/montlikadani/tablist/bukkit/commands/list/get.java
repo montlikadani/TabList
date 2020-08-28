@@ -39,14 +39,14 @@ public class get implements ICommand {
 					return false;
 				}
 
-				String nam = targ.getName();
-				if (!plugin.getConf().getNames().contains("players." + nam + ".tabname")) {
-					sendMsg(sender, plugin.getMsg("tabname.no-tab-name", "%player%", nam));
+				String tabName = plugin.getTabNameHandler().getTabName(targ);
+				if (tabName.isEmpty()) {
+					sendMsg(sender, plugin.getMsg("tabname.no-tab-name", "%player%", targ.getName()));
 					return false;
 				}
 
-				sendMsg(sender, plugin.getMsg("tabname.get-name.result", "%target%", nam, "%name%",
-						plugin.getTabNameHandler().getTabName(nam)));
+				sendMsg(sender,
+						plugin.getMsg("tabname.get-name.result", "%target%", targ.getName(), "%name%", tabName));
 			}
 
 			return true;
@@ -72,14 +72,13 @@ public class get implements ICommand {
 				return false;
 			}
 
-			String nam = targ.getName();
-			if (!plugin.getConf().getNames().contains("players." + nam + ".tabname")) {
-				sendMsg(p, plugin.getMsg("tabname.no-tab-name", "%player%", nam));
+			String tabName = plugin.getTabNameHandler().getTabName(targ);
+			if (tabName.isEmpty()) {
+				sendMsg(p, plugin.getMsg("tabname.no-tab-name", "%player%", targ.getName()));
 				return false;
 			}
 
-			sendMsg(p, plugin.getMsg("tabname.get-name.target-result", "%target%", nam, "%name%",
-					plugin.getTabNameHandler().getTabName(nam)));
+			sendMsg(p, plugin.getMsg("tabname.get-name.target-result", "%target%", targ.getName(), "%name%", tabName));
 		}
 
 		return true;

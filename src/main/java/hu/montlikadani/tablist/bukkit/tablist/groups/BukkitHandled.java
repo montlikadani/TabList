@@ -10,7 +10,7 @@ import hu.montlikadani.tablist.bukkit.utils.NMS;
 /**
  * This class is superfluous because it makes no sense to instantiate it as long
  * as there is no solution to fix multiple issues, as we use reflections to make
- * scoreboard teams work properly (like sorting).
+ * scoreboard teams work properly (like scoreboard conflict).
  */
 public class BukkitHandled implements ITabScoreboard {
 

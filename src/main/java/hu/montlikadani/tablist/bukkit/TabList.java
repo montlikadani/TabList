@@ -51,7 +51,6 @@ public class TabList extends JavaPlugin {
 	private TabNameHandler tabNameHandler;
 
 	private boolean isSpigot = false;
-	private boolean isUsingOldPapi = false;
 	private int tabRefreshTime = 0;
 
 	private final Set<AnimCreator> animations = new HashSet<>();
@@ -408,10 +407,6 @@ public class TabList extends JavaPlugin {
 
 	public boolean isSpigot() {
 		return isSpigot;
-	}
-
-	public boolean isUsingOldPapi() {
-		return isUsingOldPapi;
 	}
 
 	public Variables getPlaceholders() {

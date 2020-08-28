@@ -111,15 +111,10 @@ placeholder-format:
 change-prefix-suffix-in-tablist:
   enable: true
 
-  # Refresh interval in seconds, if using animation then it counts in ticks.
+  # Refresh interval in server ticks.
   # Set to 0 if you don't want to refresh the groups.
   # If 0, then you will need to execute the /tl reload command to refresh the groups.
-  refresh-interval: 30
-
-  # Do you want to use animation in groups?
-  # If true, you need to change the refresh-interval such as 4, because it will count in ticks.
-  # If false, interval counts in seconds.
-  enable-animation: false
+  refresh-interval: 4
 
   # Disable groups in these worlds.
   disabled-worlds:

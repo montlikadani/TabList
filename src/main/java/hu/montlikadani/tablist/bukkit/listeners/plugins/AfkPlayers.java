@@ -16,7 +16,7 @@ import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.PlayerList;
 import hu.montlikadani.tablist.bukkit.TabList;
 
-public class AfkPlayers {
+public abstract class AfkPlayers {
 
 	protected final Map<Player, String> afkPlayers = new HashMap<>();
 

@@ -84,12 +84,11 @@ public class TabHandler implements ITabHandler {
 			return;
 		}
 
-		final UUID uuid = player.getUniqueId();
 		final String world = player.getWorld().getName();
 		final String pName = player.getName();
 
 		if (c.getStringList("disabled-worlds").contains(world) || c.getStringList("blacklisted-players").contains(pName)
-				|| (TabManager.TABENABLED.containsKey(uuid) && TabManager.TABENABLED.get(uuid))
+				|| (TabManager.TABENABLED.containsKey(playerUUID) && TabManager.TABENABLED.get(playerUUID))
 				|| PluginUtils.isInGame(player)) {
 			return;
 		}
@@ -230,7 +229,7 @@ public class TabHandler implements ITabHandler {
 
 			if (c.getStringList("disabled-worlds").contains(world)
 					|| c.getStringList("blacklisted-players").contains(pName) || PluginUtils.isInGame(player)
-					|| (TabManager.TABENABLED.containsKey(uuid) && TabManager.TABENABLED.get(uuid))) {
+					|| (TabManager.TABENABLED.containsKey(playerUUID) && TabManager.TABENABLED.get(playerUUID))) {
 				unregisterTab();
 				return;
 			}

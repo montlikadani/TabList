@@ -1,20 +1,15 @@
 package hu.montlikadani.tablist.bukkit.tablist;
 
 import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
-import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
 
 import java.io.IOException;
-import java.util.logging.Level;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import com.earth2me.essentials.Essentials;
-import com.earth2me.essentials.User;
 
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 
 public class TabNameHandler {
 
@@ -31,14 +26,9 @@ public class TabNameHandler {
 
 		String result = "";
 		if (ConfigValues.isTabNameUsePluginNickName()) {
-			if (!plugin.isPluginEnabled("Essentials")) {
-				logConsole(Level.WARNING, "The Essentials plugin not found. Without the nickname option not work.");
-				return;
-			}
-
-			User user = JavaPlugin.getPlugin(Essentials.class).getUser(p);
-			if (user.getNickname() != null) {
-				result = colorMsg(user.getNickname() + "&r");
+			String nickName = PluginUtils.getNickName(p) == null ? "" : PluginUtils.getNickName(p);
+			if (!nickName.isEmpty()) {
+				result = colorMsg(nickName + "&r");
 			}
 		} else {
 			String name = getTabName(p);
@@ -64,7 +54,7 @@ public class TabNameHandler {
 		return getTabName(p.getName());
 	}
 
-	public String getTabName(String name) {
+	private String getTabName(String name) {
 		return ConfigValues.isTabNameEnabled() && plugin.getConf().getNames().contains("players." + name)
 				? plugin.getConf().getNames().getString("players." + name + ".tabname", "")
 				: "";
@@ -78,15 +68,10 @@ public class TabNameHandler {
 		String result = "", tName = "";
 
 		if (ConfigValues.isTabNameUsePluginNickName()) {
-			if (plugin.isPluginEnabled("Essentials")) {
-				User user = JavaPlugin.getPlugin(Essentials.class).getUser(p);
-				if (user.getNickname() != null) {
-					result = colorMsg(user.getNickname());
-					tName = user.getNickname();
-				}
-			} else {
-				logConsole(Level.WARNING, "The Essentials plugin not found. Without the nickname option not work.");
-				return;
+			String nickName = PluginUtils.getNickName(p) == null ? "" : PluginUtils.getNickName(p);
+			if (!nickName.isEmpty()) {
+				result = colorMsg(nickName);
+				tName = nickName;
 			}
 		} else {
 			if (ConfigValues.isDefaultColorEnabled()) {
@@ -101,7 +86,7 @@ public class TabNameHandler {
 			tName = name;
 		}
 
-		if (!result.isEmpty()) {
+		if (!result.isEmpty() && !ConfigValues.isUseTabName()) {
 			p.setPlayerListName(result);
 		}
 
@@ -121,7 +106,12 @@ public class TabNameHandler {
 			return;
 		}
 
-		p.setPlayerListName(p.getName());
+		if (ConfigValues.isUseTabName()
+				&& plugin.getGroups().getTLPlayerMap().containsKey(p.getUniqueId().toString())) {
+			plugin.getGroups().getTLPlayerMap().get(p.getUniqueId().toString()).setTabName(null);
+		} else {
+			p.setPlayerListName(p.getName());
+		}
 
 		plugin.getConf().getNames().set("players." + p.getName() + ".tabname", null);
 		plugin.getConf().getNames().set("players." + p.getName(), null);

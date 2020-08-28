@@ -7,7 +7,7 @@ import org.bukkit.scoreboard.Team;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 @SuppressWarnings("deprecation")
-public class NMS {
+public abstract class NMS {
 
 	public static void addEntry(Player player, Team team) {
 		if (Version.isCurrentLower(Version.v1_9_R1)) {

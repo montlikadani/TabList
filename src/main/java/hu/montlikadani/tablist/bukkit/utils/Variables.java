@@ -34,7 +34,7 @@ public class Variables {
 			}
 		}
 
-		if (plugin.getTabC().contains("custom-variables")) {
+		if (plugin.getTabC().isConfigurationSection("custom-variables")) {
 			for (String custom : plugin.getTabC().getConfigurationSection("custom-variables").getKeys(true)) {
 				if (str.contains(custom)) {
 					str = str.replace(custom, plugin.getTabC().getString("custom-variables." + custom));
