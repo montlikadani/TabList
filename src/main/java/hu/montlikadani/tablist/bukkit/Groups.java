@@ -129,10 +129,7 @@ public class Groups {
 	}
 
 	public void loadGroupForPlayer(Player p) {
-		removePlayerGroup(p).thenAccept(e -> {
-			startTask();
-			addPlayer(p);
-		});
+		removePlayerGroup(p).thenAccept(e -> startTask());
 	}
 
 	public void setPlayerTeam(TabListPlayer tabPlayer, int priority) {
