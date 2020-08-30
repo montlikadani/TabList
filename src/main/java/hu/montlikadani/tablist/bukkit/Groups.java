@@ -156,7 +156,6 @@ public class Groups {
 			tabPlayer.getTabTeam().setScoreboard(tboard);
 		}*/
 
-		tabPlayer.getTabTeam().registerTeam(name);
 		tabPlayer.getTabTeam().setTeam(name);
 	}
 

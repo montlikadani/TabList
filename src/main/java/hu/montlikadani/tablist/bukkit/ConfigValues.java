@@ -14,10 +14,11 @@ public class ConfigValues {
 
 	private static String afkFormatYes, afkFormatNo, timeZone, timeFormat, dateFormat, goodPingColor, mediumPingColor,
 			badPingColor, goodTpsColor, mediumTpsColor, badTpsColor, objectType, customObjectSetting,
-			defaultTabNameColor;
+			defaultTabNameColor, memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor,
+			memoryBarReleasedColor;
 
 	private static int goodPingAmount, mediumPingAmount, tpsSize, groupsRefreshInterval, objectRefreshInterval,
-			tabNameMaxLength;
+			tabNameMaxLength, memoryBarSize;
 
 	private static double goodTpsAmount;
 	private static double mediumTpsAmount;
@@ -77,6 +78,11 @@ public class ConfigValues {
 		goodTpsColor = c.getString("placeholder-format.tps.good-tps.color", "&a");
 		mediumTpsColor = c.getString("placeholder-format.tps.medium-tps.color", "&6");
 		badTpsColor = c.getString("placeholder-format.tps.bad-ping", "&c");
+		memoryBarChar = c.getString("placeholder-format.memory-bar.char", "|");
+		memoryBarUsedColor = c.getString("placeholder-format.memory-bar.colors.used", "&c");
+		memoryBarFreeColor = c.getString("placeholder-format.memory-bar.colors.free", "&a");
+		memoryBarAllocationColor = c.getString("placeholder-format.memory-bar.colors.allocation", "&e");
+		memoryBarReleasedColor = c.getString("placeholder-format.memory-bar.colors.released", "&6");
 		objectType = c.getString("tablist-object-type.type", "ping");
 		customObjectSetting = c.getString("tablist-object-type.object-settings.custom.value", "%level%");
 		defaultTabNameColor = c.getString("tabname.default-color.color", "&6");
@@ -84,12 +90,37 @@ public class ConfigValues {
 		goodPingAmount = c.getInt("placeholder-format.ping.good-ping.amount", 200);
 		mediumPingAmount = c.getInt("placeholder-format.ping.medium-ping.amount", 500);
 		tpsSize = c.getInt("placeholder-format.tps.size", 2);
+		memoryBarSize = c.getInt("placeholder-format.memory-bar.size", 80);
 		groupsRefreshInterval = c.getInt("change-prefix-suffix-in-tablist.refresh-interval", 30);
 		objectRefreshInterval = c.getInt("tablist-object-type.refresh-interval", 3);
 		tabNameMaxLength = c.getInt("tabname.max-name-length", 200);
 
 		goodTpsAmount = c.getDouble("placeholder-format.tps.good-tps.amount", 18.0);
 		mediumTpsAmount = c.getDouble("placeholder-format.tps.medium-tps.amount", 16.0);
+	}
+
+	public static String getMemoryBarChar() {
+		return memoryBarChar;
+	}
+
+	public static String getMemoryBarUsedColor() {
+		return memoryBarUsedColor;
+	}
+
+	public static String getMemoryBarFreeColor() {
+		return memoryBarFreeColor;
+	}
+
+	public static String getMemoryBarAllocationColor() {
+		return memoryBarAllocationColor;
+	}
+
+	public static String getMemoryBarReleasedColor() {
+		return memoryBarReleasedColor;
+	}
+
+	public static int getMemoryBarSize() {
+		return memoryBarSize;
 	}
 
 	public static boolean isPlaceholderAPI() {

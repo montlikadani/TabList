@@ -118,7 +118,7 @@ public class ReflectionUtils {
 
 	public static class Classes {
 
-		public static Object getPlayerContructor(Player player, GameProfile profile) {
+		public static Object getPlayerConstructor(Player player, GameProfile profile) {
 			Class<?> server = getMinecraftServer();
 			Object serverIns = getServer(server);
 

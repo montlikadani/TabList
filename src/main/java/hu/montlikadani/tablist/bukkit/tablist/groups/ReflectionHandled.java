@@ -40,7 +40,7 @@ public class ReflectionHandled implements ITabScoreboard {
 		}
 
 		profile = new GameProfile(tabPlayer.getPlayer().getUniqueId(), tabPlayer.getPlayer().getName());
-		playerConst = ReflectionUtils.Classes.getPlayerContructor(tabPlayer.getPlayer(), profile);
+		playerConst = ReflectionUtils.Classes.getPlayerConstructor(tabPlayer.getPlayer(), profile);
 
 		try {
 			scoreRef.init();
@@ -77,6 +77,10 @@ public class ReflectionHandled implements ITabScoreboard {
 
 	@Override
 	public void setTeam(String teamName) {
+		if (packet == null) {
+			registerTeam(teamName);
+		}
+
 		try {
 			scoreRef.getScoreboardTeamDisplayName().set(packet,
 					Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? ReflectionUtils.getAsIChatBaseComponent(teamName)

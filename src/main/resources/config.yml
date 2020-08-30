@@ -106,6 +106,18 @@ placeholder-format:
       amount: 16.0
     bad-tps: "&c"
 
+  # Memory bar settings for %memory_bar% variable
+  memory-bar:
+    char: "|"
+    size: 80
+    colors:
+      used: "&c"
+      free: "&a"
+      # When the server memory less than 80
+      allocation: "&e"
+      # When the server memory is on critical level (less than 40) and some resource need memory to run.
+      released: "&6"
+
 # Enable changing of prefix & suffix in player list?
 # This option generates the groups.yml file.
 change-prefix-suffix-in-tablist:

@@ -43,9 +43,11 @@ interval: 4
 random: false
 
 header:
-- "<lines>"
-- "%anim:tablist%"
+- "<lines>\n%anim:tablist%"
 - "&7<75> %anim:welcome% %player%&c!&7 <74>\n&6Ping:&r %ping%&7ms"
+- "&8<1>&7 Used ram, free, max:&e %server-ram-max%"
+- "%memory_bar%"
+- "  &e%server-ram-used%         %server-ram-free%"
 
 footer:
 - "<13>&e&l Players:&6 %online-players%&7/&6%max-players%"

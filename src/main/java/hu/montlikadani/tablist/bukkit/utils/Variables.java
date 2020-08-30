@@ -26,6 +26,44 @@ public class Variables {
 	}
 
 	public String replaceVariables(Player pl, String str) {
+		Runtime r = Runtime.getRuntime();
+
+		if (str.contains("%memory_bar%") && !ConfigValues.getMemoryBarChar().isEmpty()) {
+			StringBuilder builder = new StringBuilder();
+
+			int barSize = ConfigValues.getMemoryBarSize(),
+					totalMemory = (int) (r.totalMemory() / 1048576),
+					usedMemory = totalMemory - (int) (r.freeMemory() / 1048576),
+					maxMemory = (int) (r.maxMemory() / 1048576);
+
+			float usedMem = (float) usedMemory / maxMemory;
+			float totalMem = (float) totalMemory / maxMemory;
+
+			String barChar = ConfigValues.getMemoryBarChar();
+
+			builder.append(
+					usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
+
+			// IntStream is memory eater
+			for (int i = 0; i < (int) (barSize * usedMem); i++) {
+				builder.append(barChar);
+			}
+
+			builder.append(ConfigValues.getMemoryBarFreeColor());
+
+			for (int i = 0; i < (int) (barSize * (totalMem - usedMem)); i++) {
+				builder.append(barChar);
+			}
+
+			builder.append(ConfigValues.getMemoryBarReleasedColor());
+
+			for (int i = 0; i < (int) (barSize * (1 - totalMem)); i++) {
+				builder.append(barChar);
+			}
+
+			str = str.replace("%memory_bar%", builder.toString());
+		}
+
 		if (plugin.getC().contains("custom-variables")) { // old
 			for (String custom : plugin.getC().getConfigurationSection("custom-variables").getKeys(true)) {
 				if (str.contains(custom)) {
@@ -80,7 +118,6 @@ public class Variables {
 			dt = form2 != null ? now.format(form2) : cal.get(Calendar.YEAR) + "/" + cal.get(Calendar.DATE);
 		}
 
-		Runtime r = Runtime.getRuntime();
 		Long fram = Long.valueOf(r.freeMemory() / 1048576L),
 				mram = Long.valueOf(r.maxMemory() / 1048576L),
 				uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);

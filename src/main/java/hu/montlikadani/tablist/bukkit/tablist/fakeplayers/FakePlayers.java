@@ -31,7 +31,7 @@ public class FakePlayers implements IFakePlayers {
 	public void createFakeplayer(Player p) {
 		try {
 			profile = new GameProfile(UUID.randomUUID(), name);
-			fakePl = ReflectionUtils.Classes.getPlayerContructor(p, profile);
+			fakePl = ReflectionUtils.Classes.getPlayerConstructor(p, profile);
 
 			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(profile.getName()));
 

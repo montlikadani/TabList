@@ -274,9 +274,11 @@ public class TabList extends JavaPlugin {
 			return "";
 		}
 
-		for (AnimCreator ac : animations) {
-			name = name.replace("%anim:" + ac.getAnimName() + "%",
-					ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
+		while (name.contains("%anim:")) { // when using multiple animations
+			for (AnimCreator ac : animations) {
+				name = name.replace("%anim:" + ac.getAnimName() + "%",
+						ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
+			}
 		}
 
 		return name;
