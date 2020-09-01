@@ -82,13 +82,14 @@ placeholder-format:
   # Ping color format for %ping% placeholder.
   ping:
     enable: true
-    good-ping:
-      color: "&a"
-      amount: 200
-    medium-ping:
-      color: "&6"
-      amount: 500
-    bad-ping: "&c"
+    # Operators usage:
+    # > - highest value, "17>&e" this will be yellow color
+    # < - less value, "8<&4" dark red color
+    # = - equal value, "20.0=&a" green color
+    formats:
+    - "200<&a"
+    - "400>&6"
+    - "500>&c"
 
   # TPS color format for %tps% placeholder.
   tps:
@@ -98,13 +99,14 @@ placeholder-format:
     size: 2
 
     enable: true
-    good-tps:
-      color: "&a"
-      amount: 18.0
-    medium-tps:
-      color: "&6"
-      amount: 16.0
-    bad-tps: "&c"
+    # Operators usage:
+    # > - highest value, "17>&e" this will be yellow color
+    # < - less value, "8<&4" dark red color
+    # = - equal value, "20.0=&a" green color
+    formats:
+    - "18.0>&a"
+    - "16.0=&6"
+    - "16.0<&c"
 
   # Memory bar settings for %memory_bar% variable
   memory-bar:

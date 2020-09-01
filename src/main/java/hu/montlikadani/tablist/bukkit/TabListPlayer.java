@@ -117,14 +117,14 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			}
 		} else {
 			List<TeamHandler> playerPrimaryVaultGroups;
-			if (plugin.isPluginEnabled("Vault") && ConfigValues.isPreferPrimaryVaultGroup()
-					&& (playerPrimaryVaultGroups = groupsList.stream().filter(
+			if (plugin.hasVault() && ConfigValues.isPreferPrimaryVaultGroup()
+					&& ((playerPrimaryVaultGroups = groupsList.stream().filter(
 							group -> group.getTeam().equalsIgnoreCase(plugin.getVaultPerm().getPrimaryGroup(player)))
 							.collect(Collectors.toList())).size() > 0
-					|| (playerPrimaryVaultGroups = groupsList.stream()
-							.filter(group -> StringUtils.containsIgnoreCase(group.getTeam(),
-									plugin.getVaultPerm().getPrimaryGroup(player)))
-							.collect(Collectors.toList())).size() > 0) {
+							|| (playerPrimaryVaultGroups = groupsList.stream()
+									.filter(group -> StringUtils.containsIgnoreCase(group.getTeam(),
+											plugin.getVaultPerm().getPrimaryGroup(player)))
+									.collect(Collectors.toList())).size() > 0)) {
 				TeamHandler team = playerPrimaryVaultGroups.get(0);
 				if (group != team) {
 					update = true;
@@ -153,7 +153,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 						break;
 					}
 
-					if (perm.isEmpty() && plugin.isPluginEnabled("Vault")) {
+					if (perm.isEmpty() && plugin.hasVault()) {
 						for (String groups : plugin.getVaultPerm().getPlayerGroups(player)) {
 							if (groups.equalsIgnoreCase(name)) {
 								if (group != team) {

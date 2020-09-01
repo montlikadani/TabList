@@ -3,6 +3,7 @@ package hu.montlikadani.tablist.bukkit.utils;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
@@ -15,11 +16,17 @@ import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.utils.operators.ExpressionNode;
+import hu.montlikadani.tablist.bukkit.utils.operators.OperatorNodes;
 import me.clip.placeholderapi.PlaceholderAPI;
 
+@SuppressWarnings("deprecation")
 public class Variables {
 
 	private TabList plugin;
+
+	private final ExpressionNode tpsNode = new OperatorNodes(),
+			pingNode = new OperatorNodes();
 
 	public Variables(TabList plugin) {
 		this.plugin = plugin;
@@ -190,7 +197,6 @@ public class Variables {
 		return Util.colorMsg(str);
 	}
 
-	@SuppressWarnings("deprecation")
 	public String setPlaceholders(Player p, String s) {
 		if (ConfigValues.isPlaceholderAPI() && plugin.isPluginEnabled("PlaceholderAPI")
 				&& PlaceholderAPI.containsPlaceholders(s)) {
@@ -241,40 +247,86 @@ public class Variables {
 	}
 
 	private String formatPing(int ping) {
-		StringBuilder sb2 = new StringBuilder();
-
-		if (ConfigValues.isPingFormatEnabled()) {
-			if (ping <= ConfigValues.getGoodPingAmount()) {
-				return sb2.append(ConfigValues.getGoodPingColor().replace('&', '\u00a7')).append(ping)
-						.append(ChatColor.RESET).toString();
-			} else if (ping <= ConfigValues.getMediumPingAmount()) {
-				return sb2.append(ConfigValues.getMediumPingColor().replace('&', '\u00a7')).append(ping)
-						.append(ChatColor.RESET).toString();
-			} else {
-				return sb2.append(ConfigValues.getBadPingColor().replace('&', '\u00a7')).append(ping)
-						.append(ChatColor.RESET).toString();
-			}
+		if (!ConfigValues.isPingFormatEnabled()) {
+			return "";
 		}
 
-		return sb2.append(ping).toString();
+		if (!ConfigValues.getPingColorFormats().isEmpty()) {
+			return parseExpression(ping);
+		}
+
+		StringBuilder sb2 = new StringBuilder();
+
+		if (ping <= ConfigValues.getGoodPingAmount()) {
+			return sb2.append(ConfigValues.getGoodPingColor().replace('&', '\u00a7')).append(ping)
+					.append(ChatColor.RESET).toString();
+		} else if (ping <= ConfigValues.getMediumPingAmount()) {
+			return sb2.append(ConfigValues.getMediumPingColor().replace('&', '\u00a7')).append(ping)
+					.append(ChatColor.RESET).toString();
+		} else {
+			return sb2.append(ConfigValues.getBadPingColor().replace('&', '\u00a7')).append(ping)
+					.append(ChatColor.RESET).toString();
+		}
 	}
 
 	private String formatTPS(double tps) {
+		if (!ConfigValues.isTpsFormatEnabled()) {
+			return "";
+		}
+
+		if (!ConfigValues.getTpsColorFormats().isEmpty()) {
+			return parseExpression(tps);
+		}
+
 		StringBuilder sb = new StringBuilder();
 
-		if (ConfigValues.isTpsFormatEnabled()) {
-			if (tps > ConfigValues.getGoodTpsAmount()) {
-				return sb.append(ConfigValues.getGoodTpsColor().replace('&', '\u00a7')).append(tps)
-						.append(ChatColor.RESET).toString();
-			} else if (tps > ConfigValues.getMediumTpsAmount()) {
-				return sb.append(ConfigValues.getMediumTpsColor().replace('&', '\u00a7')).append(tps)
-						.append(ChatColor.RESET).toString();
-			} else {
-				return sb.append(ConfigValues.getBadTpsColor().replace('&', '\u00a7')).append(tps)
-						.append(ChatColor.RESET).toString();
+		if (tps > ConfigValues.getGoodTpsAmount()) {
+			return sb.append(ConfigValues.getGoodTpsColor().replace('&', '\u00a7')).append(tps).append(ChatColor.RESET)
+					.toString();
+		} else if (tps > ConfigValues.getMediumTpsAmount()) {
+			return sb.append(ConfigValues.getMediumTpsColor().replace('&', '\u00a7')).append(tps)
+					.append(ChatColor.RESET).toString();
+		} else {
+			return sb.append(ConfigValues.getBadTpsColor().replace('&', '\u00a7')).append(tps).append(ChatColor.RESET)
+					.toString();
+		}
+	}
+
+	private String parseExpression(double tps) {
+		List<String> list = ConfigValues.getTpsColorFormats();
+		for (String f : list) {
+			tpsNode.setParseExpression(f);
+
+			if (tpsNode.parse((int) tps)) {
+				String color = tpsNode.getCondition().getParseable().length > 1
+						? tpsNode.getCondition().getParseable()[1]
+						: "";
+				if (!color.isEmpty()) {
+					return new StringBuilder().append(color.replace('&', '\u00a7')).append(tps).append(ChatColor.RESET)
+							.toString();
+				}
 			}
 		}
 
-		return sb.append(tps).toString();
+		return "";
+	}
+
+	private String parseExpression(int ping) {
+		List<String> list = ConfigValues.getPingColorFormats();
+		for (String f : list) {
+			pingNode.setParseExpression(f);
+
+			if (pingNode.parse(ping)) {
+				String color = pingNode.getCondition().getParseable().length > 1
+						? pingNode.getCondition().getParseable()[1]
+						: "";
+				if (!color.isEmpty()) {
+					return new StringBuilder().append(color.replace('&', '\u00a7')).append(ping).append(ChatColor.RESET)
+							.toString();
+				}
+			}
+		}
+
+		return "";
 	}
 }

@@ -1,5 +1,7 @@
 package hu.montlikadani.tablist.bukkit;
 
+import java.util.List;
+
 import org.bukkit.configuration.file.FileConfiguration;
 
 public class ConfigValues {
@@ -16,6 +18,8 @@ public class ConfigValues {
 			badPingColor, goodTpsColor, mediumTpsColor, badTpsColor, objectType, customObjectSetting,
 			defaultTabNameColor, memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor,
 			memoryBarReleasedColor;
+
+	private static List<String> tpsColorFormats, pingColorFormats;
 
 	private static int goodPingAmount, mediumPingAmount, tpsSize, groupsRefreshInterval, objectRefreshInterval,
 			tabNameMaxLength, memoryBarSize;
@@ -86,6 +90,9 @@ public class ConfigValues {
 		objectType = c.getString("tablist-object-type.type", "ping");
 		customObjectSetting = c.getString("tablist-object-type.object-settings.custom.value", "%level%");
 		defaultTabNameColor = c.getString("tabname.default-color.color", "&6");
+
+		tpsColorFormats = c.getStringList("placeholder-format.tps.formats");
+		pingColorFormats = c.getStringList("placeholder-format.ping.formats");
 
 		goodPingAmount = c.getInt("placeholder-format.ping.good-ping.amount", 200);
 		mediumPingAmount = c.getInt("placeholder-format.ping.medium-ping.amount", 500);
@@ -201,22 +208,27 @@ public class ConfigValues {
 		return pingFormatEnabled;
 	}
 
+	@Deprecated
 	public static String getGoodPingColor() {
 		return goodPingColor;
 	}
 
+	@Deprecated
 	public static int getGoodPingAmount() {
 		return goodPingAmount;
 	}
 
+	@Deprecated
 	public static String getMediumPingColor() {
 		return mediumPingColor;
 	}
 
+	@Deprecated
 	public static int getMediumPingAmount() {
 		return mediumPingAmount;
 	}
 
+	@Deprecated
 	public static String getBadPingColor() {
 		return badPingColor;
 	}
@@ -225,22 +237,27 @@ public class ConfigValues {
 		return tpsFormatEnabled;
 	}
 
+	@Deprecated
 	public static double getGoodTpsAmount() {
 		return goodTpsAmount;
 	}
 
+	@Deprecated
 	public static double getMediumTpsAmount() {
 		return mediumTpsAmount;
 	}
 
+	@Deprecated
 	public static String getGoodTpsColor() {
 		return goodTpsColor;
 	}
 
+	@Deprecated
 	public static String getMediumTpsColor() {
 		return mediumTpsColor;
 	}
 
+	@Deprecated
 	public static String getBadTpsColor() {
 		return badTpsColor;
 	}
@@ -335,5 +352,13 @@ public class ConfigValues {
 
 	public static int getTpsSize() {
 		return tpsSize;
+	}
+
+	public static List<String> getTpsColorFormats() {
+		return tpsColorFormats;
+	}
+
+	public static List<String> getPingColorFormats() {
+		return pingColorFormats;
 	}
 }

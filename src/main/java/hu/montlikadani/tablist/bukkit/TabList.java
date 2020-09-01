@@ -39,7 +39,7 @@ public class TabList extends JavaPlugin {
 
 	private static TabList instance;
 
-	private static Permission perm = null;
+	private static Permission perm;
 
 	private Objects objects;
 	private Variables variables;
@@ -51,6 +51,7 @@ public class TabList extends JavaPlugin {
 	private TabNameHandler tabNameHandler;
 
 	private boolean isSpigot = false;
+	private boolean hasVault = false;
 	private int tabRefreshTime = 0;
 
 	private final Set<AnimCreator> animations = new HashSet<>();
@@ -90,9 +91,7 @@ public class TabList extends JavaPlugin {
 						+ me.clip.placeholderapi.PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
 			}
 
-			if (isPluginEnabled("Vault")) {
-				initVaultPerm();
-			}
+			hasVault = initVaultPerm();
 
 			fakePlayerHandler.load();
 
@@ -263,6 +262,10 @@ public class TabList extends JavaPlugin {
 	}
 
 	private boolean initVaultPerm() {
+		if (!isPluginEnabled("Vault")) {
+			return false;
+		}
+
 		org.bukkit.plugin.RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager()
 				.getRegistration(Permission.class);
 		perm = rsp == null ? null : rsp.getProvider();
@@ -409,6 +412,10 @@ public class TabList extends JavaPlugin {
 
 	public boolean isSpigot() {
 		return isSpigot;
+	}
+
+	public boolean hasVault() {
+		return hasVault;
 	}
 
 	public Variables getPlaceholders() {
