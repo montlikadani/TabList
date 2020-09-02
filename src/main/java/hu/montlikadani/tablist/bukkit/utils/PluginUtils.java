@@ -33,7 +33,7 @@ public class PluginUtils {
 	}
 
 	public static boolean isVanished(Player p) {
-		if (plugin.isPluginEnabled("SuperVanish")) {
+		if (plugin.isPluginEnabled("SuperVanish") || plugin.isPluginEnabled("PremiumVanish")) {
 			return VanishAPI.isInvisible(p);
 		}
 
@@ -56,7 +56,7 @@ public class PluginUtils {
 			return plSize;
 		}
 
-		if (plugin.isPluginEnabled("SuperVanish")) {
+		if (plugin.isPluginEnabled("SuperVanish") || plugin.isPluginEnabled("PremiumVanish")) {
 			return VanishAPI.getInvisiblePlayers().isEmpty() ? plSize : plSize - VanishAPI.getInvisiblePlayers().size();
 		}
 
@@ -80,7 +80,7 @@ public class PluginUtils {
 			return JavaPlugin.getPlugin(Essentials.class).getVanishedPlayers().size();
 		}
 
-		if (plugin.isPluginEnabled("SuperVanish")) {
+		if (plugin.isPluginEnabled("SuperVanish") || plugin.isPluginEnabled("PremiumVanish")) {
 			return VanishAPI.getInvisiblePlayers().size();
 		}
 

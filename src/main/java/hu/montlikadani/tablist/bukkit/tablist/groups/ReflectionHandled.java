@@ -125,8 +125,8 @@ public class ReflectionHandled implements ITabScoreboard {
 		List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
 				.get(packetPlayOutPlayerInfo);
 		for (Object infoData : infoList) {
-			Field e = ReflectionUtils.getField(infoData, "e");
 			if (profile.getId().equals(tabPlayer.getPlayer().getUniqueId())) {
+				Field e = ReflectionUtils.getField(infoData, "e");
 				ReflectionUtils.modifyFinalField(e, infoData,
 						ReflectionUtils.getField(playerConst, "listName").get(playerConst));
 				break;

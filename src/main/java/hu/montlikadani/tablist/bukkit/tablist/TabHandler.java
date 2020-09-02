@@ -27,18 +27,8 @@ public class TabHandler implements ITabHandler {
 	private BukkitTask task;
 	private TabBuilder builder;
 
-	@Deprecated
-	public TabHandler(TabList plugin, Player player) {
-		this(plugin, player.getUniqueId(), null);
-	}
-
 	public TabHandler(TabList plugin, UUID playerUUID) {
 		this(plugin, playerUUID, null);
-	}
-
-	@Deprecated
-	public TabHandler(TabList plugin, Player player, TabBuilder builder) {
-		this(plugin, player.getUniqueId(), builder);
 	}
 
 	public TabHandler(TabList plugin, UUID playerUUID, TabBuilder builder) {

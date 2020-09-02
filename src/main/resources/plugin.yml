@@ -8,6 +8,7 @@ softdepend:
 - Essentials
 - Vault
 - SuperVanish
+- PremiumVanish
 - Multiverse-Core # Load this plugin before tablist to prevent issues
 - ProtocolLib
 - PermissionsEx

@@ -20,13 +20,13 @@ enable-fake-players: false
 remove-gray-color-from-tab-in-spectator: false
 
 # true - does not count vanished players in %online-players% placeholder.
-# Requires Essentials, SuperVanish or CMI plugin!
+# Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!
 ignore-vanished-players-in-online-players: false
 
 # true - count vanished staff in %staff-online% placeholder,
 # but they need to have "tablist.onlinestaff" permission set.
 # false - does not count vanished staff in the %staff-online% placeholder
-# Requires Essentials, SuperVanish or CMI plugin!
+# Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!
 count-vanished-staffs: true
 
 # Hide player from player list when he is AFK?
@@ -142,7 +142,7 @@ change-prefix-suffix-in-tablist:
   sync-plugins-groups-with-tablist: true
 
   # Hide player's group in player list when the player is vanished?
-  # Requires Essentials, SuperVanish or CMI plugin!
+  # Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!
   hide-group-when-player-vanished: false
 
   # Hide player's group in player list when the player is AFK?

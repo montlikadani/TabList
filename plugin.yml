@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.tablist.bukkit.TabList
-version: 5.4.5
+version: 5.4.6
 author: montlikadani
 description: An ultimate animated tablist.
 softdepend:
@@ -8,6 +8,7 @@ softdepend:
 - Essentials
 - Vault
 - SuperVanish
+- PremiumVanish
 - Multiverse-Core # Load this plugin before tablist to prevent issues
 - ProtocolLib
 - PermissionsEx
