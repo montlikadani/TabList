@@ -83,13 +83,15 @@ placeholder-format:
   ping:
     enable: true
     # Operators usage:
-    # > - highest value, "17>&e" this will be yellow color
-    # < - less value, "8<&4" dark red color
-    # = - equal value, "20.0=&a" green color
+    # > - highest value, "17 > &e" this will be yellow color
+    # >= - highest & equal value, "5 >= &6" gold color
+    # <= - less than & equal value, "16 <= &c" red color
+    # < - less value, "8 < &4" dark red color
+    # == - equal value, "20 == &a" green color if 20 is equal to current ping amount
     formats:
-    - "200<&a"
-    - "400>&6"
-    - "500>&c"
+    - "200 <= &a"
+    - "400 >= &6"
+    - "500 > &c"
 
   # TPS color format for %tps% placeholder.
   tps:
@@ -100,13 +102,15 @@ placeholder-format:
 
     enable: true
     # Operators usage:
-    # > - highest value, "17>&e" this will be yellow color
-    # < - less value, "8<&4" dark red color
-    # = - equal value, "20.0=&a" green color
+    # > - highest value, "17 > &e" this will be yellow color
+    # >= - highest & equal value, "5 >= &6" gold color
+    # <= - less than & equal value, "16 <= &c" red color
+    # < - less value, "8 < &4" dark red color
+    # == - equal value, "20 == &a" green color if 20 is equal to current tps amount
     formats:
-    - "18.0>&a"
-    - "16.0=&6"
-    - "16.0<&c"
+    - "18.0 > &a"
+    - "16.0 == &6"
+    - "16.0 < &c"
 
   # Memory bar settings for %memory_bar% variable
   memory-bar:

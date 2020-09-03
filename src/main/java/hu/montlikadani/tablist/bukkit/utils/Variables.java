@@ -2,6 +2,7 @@ package hu.montlikadani.tablist.bukkit.utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -18,6 +19,7 @@ import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 import hu.montlikadani.tablist.bukkit.utils.operators.ExpressionNode;
 import hu.montlikadani.tablist.bukkit.utils.operators.OperatorNodes;
+import hu.montlikadani.tablist.bukkit.utils.operators.OperatorNodes.NodeType;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 @SuppressWarnings("deprecation")
@@ -25,11 +27,26 @@ public class Variables {
 
 	private TabList plugin;
 
-	private final ExpressionNode tpsNode = new OperatorNodes(),
-			pingNode = new OperatorNodes();
+	private final List<ExpressionNode> nodes = new ArrayList<>();
 
 	public Variables(TabList plugin) {
 		this.plugin = plugin;
+	}
+
+	public void loadExpressions() {
+		nodes.clear();
+
+		for (String f : ConfigValues.getPingColorFormats()) {
+			ExpressionNode node = new OperatorNodes(NodeType.PING);
+			node.setParseExpression(f);
+			nodes.add(node);
+		}
+
+		for (String f : ConfigValues.getTpsColorFormats()) {
+			ExpressionNode node = new OperatorNodes(NodeType.TPS);
+			node.setParseExpression(f);
+			nodes.add(node);
+		}
 	}
 
 	public String replaceVariables(Player pl, String str) {
@@ -252,7 +269,7 @@ public class Variables {
 		}
 
 		if (!ConfigValues.getPingColorFormats().isEmpty()) {
-			return parseExpression(ping);
+			return parseExpression(ping, NodeType.PING);
 		}
 
 		StringBuilder sb2 = new StringBuilder();
@@ -275,7 +292,7 @@ public class Variables {
 		}
 
 		if (!ConfigValues.getTpsColorFormats().isEmpty()) {
-			return parseExpression(tps);
+			return parseExpression(tps, NodeType.TPS);
 		}
 
 		StringBuilder sb = new StringBuilder();
@@ -292,41 +309,23 @@ public class Variables {
 		}
 	}
 
-	private String parseExpression(double tps) {
-		List<String> list = ConfigValues.getTpsColorFormats();
-		for (String f : list) {
-			tpsNode.setParseExpression(f);
+	private String parseExpression(double value, int type) {
+		String color = "";
 
-			if (tpsNode.parse((int) tps)) {
-				String color = tpsNode.getCondition().getParseable().length > 1
-						? tpsNode.getCondition().getParseable()[1]
-						: "";
-				if (!color.isEmpty()) {
-					return new StringBuilder().append(color.replace('&', '\u00a7')).append(tps).append(ChatColor.RESET)
-							.toString();
-				}
+		for (ExpressionNode node : nodes) {
+			if (node.getType() == type && node.getCondition().getParseable().length > 1 && node.parse(value)) {
+				color = node.getCondition().getParseable()[1];
 			}
 		}
 
-		return "";
-	}
+		color = color.trim();
 
-	private String parseExpression(int ping) {
-		List<String> list = ConfigValues.getPingColorFormats();
-		for (String f : list) {
-			pingNode.setParseExpression(f);
-
-			if (pingNode.parse(ping)) {
-				String color = pingNode.getCondition().getParseable().length > 1
-						? pingNode.getCondition().getParseable()[1]
-						: "";
-				if (!color.isEmpty()) {
-					return new StringBuilder().append(color.replace('&', '\u00a7')).append(ping).append(ChatColor.RESET)
-							.toString();
-				}
-			}
+		StringBuilder builder = new StringBuilder();
+		if (!color.isEmpty()) {
+			builder.append(color.replace('&', '\u00a7'));
 		}
 
-		return "";
+		return (type == NodeType.PING ? builder.append((int) value) : builder.append(value)).append(ChatColor.RESET)
+				.toString();
 	}
 }

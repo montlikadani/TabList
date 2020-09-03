@@ -2,13 +2,15 @@ package hu.montlikadani.tablist.bukkit.utils.operators;
 
 public interface ExpressionNode {
 
+	int getType();
+
 	String getParseExpression();
 
 	void setParseExpression(String parseExpression);
 
 	Condition getCondition();
 
-	char[] getExpressions();
+	String[] getExpressions();
 
-	boolean parse(int rightCond);
+	boolean parse(double rightCond);
 }

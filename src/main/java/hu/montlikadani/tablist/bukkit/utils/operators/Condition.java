@@ -2,10 +2,10 @@ package hu.montlikadani.tablist.bukkit.utils.operators;
 
 public class Condition {
 
-	private char operator;
+	private String operator;
 	private String[] parseable;
 
-	public Condition(char operator, String[] parseable) {
+	public Condition(String operator, String[] parseable) {
 		this.operator = operator;
 		this.parseable = parseable == null ? new String[0] : parseable;
 	}
@@ -14,7 +14,7 @@ public class Condition {
 		return parseable;
 	}
 
-	public char getOperator() {
+	public String getOperator() {
 		return operator;
 	}
 

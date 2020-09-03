@@ -2,19 +2,43 @@ package hu.montlikadani.tablist.bukkit.utils.operators;
 
 import org.apache.commons.lang.StringUtils;
 
+import hu.montlikadani.tablist.bukkit.ConfigValues;
+
 public class OperatorNodes implements ExpressionNode {
 
+	private static int pingNode = 1, tpsNode = 2;
+
+	private int type;
 	private Condition condition;
 
 	private String parseExpression;
 
-	private final char[] expressions = { '>', '<', '=' }; // not equal not required
+	private final String[] expressions = { ">", ">=", "<", "<=", "==" }; // not equal not required
 
-	public OperatorNodes(String str) {
+	public OperatorNodes(String str, int type) {
+		this(type);
+
 		setParseExpression(str);
 	}
 
-	public OperatorNodes() {
+	public OperatorNodes(int type) {
+		this.type = type;
+
+		pingNode++;
+		tpsNode++;
+	}
+
+	public static final class NodeType {
+		public static final int PING = pingNode;
+		public static final int TPS = tpsNode;
+
+		private NodeType() {
+		}
+	}
+
+	@Override
+	public int getType() {
+		return type;
 	}
 
 	@Override
@@ -31,7 +55,7 @@ public class OperatorNodes implements ExpressionNode {
 	}
 
 	@Override
-	public char[] getExpressions() {
+	public String[] getExpressions() {
 		return expressions;
 	}
 
@@ -41,58 +65,92 @@ public class OperatorNodes implements ExpressionNode {
 	}
 
 	private Condition makeConditionFromInput(final String str) {
-		for (int i = 0; i < str.length(); i++) {
-			char op = str.charAt(i);
-			if (!isOperator(op) || !isNumber(str.charAt(i - 1))) {
-				continue;
-			}
+		String operator = "";
 
-			String[] c = str.split(String.valueOf(op));
-			if (c.length > 1) {
-				condition = new Condition(op, c);
-				break;
+		for (int i = 0; i < expressions.length; i++) {
+			String expression = expressions[i];
+			String s = str.replaceAll("[^" + expression + "]", "");
+			if (s.contentEquals(expression)) {
+				operator = s;
 			}
+		}
+
+		if (operator.isEmpty()) {
+			return null;
+		}
+
+		String[] c = String.valueOf(str.trim().replace(operator, ";").toCharArray()).split(";");
+		if (isNumber(c[0])) {
+			condition = new Condition(operator, c);
 		}
 
 		return condition;
 	}
 
-	private boolean isNumber(char c) {
-		return (c >= '0' && c <= '9') || c == '.';
-	}
-
-	private boolean isOperator(char c) {
-		for (int i = 0; i < expressions.length; i++) {
-			if (c == expressions[i]) {
-				return true;
-			}
+	private boolean isNumber(String num) {
+		try {
+			Double.parseDouble(num);
+			return true;
+		} catch (NumberFormatException e) {
 		}
 
 		return false;
 	}
 
 	@Override
-	public boolean parse(int leftCond) {
-		boolean parsed = false;
-
-		double secondCondition = condition.getSecondCondition();
-		if (secondCondition < 0D || leftCond < 0D)
-			return parsed;
-
-		switch (condition.getOperator()) {
-		case '>':
-			parsed = leftCond > secondCondition;
-			break;
-		case '<':
-			parsed = leftCond < secondCondition;
-			break;
-		case '=':
-			parsed = leftCond == secondCondition;
-			break;
-		default:
-			break;
+	public boolean parse(double leftCond) {
+		if (condition == null) {
+			return false;
 		}
 
-		return parsed;
+		if (type == NodeType.TPS) {
+			double secondCondition = condition.getSecondCondition();
+			if (secondCondition < 0D || leftCond < 0D)
+				return false;
+
+			// TODO: Is there a better way to split leftCond for to be equally for secondCondition?
+			int left = Double.toString(leftCond).length(), right = Double.toString(secondCondition).length();
+			if (left != right) {
+				leftCond = Double
+						.parseDouble(Double.toString(leftCond).substring(0, right - ConfigValues.getTpsSize()));
+			}
+
+			switch (condition.getOperator()) {
+			case ">":
+				return leftCond > secondCondition;
+			case ">=":
+				return leftCond >= secondCondition;
+			case "<":
+				return leftCond < secondCondition;
+			case "<=":
+				return leftCond <= secondCondition;
+			case "==":
+				return leftCond == secondCondition;
+			default:
+				return false;
+			}
+		} else if (type == NodeType.PING) {
+			int firstCondition = (int) leftCond;
+			int secondCondition = (int) condition.getSecondCondition();
+			if (secondCondition < 0 || firstCondition < 0)
+				return false;
+
+			switch (condition.getOperator()) {
+			case ">":
+				return firstCondition > secondCondition;
+			case ">=":
+				return firstCondition >= secondCondition;
+			case "<":
+				return firstCondition < secondCondition;
+			case "<=":
+				return firstCondition <= secondCondition;
+			case "==":
+				return firstCondition == secondCondition;
+			default:
+				return false;
+			}
+		}
+
+		return false;
 	}
 }
