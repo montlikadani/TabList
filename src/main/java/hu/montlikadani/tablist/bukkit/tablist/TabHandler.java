@@ -142,7 +142,7 @@ public class TabHandler implements ITabHandler {
 					try {
 						group = plugin.getVaultPerm().getPrimaryGroup(world, player).toLowerCase();
 					} catch (UnsupportedOperationException e) {
-						logConsole(Level.WARNING, "You not using any permission manager plugin!");
+						logConsole(Level.WARNING, "You not using any permission plugin!");
 					}
 				}
 
@@ -177,7 +177,7 @@ public class TabHandler implements ITabHandler {
 				try {
 					group = plugin.getVaultPerm().getPrimaryGroup(player).toLowerCase();
 				} catch (UnsupportedOperationException e) {
-					logConsole(Level.WARNING, "You not using any permission manager plugin!");
+					logConsole(Level.WARNING, "You not using any permission plugin!");
 				}
 			}
 

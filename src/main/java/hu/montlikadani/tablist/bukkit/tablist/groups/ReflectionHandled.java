@@ -61,7 +61,7 @@ public class ReflectionHandled implements ITabScoreboard {
 			Class<?> enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
 			packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
 					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(ReflectionUtils
-							.getFieldObject(enumPlayerInfoAction, enumPlayerInfoAction.getDeclaredField("ADD_PLAYER")),
+							.getFieldObject(enumPlayerInfoAction, enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME")),
 							entityPlayerArray);
 
 			updateName(tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix());
