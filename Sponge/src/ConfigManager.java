@@ -45,7 +45,7 @@ public class ConfigManager {
 			folder.mkdirs();
 		}
 
-		this.file = new File(folder + File.separator + name);
+		this.file = new File(folder, name);
 		this.loader = HoconConfigurationLoader.builder().setFile(file)
 				.setDefaultOptions(ConfigurationOptions.defaults().setShouldCopyDefaults(true)).build();
 	}

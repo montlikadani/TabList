@@ -124,7 +124,6 @@ public class TabListManager {
 
 		taskMap.put(uuid, Task.builder().async().intervalTicks(refreshTime).execute(task -> {
 			if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
-				cancelTabForAll();
 				return;
 			}
 

@@ -135,21 +135,19 @@ public class Variables {
 	}
 
 	private String formatPing(int ping) {
-		StringBuilder ret, sb = new StringBuilder();
+		StringBuilder sb = new StringBuilder();
 
 		if (ConfigValues.isPingFormatEnabled()) {
 			if (ping <= ConfigValues.getGoodPingAmount()) {
-				ret = sb.append(ConfigValues.getGoodPingColor().replace('&', '\u00a7')).append(ping);
+				return sb.append(ConfigValues.getGoodPingColor().replace('&', '\u00a7')).append(ping).toString();
 			} else if (ping <= ConfigValues.getMediumPingAmount()) {
-				ret = sb.append(ConfigValues.getMediumPingColor().replace('&', '\u00a7')).append(ping);
+				return sb.append(ConfigValues.getMediumPingColor().replace('&', '\u00a7')).append(ping).toString();
 			} else {
-				ret = sb.append(ConfigValues.getBadPingColor().replace('&', '\u00a7')).append(ping);
+				return sb.append(ConfigValues.getBadPingColor().replace('&', '\u00a7')).append(ping).toString();
 			}
-		} else {
-			ret = sb.append(ping);
 		}
 
-		return ret.toString();
+		return sb.append(ping).toString();
 	}
 
 	public String setSymbols(String s) {

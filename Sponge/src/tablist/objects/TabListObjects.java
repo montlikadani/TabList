@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.scoreboard.Score;
 import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.scoreboard.critieria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
@@ -22,8 +23,10 @@ import hu.montlikadani.tablist.sponge.TabList;
 public class TabListObjects {
 
 	private TabList plugin;
+
 	private Task task;
-	private ObjectType type;
+
+	private ObjectType type = ObjectType.NONE;
 
 	public TabListObjects(TabList plugin) {
 		this.plugin = plugin;
@@ -33,8 +36,8 @@ public class TabListObjects {
 		return Optional.ofNullable(task);
 	}
 
-	public Optional<ObjectType> getObjectType() {
-		return Optional.ofNullable(type);
+	public ObjectType getObjectType() {
+		return type;
 	}
 
 	public void cancelTask() {
@@ -78,16 +81,12 @@ public class TabListObjects {
 	public void loadObjects() {
 		cancelTask();
 
-		type = ObjectType.getByName(ConfigValues.getTablistObjectsType());
-		if (type == null) {
-			type = ObjectType.NONE;
-		}
-
-		if (type == ObjectType.NONE) {
+		if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
 			return;
 		}
 
-		if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
+		type = ObjectType.getByName(ConfigValues.getTablistObjectsType());
+		if (type == ObjectType.NONE) {
 			return;
 		}
 
@@ -124,19 +123,28 @@ public class TabListObjects {
 					}
 				}
 
-				String objName = type.getName();
-				Objective object = getObjective(objName)
+				final String objName = type.getName();
+				final Objective object = getObjective(objName)
 						.orElse(Objective.builder().displayName(Text.of("tabObjects")).name(objName)
 								.objectiveDisplayMode(ObjectiveDisplayModes.INTEGER).criterion(Criteria.DUMMY).build());
+				final Scoreboard board = TabList.BOARD;
 
-				if (!TabList.BOARD.getObjective(objName).isPresent()) {
-					TabList.BOARD.addObjective(object);
+				if (!board.getObjective(objName).isPresent()) {
+					board.addObjective(object);
 				}
 
-				TabList.BOARD.updateDisplaySlot(object, DisplaySlots.LIST);
+				board.updateDisplaySlot(object, DisplaySlots.LIST);
 
-				object.getOrCreateScore(Text.of(all.getName())).setScore(score);
-				all.setScoreboard(TabList.BOARD);
+				final int fScore = score;
+				Optional<Score> s = object.getScore(Text.of(all.getName()));
+				if (!s.isPresent() || s.get().getScore() != fScore) {
+					Sponge.getServer().getOnlinePlayers().forEach(p -> {
+						getObjective(objName).ifPresent(obj -> {
+							obj.getOrCreateScore(Text.of(all.getName())).setScore(fScore);
+							p.setScoreboard(board);
+						});
+					});
+				}
 			});
 		}).submit(plugin);
 	}

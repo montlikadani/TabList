@@ -21,6 +21,6 @@ public enum ObjectType {
 			}
 		}
 
-		return null;
+		return NONE;
 	}
 }
