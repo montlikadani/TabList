@@ -75,7 +75,7 @@ public class TabListAPI {
 	public static boolean isTabListToggled(UUID uuid) {
 		Validate.notNull(uuid, "Player UUID can't be null");
 
-		return TabManager.TABENABLED.containsKey(uuid) && TabManager.TABENABLED.get(uuid);
+		return TabManager.TABENABLED.getOrDefault(uuid, false);
 	}
 
 	/**

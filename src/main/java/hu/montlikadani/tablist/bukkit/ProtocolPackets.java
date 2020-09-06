@@ -71,7 +71,7 @@ public class ProtocolPackets extends PacketAdapter {
 					if (c.get(infoData).equals(ReflectionUtils.getField(enumGameMode, "SPECTATOR").get(enumGameMode))
 							&& !(id.equals(event.getPlayer().getUniqueId()))) {
 						ReflectionUtils.modifyFinalField(c, infoData,
-								ReflectionUtils.getField(enumGameMode, "CREATIVE").get(enumGameMode));
+								ReflectionUtils.getField(enumGameMode, "SURVIVAL").get(enumGameMode));
 					}
 				}
 			}

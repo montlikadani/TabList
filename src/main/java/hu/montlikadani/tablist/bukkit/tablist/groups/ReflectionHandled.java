@@ -1,15 +1,28 @@
 package hu.montlikadani.tablist.bukkit.tablist.groups;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+import java.util.concurrent.CompletableFuture;
 
+import javax.net.ssl.HttpsURLConnection;
+
+import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 
 import hu.montlikadani.tablist.bukkit.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
@@ -40,6 +53,15 @@ public class ReflectionHandled implements ITabScoreboard {
 		}
 
 		profile = new GameProfile(tabPlayer.getPlayer().getUniqueId(), tabPlayer.getPlayer().getName());
+
+		if (Bukkit.getServer().getOnlineMode()) {
+			getSkinValue(tabPlayer.getPlayer().getUniqueId().toString()).thenAcceptAsync((map) -> {
+				Entry<String, String> e = map.pollFirstEntry();
+				profile.getProperties().get("textures").clear();
+				profile.getProperties().put("textures", new Property("textures", e.getKey(), e.getValue()));
+			});
+		}
+
 		playerConst = ReflectionUtils.Classes.getPlayerConstructor(tabPlayer.getPlayer(), profile);
 
 		try {
@@ -55,16 +77,17 @@ public class ReflectionHandled implements ITabScoreboard {
 			scoreRef.getScoreboardTeamNames().set(packet, Collections.singletonList(tabPlayer.getPlayer().getName()));
 			scoreRef.getScoreboardTeamMode().set(packet, 0);
 
+			ReflectionUtils.setField(playerConst, "listName", ReflectionUtils.getAsIChatBaseComponent(
+					tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix()));
+
 			entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
 			Array.set(entityPlayerArray, 0, playerConst);
 
 			Class<?> enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
 			packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
-					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(ReflectionUtils
-							.getFieldObject(enumPlayerInfoAction, enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME")),
-							entityPlayerArray);
-
-			updateName(tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix());
+					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
+					.newInstance(ReflectionUtils.getFieldObject(enumPlayerInfoAction,
+							enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME")), entityPlayerArray);
 
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(p, packet);
@@ -85,12 +108,9 @@ public class ReflectionHandled implements ITabScoreboard {
 			scoreRef.getScoreboardTeamDisplayName().set(packet,
 					Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? ReflectionUtils.getAsIChatBaseComponent(teamName)
 							: teamName);
+			scoreRef.getScoreboardTeamMode().set(packet, 2);
 
 			updateName(tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix());
-
-			Array.set(entityPlayerArray, 0, playerConst);
-
-			scoreRef.getScoreboardTeamMode().set(packet, 2);
 
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(p, packet);
@@ -104,10 +124,9 @@ public class ReflectionHandled implements ITabScoreboard {
 	@Override
 	public void unregisterTeam(String teamName) {
 		try {
-			updateName(tabPlayer.getPlayer().getName());
-
-			Array.set(entityPlayerArray, 0, playerConst);
 			scoreRef.getScoreboardTeamMode().set(packet, 1);
+
+			updateName(tabPlayer.getPlayer().getName());
 
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(p, packet);
@@ -119,7 +138,8 @@ public class ReflectionHandled implements ITabScoreboard {
 	}
 
 	private void updateName(String name) throws Throwable {
-		ReflectionUtils.setField(playerConst, "listName", ReflectionUtils.getAsIChatBaseComponent(name));
+		Object iChatBaseComponentName = ReflectionUtils.getAsIChatBaseComponent(name);
+		ReflectionUtils.setField(playerConst, "listName", iChatBaseComponentName);
 
 		@SuppressWarnings("unchecked")
 		List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
@@ -127,11 +147,50 @@ public class ReflectionHandled implements ITabScoreboard {
 		for (Object infoData : infoList) {
 			if (profile.getId().equals(tabPlayer.getPlayer().getUniqueId())) {
 				Field e = ReflectionUtils.getField(infoData, "e");
-				ReflectionUtils.modifyFinalField(e, infoData,
-						ReflectionUtils.getField(playerConst, "listName").get(playerConst));
+				ReflectionUtils.modifyFinalField(e, infoData, iChatBaseComponentName);
 				break;
 			}
 		}
+
+		Array.set(entityPlayerArray, 0, playerConst);
+	}
+
+	private final JsonParser parser = new JsonParser();
+
+	private CompletableFuture<NavigableMap<String, String>> getSkinValue(String uuid) {
+		return CompletableFuture.supplyAsync(() -> {
+			NavigableMap<String, String> map = new TreeMap<>();
+			String json = getContent("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid);
+			if (json == null) {
+				return map;
+			}
+
+			JsonObject o = parser.parse(json).getAsJsonObject();
+			String value = o.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+
+			o = parser.parse(new String(Base64.decodeBase64(value))).getAsJsonObject();
+			String texture = o.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString();
+			map.put(value, texture);
+			return map;
+		});
+	}
+
+	private String getContent(String link) {
+		try {
+			HttpsURLConnection conn = (HttpsURLConnection) new URL(link).openConnection();
+			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+			String inputLine;
+			while ((inputLine = br.readLine()) != null) {
+				return inputLine;
+			}
+
+			br.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	@Override

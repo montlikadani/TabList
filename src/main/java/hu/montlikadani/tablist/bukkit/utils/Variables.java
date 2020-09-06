@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.bukkit.utils;
 
+import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -116,9 +117,10 @@ public class Variables {
 			}
 		}
 
-		String address = null;
+		String address = "";
 		if (str.contains("%ip-address%")) {
-			address = pl.getAddress().getAddress().toString();
+			InetSocketAddress a = pl.getAddress();
+			address = a == null || a.getAddress() == null ? "" : a.getAddress().toString();
 			address = address.replaceAll("/", "");
 		}
 
@@ -182,7 +184,7 @@ public class Variables {
 			str = str.replace("%staff-online%", Integer.toString(staffs));
 		}
 
-		if (address != null)
+		if (!address.isEmpty())
 			str = str.replace("%ip-address%", address);
 
 		if (str.contains("%mc-version%"))

@@ -116,15 +116,19 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				group = team;
 			}
 		} else {
+			String vGroup = "";
+			try {
+				vGroup = plugin.hasVault() ? plugin.getVaultPerm().getPrimaryGroup(player) : "";
+			} catch (UnsupportedOperationException e) { // somehow Vault can't recognize permission plugin sometimes
+			}
+
+			final String g = vGroup;
 			List<TeamHandler> playerPrimaryVaultGroups;
-			if (plugin.hasVault() && ConfigValues.isPreferPrimaryVaultGroup()
-					&& ((playerPrimaryVaultGroups = groupsList.stream().filter(
-							group -> group.getTeam().equalsIgnoreCase(plugin.getVaultPerm().getPrimaryGroup(player)))
-							.collect(Collectors.toList())).size() > 0
-							|| (playerPrimaryVaultGroups = groupsList.stream()
-									.filter(group -> StringUtils.containsIgnoreCase(group.getTeam(),
-											plugin.getVaultPerm().getPrimaryGroup(player)))
-									.collect(Collectors.toList())).size() > 0)) {
+			if (ConfigValues.isPreferPrimaryVaultGroup() && ((playerPrimaryVaultGroups = groupsList.stream()
+					.filter(group -> group.getTeam().equalsIgnoreCase(g)).collect(Collectors.toList())).size() > 0
+					|| (playerPrimaryVaultGroups = groupsList.stream()
+							.filter(group -> StringUtils.containsIgnoreCase(group.getTeam(), g))
+							.collect(Collectors.toList())).size() > 0)) {
 				TeamHandler team = playerPrimaryVaultGroups.get(0);
 				if (group != team) {
 					update = true;
