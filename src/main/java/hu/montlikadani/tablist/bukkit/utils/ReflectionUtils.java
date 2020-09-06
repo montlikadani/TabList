@@ -18,12 +18,7 @@ public class ReflectionUtils {
 	}
 
 	public static Object getHandle(Object obj) throws Exception {
-		Method method = obj.getClass().getDeclaredMethod("getHandle");
-		if (!method.isAccessible()) {
-			method.setAccessible(true);
-		}
-
-		return method.invoke(obj);
+		return invokeMethod(obj, "getHandle");
 	}
 
 	public static Object getAsIChatBaseComponent(String name) throws Exception {
@@ -40,11 +35,20 @@ public class ReflectionUtils {
 	}
 
 	public static Object invokeMethod(Object obj, String name) throws Exception {
-		return invokeMethod(obj, name, true);
+		return invokeMethod(obj, name, true, false);
 	}
 
-	public static Object invokeMethod(Object obj, String name, boolean declared) throws Exception {
-		Method met = declared ? obj.getClass().getDeclaredMethod(name) : obj.getClass().getMethod(name);
+	public static Object invokeMethod(Object obj, String name, boolean superClass) throws Exception {
+		return invokeMethod(obj, name, true, superClass);
+	}
+
+	public static Object invokeMethod(Object obj, String name, boolean declared, boolean superClass) throws Exception {
+		Class<?> c = superClass ? obj.getClass().getSuperclass() : obj.getClass();
+		Method met = declared ? c.getDeclaredMethod(name) : c.getMethod(name);
+		if (!met.isAccessible()) {
+			met.setAccessible(true);
+		}
+
 		return met.invoke(obj);
 	}
 

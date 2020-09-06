@@ -1,28 +1,15 @@
 package hu.montlikadani.tablist.bukkit.tablist.groups;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map.Entry;
-import java.util.NavigableMap;
-import java.util.TreeMap;
-import java.util.concurrent.CompletableFuture;
 
-import javax.net.ssl.HttpsURLConnection;
-
-import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 
 import hu.montlikadani.tablist.bukkit.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
@@ -52,19 +39,12 @@ public class ReflectionHandled implements ITabScoreboard {
 			return;
 		}
 
-		profile = new GameProfile(tabPlayer.getPlayer().getUniqueId(), tabPlayer.getPlayer().getName());
-
-		if (Bukkit.getServer().getOnlineMode()) {
-			getSkinValue(tabPlayer.getPlayer().getUniqueId().toString()).thenAcceptAsync((map) -> {
-				Entry<String, String> e = map.pollFirstEntry();
-				profile.getProperties().get("textures").clear();
-				profile.getProperties().put("textures", new Property("textures", e.getKey(), e.getValue()));
-			});
-		}
-
-		playerConst = ReflectionUtils.Classes.getPlayerConstructor(tabPlayer.getPlayer(), profile);
+		final Player player = tabPlayer.getPlayer();
 
 		try {
+			playerConst = ReflectionUtils.getHandle(player);
+			profile = (GameProfile) playerConst.getClass().getSuperclass().getDeclaredMethod("getProfile").invoke(playerConst);
+
 			scoreRef.init();
 
 			packet = scoreRef.getScoreboardTeamConstructor().newInstance();
@@ -74,7 +54,7 @@ public class ReflectionHandled implements ITabScoreboard {
 					Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? ReflectionUtils.getAsIChatBaseComponent(teamName)
 							: teamName);
 
-			scoreRef.getScoreboardTeamNames().set(packet, Collections.singletonList(tabPlayer.getPlayer().getName()));
+			scoreRef.getScoreboardTeamNames().set(packet, Collections.singletonList(player.getName()));
 			scoreRef.getScoreboardTeamMode().set(packet, 0);
 
 			ReflectionUtils.setField(playerConst, "listName", ReflectionUtils.getAsIChatBaseComponent(
@@ -153,44 +133,6 @@ public class ReflectionHandled implements ITabScoreboard {
 		}
 
 		Array.set(entityPlayerArray, 0, playerConst);
-	}
-
-	private final JsonParser parser = new JsonParser();
-
-	private CompletableFuture<NavigableMap<String, String>> getSkinValue(String uuid) {
-		return CompletableFuture.supplyAsync(() -> {
-			NavigableMap<String, String> map = new TreeMap<>();
-			String json = getContent("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid);
-			if (json == null) {
-				return map;
-			}
-
-			JsonObject o = parser.parse(json).getAsJsonObject();
-			String value = o.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
-
-			o = parser.parse(new String(Base64.decodeBase64(value))).getAsJsonObject();
-			String texture = o.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString();
-			map.put(value, texture);
-			return map;
-		});
-	}
-
-	private String getContent(String link) {
-		try {
-			HttpsURLConnection conn = (HttpsURLConnection) new URL(link).openConnection();
-			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-			String inputLine;
-			while ((inputLine = br.readLine()) != null) {
-				return inputLine;
-			}
-
-			br.close();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return null;
 	}
 
 	@Override
