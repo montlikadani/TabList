@@ -119,7 +119,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			String vGroup = "";
 			try {
 				vGroup = plugin.hasVault() ? plugin.getVaultPerm().getPrimaryGroup(player) : "";
-			} catch (UnsupportedOperationException e) { // somehow Vault can't recognize permission plugin sometimes
+			} catch (UnsupportedOperationException e) { // somehow Vault can't recognise permission plugin sometimes
 			}
 
 			final String g = vGroup;

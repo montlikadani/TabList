@@ -76,7 +76,7 @@ public class Groups {
 		}
 
 		// Automatically add existing groups to the list for "lazy peoples"
-		if (ConfigValues.isSyncPluginsGroups() && plugin.isPluginEnabled("Vault")) {
+		if (ConfigValues.isSyncPluginsGroups() && plugin.hasVault()) {
 			boolean have = false;
 
 			me: for (String s : plugin.getVaultPerm().getGroups()) {

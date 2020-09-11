@@ -45,7 +45,7 @@ public class OperatorNodes implements ExpressionNode {
 	public void setParseExpression(String parseExpression) {
 		if (!StringUtils.isEmpty(parseExpression)) {
 			this.parseExpression = parseExpression;
-			makeConditionFromInput(parseExpression);
+			condition = makeConditionFromInput(parseExpression);
 		}
 	}
 
@@ -80,11 +80,7 @@ public class OperatorNodes implements ExpressionNode {
 		}
 
 		String[] c = String.valueOf(str.trim().replace(operator, ";").toCharArray()).split(";");
-		if (isNumber(c[0])) {
-			condition = new Condition(operator, c);
-		}
-
-		return condition;
+		return isNumber(c[0]) ? new Condition(operator, c) : null;
 	}
 
 	private boolean isNumber(String num) {

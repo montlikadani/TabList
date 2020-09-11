@@ -1,15 +1,12 @@
 package hu.montlikadani.tablist.bukkit.tablist.groups;
 
 import java.lang.reflect.Array;
-import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
-
-import com.mojang.authlib.GameProfile;
 
 import hu.montlikadani.tablist.bukkit.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
@@ -20,7 +17,6 @@ public class ReflectionHandled implements ITabScoreboard {
 	private final TabScoreboardReflection scoreRef = new TabScoreboardReflection();
 
 	private Object packet, playerConst, entityPlayerArray, packetPlayOutPlayerInfo;
-	private GameProfile profile;
 
 	private TabListPlayer tabPlayer;
 
@@ -43,7 +39,6 @@ public class ReflectionHandled implements ITabScoreboard {
 
 		try {
 			playerConst = ReflectionUtils.getHandle(player);
-			profile = (GameProfile) playerConst.getClass().getSuperclass().getDeclaredMethod("getProfile").invoke(playerConst);
 
 			scoreRef.init();
 
@@ -125,14 +120,14 @@ public class ReflectionHandled implements ITabScoreboard {
 		List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
 				.get(packetPlayOutPlayerInfo);
 		for (Object infoData : infoList) {
-			if (profile.getId().equals(tabPlayer.getPlayer().getUniqueId())) {
-				Field e = ReflectionUtils.getField(infoData, "e");
-				ReflectionUtils.modifyFinalField(e, infoData, iChatBaseComponentName);
+			Object profile = ReflectionUtils.invokeMethod(infoData, "a");
+			Object id = ReflectionUtils.invokeMethod(profile, "getId");
+			if (id.equals(tabPlayer.getPlayer().getUniqueId())) {
+				ReflectionUtils.modifyFinalField(ReflectionUtils.getField(infoData, "e"), infoData,
+						iChatBaseComponentName);
 				break;
 			}
 		}
-
-		Array.set(entityPlayerArray, 0, playerConst);
 	}
 
 	@Override
