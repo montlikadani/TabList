@@ -12,7 +12,7 @@ public class ConfigValues {
 			tpsFormatEnabled, prefixSuffixEnabled/*, groupAnimationEnabled*/, useDisabledWorldsAsWhiteList,
 			syncPluginsGroups/*, useOwnScoreboard*/, hideGroupInVanish, hideGroupWhenAfk, usePluginNickName, useTabName,
 			preferPrimaryVaultGroup, tablistObjectiveEnabled, tabNameEnabled, tabNameUsePluginNickName,
-			clearTabNameOnQuit, tabNameColorCodeEnabled, defaultColorEnabled;
+			clearTabNameOnQuit, tabNameColorCodeEnabled, defaultColorEnabled, tpsCanBeHigher;
 
 	private static String afkFormatYes, afkFormatNo, timeZone, timeFormat, dateFormat, goodPingColor, mediumPingColor,
 			badPingColor, goodTpsColor, mediumTpsColor, badTpsColor, objectType, customObjectSetting,
@@ -46,13 +46,12 @@ public class ConfigValues {
 		afkSortLast = c.getBoolean("placeholder-format.afk-status.sort-last", false);
 		useSystemZone = c.getBoolean("placeholder-format.time.use-system-zone", false);
 		pingFormatEnabled = c.getBoolean("placeholder-format.ping.enable", true);
+		tpsCanBeHigher = c.getBoolean("placeholder-format.tps.value-can-be-higher", false);
 		tpsFormatEnabled = c.getBoolean("placeholder-format.tps.enable", true);
 		prefixSuffixEnabled = c.getBoolean("change-prefix-suffix-in-tablist.enable", false);
-		//groupAnimationEnabled = c.getBoolean("change-prefix-suffix-in-tablist.enable-animation", false);
 		useDisabledWorldsAsWhiteList = c.getBoolean("change-prefix-suffix-in-tablist.disabled-worlds.use-as-whitelist",
 				false);
 		syncPluginsGroups = c.getBoolean("change-prefix-suffix-in-tablist.sync-plugins-groups-with-tablist", true);
-		//useOwnScoreboard = c.getBoolean("change-prefix-suffix-in-tablist.use-own-scoreboard", false);
 		hideGroupInVanish = c.getBoolean("change-prefix-suffix-in-tablist.hide-group-when-player-vanished", false);
 		hideGroupWhenAfk = c.getBoolean("change-prefix-suffix-in-tablist.hide-group-when-player-afk", false);
 		if (c.contains("change-prefix-suffix-in-tablist.use-essentials-nickname")) {
@@ -270,22 +269,12 @@ public class ConfigValues {
 		return groupsRefreshInterval;
 	}
 
-	@Deprecated
-	public static boolean isGroupAnimationEnabled() {
-		return true;
-	}
-
 	public static boolean isUseDisabledWorldsAsWhiteList() {
 		return useDisabledWorldsAsWhiteList;
 	}
 
 	public static boolean isSyncPluginsGroups() {
 		return syncPluginsGroups;
-	}
-
-	@Deprecated
-	public static boolean isUseOwnScoreboard() {
-		return false;
 	}
 
 	public static boolean isHideGroupInVanish() {
@@ -360,5 +349,9 @@ public class ConfigValues {
 
 	public static List<String> getPingColorFormats() {
 		return pingColorFormats;
+	}
+
+	public static boolean isTpsCanBeHigher() {
+		return tpsCanBeHigher;
 	}
 }

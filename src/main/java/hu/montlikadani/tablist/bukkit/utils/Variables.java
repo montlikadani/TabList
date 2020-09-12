@@ -202,8 +202,15 @@ public class Variables {
 		if (str.contains("%xp%"))
 			str = str.replace("%xp%", Float.toString(pl.getExp()));
 
-		if (str.contains("%tps%"))
-			str = str.replace("%tps%", tpsDot(TabListAPI.getTPS()));
+		if (str.contains("%tps%")) {
+			double tps = TabListAPI.getTPS();
+
+			if (!ConfigValues.isTpsCanBeHigher() && tps > 20D) {
+				tps = 20D;
+			}
+
+			str = str.replace("%tps%", tpsDot(tps));
+		}
 
 		if (str.contains("%light-level%")) {
 			str = str.replace("%light-level%", Byte.toString(pl.getLocation().getBlock().getLightLevel()));

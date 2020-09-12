@@ -86,8 +86,26 @@ public class ReflectionUtils {
 			field.setAccessible(true);
 		}
 
-		getField(Field.class, "modifiers").setInt(field, field.getModifiers() & ~Modifier.FINAL);
-		field.set(target, newValue);
+		int mods = field.getModifiers();
+		if (!Modifier.isFinal(mods)) {
+			return;
+		}
+
+		try {
+			getField(Field.class, "modifiers").setInt(field, field.getModifiers() & ~Modifier.FINAL);
+			field.set(target, newValue);
+		} catch (NoSuchFieldException e) {
+			Field unsafeField = Class.forName("sun.misc.Unsafe").getDeclaredField("theUnsafe");
+			unsafeField.setAccessible(true);
+			Object unsafe = unsafeField.get(null);
+
+			Object staticFieldBase = unsafe.getClass().getDeclaredMethod("staticFieldBase", Field.class).invoke(unsafe,
+					field);
+			long staticFieldOffset = (long) unsafe.getClass().getDeclaredMethod("staticFieldOffset", Field.class)
+					.invoke(unsafe, field);
+			unsafe.getClass().getDeclaredMethod("putObject", Object.class, long.class, Object.class).invoke(unsafe,
+					staticFieldBase, staticFieldOffset, target);
+		}
 	}
 
 	public static Object getFieldObject(Object object, Field field) throws Exception {

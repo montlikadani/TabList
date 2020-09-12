@@ -185,13 +185,16 @@ public class Groups {
 	}
 
 	public CompletableFuture<Boolean> removePlayerGroup(Player p) {
+		CompletableFuture<Boolean> result = new CompletableFuture<>();
 		if (p == null) {
-			return CompletableFuture.completedFuture(false);
+			result.complete(false);
+			return result;
 		}
 
 		TabListPlayer tlp = tLPlayerMap.remove(p.getUniqueId().toString());
 		if (tlp == null) {
-			return CompletableFuture.completedFuture(false);
+			result.complete(false);
+			return result;
 		}
 
 		String name = Integer.toString(100000 + tlp.getPriority())
@@ -202,8 +205,13 @@ public class Groups {
 
 		tlp.getTabTeam().unregisterTeam(name);
 		tlp.removeGroup();
-		sortedTabListPlayers.remove(tlp);
-		return CompletableFuture.completedFuture(true);
+
+		synchronized (sortedTabListPlayers) {
+			sortedTabListPlayers.remove(tlp);
+		}
+
+		result.complete(true);
+		return result;
 	}
 
 	public void removeGroup(String teamName) {

@@ -100,6 +100,10 @@ placeholder-format:
     # Example: 3 = 20.14
     size: 2
 
+    # Adds ability to the tps value can be highest than default 20.0
+    # This client-dependent
+    value-can-be-higher: false
+
     enable: true
     # Operators usage:
     # > - highest value, "17 > &e" this will be yellow color

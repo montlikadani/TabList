@@ -62,8 +62,7 @@ public class PluginUtils {
 
 		if (plugin.isPluginEnabled("Essentials")) {
 			Essentials ess = JavaPlugin.getPlugin(Essentials.class);
-			return ess.getVanishedPlayers().isEmpty() ? ess.getOnlinePlayers().size()
-					: ess.getOnlinePlayers().size() - ess.getVanishedPlayers().size();
+			return ess.getVanishedPlayers().isEmpty() ? plSize : plSize - ess.getVanishedPlayers().size();
 		}
 
 		if (plugin.isPluginEnabled("CMI") && CMI.getInstance() != null) {
