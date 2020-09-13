@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.bungee.tablist.groups;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -15,7 +16,7 @@ public class Groups implements ITask {
 	private TabList plugin;
 	private ScheduledTask task;
 
-	private final Set<PlayerGroup> playersGroup = new HashSet<>();
+	private final Set<PlayerGroup> playersGroup = Collections.synchronizedSet(new HashSet<PlayerGroup>());
 
 	public Groups(TabList plugin) {
 		this.plugin = plugin;
@@ -26,8 +27,10 @@ public class Groups implements ITask {
 	}
 
 	public void addPlayer(ProxiedPlayer player) {
-		if (!plugin.getConf().getBoolean("tablist-groups.enabled", false) || !getPlayerGroup(player).isPresent()) {
-			playersGroup.add(new PlayerGroup(player.getUniqueId()));
+		synchronized (playersGroup) {
+			if (!plugin.getConf().getBoolean("tablist-groups.enabled", false) || !getPlayerGroup(player).isPresent()) {
+				playersGroup.add(new PlayerGroup(player.getUniqueId()));
+			}
 		}
 	}
 
@@ -52,7 +55,9 @@ public class Groups implements ITask {
 				return;
 			}
 
-			playersGroup.forEach(PlayerGroup::update);
+			synchronized (playersGroup) {
+				playersGroup.forEach(PlayerGroup::update);
+			}
 		}, 10L, plugin.getConf().getInt("tablist-groups.refresh-time"), TimeUnit.MILLISECONDS);
 	}
 
@@ -68,11 +73,13 @@ public class Groups implements ITask {
 			task = null;
 		}
 
-		playersGroup.forEach(g -> {
-			ProxiedPlayer player = plugin.getProxy().getPlayer(g.getPlayerUUID());
-			g.sendPacket(player, player.getName());
-		});
+		synchronized (playersGroup) {
+			playersGroup.forEach(g -> {
+				ProxiedPlayer player = plugin.getProxy().getPlayer(g.getPlayerUUID());
+				g.sendPacket(player, player.getName());
+			});
 
-		playersGroup.clear();
+			playersGroup.clear();
+		}
 	}
 }

@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.bungee.tablist;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -17,7 +18,7 @@ public class TabManager implements ITask {
 	private ScheduledTask task;
 
 	private final Set<UUID> tabenable = new HashSet<>();
-	private final Set<PlayerTab> playerTabs = new HashSet<>();
+	private final Set<PlayerTab> playerTabs = Collections.synchronizedSet(new HashSet<PlayerTab>());
 
 	public TabManager(TabList plugin) {
 		this.plugin = plugin;
@@ -41,12 +42,14 @@ public class TabManager implements ITask {
 			return;
 		}
 
-		PlayerTab tab = getPlayerTab(player).orElse(new PlayerTab(player));
-		if (!playerTabs.contains(tab)) {
-			playerTabs.add(tab);
-		}
+		synchronized (playerTabs) {
+			PlayerTab tab = getPlayerTab(player).orElse(new PlayerTab(player));
+			if (!playerTabs.contains(tab)) {
+				playerTabs.add(tab);
+			}
 
-		tab.loadTabList();
+			tab.loadTabList();
+		}
 	}
 
 	public void removePlayer(ProxiedPlayer player) {
@@ -74,14 +77,16 @@ public class TabManager implements ITask {
 				return;
 			}
 
-			playerTabs.stream().filter(t -> {
-				if (!tabenable.contains(t.getPlayer().getUniqueId())) {
-					return true;
-				}
+			synchronized (playerTabs) {
+				playerTabs.stream().filter(t -> {
+					if (!tabenable.contains(t.getPlayer().getUniqueId())) {
+						return true;
+					}
 
-				t.getPlayer().resetTabHeader();
-				return false;
-			}).forEach(PlayerTab::update);
+					t.getPlayer().resetTabHeader();
+					return false;
+				}).forEach(PlayerTab::update);
+			}
 		}, 10L, plugin.getConf().getInt("tablist.refresh-interval"), TimeUnit.MILLISECONDS);
 	}
 
@@ -92,7 +97,9 @@ public class TabManager implements ITask {
 			task = null;
 		}
 
-		plugin.getProxy().getPlayers().forEach(all -> getPlayerTab(all).ifPresent(PlayerTab::clearAll));
-		playerTabs.clear();
+		synchronized (playerTabs) {
+			plugin.getProxy().getPlayers().forEach(all -> getPlayerTab(all).ifPresent(PlayerTab::clearAll));
+			playerTabs.clear();
+		}
 	}
 }
