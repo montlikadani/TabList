@@ -53,7 +53,9 @@ public class TabManager implements ITask {
 	}
 
 	public void removePlayer(ProxiedPlayer player) {
-		getPlayerTab(player).ifPresent(playerTabs::remove);
+		synchronized (playerTabs) {
+			getPlayerTab(player).ifPresent(playerTabs::remove);
+		}
 	}
 
 	public Optional<PlayerTab> getPlayerTab(ProxiedPlayer player) {

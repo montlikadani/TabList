@@ -35,7 +35,9 @@ public class Groups implements ITask {
 	}
 
 	public void removePlayer(ProxiedPlayer player) {
-		getPlayerGroup(player).ifPresent(playersGroup::remove);
+		synchronized (playersGroup) {
+			getPlayerGroup(player).ifPresent(playersGroup::remove);
+		}
 	}
 
 	@Override
@@ -76,7 +78,9 @@ public class Groups implements ITask {
 		synchronized (playersGroup) {
 			playersGroup.forEach(g -> {
 				ProxiedPlayer player = plugin.getProxy().getPlayer(g.getPlayerUUID());
-				g.sendPacket(player, player.getName());
+				if (player != null) {
+					g.sendPacket(player, player.getName());
+				}
 			});
 
 			playersGroup.clear();
