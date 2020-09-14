@@ -18,6 +18,7 @@ import org.bukkit.util.StringUtil;
 import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils.ClassMethods;
 
 public class Commands implements CommandExecutor, TabCompleter {
 
@@ -27,6 +28,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		this.plugin = plugin;
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
 		if (args.length == 0) {
@@ -72,11 +74,16 @@ public class Commands implements CommandExecutor, TabCompleter {
 		String path = "hu.montlikadani.tablist.bukkit.commands.list";
 		ICommand command = null;
 		try {
-			command = (ICommand) TabList.class.getClassLoader().loadClass(path + "." + args[0].toLowerCase())
-					.newInstance();
+			if (ClassMethods.getCurrentVersion() >= 9) {
+				command = (ICommand) TabList.class.getClassLoader().loadClass(path + "." + args[0].toLowerCase())
+						.getDeclaredConstructor().newInstance();
+			} else {
+				command = (ICommand) TabList.class.getClassLoader().loadClass(path + "." + args[0].toLowerCase())
+						.newInstance();
+			}
 		} catch (ClassNotFoundException e) {
 			sendMsg(sender, plugin.getMsg("unknown-sub-command", "%subcmd%", args[0]));
-		} catch (IllegalAccessException | InstantiationException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

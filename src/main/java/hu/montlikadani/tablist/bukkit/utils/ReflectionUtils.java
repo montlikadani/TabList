@@ -45,10 +45,7 @@ public class ReflectionUtils {
 	public static Object invokeMethod(Object obj, String name, boolean declared, boolean superClass) throws Exception {
 		Class<?> c = superClass ? obj.getClass().getSuperclass() : obj.getClass();
 		Method met = declared ? c.getDeclaredMethod(name) : c.getMethod(name);
-		if (!met.isAccessible()) {
-			met.setAccessible(true);
-		}
-
+		met.setAccessible(true);
 		return met.invoke(obj);
 	}
 
@@ -74,15 +71,12 @@ public class ReflectionUtils {
 
 	public static Field getField(Class<?> clazz, String name, boolean declared) throws Exception {
 		Field field = declared ? clazz.getDeclaredField(name) : clazz.getField(name);
-		if (!field.isAccessible()) {
-			field.setAccessible(true);
-		}
-
+		field.setAccessible(true);
 		return field;
 	}
 
 	public static void modifyFinalField(Field field, Object target, Object newValue) throws Exception {
-		if (!field.isAccessible()) {
+		if (!ClassMethods.isAccessible(field, target)) {
 			field.setAccessible(true);
 		}
 
@@ -91,21 +85,34 @@ public class ReflectionUtils {
 			return;
 		}
 
+		Field modifiersField = null;
 		try {
-			getField(Field.class, "modifiers").setInt(field, field.getModifiers() & ~Modifier.FINAL);
-			field.set(target, newValue);
-		} catch (NoSuchFieldException e) {
-			Field unsafeField = Class.forName("sun.misc.Unsafe").getDeclaredField("theUnsafe");
-			unsafeField.setAccessible(true);
-			Object unsafe = unsafeField.get(null);
+			modifiersField = getField(Field.class, "modifiers");
+		} catch (NoSuchFieldException e) { // Java 12+
+			Method meth = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
+			boolean accessibleBeforeSet = ClassMethods.isAccessible(meth, null);
+			meth.setAccessible(true);
 
-			Object staticFieldBase = unsafe.getClass().getDeclaredMethod("staticFieldBase", Field.class).invoke(unsafe,
-					field);
-			long staticFieldOffset = (long) unsafe.getClass().getDeclaredMethod("staticFieldOffset", Field.class)
-					.invoke(unsafe, field);
-			unsafe.getClass().getDeclaredMethod("putObject", Object.class, long.class, Object.class).invoke(unsafe,
-					staticFieldBase, staticFieldOffset, target);
+			Field[] fields = (Field[]) meth.invoke(Field.class, false);
+			meth.setAccessible(accessibleBeforeSet);
+
+			for (Field f : fields) {
+				if ("modifiers".equals(f.getName())) {
+					modifiersField = f;
+					break;
+				}
+			}
 		}
+
+		if (modifiersField == null) {
+			return;
+		}
+
+		boolean accessibleBeforeSet = ClassMethods.isAccessible(modifiersField, null);
+		modifiersField.setAccessible(true);
+		modifiersField.setInt(field, mods & ~Modifier.FINAL);
+		modifiersField.setAccessible(accessibleBeforeSet);
+		field.set(target, newValue);
 	}
 
 	public static Object getFieldObject(Object object, Field field) throws Exception {
@@ -219,6 +226,35 @@ public class ReflectionUtils {
 			}
 
 			return enumPlayerInfoAction;
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	public abstract static class ClassMethods {
+
+		public static boolean isAccessible(Field field, Object target) {
+			return getCurrentVersion() >= 9 && target != null ? field.canAccess(target) : field.isAccessible();
+		}
+
+		public static boolean isAccessible(Method method, Object target) {
+			return getCurrentVersion() >= 9 && target != null ? method.canAccess(target) : method.isAccessible();
+		}
+
+		public static int getCurrentVersion() {
+			String currentVersion = System.getProperty("java.version");
+			if (currentVersion.contains("_")) {
+				currentVersion = currentVersion.split("_")[0];
+			}
+
+			currentVersion = currentVersion.replaceAll("[^\\d]|_", "");
+
+			for (int i = 8; i <= 18; i++) {
+				if (currentVersion.contains(Integer.toString(i))) {
+					return i;
+				}
+			}
+
+			return 0;
 		}
 	}
 }
