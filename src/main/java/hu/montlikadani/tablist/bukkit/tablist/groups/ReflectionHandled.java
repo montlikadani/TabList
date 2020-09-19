@@ -78,11 +78,9 @@ public class ReflectionHandled implements ITabScoreboard {
 			scoreRef.getScoreboardTeamDisplayName().set(packet,
 					Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? ReflectionUtils.getAsIChatBaseComponent(teamName)
 							: teamName);
+			scoreRef.getScoreboardTeamMode().set(packet, 2);
 
 			updateName(tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix());
-
-			Array.set(entityPlayerArray, 0, playerConst);
-			scoreRef.getScoreboardTeamMode().set(packet, 2);
 
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(p, packet);

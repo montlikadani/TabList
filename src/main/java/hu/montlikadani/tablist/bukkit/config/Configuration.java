@@ -44,6 +44,7 @@ public class Configuration {
 			}
 
 			config = new CommentedConfig(config_file);
+			config.load();
 			ConfigValues.loadValues();
 
 			if (tablist_file == null) {
@@ -55,6 +56,7 @@ public class Configuration {
 			}
 
 			tablist = new CommentedConfig(tablist_file);
+			tablist.load();
 
 			messages = createFile(messages_file, "messages.yml", false);
 			messages.save(messages_file);
