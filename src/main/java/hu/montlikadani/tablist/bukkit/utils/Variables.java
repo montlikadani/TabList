@@ -15,7 +15,7 @@ import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
-import hu.montlikadani.tablist.bukkit.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 import hu.montlikadani.tablist.bukkit.utils.operators.ExpressionNode;
@@ -273,49 +273,19 @@ public class Variables {
 	}
 
 	private String formatPing(int ping) {
-		if (!ConfigValues.isPingFormatEnabled()) {
+		if (!ConfigValues.isPingFormatEnabled() || ConfigValues.getPingColorFormats().isEmpty()) {
 			return "";
 		}
 
-		if (!ConfigValues.getPingColorFormats().isEmpty()) {
-			return parseExpression(ping, NodeType.PING);
-		}
-
-		StringBuilder sb2 = new StringBuilder();
-
-		if (ping <= ConfigValues.getGoodPingAmount()) {
-			return sb2.append(ConfigValues.getGoodPingColor().replace('&', '\u00a7')).append(ping)
-					.append(ChatColor.RESET).toString();
-		} else if (ping <= ConfigValues.getMediumPingAmount()) {
-			return sb2.append(ConfigValues.getMediumPingColor().replace('&', '\u00a7')).append(ping)
-					.append(ChatColor.RESET).toString();
-		} else {
-			return sb2.append(ConfigValues.getBadPingColor().replace('&', '\u00a7')).append(ping)
-					.append(ChatColor.RESET).toString();
-		}
+		return parseExpression(ping, NodeType.PING);
 	}
 
 	private String formatTPS(double tps) {
-		if (!ConfigValues.isTpsFormatEnabled()) {
+		if (!ConfigValues.isTpsFormatEnabled() || ConfigValues.getTpsColorFormats().isEmpty()) {
 			return "";
 		}
 
-		if (!ConfigValues.getTpsColorFormats().isEmpty()) {
-			return parseExpression(tps, NodeType.TPS);
-		}
-
-		StringBuilder sb = new StringBuilder();
-
-		if (tps > ConfigValues.getGoodTpsAmount()) {
-			return sb.append(ConfigValues.getGoodTpsColor().replace('&', '\u00a7')).append(tps).append(ChatColor.RESET)
-					.toString();
-		} else if (tps > ConfigValues.getMediumTpsAmount()) {
-			return sb.append(ConfigValues.getMediumTpsColor().replace('&', '\u00a7')).append(tps)
-					.append(ChatColor.RESET).toString();
-		} else {
-			return sb.append(ConfigValues.getBadTpsColor().replace('&', '\u00a7')).append(tps).append(ChatColor.RESET)
-					.toString();
-		}
+		return parseExpression(tps, NodeType.TPS);
 	}
 
 	private String parseExpression(double value, int type) {

@@ -25,8 +25,7 @@ public class UpdateDownloader {
 		}
 
 		CompletableFuture.supplyAsync(() -> {
-			String versionString = "", lineWithVersion = "";
-			int newVersion = 0, currentVersion = 0;
+			String lineWithVersion = "";
 
 			try {
 				URL githubUrl = new URL(
@@ -41,12 +40,12 @@ public class UpdateDownloader {
 					}
 				}
 
-				versionString = lineWithVersion.split(": ")[1];
-				String nVersion = versionString.replaceAll("[^0-9]", "");
-				newVersion = Integer.parseInt(nVersion);
+				String versionString = lineWithVersion.split(": ")[1],
+						nVersion = versionString.replaceAll("[^0-9]", ""),
+						cVersion = TabList.getInstance().getDescription().getVersion().replaceAll("[^0-9]", "");
 
-				String cVersion = TabList.getInstance().getDescription().getVersion().replaceAll("[^0-9]", "");
-				currentVersion = Integer.parseInt(cVersion);
+				int newVersion = Integer.parseInt(nVersion);
+				int currentVersion = Integer.parseInt(cVersion);
 
 				if (newVersion <= currentVersion || currentVersion >= newVersion) {
 					return null;

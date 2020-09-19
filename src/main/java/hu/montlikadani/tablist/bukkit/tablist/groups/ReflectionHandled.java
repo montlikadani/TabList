@@ -63,11 +63,6 @@ public class ReflectionHandled implements ITabScoreboard {
 					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
 					.newInstance(ReflectionUtils.getFieldObject(enumPlayerInfoAction,
 							enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME")), entityPlayerArray);
-
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				ReflectionUtils.sendPacket(p, packet);
-				ReflectionUtils.sendPacket(p, packetPlayOutPlayerInfo);
-			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
@@ -83,9 +78,11 @@ public class ReflectionHandled implements ITabScoreboard {
 			scoreRef.getScoreboardTeamDisplayName().set(packet,
 					Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? ReflectionUtils.getAsIChatBaseComponent(teamName)
 							: teamName);
-			scoreRef.getScoreboardTeamMode().set(packet, 2);
 
 			updateName(tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix());
+
+			Array.set(entityPlayerArray, 0, playerConst);
+			scoreRef.getScoreboardTeamMode().set(packet, 2);
 
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(p, packet);

@@ -1,4 +1,3 @@
-# Hooks to another plugins
 hook:
   # Hook to PlaceholderAPI to use custom placeholders.
   placeholderapi: true
@@ -143,7 +142,7 @@ change-prefix-suffix-in-tablist:
     # Use the list as whitelist?
     use-as-whitelist: false
     list:
-    #- myWorld
+    - myWorldWithUpper
 
   # Automatically add groups from another plugins to the tablist groups.yml on every reload?
   # If a plugin does not support Vault, it will not be added.
@@ -190,7 +189,7 @@ tablist-object-type:
 
   # In these worlds the objects will not be displayed
   disabled-worlds:
-  #- testingWorld
+  - testingWorld
 
   # Objective settings
   object-settings:
@@ -208,7 +207,6 @@ tablist-object-type:
 
 # Changing player's tablist name with unlimited characters.
 tabname:
-  # Allow to change player's tab name?
   enable: false
 
   # Use another plugin nickname instead of tab name?
@@ -232,24 +230,18 @@ tabname:
 
   # In these worlds you can't change the tab name
   disabled-worlds:
-  #- myworld
+  - myWorldWithUpper
 
   # Which names can not be used?
   restricted-names:
   - tabname
 
-#=========================================#
-#             Plugin Settings             #
-#=========================================#
 # Check for updates?
 check-update: true
 
-# Download releases to \releases folder?
+# Download new releases to "releases" folder?
 # This only works if the "check-update" is true.
 download-updates: true
 
 # Log plugin messages to console?
 logconsole: true
-
-# DO NOT CHANGE THIS!
-config-version: 22

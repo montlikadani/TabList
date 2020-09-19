@@ -63,6 +63,7 @@ public class TeamHandler implements Cloneable {
 		return team;
 	}
 
+	@Deprecated
 	public String getFullTeamName() {
 		return (1000 + priority) + team;
 	}

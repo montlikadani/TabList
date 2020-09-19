@@ -6,13 +6,15 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.ConfigValues;
-import hu.montlikadani.tablist.bukkit.Configuration;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.Configuration;
 
 public class FakePlayerHandler {
 
@@ -28,14 +30,14 @@ public class FakePlayerHandler {
 		return fakePlayers;
 	}
 
-	public IFakePlayers getFakePlayerByName(String name) {
+	public Optional<IFakePlayers> getFakePlayerByName(String name) {
 		for (IFakePlayers fp : fakePlayers) {
 			if (fp.getName().equalsIgnoreCase(name)) {
-				return fp;
+				return Optional.ofNullable(fp);
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	public void load() {
@@ -55,6 +57,10 @@ public class FakePlayerHandler {
 	}
 
 	public boolean createPlayer(Player p, String name) {
+		return createPlayer(p, name, "");
+	}
+
+	public boolean createPlayer(Player p, String name, String headUUID) {
 		if (name == null || name.trim().isEmpty()) {
 			return false;
 		}
@@ -63,8 +69,17 @@ public class FakePlayerHandler {
 			name = name.substring(0, 16);
 		}
 
-		if (getFakePlayerByName(name) != null) {
+		if (getFakePlayerByName(name).isPresent()) {
 			return false;
+		}
+
+		if (headUUID != null && !headUUID.trim().isEmpty()) {
+			try {
+				UUID.fromString(headUUID);
+			} catch (IllegalArgumentException e) {
+				p.sendMessage("This uuid not matches to a real player uuid.");
+				return false;
+			}
 		}
 
 		Configuration conf = plugin.getConf();
@@ -85,7 +100,7 @@ public class FakePlayerHandler {
 		IFakePlayers fp = new FakePlayers(name);
 		fakePlayers.add(fp);
 
-		fp.createFakeplayer(p);
+		fp.createFakeplayer(p, headUUID);
 		return true;
 	}
 

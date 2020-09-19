@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.config;
 
 import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
 
@@ -9,20 +9,21 @@ import java.util.logging.Level;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import hu.montlikadani.tablist.bukkit.TabList;
+
 public class Configuration {
 
 	private TabList plugin;
 
-	private FileConfiguration config, messages, names, groups, fakeplayers, animCreator, tablist;
+	private FileConfiguration messages, names, groups, fakeplayers, animCreator;
+	private CommentedConfig config, tablist;
 	private File config_file, messages_file, animation_file, tablist_file, groups_file, names_file, fakeplayers_file;
-
-	private int cver = 22;
 
 	public Configuration(TabList plugin) {
 		this.plugin = plugin;
 	}
 
-	void loadFiles() {
+	public void loadFiles() {
 		try {
 			File folder = plugin.getFolder();
 
@@ -38,21 +39,22 @@ public class Configuration {
 				animation_file = new File(folder, "animcreator.yml");
 			}
 
-			config = createFile(config_file, "config.yml", false);
-			config.load(config_file);
-			ConfigValues.loadValues();
-
-			if (!config.isSet("config-version") || !config.get("config-version").equals(cver)) {
-				logConsole(Level.WARNING, "Found outdated configuration (config.yml)! (Your version: "
-						+ config.getInt("config-version") + " | Newest version: " + cver + ")");
+			if (!config_file.exists()) {
+				plugin.saveResource("config.yml", false);
 			}
+
+			config = new CommentedConfig(config_file);
+			ConfigValues.loadValues();
 
 			if (tablist_file == null) {
 				tablist_file = new File(folder, "tablist.yml");
 			}
 
-			tablist = createFile(tablist_file, "tablist.yml", false);
-			tablist.load(tablist_file);
+			if (!tablist_file.exists()) {
+				plugin.saveResource("tablist.yml", false);
+			}
+
+			tablist = new CommentedConfig(tablist_file);
 
 			messages = createFile(messages_file, "messages.yml", false);
 			messages.save(messages_file);
@@ -91,18 +93,6 @@ public class Configuration {
 					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues",
 					false);
 		}
-	}
-
-	void createAnimFile() {
-		if (animation_file != null && animation_file.exists()) {
-			return;
-		}
-
-		if (animation_file == null) {
-			animation_file = new File(plugin.getFolder(), "animcreator.yml");
-		}
-
-		animCreator = createFile(animation_file, "animcreator.yml", false);
 	}
 
 	public void createNamesFile() {
@@ -159,7 +149,7 @@ public class Configuration {
 		return YamlConfiguration.loadConfiguration(file);
 	}
 
-	public FileConfiguration getConfig() {
+	public CommentedConfig getConfig() {
 		return config;
 	}
 
@@ -183,7 +173,7 @@ public class Configuration {
 		return animCreator;
 	}
 
-	public FileConfiguration getTablist() {
+	public CommentedConfig getTablist() {
 		return tablist;
 	}
 

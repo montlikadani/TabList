@@ -11,10 +11,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 
 public class fakeplayers implements ICommand {
 
@@ -70,7 +70,8 @@ public class fakeplayers implements ICommand {
 				return false;
 			}
 
-			if (plugin.getFakePlayerHandler().createPlayer(p, name)) {
+			String headUUID = args.length > 3 ? args[3] : "";
+			if (plugin.getFakePlayerHandler().createPlayer(p, name, headUUID)) {
 				sendMsg(p, plugin.getMsg("fake-player.added", "%name%", name));
 			}
 		} else if (args[1].equalsIgnoreCase("remove")) {

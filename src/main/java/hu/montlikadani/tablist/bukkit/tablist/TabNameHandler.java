@@ -7,8 +7,8 @@ import java.io.IOException;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.Global;
-import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 
 public class TabNameHandler {

@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.bukkit;
 
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.groups.ITabScoreboard;
 import hu.montlikadani.tablist.bukkit.tablist.groups.ReflectionHandled;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;

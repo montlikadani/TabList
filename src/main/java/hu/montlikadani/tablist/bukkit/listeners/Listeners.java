@@ -10,8 +10,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
 
 public class Listeners implements Listener {
@@ -57,7 +57,6 @@ public class Listeners implements Listener {
 		Player pla = eve.getPlayer();
 
 		plugin.getTabManager().removePlayer(pla);
-
 		plugin.updateAll(pla);
 	}
 

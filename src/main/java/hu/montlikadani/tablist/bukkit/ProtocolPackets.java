@@ -9,6 +9,7 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 

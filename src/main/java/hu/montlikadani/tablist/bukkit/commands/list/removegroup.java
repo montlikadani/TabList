@@ -9,10 +9,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class removegroup implements ICommand {

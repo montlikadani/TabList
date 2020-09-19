@@ -14,9 +14,9 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
-import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class TabNameCmd implements CommandExecutor, TabCompleter {

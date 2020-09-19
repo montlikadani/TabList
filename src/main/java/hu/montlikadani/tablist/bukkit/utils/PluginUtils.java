@@ -11,8 +11,8 @@ import com.earth2me.essentials.Essentials;
 import ca.stellardrift.permissionsex.bukkit.PermissionsExPlugin;
 import de.myzelyam.api.vanish.VanishAPI;
 import hu.montlikadani.ragemode.gameUtils.GameUtils;
-import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public class PluginUtils {
@@ -120,7 +120,7 @@ public class PluginUtils {
 	}
 
 	public static boolean isInGame(Player p) {
-		return plugin.isPluginEnabled("RageMode") && ConfigValues.isRagemodeHook() && GameUtils.isPlayerPlaying(p)
+		return ConfigValues.isRagemodeHook() && plugin.isPluginEnabled("RageMode") && GameUtils.isPlayerPlaying(p)
 				&& GameUtils.getGameByPlayer(p).isGameRunning();
 	}
 }

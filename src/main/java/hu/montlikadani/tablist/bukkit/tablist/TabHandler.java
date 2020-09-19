@@ -58,7 +58,7 @@ public class TabHandler implements ITabHandler {
 	}
 
 	public void updateTab() {
-		Player player = getPlayer();
+		final Player player = getPlayer();
 		if (player == null || !player.isOnline()) {
 			return;
 		}
@@ -135,15 +135,13 @@ public class TabHandler implements ITabHandler {
 				}
 			}
 
-			if ((header == null && footer == null) && c.contains("per-world." + world + ".per-group")) {
+			if ((header == null && footer == null) && c.contains("per-world." + world + ".per-group")
+					&& plugin.hasVault()) {
 				String group = null;
-
-				if (plugin.isPluginEnabled("Vault")) {
-					try {
-						group = plugin.getVaultPerm().getPrimaryGroup(world, player).toLowerCase();
-					} catch (UnsupportedOperationException e) {
-						logConsole(Level.WARNING, "You not using any permission plugin!");
-					}
+				try {
+					group = plugin.getVaultPerm().getPrimaryGroup(world, player).toLowerCase();
+				} catch (UnsupportedOperationException e) {
+					logConsole(Level.WARNING, "You not using any permission plugin!");
 				}
 
 				if (group != null) {
@@ -170,15 +168,12 @@ public class TabHandler implements ITabHandler {
 			}
 		}
 
-		if ((header == null && footer == null) && c.contains("per-group")) {
+		if ((header == null && footer == null) && c.contains("per-group") && plugin.hasVault()) {
 			String group = null;
-
-			if (plugin.isPluginEnabled("Vault")) {
-				try {
-					group = plugin.getVaultPerm().getPrimaryGroup(player).toLowerCase();
-				} catch (UnsupportedOperationException e) {
-					logConsole(Level.WARNING, "You not using any permission plugin!");
-				}
+			try {
+				group = plugin.getVaultPerm().getPrimaryGroup(player).toLowerCase();
+			} catch (UnsupportedOperationException e) {
+				logConsole(Level.WARNING, "You not using any permission plugin!");
 			}
 
 			if (group != null) {
@@ -205,27 +200,13 @@ public class TabHandler implements ITabHandler {
 		final int refreshTime = plugin.getTabRefreshTime();
 		if (refreshTime < 1) {
 			cancelTask();
-			sendTab(worldEnable, worldList);
+			sendTab(player, worldEnable, worldList);
 			return;
 		}
 
 		final boolean enableW = worldEnable;
 
-		task = createTask(() -> {
-			if (!player.isOnline()) {
-				unregisterTab();
-				return;
-			}
-
-			if (c.getStringList("disabled-worlds").contains(world)
-					|| c.getStringList("blacklisted-players").contains(pName) || PluginUtils.isInGame(player)
-					|| (TabManager.TABENABLED.containsKey(playerUUID) && TabManager.TABENABLED.get(playerUUID))) {
-				unregisterTab();
-				return;
-			}
-
-			sendTab(enableW, worldList);
-		}, refreshTime);
+		task = createTask(() -> sendTab(player, enableW, worldList), refreshTime);
 	}
 
 	private BukkitTask createTask(Runnable run, int interval) {
@@ -233,10 +214,18 @@ public class TabHandler implements ITabHandler {
 				: Bukkit.getScheduler().runTaskTimer(plugin, run, interval, interval);
 	}
 
-	private void sendTab(boolean yesWorld, List<String> otherWorlds) {
-		final Player player = getPlayer();
+	private void sendTab(Player player, boolean yesWorld, List<String> otherWorlds) {
+		if (!player.isOnline()) {
+			unregisterTab();
+			return;
+		}
 
-		if (plugin.getTabC().getBoolean("hide-tab-when-player-vanished") && PluginUtils.isVanished(player)) {
+		final FileConfiguration c = plugin.getTabC();
+
+		if ((c.getBoolean("hide-tab-when-player-vanished") && PluginUtils.isVanished(player))
+				|| c.getStringList("disabled-worlds").contains(player.getWorld().getName())
+				|| c.getStringList("blacklisted-players").contains(player.getName()) || PluginUtils.isInGame(player)
+				|| (TabManager.TABENABLED.containsKey(playerUUID) && TabManager.TABENABLED.get(playerUUID))) {
 			TabTitle.sendTabTitle(player, "", "");
 			return;
 		}

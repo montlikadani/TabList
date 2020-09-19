@@ -36,7 +36,7 @@ public class HidePlayers {
 	}
 
 	public void removePlayerFromTab(Player p, Player to) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(TabList.getInstance(), () -> r(p, to), 4L);
+		Bukkit.getScheduler().runTaskLater(TabList.getInstance(), () -> r(p, to), 4L);
 	}
 
 	public void addPlayerToTab(Player to) {

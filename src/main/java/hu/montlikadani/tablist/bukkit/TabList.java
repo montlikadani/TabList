@@ -21,6 +21,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import hu.montlikadani.tablist.AnimCreator;
 import hu.montlikadani.tablist.bukkit.commands.Commands;
 import hu.montlikadani.tablist.bukkit.commands.TabNameCmd;
+import hu.montlikadani.tablist.bukkit.config.CommentedConfig;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.Configuration;
 import hu.montlikadani.tablist.bukkit.listeners.Listeners;
 import hu.montlikadani.tablist.bukkit.listeners.plugins.CMIAfkStatus;
 import hu.montlikadani.tablist.bukkit.listeners.plugins.EssAfkStatus;
@@ -452,11 +455,11 @@ public class TabList extends JavaPlugin {
 		return conf;
 	}
 
-	public FileConfiguration getC() {
+	public CommentedConfig getC() {
 		return conf.getConfig();
 	}
 
-	public FileConfiguration getTabC() {
+	public CommentedConfig getTabC() {
 		return conf.getTablist();
 	}
 

@@ -15,6 +15,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+
 public class Groups {
 
 	private TabList plugin;

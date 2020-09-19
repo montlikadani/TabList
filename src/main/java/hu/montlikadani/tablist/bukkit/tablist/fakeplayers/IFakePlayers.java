@@ -8,5 +8,7 @@ public interface IFakePlayers {
 
 	void createFakeplayer(Player p);
 
+	void createFakeplayer(Player p, String headUUID);
+
 	void removeFakePlayer();
 }

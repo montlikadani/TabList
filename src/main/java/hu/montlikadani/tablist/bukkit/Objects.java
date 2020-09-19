@@ -12,6 +12,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.RenderType;
 
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
