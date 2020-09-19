@@ -70,10 +70,6 @@ public class PlayerGroup {
 	}
 
 	void sendPacket(ProxiedPlayer p, String name) {
-		if (!p.getName().equals(items.getUsername())) {
-			items.setUsername(p.getName());
-		}
-
 		if (!p.getUniqueId().equals(items.getUuid())) {
 			items.setUuid(p.getUniqueId());
 		}
