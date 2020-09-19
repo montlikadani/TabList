@@ -15,6 +15,7 @@ import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class fakeplayers implements ICommand {
 
@@ -74,6 +75,34 @@ public class fakeplayers implements ICommand {
 			if (plugin.getFakePlayerHandler().createPlayer(p, name, headUUID)) {
 				sendMsg(p, plugin.getMsg("fake-player.added", "%name%", name));
 			}
+		} else if (args[1].equalsIgnoreCase("setskin")) {
+			if (!p.hasPermission(Perm.SETSKINFAKEPLAYER.getPerm())) {
+				sendMsg(p, plugin.getMsg("no-permission", "%perm%", Perm.SETSKINFAKEPLAYER.getPerm()));
+				return false;
+			}
+
+			if (args.length < 3) {
+				if (sender instanceof Player) {
+					((Player) sender).performCommand("tl help");
+				} else {
+					Bukkit.dispatchCommand(sender, "tl help");
+				}
+
+				return false;
+			}
+
+			if (!plugin.getFakePlayerHandler().getFakePlayerByName(args[2]).isPresent()) {
+				p.sendMessage("Fake player with this name not exists.");
+				return false;
+			}
+
+			String uuid = args[3];
+			if (!Util.isRealUUID(uuid)) {
+				p.sendMessage("This uuid not matches to a real player uuid.");
+				return false;
+			}
+
+			plugin.getFakePlayerHandler().getFakePlayerByName(args[2]).ifPresent(fp -> fp.setSkin(uuid));
 		} else if (args[1].equalsIgnoreCase("remove")) {
 			if (!p.hasPermission(Perm.REMOVEFAKEPLAYER.getPerm())) {
 				sendMsg(p, plugin.getMsg("no-permission", "%perm%", Perm.REMOVEFAKEPLAYER.getPerm()));

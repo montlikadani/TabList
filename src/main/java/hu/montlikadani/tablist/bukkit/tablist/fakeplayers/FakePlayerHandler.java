@@ -8,13 +8,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.config.Configuration;
+import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class FakePlayerHandler {
 
@@ -73,13 +73,9 @@ public class FakePlayerHandler {
 			return false;
 		}
 
-		if (headUUID != null && !headUUID.trim().isEmpty()) {
-			try {
-				UUID.fromString(headUUID);
-			} catch (IllegalArgumentException e) {
-				p.sendMessage("This uuid not matches to a real player uuid.");
-				return false;
-			}
+		if (!Util.isRealUUID(headUUID)) {
+			p.sendMessage("This uuid not matches to a real player uuid.");
+			return false;
 		}
 
 		Configuration conf = plugin.getConf();

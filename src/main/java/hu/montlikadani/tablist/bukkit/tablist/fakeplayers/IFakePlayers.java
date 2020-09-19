@@ -10,5 +10,7 @@ public interface IFakePlayers {
 
 	void createFakeplayer(Player p, String headUUID);
 
+	void setSkin(String skinUUID);
+
 	void removeFakePlayer();
 }

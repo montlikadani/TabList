@@ -21,6 +21,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
+import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class FakePlayers implements IFakePlayers {
 
@@ -49,13 +50,7 @@ public class FakePlayers implements IFakePlayers {
 		try {
 			profile = new GameProfile(UUID.randomUUID(), name);
 
-			if (headUUID != null && !headUUID.trim().isEmpty() && Bukkit.getServer().getOnlineMode()) {
-				getSkinValue(headUUID).thenAcceptAsync((map) -> {
-					java.util.Map.Entry<String, String> e = map.pollFirstEntry();
-					profile.getProperties().get("textures").clear();
-					profile.getProperties().put("textures", new Property("textures", e.getKey(), e.getValue()));
-				});
-			}
+			setSkin(headUUID);
 
 			fakePl = ReflectionUtils.Classes.getPlayerConstructor(p, profile);
 
@@ -77,6 +72,24 @@ public class FakePlayers implements IFakePlayers {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void setSkin(String skinUUID) {
+		if (skinUUID == null || skinUUID.trim().isEmpty() || profile == null) {
+			return;
+		}
+
+		if (!Bukkit.getServer().getOnlineMode()) {
+			Util.logConsole(java.util.logging.Level.WARNING, "Can't set skin for offline servers.");
+			return;
+		}
+
+		getSkinValue(skinUUID).thenAcceptAsync((map) -> {
+			java.util.Map.Entry<String, String> e = map.pollFirstEntry();
+			profile.getProperties().get("textures").clear();
+			profile.getProperties().put("textures", new Property("textures", e.getKey(), e.getValue()));
+		});
 	}
 
 	@Override

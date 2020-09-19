@@ -3,6 +3,7 @@ package hu.montlikadani.tablist.bukkit;
 public enum Perm {
 
 	ADDFAKEPLAYER("fakeplayers.add"),
+	SETSKINFAKEPLAYER("fakeplayers.setskin"),
 	FAKEPLAYERS("fakeplayers"),
 	GET("get"),
 	GETO("get.other"),

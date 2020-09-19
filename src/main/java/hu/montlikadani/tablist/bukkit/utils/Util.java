@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.bukkit.utils;
 
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -64,5 +65,18 @@ public class Util {
 
 		str = ChatColor.stripColor(str);
 		return str;
+	}
+
+	public static boolean isRealUUID(String uuid) {
+		if (uuid == null || uuid.trim().isEmpty()) {
+			return false;
+		}
+
+		try {
+			UUID.fromString(uuid);
+			return true;
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
 	}
 }
