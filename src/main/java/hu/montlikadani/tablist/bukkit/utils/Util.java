@@ -69,7 +69,7 @@ public class Util {
 
 	public static boolean isRealUUID(String uuid) {
 		if (uuid == null || uuid.trim().isEmpty()) {
-			return false;
+			return true;
 		}
 
 		try {
