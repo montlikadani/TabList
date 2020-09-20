@@ -73,6 +73,7 @@ chat-messages:
   - "&8/&a%command% fakeplayers&a add&2/&aremove&c <name>&6 - Create/remove fake player."
   - "&8/&a%command% fakeplayers list&6 - Lists all fake player."
   2:
+  - "&8/&a%command% fakeplayers setskin&c <skinUUID>&6 - Set skin for the fake player from the given real uuid."
   - "&8/&atabname&c <&9[player]&2/&cname>&c <name>&6 - Change player tab name."
   - "&8/&atname reset&9 [player]&6 - Resets the given player tab name."
   - "&8/&a%command% get&9 [player]&6 - Get player tab name."
