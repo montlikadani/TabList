@@ -71,9 +71,7 @@ public class ReflectionHandled implements ITabScoreboard {
 
 	@Override
 	public void setTeam(String teamName) {
-		if (packet == null) {
-			registerTeam(teamName);
-		}
+		registerTeam(teamName);
 
 		try {
 			scoreRef.getScoreboardTeamDisplayName().set(packet,

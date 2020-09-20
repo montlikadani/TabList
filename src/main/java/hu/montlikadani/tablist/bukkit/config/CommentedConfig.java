@@ -35,7 +35,7 @@ public class CommentedConfig extends YamlConfiguration {
 		}
 	}
 
-	public YamlConfiguration getC() {
+	public YamlConfiguration getConfig() {
 		return config;
 	}
 
@@ -258,7 +258,7 @@ public class CommentedConfig extends YamlConfiguration {
 	}
 
 	public void copyDefaults(boolean value) {
-		getC().options().copyDefaults(value);
+		config.options().copyDefaults(value);
 	}
 
 	private String process(String path, Object value) {
