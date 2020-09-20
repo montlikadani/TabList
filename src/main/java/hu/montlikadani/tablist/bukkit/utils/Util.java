@@ -33,11 +33,15 @@ public class Util {
 	}
 
 	public static String colorMsg(String msg) {
+		return colorMsg(msg, false);
+	}
+
+	public static String colorMsg(String msg, boolean usingNMSHex) {
 		if (msg == null) {
 			return "";
 		}
 
-		if (msg.contains("#") && Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
+		if (!usingNMSHex && msg.contains("#") && Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
 			msg = Global.matchColorRegex(msg);
 		}
 

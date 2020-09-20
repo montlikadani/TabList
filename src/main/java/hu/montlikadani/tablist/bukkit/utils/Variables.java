@@ -120,11 +120,11 @@ public class Variables {
 		String address = "";
 		if (str.contains("%ip-address%")) {
 			InetSocketAddress a = pl.getAddress();
-			address = a == null || a.getAddress() == null ? "" : a.getAddress().toString();
+			address = (a == null || a.getAddress() == null) ? "" : a.getAddress().toString();
 			address = address.replaceAll("/", "");
 		}
 
-		String t = null, dt = null;
+		String t = "", dt = "";
 		if (str.contains("%server-time%") || str.contains("%date%")) {
 			DateTimeFormatter form = !ConfigValues.getTimeFormat().isEmpty()
 					? DateTimeFormatter.ofPattern(ConfigValues.getTimeFormat())
@@ -150,10 +150,11 @@ public class Variables {
 
 		str = setPlaceholders(pl, str);
 		str = Global.setSymbols(str);
-		if (t != null)
+
+		if (!t.isEmpty())
 			str = str.replace("%server-time%", t);
 
-		if (dt != null)
+		if (!dt.isEmpty())
 			str = str.replace("%date%", dt);
 
 		if (str.contains("%server-ram-free%"))
@@ -220,7 +221,8 @@ public class Variables {
 			str = str.replace("\n", "\n");
 		}
 
-		return Util.colorMsg(str);
+		// Don't use here colors because of some issues with hex
+		return str;
 	}
 
 	public String setPlaceholders(Player p, String s) {

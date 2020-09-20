@@ -11,6 +11,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import hu.montlikadani.tablist.bukkit.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class ReflectionHandled implements ITabScoreboard {
 
@@ -108,6 +109,9 @@ public class ReflectionHandled implements ITabScoreboard {
 	}
 
 	private void updateName(String name) throws Throwable {
+		// Colorize '&' codes before hex
+		name = Util.colorMsg(name, true);
+
 		Object iChatBaseComponentName = ReflectionUtils.getAsIChatBaseComponent(name);
 		ReflectionUtils.setField(playerConst, "listName", iChatBaseComponentName);
 

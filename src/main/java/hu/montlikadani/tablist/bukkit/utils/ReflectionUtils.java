@@ -8,11 +8,16 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 import com.mojang.authlib.GameProfile;
 
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class ReflectionUtils {
+
+	private static final Gson GSON = new GsonBuilder().create();
 
 	private ReflectionUtils() {
 	}
@@ -23,6 +28,23 @@ public class ReflectionUtils {
 
 	public static Object getAsIChatBaseComponent(String name) throws Exception {
 		Class<?> iChatBaseComponent = getNMSClass("IChatBaseComponent");
+
+		if (Version.isCurrentEqualOrHigher(Version.v1_16_R1) && name.contains("#")) {
+			char[] array = name.toCharArray();
+			for (int i = 0; i < array.length; i++) {
+				if (array[i] == '#') {
+					String code = name.substring(i, i + 7);
+
+					JsonObject obj = new JsonObject();
+					obj.addProperty("text", name.replace(code, ""));
+					obj.addProperty("color", code);
+
+					Method m = iChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class);
+					return m.invoke(iChatBaseComponent, GSON.toJson(obj));
+				}
+			}
+		}
+
 		if (Version.isCurrentLower(Version.v1_8_R2)) {
 			Class<?> chatSerializer = getNMSClass("ChatSerializer");
 			Method m = chatSerializer.getMethod("a", String.class);

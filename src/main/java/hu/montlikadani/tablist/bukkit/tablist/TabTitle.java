@@ -30,8 +30,7 @@ public abstract class TabTitle {
 		header = Util.colorMsg(header);
 		footer = Util.colorMsg(footer);
 
-		// not going to figure out whats the issue in ichatbasecomponent
-		// temporary fix
+		// somehow hex colors not returns the correct colour from ichatbasecomponent so we use this
 		if (Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
 			player.setPlayerListHeaderFooter(header, footer);
 			return;

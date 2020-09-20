@@ -72,7 +72,8 @@ public class CommentedConfig extends YamlConfiguration {
 
 		Files.createParentDirs(file);
 		String data = insertComments(saveToString());
-		PrintWriter writer = new PrintWriter(file, StandardCharsets.UTF_8);
+		// 2. arg should be string for j8 users
+		PrintWriter writer = new PrintWriter(file, StandardCharsets.UTF_8.name());
 
 		try {
 			writer.write(data);
