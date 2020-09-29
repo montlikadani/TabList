@@ -3,6 +3,8 @@ package hu.montlikadani.tablist.bukkit.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -18,6 +20,7 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 public class ReflectionUtils {
 
 	private static final Gson GSON = new GsonBuilder().create();
+	private static final List<JsonObject> JSONLIST = new ArrayList<>();
 
 	private ReflectionUtils() {
 	}
@@ -30,26 +33,30 @@ public class ReflectionUtils {
 		Class<?> iChatBaseComponent = getNMSClass("IChatBaseComponent");
 
 		if (Version.isCurrentEqualOrHigher(Version.v1_16_R1) && name.contains("#")) {
+			JSONLIST.clear();
+
 			char[] array = name.toCharArray();
 			for (int i = 0; i < array.length; i++) {
 				if (array[i] == '#') {
 					String code = name.substring(i, i + 7);
+					String[] split = name.split(code);
+					String text = split[1].contains("#") ? split[1].split("#")[0] : split[1];
 
 					JsonObject obj = new JsonObject();
-					obj.addProperty("text", name.replace(code, ""));
+					obj.addProperty("text", text);
 					obj.addProperty("color", code);
-
-					Method m = iChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class);
-					return m.invoke(iChatBaseComponent, GSON.toJson(obj));
+					JSONLIST.add(obj);
 				}
 			}
+
+			Method m = iChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class);
+			return m.invoke(iChatBaseComponent, GSON.toJson(JSONLIST));
 		}
 
 		if (Version.isCurrentLower(Version.v1_8_R2)) {
 			Class<?> chatSerializer = getNMSClass("ChatSerializer");
 			Method m = chatSerializer.getMethod("a", String.class);
-			Object t = iChatBaseComponent.cast(m.invoke(chatSerializer, "{\"text\":\"" + name + "\"}"));
-			return t;
+			return iChatBaseComponent.cast(m.invoke(chatSerializer, "{\"text\":\"" + name + "\"}"));
 		}
 
 		Method m = iChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class);

@@ -113,6 +113,10 @@ public class ReflectionHandled implements ITabScoreboard {
 		Object iChatBaseComponentName = ReflectionUtils.getAsIChatBaseComponent(name);
 		ReflectionUtils.setField(playerConst, "listName", iChatBaseComponentName);
 
+		if (packetPlayOutPlayerInfo == null) {
+			return;
+		}
+
 		@SuppressWarnings("unchecked")
 		List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
 				.get(packetPlayOutPlayerInfo);

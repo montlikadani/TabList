@@ -93,7 +93,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 			}
 
 			String msg = builder.toString();
-			if (isNameDisabled(msg)) {
+			if (plugin.getTabNameHandler().isNameDisabled(msg)) {
 				sendMsg(sender, plugin.getMsg("tabname.name-disabled", "%name%", msg));
 				return true;
 			}
@@ -173,7 +173,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 			}
 
 			String msg = builder.toString();
-			if (isNameDisabled(msg)) {
+			if (plugin.getTabNameHandler().isNameDisabled(msg)) {
 				sendMsg(p, plugin.getMsg("tabname.name-disabled", "%name%", msg));
 				return true;
 			}
@@ -213,7 +213,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 			}
 
 			String msg = builder.toString();
-			if (isNameDisabled(msg)) {
+			if (plugin.getTabNameHandler().isNameDisabled(msg)) {
 				sendMsg(p, plugin.getMsg("tabname.name-disabled", "%name%", msg));
 				return true;
 			}
@@ -233,28 +233,12 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 		return true;
 	}
 
-	private boolean isNameDisabled(String arg) {
-		String text = Util.stripColor(arg.trim());
-		List<String> restrictedNames = plugin.getC().getStringList("tabname.blacklist-names");
-		if (restrictedNames.isEmpty()) {
-			restrictedNames = plugin.getC().getStringList("tabname.restricted-names");
-		}
-
-		for (String b : restrictedNames) {
-			if (b.equalsIgnoreCase(text)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> completionList = new ArrayList<>(), cmds = new ArrayList<>();
-		String partOfCommand = "";
-
 		if (sender.hasPermission(Perm.TABNAME.getPerm())) {
+			List<String> completionList = new ArrayList<>(), cmds = new ArrayList<>();
+			String partOfCommand = "";
+
 			if (args.length == 0) {
 				cmds.add("tabname");
 				cmds.add("tname");
@@ -265,7 +249,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 				return completionList;
 			}
 
-			if (sender.hasPermission(Perm.RESET.getPerm()) && args.length == 1) {
+			if (args.length == 1 && sender.hasPermission(Perm.RESET.getPerm())) {
 				cmds.add("reset");
 				partOfCommand = args[0];
 

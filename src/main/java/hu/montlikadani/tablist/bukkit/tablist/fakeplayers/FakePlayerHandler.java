@@ -4,7 +4,6 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -123,14 +122,10 @@ public class FakePlayerHandler {
 			return false;
 		}
 
-		for (Iterator<IFakePlayers> it = fakePlayers.iterator(); it.hasNext();) {
-			IFakePlayers fp = it.next();
-			if (fp.getName().equalsIgnoreCase(name)) {
-				fp.removeFakePlayer();
-				it.remove();
-				break;
-			}
-		}
+		getFakePlayerByName(name).ifPresent(fp -> {
+			fp.removeFakePlayer();
+			fakePlayers.remove(fp);
+		});
 
 		return true;
 	}

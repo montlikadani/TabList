@@ -276,7 +276,7 @@ public class Variables {
 
 	private String formatPing(int ping) {
 		if (!ConfigValues.isPingFormatEnabled() || ConfigValues.getPingColorFormats().isEmpty()) {
-			return "";
+			return "" + ping;
 		}
 
 		return parseExpression(ping, NodeType.PING);
@@ -284,7 +284,7 @@ public class Variables {
 
 	private String formatTPS(double tps) {
 		if (!ConfigValues.isTpsFormatEnabled() || ConfigValues.getTpsColorFormats().isEmpty()) {
-			return "";
+			return "" + tps;
 		}
 
 		return parseExpression(tps, NodeType.TPS);

@@ -93,14 +93,9 @@ public class CommentedConfig extends YamlConfiguration {
 		boolean node = false;
 		int depth = 0;
 
-		boolean firstLine = true;
 		for (final String line : yamlContents) {
-			if (firstLine) {
-				firstLine = false;
-
-				if (line.startsWith("#")) {
-					continue;
-				}
+			if (line.startsWith("#")) {
+				continue; // Ignore comments
 			}
 
 			boolean keyOk = true;

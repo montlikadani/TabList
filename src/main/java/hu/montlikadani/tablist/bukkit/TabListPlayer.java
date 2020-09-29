@@ -176,7 +176,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 		if (ConfigValues.isUsePluginNickName()) {
 			String nick = PluginUtils.getNickName(player);
-			if (nick == null && this.nick != null || nick != null && !nick.equals(this.nick)) {
+			if (this.nick != null || !nick.equals(this.nick)) {
 				this.nick = nick;
 				update = true;
 			}

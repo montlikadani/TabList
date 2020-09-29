@@ -242,6 +242,7 @@ public class TabList extends JavaPlugin {
 		this.tabRefreshTime = getTabC().getInt("interval", 4);
 
 		variables.loadExpressions();
+		tabNameHandler.loadRestrictedNames();
 	}
 
 	private void loadAnimations() {

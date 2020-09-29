@@ -6,7 +6,9 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.sendMsg;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -24,11 +26,41 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	private TabList plugin;
 
-	public Commands(TabList plugin) {
-		this.plugin = plugin;
-	}
+	@SuppressWarnings("serial")
+	private final Set<String> subCmds = new HashSet<String>() {
+		{
+			add("reload");
+			add("fakeplayers");
+			add("get");
+			add("removegroup");
+			add("setprefix");
+			add("setsuffix");
+			add("setpriority");
+			add("toggle");
+		}
+	};
+
+	private final Set<ICommand> cmds = new HashSet<>();
 
 	@SuppressWarnings("deprecation")
+	public Commands(TabList plugin) {
+		this.plugin = plugin;
+
+		for (String s : subCmds) {
+			try {
+				Class<?> c = TabList.class.getClassLoader()
+						.loadClass("hu.montlikadani.tablist.bukkit.commands.list." + s);
+				if (ClassMethods.getCurrentVersion() >= 9) {
+					cmds.add((ICommand) c.getDeclaredConstructor().newInstance());
+				} else {
+					cmds.add((ICommand) c.newInstance());
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
 		if (args.length == 0) {
@@ -71,24 +103,17 @@ public class Commands implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
-		String path = "hu.montlikadani.tablist.bukkit.commands.list";
-		ICommand command = null;
-		try {
-			if (ClassMethods.getCurrentVersion() >= 9) {
-				command = (ICommand) TabList.class.getClassLoader().loadClass(path + "." + args[0].toLowerCase())
-						.getDeclaredConstructor().newInstance();
-			} else {
-				command = (ICommand) TabList.class.getClassLoader().loadClass(path + "." + args[0].toLowerCase())
-						.newInstance();
+		boolean found = false;
+		for (ICommand command : cmds) {
+			if (command.getClass().getSimpleName().equalsIgnoreCase(args[0])) {
+				command.run(plugin, sender, cmd, label, args);
+				found = true;
+				break;
 			}
-		} catch (ClassNotFoundException e) {
-			sendMsg(sender, plugin.getMsg("unknown-sub-command", "%subcmd%", args[0]));
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
-		if (command != null) {
-			command.run(plugin, sender, cmd, label, args);
+		if (!found) {
+			sendMsg(sender, plugin.getMsg("unknown-sub-command", "%subcmd%", args[0]));
 		}
 
 		return true;
@@ -110,7 +135,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		if (args.length == 2) {
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
-				Arrays.asList("add", "remove", "list").forEach(cmds::add);
+				Arrays.asList("add", "remove", "list", "setskin").forEach(cmds::add);
 				partOfCommand = args[1];
 
 				StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
@@ -127,7 +152,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		if (args.length == 3 && ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
-			if (args[1].equalsIgnoreCase("remove")) {
+			if (args[1].equalsIgnoreCase("remove") || args[1].equalsIgnoreCase("setskin")) {
 				plugin.getConf().getFakeplayers().getStringList("fakeplayers").forEach(cmds::add);
 				partOfCommand = args[2];
 			}
@@ -140,15 +165,17 @@ public class Commands implements CommandExecutor, TabCompleter {
 		return null;
 	}
 
-	private List<String> getCmds(CommandSender sender) {
-		List<String> c = new ArrayList<>();
-		for (String cmds : Arrays.asList("reload", "fakeplayers", "get", "removegroup", "setprefix", "setsuffix",
-				"setpriority", "toggle")) {
-			if (sender instanceof Player && !sender.hasPermission("tablist." + cmds)) {
-				continue;
-			}
+	private Set<String> getCmds(CommandSender sender) {
+		if (!(sender instanceof Player)) {
+			return subCmds;
+		}
 
-			c.add(cmds);
+		// Don't use stream for tab-complete
+		Set<String> c = new HashSet<>();
+		for (String name : subCmds) {
+			if (sender.hasPermission("tablist." + name)) {
+				c.add(name);
+			}
 		}
 
 		return c;

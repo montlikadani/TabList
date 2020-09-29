@@ -19,7 +19,7 @@ public class ConfigValues {
 			defaultTabNameColor, memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor,
 			memoryBarReleasedColor;
 
-	private static List<String> tpsColorFormats, pingColorFormats;
+	private static List<String> tpsColorFormats, pingColorFormats, restrictedTabNames;
 
 	private static int tpsSize, groupsRefreshInterval, objectRefreshInterval, tabNameMaxLength, memoryBarSize;
 
@@ -143,14 +143,14 @@ public class ConfigValues {
 		c.addComment("tabname.default-color",
 				"Enable default color? (If the player has not written a color code, this color will be given by default.)");
 		c.addComment("tabname.disabled-worlds", "In these worlds you can't change the tab name");
-		c.addComment("tabname.restricted-names", "Which names can not be used?");
+		c.addComment("tabname.restricted-names", "Which names can not be used? Supports regexes",
+				"For example if you have \"[^name]\" every character are ignored except the name.");
 		c.addComment("check-update", "Check for updates?");
 		c.addComment("download-updates", "Download new releases to \"releases\" folder?",
 				"This only works if the \"check-update\" is true.");
 		c.addComment("logconsole", "Log plugin messages to console?");
 
-		placeholderAPI = c.contains("placeholderapi") ? c.get("placeholderapi", false)
-				: c.get("hook.placeholderapi", false);
+		placeholderAPI = c.get("hook.placeholderapi", false);
 		ragemodeHook = c.get("hook.RageMode", false);
 		perWorldPlayerList = c.get("per-world-player-list", false);
 		fakePlayers = c.get("enable-fake-players", false);
@@ -177,9 +177,7 @@ public class ConfigValues {
 		preferPrimaryVaultGroup = c.get("change-prefix-suffix-in-tablist.prefer-primary-vault-group", true);
 		tablistObjectiveEnabled = c.get("tablist-object-type.enable", false);
 		tabNameEnabled = c.get("tabname.enable", false);
-		tabNameUsePluginNickName = c
-				.get(c.contains("tabname.use-essentials-nickname") ? "tabname.use-essentials-nickname"
-						: "tabname.use-plugin-nickname", false);
+		tabNameUsePluginNickName = c.get("tabname.use-plugin-nickname", false);
 		clearTabNameOnQuit = c.get("tabname.clear-player-tabname-on-quit", false);
 		tabNameColorCodeEnabled = c.get("tabname.enable-color-code", false);
 		defaultColorEnabled = c.get("tabname.default-color.enable", false);
@@ -212,7 +210,7 @@ public class ConfigValues {
 		c.get("tablist-object-type.object-settings.health.restricted-players",
 				Arrays.asList("exampleplayer", "players"));
 		c.get("tabname.disabled-worlds", Arrays.asList("myWorldWithUpper"));
-		c.get("tabname.restricted-names", Arrays.asList("tabname"));
+		restrictedTabNames = c.get("tabname.restricted-names", Arrays.asList("[^tabname]", "namesHere"));
 
 		tpsSize = c.get("placeholder-format.tps.size", 2);
 		memoryBarSize = c.get("placeholder-format.memory-bar.size", 80);
@@ -421,5 +419,9 @@ public class ConfigValues {
 
 	public static boolean isTpsCanBeHigher() {
 		return tpsCanBeHigher;
+	}
+
+	public static List<String> getRestrictedTabNames() {
+		return restrictedTabNames;
 	}
 }

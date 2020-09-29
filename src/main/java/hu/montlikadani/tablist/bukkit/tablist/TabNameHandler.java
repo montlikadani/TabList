@@ -3,6 +3,10 @@ package hu.montlikadani.tablist.bukkit.tablist;
 import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 import org.bukkit.entity.Player;
 
@@ -15,8 +19,25 @@ public class TabNameHandler {
 
 	private TabList plugin;
 
+	private final Set<Predicate<String>> restrictedNames = new HashSet<>();
+
 	public TabNameHandler(TabList plugin) {
 		this.plugin = plugin;
+	}
+
+	public Set<Predicate<String>> getRestrictedNames() {
+		return new HashSet<>(restrictedNames);
+	}
+
+	public void loadRestrictedNames() {
+		restrictedNames.clear();
+
+		for (String rn : ConfigValues.getRestrictedTabNames()) {
+			try {
+				restrictedNames.add(Pattern.compile(rn).asPredicate());
+			} catch (java.util.regex.PatternSyntaxException e) {
+			}
+		}
 	}
 
 	public void loadTabName(Player p) {
@@ -26,7 +47,7 @@ public class TabNameHandler {
 
 		String result = "";
 		if (ConfigValues.isTabNameUsePluginNickName()) {
-			String nickName = PluginUtils.getNickName(p) == null ? "" : PluginUtils.getNickName(p);
+			String nickName = PluginUtils.getNickName(p);
 			if (!nickName.isEmpty()) {
 				result = colorMsg(nickName + "&r");
 			}
@@ -50,6 +71,16 @@ public class TabNameHandler {
 		}
 	}
 
+	public boolean isNameDisabled(String arg) {
+		for (Predicate<String> b : restrictedNames) {
+			if (b.test(arg)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public String getTabName(Player p) {
 		return getTabName(p.getName());
 	}
@@ -68,7 +99,7 @@ public class TabNameHandler {
 		String result = "", tName = "";
 
 		if (ConfigValues.isTabNameUsePluginNickName()) {
-			String nickName = PluginUtils.getNickName(p) == null ? "" : PluginUtils.getNickName(p);
+			String nickName = PluginUtils.getNickName(p);
 			if (!nickName.isEmpty()) {
 				result = colorMsg(nickName);
 				tName = nickName;
