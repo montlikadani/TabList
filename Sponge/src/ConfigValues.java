@@ -1,14 +1,18 @@
 package hu.montlikadani.tablist.sponge;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class ConfigValues {
 
-	private static String tablistObjectsType, customObject, timeFormat, dateFormat, timeZone, goodPingColor,
-			mediumPingColor, badPingColor;
+	private static String tablistObjectsType, customObject, timeFormat, dateFormat, timeZone;
 
 	private static boolean useSystemZone, pingFormatEnabled, tablistEnabled, randomTablist, tablistGroups,
 			useOwnScoreboard;
 
-	private static int tablistUpdateTime, objectsRefreshInterval, goodPingAmount, mediumPingAmount;
+	private static int tablistUpdateTime, objectsRefreshInterval;
+
+	private static List<String> pingColorFormats;
 
 	public static void loadValues() {
 		ConfigManager c = TabList.get().getC().getConfig();
@@ -27,11 +31,16 @@ public class ConfigValues {
 		useSystemZone = c.getBoolean(false, "placeholder-format", "time", "time-zone", "use-system-zone");
 		c.setComment("Ping color format for %player-ping% placeholder.", "placeholder-format", "ping");
 		pingFormatEnabled = c.getBoolean(true, "placeholder-format", "ping", "enabled");
-		goodPingColor = c.getString("&a", "placeholder-format", "ping", "good-ping", "color");
-		goodPingAmount = c.getInt(200, "placeholder-format", "ping", "good-ping", "amount");
-		mediumPingColor = c.getString("&6", "placeholder-format", "ping", "medium-ping", "color");
-		mediumPingAmount = c.getInt(200, "placeholder-format", "ping", "medium-ping", "amount");
-		badPingColor = c.getString("&c", "placeholder-format", "ping", "bad-ping");
+
+		c.setComment(
+				"Operators usage:\n> - highest value, \"17 > &e\" this will be yellow color\n"
+						+ ">= - highest & equal value, \"5 >= &6\" gold color\n"
+						+ "<= - less than & equal value, \"16 <= &c\" red color\n"
+						+ "< - less value, \"8 < &4\" dark red color\n"
+						+ "== - equal value, \"20 == &a\" green color if 20 is equal to current ping amount",
+				"placeholder-format", "ping", "formats");
+		pingColorFormats = c.getStringList(Arrays.asList("200 <= &a", "400 >= &6", "500 > &c"), "placeholder-format",
+				"ping", "formats");
 
 		c.setComment("Tablist, header & footer with animation.\n"
 				+ "Use %anim:animationName% placeholder to make an animation.\n"
@@ -121,23 +130,7 @@ public class ConfigValues {
 		return pingFormatEnabled;
 	}
 
-	public static int getGoodPingAmount() {
-		return goodPingAmount;
-	}
-
-	public static String getGoodPingColor() {
-		return goodPingColor;
-	}
-
-	public static String getMediumPingColor() {
-		return mediumPingColor;
-	}
-
-	public static int getMediumPingAmount() {
-		return mediumPingAmount;
-	}
-
-	public static String getBadPingColor() {
-		return badPingColor;
+	public static List<String> getPingColorFormats() {
+		return pingColorFormats;
 	}
 }

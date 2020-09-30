@@ -70,7 +70,10 @@ public class TabListObjects {
 
 	public void unregisterObjective(Player player, String objectName) {
 		Scoreboard b = player.getScoreboard();
-		b.clearSlot(DisplaySlots.LIST);
+		synchronized (b) { // Avoiding concurrentModify
+			b.clearSlot(DisplaySlots.LIST);
+		}
+
 		b.getObjective(objectName).ifPresent(b::removeObjective);
 	}
 

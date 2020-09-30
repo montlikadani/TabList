@@ -82,13 +82,12 @@ public class ConfigManager {
 			return;
 		}
 
-		try {
-			InputStream in = TabList.get().getClass().getClassLoader().getResourceAsStream(name);
+		try (InputStream in = TabList.get().getClass().getClassLoader().getResourceAsStream(name)) {
 			if (in != null) {
 				Files.copy(in, file.toPath());
 				in.close();
 			}
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -141,19 +140,17 @@ public class ConfigManager {
 	}
 
 	public List<String> getStringList(List<String> def, Object... path) {
-		List<String> list = new ArrayList<>();
-
 		try {
 			if (def == null) {
-				list.addAll(get(path).getList(TypeToken.of(String.class)));
-			} else {
-				list.addAll(get(path).getList(TypeToken.of(String.class), def));
+				return get(path).getList(TypeToken.of(String.class));
 			}
+
+			return get(path).getList(TypeToken.of(String.class), def);
 		} catch (ObjectMappingException e) {
 			e.printStackTrace();
 		}
 
-		return list;
+		return new ArrayList<>();
 	}
 
 	public boolean contains(Object... path) {

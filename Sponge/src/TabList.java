@@ -26,10 +26,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Plugin(id = "tablist", name = "TabList", version = "1.0.1", description = "An ultimate animated tablist", authors = "montlikadani")
+@Plugin(id = "tablist", name = "TabList", version = "1.0.2", description = "An ultimate animated tablist", authors = "montlikadani")
 public class TabList {
 
-	private static TabList instance = null;
+	private static TabList instance;
 
 	@Inject
 	private PluginContainer pc;
@@ -55,7 +55,7 @@ public class TabList {
 	@Listener
 	public void onPluginInit(GameInitializationEvent ev) {
 		initConfigs();
-		initCommands();
+		new SpongeCommands(this);
 
 		tManager = new TabListManager(this);
 		variables = new Variables();
@@ -65,7 +65,6 @@ public class TabList {
 	@Listener
 	public void onServerStarted(GameStartedServerEvent event) {
 		Sponge.getEventManager().registerListeners(this, new EventListeners());
-
 		reload();
 	}
 
@@ -106,11 +105,6 @@ public class TabList {
 		animationsFile.reload();
 	}
 
-	private void initCommands() {
-		SpongeCommands sc = new SpongeCommands(this);
-		sc.init();
-	}
-
 	public void reload() {
 		if (tManager == null) {
 			tManager = new TabListManager(this);
@@ -127,6 +121,7 @@ public class TabList {
 		initConfigs();
 		loadAnimations();
 		loadGroups();
+		variables.loadExpressions();
 		updateAll();
 	}
 
@@ -187,9 +182,15 @@ public class TabList {
 	}
 
 	public String makeAnim(String name) {
-		for (AnimCreator ac : animations) {
-			name = name.replace("%anim:" + ac.getAnimName() + "%",
-					ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
+		if (name == null) {
+			return "";
+		}
+
+		while (name.contains("%anim:")) { // when using multiple animations
+			for (AnimCreator ac : animations) {
+				name = name.replace("%anim:" + ac.getAnimName() + "%",
+						ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
+			}
 		}
 
 		return name;

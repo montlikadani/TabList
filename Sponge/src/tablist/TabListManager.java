@@ -65,7 +65,7 @@ public class TabListManager {
 
 		cancelTab(uuid);
 
-		if (SpongeCommands.TABENABLED.containsKey(uuid) && SpongeCommands.TABENABLED.get(uuid)) {
+		if (SpongeCommands.TABENABLED.getOrDefault(uuid, false)) {
 			return;
 		}
 
@@ -129,7 +129,7 @@ public class TabListManager {
 
 			if (conf.getStringList("tablist", "disabled-worlds").contains(world)
 					|| conf.getStringList("tablist", "restricted-players").contains(pName)
-					|| (SpongeCommands.TABENABLED.containsKey(uuid) && SpongeCommands.TABENABLED.get(uuid))) {
+					|| SpongeCommands.TABENABLED.getOrDefault(uuid, false)) {
 				cancelTab(uuid);
 				return;
 			}

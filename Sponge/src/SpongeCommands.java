@@ -32,9 +32,11 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 						GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))),
 						GenericArguments.string(Text.of("all")))))
 				.permission("tablist.toggle").executor(this::toggleCommand).build();
+
+		init();
 	}
 
-	public void init() {
+	private void init() {
 		Sponge.getCommandManager().register(plugin, get(), "tablist", "tl");
 	}
 
@@ -101,17 +103,17 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 		return CommandSpec.builder().child(toggleCmd, "toggle").description(Text.of("Tablist modifier")).build();
 	}
 
-	private boolean hasPerm(CommandSource src, String perm) {
+	private final boolean hasPerm(CommandSource src, String perm) {
 		return !(src instanceof Player) ? true : src.hasPermission(perm);
 	}
 
-	private void sendMsg(CommandSource src, String msg) {
+	private final void sendMsg(CommandSource src, String msg) {
 		if (msg != null && !msg.trim().isEmpty()) {
 			sendMsg(src, TextSerializers.FORMATTING_CODE.deserialize(msg));
 		}
 	}
 
-	private void sendMsg(CommandSource src, Text text) {
+	private final void sendMsg(CommandSource src, Text text) {
 		src.sendMessage(text);
 	}
 }

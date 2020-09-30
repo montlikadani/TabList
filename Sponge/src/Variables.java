@@ -4,7 +4,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -14,7 +16,20 @@ import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import hu.montlikadani.tablist.sponge.utils.operators.ExpressionNode;
+import hu.montlikadani.tablist.sponge.utils.operators.OperatorNodes;
+
 public class Variables {
+
+	private final List<ExpressionNode> nodes = new ArrayList<>();
+
+	public void loadExpressions() {
+		nodes.clear();
+
+		for (String f : ConfigValues.getPingColorFormats()) {
+			nodes.add(new OperatorNodes(f));
+		}
+	}
 
 	public Text replaceVariables(Player p, String str) {
 		int staffs = 0;
@@ -26,10 +41,10 @@ public class Variables {
 			}
 		}
 
-		String address = null;
+		String address = "";
 		if (str.contains("%ip-address%")) {
 			address = p.getConnection().getAddress().getAddress().toString();
-			address = address.replaceAll("/", "");
+			address = address.replace("/", "");
 		}
 
 		if (str.contains("%tps%")) {
@@ -38,7 +53,7 @@ public class Variables {
 			str = str.replace("%tps%", df.format(Sponge.getServer().getTicksPerSecond()));
 		}
 
-		String t = null, dt = null;
+		String t = "", dt = "";
 		if (str.contains("%server-time%") || str.contains("%date%")) {
 			DateTimeFormatter form = DateTimeFormatter.ofPattern(ConfigValues.getTimeFormat()),
 					form2 = DateTimeFormatter.ofPattern(ConfigValues.getDateFormat());
@@ -72,11 +87,11 @@ public class Variables {
 		}
 
 		if (str.contains("%player-level%")) {
-			str = str.replace("%player-level%", Integer.toString(p.get(Keys.EXPERIENCE_LEVEL).get()));
+			str = str.replace("%player-level%", Integer.toString(p.get(Keys.EXPERIENCE_LEVEL).orElse(0)));
 		}
 
 		if (str.contains("%player-total-level%")) {
-			str = str.replace("%player-total-level%", Integer.toString(p.get(Keys.TOTAL_EXPERIENCE).get()));
+			str = str.replace("%player-total-level%", Integer.toString(p.get(Keys.TOTAL_EXPERIENCE).orElse(0)));
 		}
 
 		if (str.contains("%world%")) {
@@ -93,10 +108,10 @@ public class Variables {
 			str = str.replace("%player-max-health%", Double.toString(p.getHealthData().maxHealth().get()));
 		}
 
-		if (t != null)
+		if (!t.isEmpty())
 			str = str.replace("%server-time%", t);
 
-		if (dt != null)
+		if (!dt.isEmpty())
 			str = str.replace("%date%", dt);
 
 		if (str.contains("%server-ram-free%"))
@@ -121,7 +136,7 @@ public class Variables {
 			str = str.replace("%staff-online%", Integer.toString(staffs));
 		}
 
-		if (address != null)
+		if (!address.isEmpty())
 			str = str.replace("%ip-address%", address);
 
 		if (str.contains("%mc-version%"))
@@ -135,19 +150,30 @@ public class Variables {
 	}
 
 	private String formatPing(int ping) {
-		StringBuilder sb = new StringBuilder();
+		if (!ConfigValues.isPingFormatEnabled() || ConfigValues.getPingColorFormats().isEmpty()) {
+			return "" + ping;
+		}
 
-		if (ConfigValues.isPingFormatEnabled()) {
-			if (ping <= ConfigValues.getGoodPingAmount()) {
-				return sb.append(ConfigValues.getGoodPingColor().replace('&', '\u00a7')).append(ping).toString();
-			} else if (ping <= ConfigValues.getMediumPingAmount()) {
-				return sb.append(ConfigValues.getMediumPingColor().replace('&', '\u00a7')).append(ping).toString();
-			} else {
-				return sb.append(ConfigValues.getBadPingColor().replace('&', '\u00a7')).append(ping).toString();
+		return parseExpression(ping);
+	}
+
+	private String parseExpression(int value) {
+		String color = "";
+
+		for (ExpressionNode node : nodes) {
+			if (node.parse(value) && node.getCondition().getParseable().length > 1) {
+				color = node.getCondition().getParseable()[1];
 			}
 		}
 
-		return sb.append(ping).toString();
+		color = color.trim();
+
+		StringBuilder builder = new StringBuilder();
+		if (!color.isEmpty()) {
+			builder.append(color.replace('&', '\u00a7'));
+		}
+
+		return builder.append(value).toString();
 	}
 
 	public String setSymbols(String s) {
