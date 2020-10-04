@@ -65,11 +65,7 @@ public class setpriority implements ICommand {
 		String suffix = plugin.getGS().getString("groups." + name + ".suffix", "");
 
 		Groups groups = plugin.getGroups();
-
-		TeamHandler team = groups.getTeam(name);
-		if (team == null) {
-			team = new TeamHandler(name, prefix, suffix);
-		}
+		TeamHandler team = groups.getTeam(name).orElse(new TeamHandler(name, prefix, suffix));
 
 		team.setPriority(priority);
 
@@ -89,11 +85,8 @@ public class setpriority implements ICommand {
 			groups.setPlayerTeam(tabPlayer, priority);
 		}
 
-		java.util.List<TeamHandler> teams = groups.getGroupsList();
-		teams.add(team);
-
-		groups.getGroupsList().clear();
-		groups.getGroupsList().addAll(teams);
+		groups.getGroupsList().remove(team);
+		groups.getGroupsList().add(team);
 
 		sendMsg(sender,
 				plugin.getMsg("set-prefix-suffix.set-priority.successfully-set", "%group%", name, "%number%", match));

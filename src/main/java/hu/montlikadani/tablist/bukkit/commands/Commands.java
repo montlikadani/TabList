@@ -126,6 +126,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		if (args.length == 1) {
 			getCmds(sender).forEach(cmds::add);
+			cmds.add("help");
 			partOfCommand = args[0];
 
 			StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);

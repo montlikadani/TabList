@@ -53,9 +53,6 @@ public class ReflectionHandled implements ITabScoreboard {
 			scoreRef.getScoreboardTeamNames().set(packet, Collections.singletonList(player.getName()));
 			scoreRef.getScoreboardTeamMode().set(packet, 0);
 
-			ReflectionUtils.setField(playerConst, "listName", ReflectionUtils.getAsIChatBaseComponent(
-					tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix()));
-
 			entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
 			Array.set(entityPlayerArray, 0, playerConst);
 

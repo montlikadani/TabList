@@ -232,9 +232,11 @@ tabname:
   disabled-worlds:
   - myWorldWithUpper
 
-  # Which names can not be used?
+  # Which names can not be used? Supports regexes
+  # For example if you have "[^name]" every character are ignored except the name.
   restricted-names:
-  - tabname
+  - "[^tabname]"
+  - "namesHere"
 
 # Check for updates?
 check-update: true

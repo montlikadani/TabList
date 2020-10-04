@@ -69,10 +69,7 @@ public class setsuffix implements ICommand {
 		String prefix = plugin.getGS().getString("groups." + name + ".prefix", "");
 		int priority = plugin.getGS().getInt("groups." + name + ".sort-priority", 0);
 
-		TeamHandler team = groups.getTeam(name);
-		if (team == null) {
-			team = new TeamHandler(name, prefix, suffix, priority);
-		}
+		TeamHandler team = groups.getTeam(name).orElse(new TeamHandler(name, prefix, suffix, priority));
 
 		Player target = Bukkit.getPlayer(name);
 		if (target != null) {
@@ -90,11 +87,8 @@ public class setsuffix implements ICommand {
 			groups.setPlayerTeam(tabPlayer, priority);
 		}
 
-		java.util.List<TeamHandler> teams = groups.getGroupsList();
-		teams.add(team);
-
-		groups.getGroupsList().clear();
-		groups.getGroupsList().addAll(teams);
+		groups.getGroupsList().remove(team);
+		groups.getGroupsList().add(team);
 
 		sendMsg(sender, plugin.getMsg("set-prefix-suffix.suffix.successfully-set", "%group%", name, "%tag%",
 				builder.toString()));

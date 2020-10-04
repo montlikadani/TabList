@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.Location;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -262,22 +261,12 @@ public class CommentedConfig extends YamlConfiguration {
 		return path;
 	}
 
-	public Boolean get(String path, Boolean def) {
+	public Boolean get(String path, boolean def) {
 		path = process(path, def);
 		return config.getBoolean(path);
 	}
 
-	public Object get(String path, Location def) {
-		path = process(path, def);
-		return config.get(path);
-	}
-
 	public int get(String path, int def) {
-		path = process(path, def);
-		return config.getInt(path);
-	}
-
-	public int get(String path, Integer def) {
 		path = process(path, def);
 		return config.getInt(path);
 	}

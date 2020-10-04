@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import hu.montlikadani.tablist.bukkit.Groups;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.TeamHandler;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
@@ -119,9 +120,11 @@ public class TabListAPI {
 	 * 
 	 * @param name Group name
 	 * @return {@link TeamHandler} if exists
+	 * @deprecated Use {@link Groups#getTeam(String)} instead
 	 */
+	@Deprecated
 	public static TeamHandler getGroup(String name) {
-		return getInstance().getGroups().getTeam(name);
+		return getInstance().getGroups().getTeam(name).get();
 	}
 
 	/**

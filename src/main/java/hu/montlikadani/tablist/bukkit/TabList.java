@@ -97,11 +97,9 @@ public class TabList extends JavaPlugin {
 			hasVault = initVaultPerm();
 
 			fakePlayerHandler.load();
-
 			loadAnimations();
 			loadListeners();
 			registerCommands();
-
 			tabManager.loadToggledTabs();
 			g.load();
 

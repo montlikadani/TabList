@@ -2,10 +2,12 @@ package hu.montlikadani.tablist.bukkit;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -38,20 +40,31 @@ public class Groups {
 		return tLPlayerMap;
 	}
 
+	/**
+	 * Returns the list of teams
+	 * 
+	 * @return {@link List}
+	 */
 	public List<TeamHandler> getGroupsList() {
 		return groupsList;
 	}
 
-	public TeamHandler getTeam(String name) {
+	/**
+	 * Returns the team by name.
+	 * 
+	 * @param name Team name
+	 * @return {@link Optional} -> {@link TeamHandler}
+	 */
+	public Optional<TeamHandler> getTeam(String name) {
 		Validate.notEmpty(name, "The team name can't be empty/null");
 
 		for (TeamHandler handler : groupsList) {
 			if (handler.getTeam().equalsIgnoreCase(name)) {
-				return handler;
+				return Optional.ofNullable(handler);
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	protected void load() {
@@ -94,11 +107,7 @@ public class Groups {
 				ChatColor[] colors = ChatColor.values();
 				ChatColor c = colors[ThreadLocalRandom.current().nextInt(colors.length)];
 
-				plugin.getGS().set(path + "prefix", "&" + c.getChar());
-
-				c = colors[ThreadLocalRandom.current().nextInt(colors.length)];
-
-				plugin.getGS().set(path + "suffix", "&" + c.getChar());
+				plugin.getGS().set(path + "prefix", "&" + c.getChar() + s + "&r - ");
 				have = true;
 			}
 
@@ -130,10 +139,23 @@ public class Groups {
 		startTask();
 	}
 
+	/**
+	 * Loads the group(s) for the given player. If the player have before group set, that group getting remove.
+	 * The scheduler task will get started to update continuously.
+	 * 
+	 * @param p {@link Player}
+	 */
 	public void loadGroupForPlayer(Player p) {
 		removePlayerGroup(p).thenAccept(e -> startTask());
 	}
 
+	/**
+	 * Sets the player prefix/suffix<br><br>
+	 * If the player is hidden using {@link TabList#getHidePlayers()}, returned.
+	 * 
+	 * @param tabPlayer {@link TabListPlayer}
+	 * @param priority
+	 */
 	public void setPlayerTeam(TabListPlayer tabPlayer, int priority) {
 		if (tabPlayer == null) {
 			return;
@@ -158,6 +180,17 @@ public class Groups {
 		tabPlayer.getTabTeam().setTeam(name);
 	}
 
+	/**
+	 * Adds a new player to groups.<br>
+	 * If the given player is not exists in the list it will be instantiated to a new one and
+	 * making this <code>synchronized</code> to not cause {@link ConcurrentModificationException}.
+	 * <br><br>
+	 * After adding/or the player existing, their groups will get updated once to retrieve the
+	 * approximately group and sets the prefix/suffix to be shown in player list. see {@link #setPlayerTeam(TabListPlayer, int)}
+	 * 
+	 * @param player {@link Player}
+	 * @return {@link TabListPlayer} if ever exists or not
+	 */
 	public TabListPlayer addPlayer(Player player) {
 		String uuid = player.getUniqueId().toString();
 
@@ -182,10 +215,21 @@ public class Groups {
 		return tabPlayer;
 	}
 
+	/**
+	 * Removes all groups from every online players.
+	 */
 	public void removeGroupsFromAll() {
 		Bukkit.getOnlinePlayers().forEach(this::removePlayerGroup);
 	}
 
+	/**
+	 * Removes the given player's group.<br><br>
+	 * If the player does not have any groups this future will completes and returns false.
+	 * Otherwise returns true if the player have any groups and its being removed from list.
+	 * 
+	 * @param p {@link Player}
+	 * @return {@link CompletableFuture}
+	 */
 	public CompletableFuture<Boolean> removePlayerGroup(Player p) {
 		CompletableFuture<Boolean> result = new CompletableFuture<>();
 		if (p == null) {
@@ -216,13 +260,18 @@ public class Groups {
 		return result;
 	}
 
+	/**
+	 * Removes the given group by name.
+	 * 
+	 * @param teamName
+	 */
 	public void removeGroup(String teamName) {
-		TeamHandler th = getTeam(teamName);
-		if (th != null) {
-			groupsList.remove(th);
-		}
+		getTeam(teamName).ifPresent(th -> groupsList.remove(th));
 	}
 
+	/**
+	 * Cancels the current running task of groups and removes from players.
+	 */
 	public void cancelUpdate() {
 		if (animationTask != null) {
 			animationTask.cancel();
