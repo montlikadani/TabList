@@ -13,5 +13,11 @@ public interface ITabHandler {
 
 	TabBuilder getBuilder();
 
+	/**
+	 * Handling multiple schedulers for all players one by one
+	 * causes server thread slowing down
+	 * @return {@link BukkitTask}
+	 */
+	@Deprecated
 	BukkitTask getTask();
 }

@@ -48,11 +48,13 @@ public class TabBuilder {
 		}
 
 		public Builder header(List<String> header) {
+			this.header.clear();
 			this.header.addAll(header == null ? new ArrayList<>() : header);
 			return this;
 		}
 
 		public Builder footer(List<String> footer) {
+			this.footer.clear();
 			this.footer.addAll(footer == null ? new ArrayList<>() : footer);
 			return this;
 		}

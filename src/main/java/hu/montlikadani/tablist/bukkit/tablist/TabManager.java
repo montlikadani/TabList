@@ -10,9 +10,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 
@@ -21,6 +23,7 @@ public class TabManager {
 	public static final Map<UUID, Boolean> TABENABLED = new HashMap<>();
 
 	private TabList plugin;
+	private BukkitTask task;
 
 	private final Set<TabHandler> tabPlayers = new HashSet<>();
 
@@ -32,14 +35,47 @@ public class TabManager {
 		return tabPlayers;
 	}
 
+	public BukkitTask getTask() {
+		return task;
+	}
+
+	public void cancelTask() {
+		if (task != null) {
+			task.cancel();
+			task = null;
+		}
+	}
+
 	public void addPlayer(Player p) {
 		if (p == null || isPlayerInTab(p)) {
 			return;
 		}
 
-		TabHandler tabHandler = new TabHandler(plugin, p.getUniqueId());
+		final TabHandler tabHandler = new TabHandler(plugin, p.getUniqueId());
 		tabHandler.updateTab();
 		tabPlayers.add(tabHandler);
+
+		final int refreshTime = plugin.getTabRefreshTime();
+		if (refreshTime < 1) {
+			tabHandler.sendTab();
+			return;
+		}
+
+		if (task == null) {
+			task = createTask(() -> {
+				if (Bukkit.getOnlinePlayers().isEmpty()) {
+					cancelTask();
+					return;
+				}
+
+				tabPlayers.forEach(TabHandler::sendTab);
+			}, refreshTime);
+		}
+	}
+
+	private BukkitTask createTask(Runnable run, int interval) {
+		return plugin.isSpigot() ? Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, run, interval, interval)
+				: Bukkit.getScheduler().runTaskTimer(plugin, run, interval, interval);
 	}
 
 	public void removePlayer(Player player) {
@@ -49,16 +85,10 @@ public class TabManager {
 		});
 	}
 
-	public void removePlayer() {
-		tabPlayers.forEach(pl -> {
-			pl.unregisterTab();
+	public void removeAll() {
+		cancelTask();
 
-			// We should call this again due to AsyncCatch from spigot
-			if (pl.getTask() != null) {
-				plugin.getServer().getScheduler().cancelTask(pl.getTask().getTaskId());
-			}
-		});
-
+		tabPlayers.forEach(TabHandler::unregisterTab);
 		tabPlayers.clear();
 	}
 

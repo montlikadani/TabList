@@ -163,7 +163,7 @@ public class TabList extends JavaPlugin {
 			objects.unregisterCustomValue();
 
 			tabManager.saveToggledTabs();
-			tabManager.removePlayer();
+			tabManager.removeAll();
 
 			addBackAllHiddenPlayers();
 
@@ -172,9 +172,7 @@ public class TabList extends JavaPlugin {
 			}
 
 			HandlerList.unregisterAll(this);
-
 			getServer().getScheduler().cancelTasks(this);
-
 			instance = null;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -223,7 +221,7 @@ public class TabList extends JavaPlugin {
 	}
 
 	public void reload() {
-		tabManager.removePlayer();
+		tabManager.removeAll();
 		g.cancelUpdate();
 
 		loadListeners();

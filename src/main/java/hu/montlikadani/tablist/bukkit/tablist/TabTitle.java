@@ -8,17 +8,6 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public abstract class TabTitle {
 
-	private static java.lang.reflect.Constructor<?> titleConstructor;
-	private static Object packet;
-
-	static {
-		try {
-			titleConstructor = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter").getConstructor();
-			packet = titleConstructor.newInstance();
-		} catch (Exception e) {
-		}
-	}
-
 	public static void sendTabTitle(Player player, String header, String footer) {
 		if (player == null) {
 			return;
@@ -37,8 +26,13 @@ public abstract class TabTitle {
 		}
 
 		try {
+			java.lang.reflect.Constructor<?> titleConstructor = null;
+
 			try {
-				Object tabHeader = ReflectionUtils.getAsIChatBaseComponent(header),
+				titleConstructor = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter").getConstructor();
+
+				Object packet = titleConstructor.newInstance(),
+						tabHeader = ReflectionUtils.getAsIChatBaseComponent(header),
 						tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);
 
 				if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
@@ -51,10 +45,17 @@ public abstract class TabTitle {
 
 				ReflectionUtils.sendPacket(player, packet);
 			} catch (Exception f) {
-				if (Version.isCurrentLower(Version.v1_12_R1)) {
+				if (Version.isCurrentEqualOrHigher(Version.v1_12_R1)) {
+					titleConstructor = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter")
+							.getConstructor();
+				} else if (Version.isCurrentLower(Version.v1_12_R1)) {
 					Object tabHeader = ReflectionUtils.getAsIChatBaseComponent(header);
 					titleConstructor = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter")
 							.getConstructor(tabHeader.getClass());
+				}
+
+				if (titleConstructor == null) {
+					return;
 				}
 
 				Object tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);

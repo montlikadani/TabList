@@ -4,29 +4,33 @@ public enum Perm {
 
 	ADDFAKEPLAYER("fakeplayers.add"),
 	SETSKINFAKEPLAYER("fakeplayers.setskin"),
-	FAKEPLAYERS("fakeplayers"),
-	GET("get"),
+	FAKEPLAYERS,
+	GET,
 	GETO("get.other"),
-	HELP("help"),
+	HELP,
 	LISTFAKEPLAYERS("fakeplayers.list"),
-	RELOAD("reload"),
+	RELOAD,
 	REMOVEFAKEPLAYER("fakeplayers.remove"),
-	RESET("reset"),
+	RESET,
 	RESETOTHERTAB("reset.other"),
-	SETPREFIX("setprefix"),
-	SETPRIORITY("setpriority"),
-	SETSUFFIX("setsuffix"),
-	REMOVEGROUP("removegroup"),
-	TABNAME("tabname"),
+	SETPREFIX,
+	SETPRIORITY,
+	SETSUFFIX,
+	REMOVEGROUP,
+	TABNAME,
 	TABNAMEOTHER("tabname.other"),
-	TOGGLE("toggle"),
+	TOGGLE,
 	TOGGLEALL("toggle.all"),
 	SEESPECTATOR("seespectators");
 
 	private String perm;
 
+	Perm() {
+		this("");
+	}
+
 	Perm(String perm) {
-		this.perm = "tablist." + perm;
+		this.perm = "tablist." + (perm.trim().isEmpty() ? toString().toLowerCase() : perm);
 	}
 
 	public String getPerm() {

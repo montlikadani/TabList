@@ -24,8 +24,12 @@ public class TabHandler implements ITabHandler {
 
 	private UUID playerUUID;
 
+	@Deprecated
 	private BukkitTask task;
 	private TabBuilder builder;
+	private boolean worldEnabled = false;
+
+	private final List<String> worldList = new ArrayList<>();
 
 	public TabHandler(TabList plugin, UUID playerUUID) {
 		this(plugin, playerUUID, null);
@@ -52,12 +56,16 @@ public class TabHandler implements ITabHandler {
 		return builder;
 	}
 
+	@Deprecated
 	@Override
 	public BukkitTask getTask() {
 		return task;
 	}
 
 	public void updateTab() {
+		worldList.clear();
+		worldEnabled = false;
+
 		final Player player = getPlayer();
 		if (player == null || !player.isOnline()) {
 			return;
@@ -78,14 +86,9 @@ public class TabHandler implements ITabHandler {
 		final String pName = player.getName();
 
 		if (c.getStringList("disabled-worlds").contains(world) || c.getStringList("blacklisted-players").contains(pName)
-				|| (TabManager.TABENABLED.containsKey(playerUUID) && TabManager.TABENABLED.get(playerUUID))
-				|| PluginUtils.isInGame(player)) {
+				|| TabManager.TABENABLED.getOrDefault(playerUUID, false) || PluginUtils.isInGame(player)) {
 			return;
 		}
-
-		boolean worldEnable = false;
-
-		final List<String> worldList = new ArrayList<>();
 
 		List<String> header = null, footer = null;
 
@@ -97,7 +100,7 @@ public class TabHandler implements ITabHandler {
 				footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
 						: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
 
-				worldEnable = true;
+				worldEnabled = true;
 			}
 
 			if (header == null && footer == null) {
@@ -115,7 +118,7 @@ public class TabHandler implements ITabHandler {
 												: null;
 
 								worldList.add(split);
-								worldEnable = true;
+								worldEnabled = true;
 								break t;
 							}
 						}
@@ -130,7 +133,7 @@ public class TabHandler implements ITabHandler {
 						footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
 								: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
 
-						worldEnable = true;
+						worldEnabled = true;
 					}
 				}
 			}
@@ -152,7 +155,7 @@ public class TabHandler implements ITabHandler {
 						footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
 								: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
 
-						worldEnable = true;
+						worldEnabled = true;
 					}
 				}
 			}
@@ -194,29 +197,12 @@ public class TabHandler implements ITabHandler {
 					: c.isString("footer") ? Arrays.asList(c.getString("footer")) : null;
 		}
 
-		this.builder = TabBuilder.builder().header(header).footer(footer)
-				.random(plugin.getTabC().getBoolean("random", false)).build();
-
-		final int refreshTime = plugin.getTabRefreshTime();
-		if (refreshTime < 1) {
-			cancelTask();
-			sendTab(player, worldEnable, worldList);
-			return;
-		}
-
-		final boolean enableW = worldEnable;
-
-		task = createTask(() -> sendTab(player, enableW, worldList), refreshTime);
+		this.builder = TabBuilder.builder().header(header).footer(footer).random(c.getBoolean("random", false)).build();
 	}
 
-	private BukkitTask createTask(Runnable run, int interval) {
-		return plugin.isSpigot() ? Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, run, interval, interval)
-				: Bukkit.getScheduler().runTaskTimer(plugin, run, interval, interval);
-	}
-
-	private void sendTab(Player player, boolean yesWorld, List<String> otherWorlds) {
-		if (!player.isOnline()) {
-			unregisterTab();
+	protected void sendTab() {
+		final Player player = getPlayer();
+		if (player == null || !player.isOnline()) {
 			return;
 		}
 
@@ -225,7 +211,7 @@ public class TabHandler implements ITabHandler {
 		if ((c.getBoolean("hide-tab-when-player-vanished") && PluginUtils.isVanished(player))
 				|| c.getStringList("disabled-worlds").contains(player.getWorld().getName())
 				|| c.getStringList("blacklisted-players").contains(player.getName()) || PluginUtils.isInGame(player)
-				|| (TabManager.TABENABLED.containsKey(playerUUID) && TabManager.TABENABLED.get(playerUUID))) {
+				|| TabManager.TABENABLED.getOrDefault(playerUUID, false)) {
 			TabTitle.sendTabTitle(player, "", "");
 			return;
 		}
@@ -271,14 +257,14 @@ public class TabHandler implements ITabHandler {
 		he = plugin.makeAnim(he);
 		fo = plugin.makeAnim(fo);
 
-		Variables v = plugin.getPlaceholders();
+		final Variables v = plugin.getPlaceholders();
 
-		if (!yesWorld) {
+		if (!worldEnabled) {
 			TabTitle.sendTabTitle(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
 			return;
 		}
 
-		if (otherWorlds.isEmpty()) {
+		if (worldList.isEmpty()) {
 			for (Player all : player.getWorld().getPlayers()) {
 				TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));
 			}
@@ -286,7 +272,7 @@ public class TabHandler implements ITabHandler {
 			return;
 		}
 
-		for (String l : otherWorlds) {
+		for (String l : worldList) {
 			if (Bukkit.getWorld(l) == null)
 				continue;
 
@@ -297,11 +283,10 @@ public class TabHandler implements ITabHandler {
 	}
 
 	public void unregisterTab() {
-		cancelTask();
-
 		TabTitle.sendTabTitle(getPlayer(), "", "");
 	}
 
+	@Deprecated
 	public void cancelTask() {
 		if (task != null) {
 			task.cancel();

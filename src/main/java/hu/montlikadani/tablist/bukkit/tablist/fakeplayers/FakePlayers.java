@@ -33,6 +33,8 @@ public class FakePlayers implements IFakePlayers {
 
 	public FakePlayers(String name) {
 		this.name = name;
+
+		profile = new GameProfile(UUID.randomUUID(), name);
 	}
 
 	@Override
@@ -48,8 +50,6 @@ public class FakePlayers implements IFakePlayers {
 	@Override
 	public void createFakeplayer(Player p, String headUUID) {
 		try {
-			profile = new GameProfile(UUID.randomUUID(), name);
-
 			setSkin(headUUID);
 
 			fakePl = ReflectionUtils.Classes.getPlayerConstructor(p, profile);

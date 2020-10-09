@@ -14,6 +14,7 @@ import hu.montlikadani.tablist.bukkit.TeamHandler;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 import hu.montlikadani.tablist.bukkit.tablist.TabTitle;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayers;
+import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.IFakePlayers;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 
 /**
@@ -107,10 +108,10 @@ public class TabListAPI {
 	 * 
 	 * @param player the player who's own that player
 	 * @param name the fake player name
-	 * @return {@link FakePlayers}
+	 * @return {@link IFakePlayers}
 	 */
-	public static FakePlayers createFakePlayer(Player player, String name) {
-		FakePlayers fp = new FakePlayers(name);
+	public static IFakePlayers createFakePlayer(Player player, String name) {
+		IFakePlayers fp = new FakePlayers(name);
 		fp.createFakeplayer(player);
 		return fp;
 	}
@@ -160,7 +161,7 @@ public class TabListAPI {
 			Field rec = ReflectionUtils.getField(mc, "recentTps", false);
 			double[] recentTps = (double[]) rec.get(mc);
 			tps = recentTps[0];
-		} catch (Throwable t) {// TODO: Fix CraftBukkit TPS bug
+		} catch (Throwable t) {
 		}
 
 		return tps;
