@@ -333,14 +333,14 @@ public class TabList extends JavaPlugin {
 		if (ConfigValues.isHidePlayersFromTab()) {
 			HidePlayers h;
 			if (!hidePlayers.containsKey(p)) {
-				h = new HidePlayers(p);
+				h = new HidePlayers();
 				hidePlayers.put(p, h);
 			} else {
 				h = hidePlayers.get(p);
 			}
 
 			if (h != null) {
-				h.removePlayerFromTab();
+				h.removePlayerFromTab(p);
 			}
 		} else {
 			if (hidePlayers.containsKey(p)) {

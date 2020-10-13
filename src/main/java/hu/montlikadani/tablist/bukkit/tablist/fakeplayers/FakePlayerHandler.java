@@ -68,7 +68,7 @@ public class FakePlayerHandler {
 	}
 
 	public boolean createPlayer(Player p, String name) {
-		return createPlayer(p, name, "", 0);
+		return createPlayer(p, name, "", -1);
 	}
 
 	public boolean createPlayer(Player p, String name, int ping) {

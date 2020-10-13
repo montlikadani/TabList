@@ -109,6 +109,7 @@ public class TabListAPI {
 	 * @param player the player who's own that player
 	 * @param name the fake player name
 	 * @return {@link IFakePlayers}
+	 * @see IFakePlayers#createFakePlayer(Player, String, int)
 	 */
 	public static IFakePlayers createFakePlayer(Player player, String name) {
 		IFakePlayers fp = new FakePlayers(name);

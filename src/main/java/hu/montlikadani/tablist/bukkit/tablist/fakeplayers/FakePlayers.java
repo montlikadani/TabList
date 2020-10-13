@@ -28,7 +28,7 @@ public class FakePlayers implements IFakePlayers {
 
 	private String name;
 
-	private int ping = 0;
+	private int ping = -1;
 
 	private Object fakePl;
 	private GameProfile profile;
@@ -52,7 +52,7 @@ public class FakePlayers implements IFakePlayers {
 
 	@Override
 	public void createFakePlayer(Player p) {
-		createFakePlayer(p, "", 0);
+		createFakePlayer(p, "", -1);
 	}
 
 	@Override

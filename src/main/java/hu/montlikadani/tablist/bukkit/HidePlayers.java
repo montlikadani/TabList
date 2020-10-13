@@ -12,24 +12,14 @@ public final class HidePlayers {
 	private Class<?> enumPlayerInfoAction;
 	private Object entityPlayerArray;
 
-	private final Player player;
-
-	public HidePlayers(Player player) {
-		this.player = player;
-	}
-
-	public Player getPlayer() {
-		return player;
-	}
-
 	public void addPlayerToTab() {
 		Bukkit.getOnlinePlayers().forEach(this::addPlayerToTab);
 	}
 
-	public void removePlayerFromTab() {
+	public void removePlayerFromTab(Player to) {
 		for (Player pl : Bukkit.getOnlinePlayers()) {
-			removePlayerFromTab(player, pl);
-			removePlayerFromTab(pl, player);
+			removePlayerFromTab(to, pl);
+			removePlayerFromTab(pl, to);
 		}
 	}
 
