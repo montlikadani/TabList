@@ -56,8 +56,10 @@ public class ReflectionHandled implements ITabScoreboard {
 			entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
 			Array.set(entityPlayerArray, 0, playerConst);
 
-			Class<?> enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
-			packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
+			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
+			Class<?> enumPlayerInfoAction = ReflectionUtils.Classes
+					.getEnumPlayerInfoAction(packetPlayOutPlayerInfoClass);
+			packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
 					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
 					.newInstance(ReflectionUtils.getFieldObject(enumPlayerInfoAction,
 							enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME")), entityPlayerArray);
@@ -89,6 +91,10 @@ public class ReflectionHandled implements ITabScoreboard {
 
 	@Override
 	public void unregisterTeam(String teamName) {
+		if (packet == null) {
+			return;
+		}
+
 		try {
 			scoreRef.getScoreboardTeamMode().set(packet, 1);
 

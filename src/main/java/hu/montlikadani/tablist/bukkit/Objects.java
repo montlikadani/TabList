@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist.bukkit;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.bukkit.Bukkit;
@@ -26,18 +25,8 @@ public class Objects {
 	@SuppressWarnings("deprecation")
 	void registerHealthTab(Player pl) {
 		String path = "tablist-object-type.object-settings.health.";
-		if (plugin.getC().getStringList(path + "disabled-worlds").contains(pl.getWorld().getName())) {
-			unregisterHealthObjective(pl);
-			return;
-		}
-
-		// For better understand and rule changes
-		List<String> restrictedPlayers = plugin.getC().getStringList(path + "blacklisted-players");
-		if (restrictedPlayers.isEmpty()) {
-			restrictedPlayers = plugin.getC().getStringList(path + "restricted-players");
-		}
-
-		if (restrictedPlayers.contains(pl.getName())) {
+		if (plugin.getC().getStringList(path + "disabled-worlds").contains(pl.getWorld().getName())
+				|| plugin.getC().getStringList(path + "restricted-players").contains(pl.getName())) {
 			unregisterHealthObjective(pl);
 			return;
 		}

@@ -121,7 +121,7 @@ public class Variables {
 		if (str.contains("%ip-address%")) {
 			InetSocketAddress a = pl.getAddress();
 			address = (a == null || a.getAddress() == null) ? "" : a.getAddress().toString();
-			address = address.replaceAll("/", "");
+			address = address.replace("/", "");
 		}
 
 		String t = "", dt = "";

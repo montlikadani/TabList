@@ -40,26 +40,42 @@ public class FakePlayerHandler {
 	}
 
 	public void load() {
+		fakePlayers.clear();
+
 		if (!ConfigValues.isFakePlayers()) {
 			return;
 		}
 
-		fakePlayers.clear();
+		for (String l : getFakePlayersFromConfig()) {
+			String name = l;
+			String headUUID = "";
+			int ping = -1;
+			if (l.contains(";")) {
+				String[] split = l.split(";");
 
-		List<String> fpls = plugin.getConf().getFakeplayers().getStringList("fakeplayers");
-		for (String l : fpls) {
-			IFakePlayers fp = new FakePlayers(colorMsg(l));
+				name = split[0];
+				headUUID = split.length > 0 ? split[1] : "";
+				ping = split.length > 1 ? Integer.parseInt(split[2]) : -1;
+			}
+
+			final IFakePlayers fp = new FakePlayers(colorMsg(name));
 			fakePlayers.add(fp);
 
-			plugin.getServer().getOnlinePlayers().forEach(fp::createFakeplayer);
+			final int finalPing = ping;
+			final String finalHeadUUID = headUUID;
+			plugin.getServer().getOnlinePlayers().forEach(all -> fp.createFakePlayer(all, finalHeadUUID, finalPing));
 		}
 	}
 
 	public boolean createPlayer(Player p, String name) {
-		return createPlayer(p, name, "");
+		return createPlayer(p, name, "", 0);
 	}
 
-	public boolean createPlayer(Player p, String name, String headUUID) {
+	public boolean createPlayer(Player p, String name, int ping) {
+		return createPlayer(p, name, "", ping);
+	}
+
+	public boolean createPlayer(Player p, String name, String headUUID, int ping) {
 		if (name == null || name.trim().isEmpty()) {
 			return false;
 		}
@@ -77,11 +93,11 @@ public class FakePlayerHandler {
 			return false;
 		}
 
+		List<String> fakepls = getFakePlayersFromConfig();
+		String result = name + ";" + (headUUID.trim().isEmpty() ? "uuid" : headUUID) + (ping > -1 ? ";" + ping : "");
+		fakepls.add(result);
+
 		Configuration conf = plugin.getConf();
-		List<String> fakepls = conf.getFakeplayers().getStringList("fakeplayers");
-
-		fakepls.add(name);
-
 		conf.getFakeplayers().set("fakeplayers", fakepls);
 		try {
 			conf.getFakeplayers().save(conf.getFakeplayersFile());
@@ -95,13 +111,28 @@ public class FakePlayerHandler {
 		IFakePlayers fp = new FakePlayers(name);
 		fakePlayers.add(fp);
 
-		fp.createFakeplayer(p, headUUID);
+		fp.createFakePlayer(p, headUUID, ping);
 		return true;
 	}
 
-	public void removeAllFakePlayer() {
+	public void removeAllFakePlayer(boolean removeFromConfig) {
 		fakePlayers.forEach(IFakePlayers::removeFakePlayer);
 		fakePlayers.clear();
+
+		if (!removeFromConfig) {
+			return;
+		}
+
+		List<String> fakepls = getFakePlayersFromConfig();
+		fakepls.clear();
+
+		Configuration conf = plugin.getConf();
+		conf.getFakeplayers().set("fakeplayers", fakepls);
+		try {
+			conf.getFakeplayers().save(conf.getFakeplayersFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public boolean removePlayer(String name) {
@@ -109,17 +140,33 @@ public class FakePlayerHandler {
 			return false;
 		}
 
-		Configuration conf = plugin.getConf();
-		List<String> fakepls = conf.getFakeplayers().getStringList("fakeplayers");
+		List<String> fakepls = getFakePlayersFromConfig();
 
-		fakepls.remove(name);
+		String path = "";
+		for (String names : fakepls) {
+			if (!names.contains(";")) {
+				path = names;
+				continue;
+			}
 
-		conf.getFakeplayers().set("fakeplayers", fakepls);
-		try {
-			conf.getFakeplayers().save(conf.getFakeplayersFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
+			String n = names.split(";")[0];
+			if (n.equalsIgnoreCase(name)) {
+				path = names;
+				break;
+			}
+		}
+
+		if (!path.isEmpty()) {
+			fakepls.remove(path);
+
+			Configuration conf = plugin.getConf();
+			conf.getFakeplayers().set("fakeplayers", fakepls);
+			try {
+				conf.getFakeplayers().save(conf.getFakeplayersFile());
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
 		}
 
 		getFakePlayerByName(name).ifPresent(fp -> {
@@ -128,5 +175,9 @@ public class FakePlayerHandler {
 		});
 
 		return true;
+	}
+
+	public List<String> getFakePlayersFromConfig() {
+		return plugin.getConf().getFakeplayers().getStringList("fakeplayers");
 	}
 }

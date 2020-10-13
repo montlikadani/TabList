@@ -41,7 +41,7 @@ public class PlayerTab {
 			i = 0;
 		}
 
-		return i < 0 || i >= header.size() ? "" : header.get(i);
+		return (i < 0 || i >= header.size()) ? "" : header.get(i);
 	}
 
 	public String getNextFooter() {
@@ -53,7 +53,7 @@ public class PlayerTab {
 			i2 = 0;
 		}
 
-		return i2 < 0 || i2 >= footer.size() ? "" : footer.get(i2);
+		return (i2 < 0 || i2 >= footer.size()) ? "" : footer.get(i2);
 	}
 
 	public void clearAll() {

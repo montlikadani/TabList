@@ -112,7 +112,7 @@ public class TabListAPI {
 	 */
 	public static IFakePlayers createFakePlayer(Player player, String name) {
 		IFakePlayers fp = new FakePlayers(name);
-		fp.createFakeplayer(player);
+		fp.createFakePlayer(player);
 		return fp;
 	}
 

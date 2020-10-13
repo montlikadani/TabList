@@ -6,9 +6,15 @@ public interface IFakePlayers {
 
 	String getName();
 
-	void createFakeplayer(Player p);
+	int getPingLatency();
 
-	void createFakeplayer(Player p, String headUUID);
+	void createFakePlayer(Player p);
+
+	void createFakePlayer(Player p, int pingLatency);
+
+	void createFakePlayer(Player p, String headUUID, int pingLatency);
+
+	void setPing(int pingAmount);
 
 	void setSkin(String skinUUID);
 

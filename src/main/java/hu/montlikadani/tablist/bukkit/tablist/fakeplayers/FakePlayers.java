@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.net.URL;
+import java.util.List;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.UUID;
@@ -27,6 +28,8 @@ public class FakePlayers implements IFakePlayers {
 
 	private String name;
 
+	private int ping = 0;
+
 	private Object fakePl;
 	private GameProfile profile;
 	private Class<?> enumPlayerInfoAction;
@@ -43,12 +46,22 @@ public class FakePlayers implements IFakePlayers {
 	}
 
 	@Override
-	public void createFakeplayer(Player p) {
-		createFakeplayer(p, "");
+	public int getPingLatency() {
+		return ping;
 	}
 
 	@Override
-	public void createFakeplayer(Player p, String headUUID) {
+	public void createFakePlayer(Player p) {
+		createFakePlayer(p, "", 0);
+	}
+
+	@Override
+	public void createFakePlayer(Player p, int pingLatency) {
+		createFakePlayer(p, "", pingLatency);
+	}
+
+	@Override
+	public void createFakePlayer(Player p, String headUUID, int pingLatency) {
 		try {
 			setSkin(headUUID);
 
@@ -56,15 +69,57 @@ public class FakePlayers implements IFakePlayers {
 
 			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(profile.getName()));
 
-			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
+			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
+			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction(packetPlayOutPlayerInfoClass);
 
 			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakePl);
 
-			Object packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
+			Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
 					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(ReflectionUtils
 							.getFieldObject(enumPlayerInfoAction, enumPlayerInfoAction.getDeclaredField("ADD_PLAYER")),
 							entityPlayerArray);
+
+			for (Player aOnline : Bukkit.getOnlinePlayers()) {
+				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
+			}
+
+			// Setting ping should be in this place, after the player added
+			setPing(pingLatency);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void setPing(int pingAmount) {
+		if (pingAmount < 0) {
+			return;
+		}
+
+		ping = pingAmount;
+
+		try {
+			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
+			Array.set(entityPlayerArray, 0, fakePl);
+
+			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
+			Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
+					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(ReflectionUtils
+							.getFieldObject(enumPlayerInfoAction, enumPlayerInfoAction.getDeclaredField("UPDATE_LATENCY")),
+							entityPlayerArray);
+
+			@SuppressWarnings("unchecked")
+			List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
+					.get(packetPlayOutPlayerInfo);
+			for (Object infoData : infoList) {
+				Object profile = ReflectionUtils.invokeMethod(infoData, "a");
+				Object id = ReflectionUtils.invokeMethod(profile, "getId");
+				if (id.equals(this.profile.getId())) {
+					ReflectionUtils.modifyFinalField(ReflectionUtils.getField(infoData, "b"), infoData, ping);
+					break;
+				}
+			}
 
 			for (Player aOnline : Bukkit.getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
@@ -76,7 +131,7 @@ public class FakePlayers implements IFakePlayers {
 
 	@Override
 	public void setSkin(String skinUUID) {
-		if (skinUUID == null || skinUUID.trim().isEmpty() || profile == null) {
+		if (skinUUID == null || skinUUID.trim().isEmpty() || !Util.isRealUUID(skinUUID)) {
 			return;
 		}
 
@@ -95,8 +150,6 @@ public class FakePlayers implements IFakePlayers {
 	@Override
 	public void removeFakePlayer() {
 		try {
-			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(profile.getName()));
-
 			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakePl);
 
@@ -144,6 +197,7 @@ public class FakePlayers implements IFakePlayers {
 			}
 
 			br.close();
+			conn.disconnect();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

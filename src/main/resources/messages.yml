@@ -51,9 +51,10 @@ fake-player:
   added: "&aThe fake player&7 %name%&a successfully added!"
   removed: "&cThe fake player&7 %name%&c successfully removed!"
   already-added: "&cThe fake player&7 %name%&c already added."
-  already-removed: "&cThe fake player&7 %name%&c already removed."
+  not-exists: "&cThe fake player with this name not exists."
   no-fake-player: "&cThere is no fake player either."
   disabled: "&cThe fake player is disabled. Please enable in config.yml file."
+  ping-can-not-be-less: "&cThe ping amount should be highest than&e %amount%&c or the value is not a number."
 
   list:
   - "&cFake players&7 (&e%amount%&7):"

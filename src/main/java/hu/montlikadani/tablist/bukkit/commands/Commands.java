@@ -37,6 +37,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			add("setsuffix");
 			add("setpriority");
 			add("toggle");
+			add("help");
 		}
 	};
 
@@ -48,8 +49,16 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		for (String s : subCmds) {
 			try {
-				Class<?> c = TabList.class.getClassLoader()
-						.loadClass("hu.montlikadani.tablist.bukkit.commands.list." + s);
+				Class<?> c = null;
+				try {
+					c = TabList.class.getClassLoader().loadClass("hu.montlikadani.tablist.bukkit.commands.list." + s);
+				} catch (ClassNotFoundException e) {
+				}
+
+				if (c == null) {
+					continue;
+				}
+
 				if (ClassMethods.getCurrentVersion() >= 9) {
 					cmds.add((ICommand) c.getDeclaredConstructor().newInstance());
 				} else {
@@ -126,7 +135,6 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		if (args.length == 1) {
 			getCmds(sender).forEach(cmds::add);
-			cmds.add("help");
 			partOfCommand = args[0];
 
 			StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
@@ -136,7 +144,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		if (args.length == 2) {
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
-				Arrays.asList("add", "remove", "list", "setskin").forEach(cmds::add);
+				Arrays.asList("add", "remove", "list", "setskin", "setping").forEach(cmds::add);
 				partOfCommand = args[1];
 
 				StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
@@ -153,8 +161,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		if (args.length == 3 && ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
-			if (args[1].equalsIgnoreCase("remove") || args[1].equalsIgnoreCase("setskin")) {
-				plugin.getConf().getFakeplayers().getStringList("fakeplayers").forEach(cmds::add);
+			if (args[1].equalsIgnoreCase("remove") || args[1].equalsIgnoreCase("setskin")
+					|| args[1].equalsIgnoreCase("setping")) {
+				plugin.getFakePlayerHandler().getFakePlayersFromConfig().stream()
+						.map(fp -> fp.contains(";") ? fp.split(";")[0] : fp).forEach(cmds::add);
 				partOfCommand = args[2];
 			}
 

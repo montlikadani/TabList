@@ -11,7 +11,6 @@ import com.comphenix.protocol.events.PacketEvent;
 
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
-import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class ProtocolPackets extends PacketAdapter {
 
@@ -41,17 +40,7 @@ public class ProtocolPackets extends PacketAdapter {
 
 		try {
 			Object packetPlayOutPlayerInfo = event.getPacket().getHandle();
-			Class<?> enumPlayerInfoAction = null;
-			if (Version.isCurrentEqual(Version.v1_8_R1)) {
-				enumPlayerInfoAction = ReflectionUtils.getNMSClass("EnumPlayerInfoAction");
-			} else if (Version.isCurrentEqualOrHigher(Version.v1_11_R1)) {
-				enumPlayerInfoAction = packetPlayOutPlayerInfo.getClass().getDeclaredClasses()[1];
-			}
-
-			if (enumPlayerInfoAction == null) {
-				enumPlayerInfoAction = packetPlayOutPlayerInfo.getClass().getDeclaredClasses()[2];
-			}
-
+			Class<?> enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction(packetPlayOutPlayerInfo.getClass());
 			Class<?> enumGameMode = ReflectionUtils.getNMSClass("EnumGamemode");
 			if (enumGameMode == null) {
 				enumGameMode = ReflectionUtils.getNMSClass("WorldSettings$EnumGamemode");

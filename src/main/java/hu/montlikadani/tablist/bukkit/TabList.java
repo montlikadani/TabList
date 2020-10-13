@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 
@@ -165,11 +166,11 @@ public class TabList extends JavaPlugin {
 			tabManager.saveToggledTabs();
 			tabManager.removeAll();
 
-			addBackAllHiddenPlayers();
-
 			if (fakePlayerHandler != null) {
-				fakePlayerHandler.removeAllFakePlayer();
+				fakePlayerHandler.removeAllFakePlayer(false);
 			}
+
+			addBackAllHiddenPlayers();
 
 			HandlerList.unregisterAll(this);
 			getServer().getScheduler().cancelTasks(this);
@@ -193,13 +194,17 @@ public class TabList extends JavaPlugin {
 	}
 
 	private void registerCommands() {
-		Commands cmds = new Commands(this);
-		getCommand("tablist").setExecutor(cmds);
-		getCommand("tablist").setTabCompleter(cmds);
+		Optional.ofNullable(getCommand("tablist")).ifPresent(tl -> {
+			Commands cmds = new Commands(this);
+			tl.setExecutor(cmds);
+			tl.setTabCompleter(cmds);
+		});
 
-		TabNameCmd tname = new TabNameCmd(this);
-		getCommand("tabname").setExecutor(tname);
-		getCommand("tabname").setTabCompleter(tname);
+		Optional.ofNullable(getCommand("tabname")).ifPresent(tName -> {
+			TabNameCmd tname = new TabNameCmd(this);
+			tName.setExecutor(tname);
+			tName.setTabCompleter(tname);
+		});
 	}
 
 	void loadListeners() {
@@ -320,6 +325,11 @@ public class TabList extends JavaPlugin {
 			}
 		}
 
+		if (reload) {
+			fakePlayerHandler.removeAllFakePlayer(false);
+			fakePlayerHandler.load();
+		}
+
 		if (ConfigValues.isHidePlayersFromTab()) {
 			HidePlayers h;
 			if (!hidePlayers.containsKey(p)) {
@@ -367,7 +377,6 @@ public class TabList extends JavaPlugin {
 		}
 
 		tabManager.removePlayer(p);
-
 		g.removePlayerGroup(p);
 	}
 

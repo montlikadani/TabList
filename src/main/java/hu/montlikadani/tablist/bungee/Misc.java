@@ -58,7 +58,7 @@ public class Misc {
 			}
 		}
 
-		String t = null, dt = null;
+		String t = "", dt = "";
 		if (str.contains("%time%") || str.contains("%date%")) {
 			String path = "placeholder-format.time.";
 			DateTimeFormatter form = !conf.getString(path + "time-format", "").isEmpty()
@@ -86,10 +86,10 @@ public class Misc {
 
 		String online = info != null ? Integer.toString(info.getPlayers().size()) : "0";
 
-		if (t != null)
+		if (!t.isEmpty())
 			str = str.replace("%time%", t);
 
-		if (dt != null)
+		if (!dt.isEmpty())
 			str = str.replace("%date%", dt);
 
 		if (str.contains("%server%") && info != null)

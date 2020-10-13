@@ -5,11 +5,9 @@ import java.lang.reflect.Array;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.mojang.authlib.GameProfile;
-
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 
-public class HidePlayers {
+public final class HidePlayers {
 
 	private Class<?> enumPlayerInfoAction;
 	private Object entityPlayerArray;
@@ -58,17 +56,16 @@ public class HidePlayers {
 
 	private void r(Player p, Player to) {
 		try {
-			GameProfile profile = new GameProfile(p.getUniqueId(), p.getName());
-			Object playerConst = ReflectionUtils.Classes.getPlayerConstructor(p, profile);
-			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
+			Object playerConst = ReflectionUtils.getHandle(p);
+			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
+			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction(packetPlayOutPlayerInfoClass);
 
-			ReflectionUtils.setField(playerConst, "listName",
-					ReflectionUtils.getAsIChatBaseComponent(profile.getName()));
+			ReflectionUtils.setField(playerConst, "listName", ReflectionUtils.getAsIChatBaseComponent(p.getName()));
 
 			entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
 			Array.set(entityPlayerArray, 0, playerConst);
 
-			Object packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
+			Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
 					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
 					.newInstance(ReflectionUtils.getFieldObject(enumPlayerInfoAction,
 							enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER")), entityPlayerArray);

@@ -13,7 +13,6 @@ import org.bukkit.entity.Player;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.mojang.authlib.GameProfile;
 
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
@@ -176,7 +175,7 @@ public class ReflectionUtils {
 
 	public static class Classes {
 
-		public static Object getPlayerConstructor(Player player, GameProfile profile) {
+		public static Object getPlayerConstructor(Player player, Object profile) {
 			Class<?> server = getMinecraftServer();
 			Object serverIns = getServer(server);
 
@@ -237,18 +236,18 @@ public class ReflectionUtils {
 			return serverIns;
 		}
 
-		public static Class<?> getEnumPlayerInfoAction() {
+		public static Class<?> getEnumPlayerInfoAction(Class<?> packetPlayOutPlayerInfo) {
 			Class<?> enumPlayerInfoAction = null;
 
 			try {
 				if (Version.isCurrentEqual(Version.v1_8_R1)) {
 					enumPlayerInfoAction = getNMSClass("EnumPlayerInfoAction");
 				} else if (Version.isCurrentEqualOrHigher(Version.v1_11_R1)) {
-					enumPlayerInfoAction = getNMSClass("PacketPlayOutPlayerInfo").getDeclaredClasses()[1];
+					enumPlayerInfoAction = packetPlayOutPlayerInfo.getDeclaredClasses()[1];
 				}
 
 				if (enumPlayerInfoAction == null) {
-					enumPlayerInfoAction = getNMSClass("PacketPlayOutPlayerInfo").getDeclaredClasses()[2];
+					enumPlayerInfoAction = packetPlayOutPlayerInfo.getDeclaredClasses()[2];
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

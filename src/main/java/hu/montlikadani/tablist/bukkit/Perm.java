@@ -4,6 +4,7 @@ public enum Perm {
 
 	ADDFAKEPLAYER("fakeplayers.add"),
 	SETSKINFAKEPLAYER("fakeplayers.setskin"),
+	SETPINGFAKEPLAYER("fakeplayers.setping"),
 	FAKEPLAYERS,
 	GET,
 	GETO("get.other"),
