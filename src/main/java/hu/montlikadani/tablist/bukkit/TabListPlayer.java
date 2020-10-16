@@ -125,7 +125,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 			final String g = vGroup;
 			List<TeamHandler> playerPrimaryVaultGroups;
-			if (ConfigValues.isPreferPrimaryVaultGroup() && ((playerPrimaryVaultGroups = groupsList.stream()
+			if (g != null && ConfigValues.isPreferPrimaryVaultGroup() && ((playerPrimaryVaultGroups = groupsList.stream()
 					.filter(group -> group.getTeam().equalsIgnoreCase(g)).collect(Collectors.toList())).size() > 0
 					|| (playerPrimaryVaultGroups = groupsList.stream()
 							.filter(group -> StringUtils.containsIgnoreCase(group.getTeam(), g))

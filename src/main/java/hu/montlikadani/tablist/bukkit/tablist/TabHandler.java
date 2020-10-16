@@ -142,12 +142,14 @@ public class TabHandler implements ITabHandler {
 					&& plugin.hasVault()) {
 				String group = null;
 				try {
-					group = plugin.getVaultPerm().getPrimaryGroup(world, player).toLowerCase();
+					group = plugin.getVaultPerm().getPrimaryGroup(world, player);
 				} catch (UnsupportedOperationException e) {
 					logConsole(Level.WARNING, "You not using any permission plugin!");
 				}
 
 				if (group != null) {
+					group = group.toLowerCase();
+
 					if (c.contains("per-world." + world + ".per-group." + group)) {
 						String path = "per-world." + world + ".per-group." + group + ".";
 						header = c.isList(path + "header") ? c.getStringList(path + "header")
@@ -174,12 +176,14 @@ public class TabHandler implements ITabHandler {
 		if ((header == null && footer == null) && c.contains("per-group") && plugin.hasVault()) {
 			String group = null;
 			try {
-				group = plugin.getVaultPerm().getPrimaryGroup(player).toLowerCase();
+				group = plugin.getVaultPerm().getPrimaryGroup(player);
 			} catch (UnsupportedOperationException e) {
 				logConsole(Level.WARNING, "You not using any permission plugin!");
 			}
 
 			if (group != null) {
+				group = group.toLowerCase();
+
 				if (c.contains("per-group." + group)) {
 					String path = "per-group." + group + ".";
 					header = c.isList(path + "header") ? c.getStringList(path + "header")
