@@ -142,7 +142,7 @@ public class CommentedConfig extends YamlConfiguration {
 					}
 
 					if (whiteSpace / 2 > depth) {
-						currentPath.append(".").append(line.substring(whiteSpace, index));
+						currentPath.append('.').append(line.substring(whiteSpace, index));
 						depth++;
 					} else if (whiteSpace / 2 < depth) {
 						int newDepth = whiteSpace / 2;
@@ -154,7 +154,7 @@ public class CommentedConfig extends YamlConfiguration {
 						if (lastIndex < 0) {
 							currentPath = new StringBuilder();
 						} else {
-							currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
+							currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append('.');
 						}
 
 						currentPath.append(line.substring(whiteSpace, index));
@@ -164,7 +164,7 @@ public class CommentedConfig extends YamlConfiguration {
 						if (lastIndex < 0) {
 							currentPath = new StringBuilder();
 						} else {
-							currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append(".");
+							currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append('.');
 						}
 
 						currentPath.append(line.substring(whiteSpace, index));

@@ -52,10 +52,15 @@ public class FakePlayerHandler {
 			int ping = -1;
 			if (l.contains(";")) {
 				String[] split = l.split(";");
-
 				name = split[0];
-				headUUID = split.length > 0 ? split[1] : "";
-				ping = split.length > 1 ? Integer.parseInt(split[2]) : -1;
+
+				if (split.length > 0) {
+					headUUID = split[1];
+				}
+
+				if (split.length > 1) {
+					ping = Integer.parseInt(split[2]);
+				}
 			}
 
 			final IFakePlayers fp = new FakePlayers(colorMsg(name));

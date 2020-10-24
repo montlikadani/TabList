@@ -27,7 +27,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 	private TabList plugin;
 
 	@SuppressWarnings("serial")
-	private final Set<String> subCmds = new HashSet<String>() {
+	private final Set<String> subCmds = new HashSet<String>(9) {
 		{
 			add("reload");
 			add("fakeplayers");

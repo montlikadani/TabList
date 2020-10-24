@@ -86,7 +86,7 @@ public class Objects {
 				if (type.equals("ping")) {
 					obj = getPingObject(player);
 					if (!obj.isPresent()) {
-						obj = Optional.ofNullable(player.getScoreboard().registerNewObjective("PingTab", "dummy"));
+						obj = Optional.of(player.getScoreboard().registerNewObjective("PingTab", "dummy"));
 					}
 
 					if (!obj.isPresent()) {
@@ -99,7 +99,7 @@ public class Objects {
 				} else if (type.equals("custom")) {
 					obj = getCustomObject(player);
 					if (!obj.isPresent()) {
-						obj = Optional.ofNullable(player.getScoreboard().registerNewObjective("customObj", "dummy"));
+						obj = Optional.of(player.getScoreboard().registerNewObjective("customObj", "dummy"));
 					}
 
 					if (!obj.isPresent()) {

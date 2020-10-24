@@ -46,12 +46,12 @@ public class ReflectionHandled implements ITabScoreboard {
 			packet = scoreRef.getScoreboardTeamConstructor().newInstance();
 
 			scoreRef.getScoreboardTeamName().set(packet, teamName);
+			scoreRef.getScoreboardTeamMode().set(packet, 0);
 			scoreRef.getScoreboardTeamDisplayName().set(packet,
 					Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? ReflectionUtils.getAsIChatBaseComponent(teamName)
 							: teamName);
 
 			scoreRef.getScoreboardTeamNames().set(packet, Collections.singletonList(player.getName()));
-			scoreRef.getScoreboardTeamMode().set(packet, 0);
 
 			entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
 			Array.set(entityPlayerArray, 0, playerConst);
@@ -73,10 +73,11 @@ public class ReflectionHandled implements ITabScoreboard {
 		registerTeam(teamName);
 
 		try {
+			scoreRef.getScoreboardTeamName().set(packet, teamName);
+			scoreRef.getScoreboardTeamMode().set(packet, 2);
 			scoreRef.getScoreboardTeamDisplayName().set(packet,
 					Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? ReflectionUtils.getAsIChatBaseComponent(teamName)
 							: teamName);
-			scoreRef.getScoreboardTeamMode().set(packet, 2);
 
 			updateName(tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix());
 
@@ -110,15 +111,15 @@ public class ReflectionHandled implements ITabScoreboard {
 	}
 
 	private void updateName(String name) throws Throwable {
+		if (packetPlayOutPlayerInfo == null) {
+			return;
+		}
+
 		// Colorize '&' codes before hex
 		name = Util.colorMsg(name, true);
 
 		Object iChatBaseComponentName = ReflectionUtils.getAsIChatBaseComponent(name);
-		ReflectionUtils.setField(playerConst, "listName", iChatBaseComponentName);
-
-		if (packetPlayOutPlayerInfo == null) {
-			return;
-		}
+		//ReflectionUtils.setField(playerConst, "listName", iChatBaseComponentName);
 
 		@SuppressWarnings("unchecked")
 		List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")

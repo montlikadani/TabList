@@ -175,7 +175,7 @@ public class TabList extends JavaPlugin {
 			HandlerList.unregisterAll(this);
 			getServer().getScheduler().cancelTasks(this);
 			instance = null;
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 			logConsole(Level.WARNING,
 					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues",

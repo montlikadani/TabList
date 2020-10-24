@@ -48,6 +48,18 @@ public class Variables {
 			node.setParseExpression(f);
 			nodes.add(node);
 		}
+
+		// Sort in ascending order
+		for (int i = 0; i < nodes.size(); i++) {
+			for (int j = nodes.size() - 1; j > i; j--) {
+				ExpressionNode node = nodes.get(i), node2 = nodes.get(j);
+				if (node.getType() == NodeType.TPS && node2.getType() == NodeType.TPS
+						&& node.getCondition().getSecondCondition() > node2.getCondition().getSecondCondition()) {
+					nodes.set(i, node2);
+					nodes.set(j, node);
+				}
+			}
+		}
 	}
 
 	public String replaceVariables(Player pl, String str) {
@@ -268,7 +280,7 @@ public class Variables {
 		String ds = formatTPS(d);
 		if (ds.contains(".")) {
 			int size = ConfigValues.getTpsSize();
-			ds = ds.substring(0, (size == 1 ? 3 : ds.indexOf(".")) + (size < 1 ? 2 : size));
+			ds = ds.substring(0, (size == 1 ? 3 : ds.indexOf('.')) + (size < 1 ? 2 : size));
 		}
 
 		return ds;
