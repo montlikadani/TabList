@@ -41,7 +41,7 @@ public class Util {
 			return "";
 		}
 
-		if (!usingNMSHex && msg.contains("#") && Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
+		if (!usingNMSHex && Version.isCurrentEqualOrHigher(Version.v1_16_R1) && msg.contains("#")) {
 			msg = Global.matchColorRegex(msg);
 		}
 

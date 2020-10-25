@@ -137,15 +137,6 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				}
 			} else {
 				for (final TeamHandler team : groupsList) {
-					if (team.isGlobal()) {
-						if (group != team) {
-							update = true;
-							group = team;
-						}
-
-						break;
-					}
-
 					String name = team.getTeam();
 					String perm = team.getPermission();
 
@@ -169,6 +160,16 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 								break;
 							}
 						}
+					}
+
+					// Only assign global group to player if don't have any group set before this.
+					if (team.isGlobal()) {
+						if (group != team) {
+							update = true;
+							group = team;
+						}
+
+						break;
 					}
 				}
 			}
