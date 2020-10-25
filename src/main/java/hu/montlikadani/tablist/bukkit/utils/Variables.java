@@ -49,12 +49,16 @@ public class Variables {
 			nodes.add(node);
 		}
 
-		// Sort in ascending order
+		// Sort
+		//   ping in descending order
+		//   tps in ascending order
 		for (int i = 0; i < nodes.size(); i++) {
 			for (int j = nodes.size() - 1; j > i; j--) {
 				ExpressionNode node = nodes.get(i), node2 = nodes.get(j);
-				if (node.getType() == NodeType.TPS && node2.getType() == NodeType.TPS
-						&& node.getCondition().getSecondCondition() > node2.getCondition().getSecondCondition()) {
+				if ((node.getType() == NodeType.PING && node2.getType() == NodeType.PING
+						&& node.getCondition().getSecondCondition() < node2.getCondition().getSecondCondition())
+						|| (node.getType() == NodeType.TPS && node2.getType() == NodeType.TPS && node.getCondition()
+								.getSecondCondition() > node2.getCondition().getSecondCondition())) {
 					nodes.set(i, node2);
 					nodes.set(j, node);
 				}

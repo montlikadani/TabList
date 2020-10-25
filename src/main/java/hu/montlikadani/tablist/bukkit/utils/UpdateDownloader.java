@@ -25,13 +25,12 @@ public class UpdateDownloader {
 		}
 
 		CompletableFuture.supplyAsync(() -> {
-			String lineWithVersion = "";
-
 			try {
 				URL githubUrl = new URL(
 						"https://raw.githubusercontent.com/montlikadani/TabList/master/src/main/resources/plugin.yml");
 				BufferedReader br = new BufferedReader(new InputStreamReader(githubUrl.openStream()));
 				String s;
+				String lineWithVersion = "";
 				while ((s = br.readLine()) != null) {
 					String line = s;
 					if (line.toLowerCase().contains("version")) {
