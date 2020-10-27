@@ -6,6 +6,7 @@ import org.bukkit.scoreboard.Team;
 
 import hu.montlikadani.tablist.bukkit.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.utils.NMS;
+import hu.montlikadani.tablist.bukkit.utils.Util;
 
 /**
  * This class is superfluous because it makes no sense to instantiate it as long
@@ -29,6 +30,10 @@ public class BukkitHandled implements ITabScoreboard {
 
 	@Override
 	public void registerTeam(String teamName) {
+		if (board == null) {
+			return;
+		}
+
 		Team team = board.getTeam(teamName);
 		if (team == null) {
 			team = board.registerNewTeam(teamName);
@@ -39,14 +44,17 @@ public class BukkitHandled implements ITabScoreboard {
 
 	@Override
 	public void setTeam(String teamName) {
-		tabPlayer.getPlayer()
-				.setPlayerListName(tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix());
-		tabPlayer.getPlayer().setScoreboard(board);
+		tabPlayer.getPlayer().setPlayerListName(
+				Util.colorMsg(tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix()));
+
+		if (board != null) {
+			tabPlayer.getPlayer().setScoreboard(board);
+		}
 	}
 
 	@Override
 	public void unregisterTeam(String teamName) {
-		Team team = board.getTeam(teamName);
+		Team team = board == null ? null : board.getTeam(teamName);
 		if (team == null) {
 			return;
 		}

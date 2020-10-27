@@ -14,9 +14,6 @@ groups:
     prefix: "&a[&cStaff&a]&6 "
     suffix: "&7 <12>"
     # (Optional)
-    # Sorting the groups/players (lower number = higher in player list)
-    #sort-priority: 0
-    # (Optional)
     # This permission must be set in the permission system.
     #permission: tablist.staff
 
@@ -25,7 +22,5 @@ groups:
   Admin:
     prefix: "&7<62>&r %anim:Admin%"
     suffix: "&7 <62>"
-    sort-priority: 0
   PlayerName:
     prefix: "&a[MyGroup]&7"
-    sort-priority: 1

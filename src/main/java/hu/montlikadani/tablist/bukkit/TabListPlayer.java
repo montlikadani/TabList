@@ -23,10 +23,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 	private boolean afk;
 
-	private String nick;
-	private String tabName;
-	private String customPrefix;
-	private String customSuffix;
+	private String nick, tabName, customPrefix, customSuffix;
 
 	private int customPriority = Integer.MIN_VALUE;
 
