@@ -37,16 +37,20 @@ public class Variables {
 	public void loadExpressions() {
 		nodes.clear();
 
-		for (String f : ConfigValues.getPingColorFormats()) {
-			ExpressionNode node = new OperatorNodes(NodeType.PING);
-			node.setParseExpression(f);
-			nodes.add(node);
+		if (ConfigValues.isPingFormatEnabled()) {
+			for (String f : ConfigValues.getPingColorFormats()) {
+				ExpressionNode node = new OperatorNodes(NodeType.PING);
+				node.setParseExpression(f);
+				nodes.add(node);
+			}
 		}
 
-		for (String f : ConfigValues.getTpsColorFormats()) {
-			ExpressionNode node = new OperatorNodes(NodeType.TPS);
-			node.setParseExpression(f);
-			nodes.add(node);
+		if (ConfigValues.isTpsFormatEnabled()) {
+			for (String f : ConfigValues.getTpsColorFormats()) {
+				ExpressionNode node = new OperatorNodes(NodeType.TPS);
+				node.setParseExpression(f);
+				nodes.add(node);
+			}
 		}
 
 		// Sort
@@ -311,7 +315,7 @@ public class Variables {
 
 		for (ExpressionNode node : nodes) {
 			if (node.getType() == type && node.getCondition().getParseable().length > 1 && node.parse(value)) {
-				color = node.getCondition().getParseable()[1];
+				color = node.getCondition().getColor();
 			}
 		}
 
@@ -319,7 +323,7 @@ public class Variables {
 
 		StringBuilder builder = new StringBuilder();
 		if (!color.isEmpty()) {
-			builder.append(color.replace('&', '\u00a7'));
+			builder.append(color.replaceAll("%tps%|%ping%", "").replace('&', '\u00a7'));
 		}
 
 		return (type == NodeType.PING ? builder.append((int) value) : builder.append(value)).append(ChatColor.RESET)

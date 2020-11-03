@@ -20,9 +20,16 @@ public class Condition {
 
 	public double getSecondCondition() {
 		try {
-			return parseable.length > 1 ? Double.parseDouble(parseable[0]) : 0D;
+			return parseable.length > 1
+					? Double.parseDouble(
+							parseable[(parseable[0].contains("%tps%") || parseable[0].contains("%ping%")) ? 1 : 0])
+					: 0D;
 		} catch (NumberFormatException e) {
 			return 0;
 		}
+	}
+
+	public String getColor() {
+		return parseable.length > 1 ? parseable[1].matches("&|#") ? parseable[1] : parseable[0] : "";
 	}
 }

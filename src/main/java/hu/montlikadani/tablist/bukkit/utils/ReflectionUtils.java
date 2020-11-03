@@ -28,25 +28,92 @@ public class ReflectionUtils {
 		return invokeMethod(obj, "getHandle");
 	}
 
-	public static Object getAsIChatBaseComponent(String name) throws Exception {
+	public static Object getAsIChatBaseComponent(final String text) throws Exception {
 		Class<?> iChatBaseComponent = getNMSClass("IChatBaseComponent");
 
-		if (Version.isCurrentEqualOrHigher(Version.v1_16_R1) && name.contains("#")) {
+		if (Version.isCurrentEqualOrHigher(Version.v1_16_R1) && text.contains("#")) {
 			JSONLIST.clear();
 
-			char[] array = name.toCharArray();
-			for (int i = 0; i < array.length; i++) {
-				if (array[i] == '#') {
-					String code = name.substring(i, i + 7);
-					String[] split = name.split(code);
-					String text = split[1].contains("#") ? split[1].split("#")[0] : split[1];
+			JsonObject obj = new JsonObject();
+			StringBuilder builder = new StringBuilder();
 
-					JsonObject obj = new JsonObject();
-					obj.addProperty("text", text);
-					obj.addProperty("color", code);
-					JSONLIST.add(obj);
+			String res = text;
+			char charBefore = ' ';
+			for (int i = 0; i < res.length(); i++) {
+				if (i >= res.length()) {
+					break;
+				}
+
+				// Ignore the last char starting with '&' because color has already
+				// added
+				if (charBefore == '&') {
+					charBefore = ' ';
+					continue;
+				}
+
+				char charAt = res.charAt(i);
+				if (charAt == '#') {
+					String hex = res.substring(i, i + 7);
+
+					if (builder.length() > 0) {
+						obj.addProperty("text", builder.toString());
+						JSONLIST.add(obj);
+						builder = new StringBuilder();
+					}
+
+					obj = new JsonObject();
+					obj.addProperty("color", hex);
+					i += 6; // Increase loop with 6 to ignore hex digit
+				} else if (charAt == '&') {
+					charBefore = charAt;
+
+					char colorCode = res.charAt(i + 1);
+					if (Character.isDigit(colorCode)
+							|| ((colorCode >= 'a' && colorCode <= 'f') || (colorCode == 'k' || colorCode == 'l'
+									|| colorCode == 'm' || colorCode == 'n' || colorCode == 'o' || colorCode == 'r'))) {
+						switch (colorCode) {
+						case 'k':
+							obj.addProperty("obfuscated", true);
+							break;
+						case 'o':
+							obj.addProperty("italic", true);
+							break;
+						case 'n':
+							obj.addProperty("underlined", true);
+							break;
+						case 'm':
+							obj.addProperty("strikethrough", true);
+							break;
+						case 'l':
+							obj.addProperty("bold", true);
+							break;
+						case 'r':
+							obj.addProperty("text", builder.toString());
+							JSONLIST.add(obj);
+
+							obj = new JsonObject();
+							builder = new StringBuilder();
+							obj.addProperty("color", "white");
+							break;
+						default:
+							obj.addProperty("text", builder.toString());
+							JSONLIST.add(obj);
+
+							obj = new JsonObject();
+							builder = new StringBuilder();
+
+							String colorName = org.bukkit.ChatColor.getByChar(colorCode).name().toLowerCase();
+							obj.addProperty("color", colorName);
+							break;
+						}
+					}
+				} else {
+					builder.append(charAt);
 				}
 			}
+
+			obj.addProperty("text", builder.toString());
+			JSONLIST.add(obj);
 
 			Method m = iChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class);
 			return m.invoke(iChatBaseComponent, GSON.toJson(JSONLIST));
@@ -55,11 +122,11 @@ public class ReflectionUtils {
 		if (Version.isCurrentLower(Version.v1_8_R2)) {
 			Class<?> chatSerializer = getNMSClass("ChatSerializer");
 			Method m = chatSerializer.getMethod("a", String.class);
-			return iChatBaseComponent.cast(m.invoke(chatSerializer, "{\"text\":\"" + name + "\"}"));
+			return iChatBaseComponent.cast(m.invoke(chatSerializer, "{\"text\":\"" + text + "\"}"));
 		}
 
 		Method m = iChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class);
-		return m.invoke(iChatBaseComponent, "{\"text\":\"" + name + "\"}");
+		return m.invoke(iChatBaseComponent, "{\"text\":\"" + text + "\"}");
 	}
 
 	public static Object invokeMethod(Object obj, String name) throws Exception {

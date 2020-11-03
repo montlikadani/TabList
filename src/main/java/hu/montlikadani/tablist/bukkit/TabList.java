@@ -6,6 +6,7 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -58,7 +59,7 @@ public class TabList extends JavaPlugin {
 	private boolean hasVault = false;
 	private int tabRefreshTime = 0;
 
-	private final Set<AnimCreator> animations = new HashSet<>();
+	private final Set<AnimCreator> animations = Collections.synchronizedSet(new HashSet<AnimCreator>());
 	private final Map<Player, HidePlayers> hidePlayers = new HashMap<>();
 
 	@Override
@@ -240,7 +241,7 @@ public class TabList extends JavaPlugin {
 	}
 
 	private void loadValues() {
-		this.tabRefreshTime = getTabC().getInt("interval", 4);
+		tabRefreshTime = getTabC().getInt("interval", 4);
 
 		variables.loadExpressions();
 		tabNameHandler.loadRestrictedNames();
@@ -285,9 +286,11 @@ public class TabList extends JavaPlugin {
 		}
 
 		while (name.contains("%anim:")) { // when using multiple animations
-			for (AnimCreator ac : animations) {
-				name = name.replace("%anim:" + ac.getAnimName() + "%",
-						ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
+			synchronized (animations) {
+				for (AnimCreator ac : animations) {
+					name = name.replace("%anim:" + ac.getAnimName() + "%",
+							ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
+				}
 			}
 		}
 

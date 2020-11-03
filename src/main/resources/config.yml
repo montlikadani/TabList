@@ -88,9 +88,9 @@ placeholder-format:
     # < - less value, "8 < &4" dark red color
     # == - equal value, "20 == &a" green color if 20 is equal to current ping amount
     formats:
-    - "200 <= &a"
-    - "400 >= &6"
-    - "500 > &c"
+    - "&a%ping% <= 200"
+    - "&6%ping% >= 400"
+    - "&c%ping% > 500"
 
   # TPS color format for %tps% placeholder.
   tps:
@@ -111,9 +111,9 @@ placeholder-format:
     # < - less value, "8 < &4" dark red color
     # == - equal value, "20 == &a" green color if 20 is equal to current tps amount
     formats:
-    - "18.0 > &a"
-    - "16.0 == &6"
-    - "16.0 < &c"
+    - '&a%tps% > 18.0'
+    - '&6%tps% == 16.0'
+    - '&c%tps% < 16.0'
 
   # Memory bar settings for %memory_bar% variable
   memory-bar:

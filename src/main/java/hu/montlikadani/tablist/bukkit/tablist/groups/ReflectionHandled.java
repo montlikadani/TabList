@@ -11,7 +11,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import hu.montlikadani.tablist.bukkit.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
-import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class ReflectionHandled implements ITabScoreboard {
 
@@ -116,10 +115,12 @@ public class ReflectionHandled implements ITabScoreboard {
 		}
 
 		// Colorize '&' codes before hex
-		name = Util.colorMsg(name, true);
+		if (!name.contains("#")) {
+			name = hu.montlikadani.tablist.bukkit.utils.Util.colorMsg(name, true);
+		}
 
 		Object iChatBaseComponentName = ReflectionUtils.getAsIChatBaseComponent(name);
-		ReflectionUtils.setField(playerConst, "listName", iChatBaseComponentName);
+		//ReflectionUtils.setField(playerConst, "listName", iChatBaseComponentName);
 
 		@SuppressWarnings("unchecked")
 		List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")

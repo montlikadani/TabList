@@ -64,7 +64,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 				} else {
 					cmds.add((ICommand) c.newInstance());
 				}
-			} catch (Exception e) {
+			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
 		}

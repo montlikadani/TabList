@@ -117,8 +117,7 @@ public class TabHandler implements ITabHandler {
 										: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer"))
 												: null;
 
-								worldList.add(split);
-								worldEnabled = true;
+								worldEnabled = worldList.add(split);
 								break t;
 							}
 						}

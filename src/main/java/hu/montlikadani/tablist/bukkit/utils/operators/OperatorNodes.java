@@ -80,7 +80,8 @@ public class OperatorNodes implements ExpressionNode {
 		}
 
 		String[] c = String.valueOf(str.trim().replace(operator, ";").toCharArray()).split(";");
-		return isNumber(c[0]) ? new Condition(operator, c) : null;
+		return isNumber(c[(c[0].contains("%tps%") || c[0].contains("%ping%")) ? 1 : 0]) ? new Condition(operator, c)
+				: null;
 	}
 
 	private boolean isNumber(String num) {
@@ -104,11 +105,12 @@ public class OperatorNodes implements ExpressionNode {
 			if (secondCondition < 0D || leftCond < 0D)
 				return false;
 
-			// TODO: Is there a better way to split leftCond for to be equally for secondCondition?
-			int left = Double.toString(leftCond).length(), right = Double.toString(secondCondition).length();
-			if (left != right) {
-				leftCond = Double
-						.parseDouble(Double.toString(leftCond).substring(0, right - ConfigValues.getTpsSize()));
+			// Making leftCond to be equally to secondCondition with tpsSize
+			int tpsSize = ConfigValues.getTpsSize();
+			if (Math.floor(leftCond * tpsSize) != Math.floor(secondCondition * tpsSize)) {
+				String lc = Double.toString(leftCond);
+				leftCond = Double.parseDouble(
+						lc.substring(0, (tpsSize == 1 ? 3 : lc.indexOf('.')) + (tpsSize < 1 ? 2 : tpsSize)));
 			}
 
 			switch (condition.getOperator()) {
