@@ -16,7 +16,7 @@ import org.spongepowered.api.text.Text;
 import hu.montlikadani.tablist.sponge.TabList;
 import hu.montlikadani.tablist.sponge.tablist.TabHandler;
 
-@Command(name = "tablist", aliases = { "tablist", "tl" }, subCommands = { "toggle" })
+@Command(name = "tablist", aliases = { "tablist", "tl" }, subCommands = "toggle")
 public final class SpongeCommands extends ICommand implements Supplier<CommandCallable> {
 
 	private TabList plugin;
