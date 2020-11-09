@@ -26,8 +26,21 @@ public class Variables {
 	public void loadExpressions() {
 		nodes.clear();
 
-		for (String f : ConfigValues.getPingColorFormats()) {
-			nodes.add(new OperatorNodes(f));
+		if (ConfigValues.isPingFormatEnabled()) {
+			for (String f : ConfigValues.getPingColorFormats()) {
+				nodes.add(new OperatorNodes(f));
+			}
+		}
+
+		// Sort ping in descending order
+		for (int i = 0; i < nodes.size(); i++) {
+			for (int j = nodes.size() - 1; j > i; j--) {
+				ExpressionNode node = nodes.get(i), node2 = nodes.get(j);
+				if (node.getCondition().getSecondCondition() < node2.getCondition().getSecondCondition()) {
+					nodes.set(i, node2);
+					nodes.set(j, node);
+				}
+			}
 		}
 	}
 
@@ -161,8 +174,8 @@ public class Variables {
 		String color = "";
 
 		for (ExpressionNode node : nodes) {
-			if (node.parse(value) && node.getCondition().getParseable().length > 1) {
-				color = node.getCondition().getParseable()[1];
+			if (node.parse(value)) {
+				color = node.getCondition().getColor();
 			}
 		}
 

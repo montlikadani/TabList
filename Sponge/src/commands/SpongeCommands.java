@@ -1,7 +1,5 @@
-package hu.montlikadani.tablist.sponge;
+package hu.montlikadani.tablist.sponge.commands;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -14,15 +12,20 @@ import org.spongepowered.api.command.args.GenericArguments;
 import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
-public class SpongeCommands implements Supplier<CommandCallable> {
+import hu.montlikadani.tablist.sponge.TabList;
+import hu.montlikadani.tablist.sponge.tablist.TabHandler;
+
+@Command(name = "tablist", aliases = { "tablist", "tl" }, subCommands = { "toggle" })
+public final class SpongeCommands extends ICommand implements Supplier<CommandCallable> {
 
 	private TabList plugin;
 
 	private CommandCallable toggleCmd;
 
-	public static final Map<UUID, Boolean> TABENABLED = new HashMap<>();
+	public SpongeCommands() {
+		throw new IllegalAccessError(toString() + " can't be instantiated.");
+	}
 
 	public SpongeCommands(TabList plugin) {
 		this.plugin = plugin;
@@ -31,30 +34,35 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 				.arguments(GenericArguments.optional(GenericArguments.firstParsing(
 						GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))),
 						GenericArguments.string(Text.of("all")))))
-				.permission("tablist.toggle").executor(this::toggleCommand).build();
+				.permission("tablist.toggle").executor(this::handleToggle).build();
 
-		init();
+		try {
+			Sponge.getCommandManager().register(plugin, get(),
+					(String[]) Command.class.getMethod("aliases").invoke(null));
+		} catch (ReflectiveOperationException e) {
+			e.printStackTrace();
+		}
 	}
 
-	private void init() {
-		Sponge.getCommandManager().register(plugin, get(), "tablist", "tl");
-	}
-
-	private CommandResult toggleCommand(CommandSource src, CommandContext args) {
-		if (args.<String>getOne("all").isPresent() && args.<String>getOne("all").get().equalsIgnoreCase("all")) {
+	private CommandResult handleToggle(CommandSource src, CommandContext args) {
+		if ("all".equalsIgnoreCase(args.<String>getOne("all").get())) {
 			if (!hasPerm(src, "tablist.toggle.all")) {
 				return CommandResult.empty();
 			}
 
 			for (Player pl : Sponge.getServer().getOnlinePlayers()) {
+				if (!plugin.getTabHandler().isPlayerInTab(pl)) {
+					continue;
+				}
+
 				UUID uuid = pl.getUniqueId();
 
-				boolean changed = TABENABLED.containsKey(uuid) ? !TABENABLED.get(uuid) : true;
+				boolean changed = TabHandler.TABENABLED.containsKey(uuid) ? !TabHandler.TABENABLED.get(uuid) : true;
 				if (changed) {
-					TABENABLED.put(uuid, true);
+					TabHandler.TABENABLED.put(uuid, true);
 				} else {
-					TABENABLED.remove(uuid);
-					plugin.getTManager().loadTab(pl);
+					TabHandler.TABENABLED.remove(uuid);
+					plugin.getTabHandler().getPlayerTab(pl).get().loadTab();
 				}
 			}
 
@@ -63,15 +71,19 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 
 		if (args.<Player>getOne("player").isPresent()) {
 			Player p = args.<Player>getOne("player").get();
+			if (!plugin.getTabHandler().isPlayerInTab(p)) {
+				return CommandResult.empty();
+			}
+
 			UUID uuid = p.getUniqueId();
 
-			boolean changed = TABENABLED.containsKey(uuid) ? !TABENABLED.get(uuid) : true;
+			boolean changed = TabHandler.TABENABLED.containsKey(uuid) ? !TabHandler.TABENABLED.get(uuid) : true;
 			if (changed) {
-				TABENABLED.put(uuid, true);
+				TabHandler.TABENABLED.put(uuid, true);
 				sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
 			} else {
-				TABENABLED.remove(uuid);
-				plugin.getTManager().loadTab(p);
+				TabHandler.TABENABLED.remove(uuid);
+				plugin.getTabHandler().getPlayerTab(p).get().loadTab();
 				sendMsg(src, "&aThe tab has been enabled for &e" + p.getName() + "&a!");
 			}
 
@@ -80,15 +92,19 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 
 		if (src instanceof Player) {
 			Player p = (Player) src;
+			if (!plugin.getTabHandler().isPlayerInTab(p)) {
+				return CommandResult.empty();
+			}
+
 			UUID uuid = p.getUniqueId();
 
-			boolean changed = TABENABLED.containsKey(uuid) ? !TABENABLED.get(uuid) : true;
+			boolean changed = TabHandler.TABENABLED.containsKey(uuid) ? !TabHandler.TABENABLED.get(uuid) : true;
 			if (changed) {
-				TABENABLED.put(uuid, true);
+				TabHandler.TABENABLED.put(uuid, true);
 				sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
 			} else {
-				TABENABLED.remove(uuid);
-				plugin.getTManager().loadTab(p);
+				TabHandler.TABENABLED.remove(uuid);
+				plugin.getTabHandler().getPlayerTab(p).get().loadTab();
 				sendMsg(src, "&aThe tab has been enabled for &e" + p.getName() + "&a!");
 			}
 
@@ -100,20 +116,7 @@ public class SpongeCommands implements Supplier<CommandCallable> {
 
 	@Override
 	public CommandCallable get() {
-		return CommandSpec.builder().child(toggleCmd, "toggle").description(Text.of("Tablist modifier")).build();
-	}
-
-	private final boolean hasPerm(CommandSource src, String perm) {
-		return !(src instanceof Player) ? true : src.hasPermission(perm);
-	}
-
-	private final void sendMsg(CommandSource src, String msg) {
-		if (msg != null && !msg.trim().isEmpty()) {
-			sendMsg(src, TextSerializers.FORMATTING_CODE.deserialize(msg));
-		}
-	}
-
-	private final void sendMsg(CommandSource src, Text text) {
-		src.sendMessage(text);
+		return CommandSpec.builder().child(toggleCmd, "toggle").description(Text.of("Toggling tablist visibility"))
+				.build();
 	}
 }

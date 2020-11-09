@@ -20,9 +20,13 @@ public class Condition {
 
 	public int getSecondCondition() {
 		try {
-			return parseable.length > 1 ? Integer.parseInt(parseable[0]) : 0;
+			return parseable.length > 1 ? Integer.parseInt(parseable[1]) : 0;
 		} catch (NumberFormatException e) {
 			return 0;
 		}
+	}
+
+	public String getColor() {
+		return parseable.length != 0 ? parseable[0] : "";
 	}
 }

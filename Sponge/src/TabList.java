@@ -3,11 +3,13 @@ package hu.montlikadani.tablist.sponge;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.event.game.state.GameStartedServerEvent;
 import org.spongepowered.api.event.game.state.GameStoppingEvent;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.plugin.PluginContainer;
 import org.spongepowered.api.scheduler.Task;
@@ -15,18 +17,20 @@ import org.spongepowered.api.scoreboard.Scoreboard;
 
 import com.google.inject.Inject;
 
-import hu.montlikadani.tablist.sponge.tablist.TabListManager;
+import hu.montlikadani.tablist.sponge.commands.SpongeCommands;
+import hu.montlikadani.tablist.sponge.tablist.TabHandler;
 import hu.montlikadani.tablist.sponge.tablist.groups.GroupTask;
 import hu.montlikadani.tablist.sponge.tablist.groups.TabGroup;
 import hu.montlikadani.tablist.sponge.tablist.objects.ObjectType;
 import hu.montlikadani.tablist.sponge.tablist.objects.TabListObjects;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Plugin(id = "tablist", name = "TabList", version = "1.0.2", description = "An ultimate animated tablist", authors = "montlikadani")
+@Plugin(id = "tablist", name = "TabList", version = "1.0.2", description = "An ultimate animated tablist", authors = "montlikadani", dependencies = @Dependency(id = "spongeapi", version = "7.2.0"))
 public class TabList {
 
 	private static TabList instance;
@@ -36,28 +40,28 @@ public class TabList {
 
 	private ConfigHandlers config, animationsFile, groupsFile;
 
-	private TabListManager tManager;
+	private TabHandler tabHandler;
 	private Variables variables;
 	private GroupTask groupTask;
 	private TabListObjects objects;
 
 	private final Set<TabGroup> groupsList = new HashSet<>();
-	private final Set<AnimCreator> animations = new HashSet<>();
+	private final Set<AnimCreator> animations = Collections.synchronizedSet(new HashSet<AnimCreator>());
 
 	public static final Scoreboard BOARD = Sponge.getServer().getServerScoreboard()
 			.orElse(Scoreboard.builder().build());
 
-	@Listener
+	@Listener(order = Order.PRE)
 	public void onPluginPreInit(GamePreInitializationEvent e) {
 		instance = this;
 	}
 
-	@Listener
+	@Listener(order = Order.AFTER_PRE)
 	public void onPluginInit(GameInitializationEvent ev) {
 		initConfigs();
 		new SpongeCommands(this);
 
-		tManager = new TabListManager(this);
+		tabHandler = new TabHandler(this);
 		variables = new Variables();
 		objects = new TabListObjects(this);
 	}
@@ -106,11 +110,11 @@ public class TabList {
 	}
 
 	public void reload() {
-		if (tManager == null) {
-			tManager = new TabListManager(this);
+		if (tabHandler == null) {
+			tabHandler = new TabHandler(this);
 		}
 
-		tManager.cancelTabForAll();
+		tabHandler.removeAll();
 
 		if (groupTask != null) {
 			groupTask.cancel();
@@ -187,9 +191,11 @@ public class TabList {
 		}
 
 		while (name.contains("%anim:")) { // when using multiple animations
-			for (AnimCreator ac : animations) {
-				name = name.replace("%anim:" + ac.getAnimName() + "%",
-						ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
+			synchronized (animations) {
+				for (AnimCreator ac : animations) {
+					name = name.replace("%anim:" + ac.getAnimName() + "%",
+							ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
+				}
 			}
 		}
 
@@ -201,8 +207,7 @@ public class TabList {
 	}
 
 	public void updateAll(final Player player) {
-		tManager.cancelTab(player.getUniqueId());
-		tManager.loadTab(player);
+		tabHandler.addPlayer(player);
 
 		if (groupTask != null) {
 			groupTask.removePlayer(player);
@@ -229,7 +234,7 @@ public class TabList {
 	}
 
 	public void onQuit(Player player) {
-		tManager.cancelTab(player.getUniqueId());
+		tabHandler.removePlayer(player);
 
 		if (groupTask != null) {
 			groupTask.removePlayer(player);
@@ -241,7 +246,7 @@ public class TabList {
 	}
 
 	public void cancelAll() {
-		tManager.cancelTabForAll();
+		tabHandler.removeAll();
 
 		if (objects != null) {
 			objects.cancelTask();
@@ -280,8 +285,8 @@ public class TabList {
 		return animationsFile;
 	}
 
-	public TabListManager getTManager() {
-		return tManager;
+	public TabHandler getTabHandler() {
+		return tabHandler;
 	}
 
 	public Variables getVariables() {

@@ -13,10 +13,7 @@ import hu.montlikadani.tablist.sponge.TabList;
 
 public class TabGroup implements Cloneable {
 
-	private String groupName;
-	private String prefix;
-	private String suffix;
-	private String permission;
+	private String groupName, prefix, suffix, permission;
 
 	private int priority;
 
@@ -95,10 +92,10 @@ public class TabGroup implements Cloneable {
 				b.registerTeam(team);
 			}
 
-			Text representationName = player.getTeamRepresentation();
+			/*Text representationName = player.getTeamRepresentation();
 			if (!team.getMembers().contains(representationName)) {
 				team.addMember(representationName);
-			}
+			}*/
 
 			final Text resultName = TabList.get().getVariables().replaceVariables(player,
 					pref + player.getName() + suf);

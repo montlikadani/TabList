@@ -52,7 +52,9 @@ public class OperatorNodes implements ExpressionNode {
 		}
 
 		String[] c = String.valueOf(str.trim().replace(operator, ";").toCharArray()).split(";");
-		return c[0].replaceAll("[^\\d]", "").matches("[0-9]+") ? new Condition(operator, c) : null;
+		return c[0].contains("%ping%")
+				? (c[1].replaceAll("[^\\d]", "").matches("[0-9]+")) ? new Condition(operator, c) : null
+				: null;
 	}
 
 	@Override
