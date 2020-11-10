@@ -196,6 +196,10 @@ public class CommentedConfig extends YamlConfiguration {
 	}
 
 	public void addComment(String path, String... commentLines) {
+		if (commentLines.length == 0) {
+			return;
+		}
+
 		String leadingSpaces = "";
 		for (int n = 0; n < path.length(); n++) {
 			if (path.charAt(n) == '.') {

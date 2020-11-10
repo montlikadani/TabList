@@ -314,7 +314,7 @@ public class Variables {
 		String color = "";
 
 		for (ExpressionNode node : nodes) {
-			if (node.getType() == type && node.getCondition().getParseable().length > 1 && node.parse(value)) {
+			if (node.getType() == type && node.parse(value)) {
 				color = node.getCondition().getColor();
 			}
 		}

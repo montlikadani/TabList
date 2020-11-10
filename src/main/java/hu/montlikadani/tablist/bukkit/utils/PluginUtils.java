@@ -8,7 +8,6 @@ import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Containers.CMIUser;
 import com.earth2me.essentials.Essentials;
 
-import ca.stellardrift.permissionsex.bukkit.PermissionsExPlugin;
 import de.myzelyam.api.vanish.VanishAPI;
 import hu.montlikadani.ragemode.gameUtils.GameUtils;
 import hu.montlikadani.tablist.bukkit.TabList;
@@ -91,7 +90,7 @@ public class PluginUtils {
 	}
 
 	public static String getNickName(Player player) {
-		String nick = "";
+		String nick = player.getName();
 
 		if (plugin.isPluginEnabled("Essentials")) {
 			nick = JavaPlugin.getPlugin(Essentials.class).getUser(player).getNickname();
@@ -104,7 +103,7 @@ public class PluginUtils {
 			nick = CMI.getInstance().getNickNameManager().getNickNameFormat();
 		}
 
-		return nick == null ? "" : nick;
+		return nick == null ? player.getName() : nick;
 	}
 
 	public static boolean hasPermission(Player player, String perm) {
@@ -115,9 +114,7 @@ public class PluginUtils {
 			try {
 				return PermissionsEx.getPermissionManager().has(player, perm);
 			} catch (Throwable e) {
-				return JavaPlugin.getPlugin(PermissionsExPlugin.class).getUserSubjects()
-						.get(player.getUniqueId().toString()).thenAccept(u -> u.hasPermission(perm))
-						.completeExceptionally(e.getCause());
+				// Pex2 supports bukkit provided "hasPermission" check
 			}
 		}
 

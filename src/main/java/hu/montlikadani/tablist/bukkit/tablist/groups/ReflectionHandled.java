@@ -62,6 +62,11 @@ public class ReflectionHandled implements ITabScoreboard {
 					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
 					.newInstance(ReflectionUtils.getFieldObject(enumPlayerInfoAction,
 							enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME")), entityPlayerArray);
+
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				ReflectionUtils.sendPacket(p, packet);
+				ReflectionUtils.sendPacket(p, packetPlayOutPlayerInfo);
+			}
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
