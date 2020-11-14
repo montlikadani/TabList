@@ -40,7 +40,7 @@ public final class SpongeCommands extends ICommand implements Supplier<CommandCa
 	}
 
 	private CommandResult handleToggle(CommandSource src, CommandContext args) {
-		if ("all".equalsIgnoreCase(args.<String>getOne("all").get())) {
+		if ("all".equalsIgnoreCase(args.<String>getOne("all").orElse(""))) {
 			if (!hasPerm(src, "tablist.toggle.all")) {
 				return CommandResult.empty();
 			}
@@ -61,6 +61,8 @@ public final class SpongeCommands extends ICommand implements Supplier<CommandCa
 				}
 			}
 
+			sendMsg(src, Sponge.getServer().getOnlinePlayers().isEmpty() ? "&cNo one on the server"
+					: "&2Tab has been toggled for everyone!");
 			return CommandResult.success();
 		}
 
@@ -75,11 +77,11 @@ public final class SpongeCommands extends ICommand implements Supplier<CommandCa
 			boolean changed = TabHandler.TABENABLED.containsKey(uuid) ? !TabHandler.TABENABLED.get(uuid) : true;
 			if (changed) {
 				TabHandler.TABENABLED.put(uuid, true);
-				sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
+				sendMsg(src, "&cTab has been disabled for &e" + p.getName() + "&c!");
 			} else {
 				TabHandler.TABENABLED.remove(uuid);
 				plugin.getTabHandler().getPlayerTab(p).get().loadTab();
-				sendMsg(src, "&aThe tab has been enabled for &e" + p.getName() + "&a!");
+				sendMsg(src, "&aTab has been enabled for &e" + p.getName() + "&a!");
 			}
 
 			return CommandResult.success();
@@ -96,16 +98,17 @@ public final class SpongeCommands extends ICommand implements Supplier<CommandCa
 			boolean changed = TabHandler.TABENABLED.containsKey(uuid) ? !TabHandler.TABENABLED.get(uuid) : true;
 			if (changed) {
 				TabHandler.TABENABLED.put(uuid, true);
-				sendMsg(src, "&cThe tab has been disabled for &e" + p.getName() + "&c!");
+				sendMsg(src, "&cTab has been disabled in yourself.");
 			} else {
 				TabHandler.TABENABLED.remove(uuid);
 				plugin.getTabHandler().getPlayerTab(p).get().loadTab();
-				sendMsg(src, "&aThe tab has been enabled for &e" + p.getName() + "&a!");
+				sendMsg(src, "&aTab has been enabled in yourself.");
 			}
 
 			return CommandResult.success();
 		}
 
+		sendMsg(src, "&cUsage: /" + args.<String>getOne("tablist").orElse("tablist") + " toggle <player;all>");
 		return CommandResult.empty();
 	}
 
