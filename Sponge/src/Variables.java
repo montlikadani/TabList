@@ -183,6 +183,10 @@ public class Variables {
 
 		StringBuilder builder = new StringBuilder();
 		if (!color.isEmpty()) {
+			if (color.contains("%player-ping%")) {
+				color = color.replace("%player-ping%", "");
+			}
+
 			builder.append(color.replace('&', '\u00a7'));
 		}
 

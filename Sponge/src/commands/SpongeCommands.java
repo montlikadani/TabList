@@ -36,12 +36,7 @@ public final class SpongeCommands extends ICommand implements Supplier<CommandCa
 						GenericArguments.string(Text.of("all")))))
 				.permission("tablist.toggle").executor(this::handleToggle).build();
 
-		try {
-			Sponge.getCommandManager().register(plugin, get(),
-					(String[]) Command.class.getMethod("aliases").invoke(null));
-		} catch (ReflectiveOperationException e) {
-			e.printStackTrace();
-		}
+		Sponge.getCommandManager().register(plugin, get(), getClass().getAnnotation(Command.class).aliases());
 	}
 
 	private CommandResult handleToggle(CommandSource src, CommandContext args) {

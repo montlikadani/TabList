@@ -175,6 +175,9 @@ public class TabListManager {
 		final String resultFooter = fo;
 
 		final Variables v = plugin.getVariables();
+		if (v == null) {
+			return;
+		}
 
 		if (!worldList.isEmpty()) {
 			for (String l : worldList) {

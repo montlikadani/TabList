@@ -3,7 +3,6 @@ package hu.montlikadani.tablist.sponge;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.Order;
 import org.spongepowered.api.event.game.GameReloadEvent;
 import org.spongepowered.api.event.game.state.GameInitializationEvent;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
@@ -51,12 +50,12 @@ public class TabList {
 	public static final Scoreboard BOARD = Sponge.getServer().getServerScoreboard()
 			.orElse(Scoreboard.builder().build());
 
-	@Listener(order = Order.PRE)
+	@Listener
 	public void onPluginPreInit(GamePreInitializationEvent e) {
 		instance = this;
 	}
 
-	@Listener(order = Order.AFTER_PRE)
+	@Listener
 	public void onPluginInit(GameInitializationEvent ev) {
 		initConfigs();
 		new SpongeCommands(this);
