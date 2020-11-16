@@ -183,7 +183,7 @@ public class ConfigValues {
 		defaultColorEnabled = c.get("tabname.default-color.enable", false);
 
 		c.get("check-update", true);
-		c.get("download-updates", true);
+		c.get("download-updates", false);
 		c.get("logconsole", true);
 
 		afkFormatYes = c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r ");

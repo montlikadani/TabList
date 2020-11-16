@@ -243,7 +243,7 @@ check-update: true
 
 # Download new releases to "releases" folder?
 # This only works if the "check-update" is true.
-download-updates: true
+download-updates: false
 
 # Log plugin messages to console?
 logconsole: true
