@@ -95,7 +95,7 @@ public class PluginUtils {
 		if (plugin.isPluginEnabled("Essentials")) {
 			nick = JavaPlugin.getPlugin(Essentials.class).getUser(player).getNickname();
 			if (nick != null) {
-				nick = nick.replace("§x", "#").replace("§", "");
+				nick = nick.replace("\u00A7x", "#").replace('\u00A7', '&');
 			}
 		}
 
