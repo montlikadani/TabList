@@ -62,10 +62,10 @@
 			<id>minecraft-repo</id>
 			<url>https://libraries.minecraft.net/</url>
 		</repository>
-		<repository>
+		<!--<repository>
 			<id>pex-repo</id>
 			<url>https://repo.glaremasters.me/repository/permissionsex/</url>
-		</repository>
+		</repository>-->
 	</repositories>
 
 	<dependencies>

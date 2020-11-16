@@ -12,7 +12,7 @@ import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
@@ -23,11 +23,10 @@ public class TabHandler implements ITabHandler {
 	private final TabList plugin;
 
 	private UUID playerUUID;
-
-	@Deprecated
-	private BukkitTask task;
 	private TabBuilder builder;
+
 	private boolean worldEnabled = false;
+	private String usedPermission = "";
 
 	private final List<String> worldList = new ArrayList<>();
 
@@ -56,22 +55,17 @@ public class TabHandler implements ITabHandler {
 		return builder;
 	}
 
-	@Deprecated
-	@Override
-	public BukkitTask getTask() {
-		return task;
-	}
-
 	public void updateTab() {
 		worldList.clear();
 		worldEnabled = false;
+		usedPermission = "";
 
 		final Player player = getPlayer();
 		if (player == null || !player.isOnline()) {
 			return;
 		}
 
-		unregisterTab();
+		TabTitle.sendTabTitle(player, "", "");
 
 		if (!plugin.getConf().getTablistFile().exists()) {
 			return;
@@ -162,6 +156,21 @@ public class TabHandler implements ITabHandler {
 			}
 		}
 
+		if ((header == null && footer == null) && c.isConfigurationSection("permissions")) {
+			for (String name : c.getConfigurationSection("permissions").getKeys(false)) {
+				String node = name.startsWith("tablist.") ? name : "tablist." + name;
+				if (PluginUtils.hasPermission(player, node)) {
+					String path = "permissions." + name + ".";
+					header = c.isList(path + "header") ? c.getStringList(path + "header")
+							: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
+					footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
+							: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
+					usedPermission = node;
+					break;
+				}
+			}
+		}
+
 		if ((header == null && footer == null) && c.contains("per-player")) {
 			if (c.contains("per-player." + pName)) {
 				String path = "per-player." + pName + ".";
@@ -200,7 +209,7 @@ public class TabHandler implements ITabHandler {
 					: c.isString("footer") ? Arrays.asList(c.getString("footer")) : null;
 		}
 
-		this.builder = TabBuilder.builder().header(header).footer(footer).random(c.getBoolean("random", false)).build();
+		this.builder = TabBuilder.builder().header(header).footer(footer).random(c.getBoolean("random")).build();
 	}
 
 	protected void sendTab() {
@@ -219,7 +228,40 @@ public class TabHandler implements ITabHandler {
 			return;
 		}
 
+		// Track player permissions change and update tab if required
+		// Note: avoid using Player#hasPermission which calls multiple times to prevent
+		// verbose logging
+		if (c.isConfigurationSection("permissions")) {
+			boolean foundPerm = false;
+			eff: for (PermissionAttachmentInfo info : player.getEffectivePermissions()) {
+				if (!info.getPermission().startsWith("tablist.")) {
+					continue;
+				}
+
+				if (info.getPermission().equalsIgnoreCase(usedPermission)) {
+					foundPerm = true;
+					break;
+				}
+
+				for (String name : c.getConfigurationSection("permissions").getKeys(false)) {
+					String node = name.startsWith("tablist.") ? name : "tablist." + name;
+					if (node.equalsIgnoreCase(info.getPermission()) || node.equalsIgnoreCase(usedPermission)) {
+						foundPerm = true;
+						updateTab();
+						break eff;
+					}
+				}
+			}
+
+			if (!foundPerm && !usedPermission.isEmpty()) {
+				updateTab(); // Back to the original tab
+			}
+		}
+
 		final List<String> header = builder.getHeader(), footer = builder.getFooter();
+		if (header.isEmpty() && footer.isEmpty()) {
+			return;
+		}
 
 		String he = "";
 		String fo = "";
@@ -282,18 +324,6 @@ public class TabHandler implements ITabHandler {
 			for (Player all : Bukkit.getWorld(l).getPlayers()) {
 				TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));
 			}
-		}
-	}
-
-	public void unregisterTab() {
-		TabTitle.sendTabTitle(getPlayer(), "", "");
-	}
-
-	@Deprecated
-	public void cancelTask() {
-		if (task != null) {
-			task.cancel();
-			task = null;
 		}
 	}
 }

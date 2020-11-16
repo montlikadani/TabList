@@ -32,6 +32,10 @@ public class TabNameHandler {
 	public void loadRestrictedNames() {
 		restrictedNames.clear();
 
+		if (!ConfigValues.isTabNameEnabled()) {
+			return;
+		}
+
 		for (String rn : ConfigValues.getRestrictedTabNames()) {
 			try {
 				restrictedNames.add(Pattern.compile(rn).asPredicate());

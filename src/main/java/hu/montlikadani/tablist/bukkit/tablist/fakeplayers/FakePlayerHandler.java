@@ -63,12 +63,16 @@ public class FakePlayerHandler {
 				}
 			}
 
-			final IFakePlayers fp = new FakePlayers(colorMsg(name));
-			fakePlayers.add(fp);
+			if (name.length() > 16) {
+				name = name.substring(0, 16);
+			}
 
+			final IFakePlayers fp = new FakePlayers(colorMsg(name));
 			final int finalPing = ping;
 			final String finalHeadUUID = headUUID;
+
 			plugin.getServer().getOnlinePlayers().forEach(all -> fp.createFakePlayer(all, finalHeadUUID, finalPing));
+			fakePlayers.add(fp);
 		}
 	}
 
@@ -114,9 +118,8 @@ public class FakePlayerHandler {
 		name = colorMsg(name);
 
 		IFakePlayers fp = new FakePlayers(name);
-		fakePlayers.add(fp);
-
 		fp.createFakePlayer(p, headUUID, ping);
+		fakePlayers.add(fp);
 		return true;
 	}
 

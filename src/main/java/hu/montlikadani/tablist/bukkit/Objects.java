@@ -27,7 +27,7 @@ public class Objects {
 		String path = "tablist-object-type.object-settings.health.";
 		if (plugin.getC().getStringList(path + "disabled-worlds").contains(pl.getWorld().getName())
 				|| plugin.getC().getStringList(path + "restricted-players").contains(pl.getName())) {
-			unregisterHealthObjective(pl);
+			unregisterObjective(getObject(pl, ObjectTypes.HEALTH));
 			return;
 		}
 
@@ -35,16 +35,17 @@ public class Objects {
 			return;
 		}
 
-		// TODO Fix not show correctly the health when reload
+		// TODO Fix not show correctly the health after reload
 
 		org.bukkit.scoreboard.Scoreboard board = pl.getScoreboard();
-		Objective objective = getHealthObject(pl).orElse(null);
+		Objective objective = getObject(pl, ObjectTypes.HEALTH).orElse(null);
 		if (objective == null) {
 			String dName = ChatColor.RED + "\u2665";
 			if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
-				objective = board.registerNewObjective("showhealth", "health", dName, RenderType.HEARTS);
+				objective = board.registerNewObjective(ObjectTypes.HEALTH.getObjectName(), "health", dName,
+						RenderType.HEARTS);
 			} else {
-				objective = board.registerNewObjective("showhealth", "health");
+				objective = board.registerNewObjective(ObjectTypes.HEALTH.getObjectName(), "health");
 				objective.setDisplayName(dName);
 			}
 
@@ -72,11 +73,7 @@ public class Objects {
 
 			for (Player player : Bukkit.getOnlinePlayers()) {
 				if (plugin.getC().getStringList("tablist-object-type.object-settings." + type + ".disabled-worlds")
-						.contains(player.getWorld().getName())) {
-					continue;
-				}
-
-				if (PluginUtils.isInGame(player)) {
+						.contains(player.getWorld().getName()) || PluginUtils.isInGame(player)) {
 					continue;
 				}
 
@@ -84,9 +81,10 @@ public class Objects {
 				int score = 0;
 
 				if (type.equals("ping")) {
-					obj = getPingObject(player);
+					obj = getObject(player, ObjectTypes.PING);
 					if (!obj.isPresent()) {
-						obj = Optional.of(player.getScoreboard().registerNewObjective("PingTab", "dummy"));
+						obj = Optional.of(
+								player.getScoreboard().registerNewObjective(ObjectTypes.PING.getObjectName(), "dummy"));
 					}
 
 					if (!obj.isPresent()) {
@@ -97,9 +95,10 @@ public class Objects {
 
 					score = TabListAPI.getPing(player);
 				} else if (type.equals("custom")) {
-					obj = getCustomObject(player);
+					obj = getObject(player, ObjectTypes.CUSTOM);
 					if (!obj.isPresent()) {
-						obj = Optional.of(player.getScoreboard().registerNewObjective("customObj", "dummy"));
+						obj = Optional.of(player.getScoreboard()
+								.registerNewObjective(ObjectTypes.CUSTOM.getObjectName(), "dummy"));
 					}
 
 					if (!obj.isPresent()) {
@@ -129,8 +128,8 @@ public class Objects {
 					final int s = score;
 					if (object.getScore(player.getName()).getScore() != s) {
 						for (Player p : Bukkit.getOnlinePlayers()) {
-							(type.equals("custom") ? getCustomObject(p)
-									: (type.equals("ping") ? getPingObject(p) : Optional.empty()))
+							(type.equals("custom") ? getObject(p, ObjectTypes.CUSTOM)
+									: (type.equals("ping") ? getObject(p, ObjectTypes.PING) : Optional.empty()))
 											.ifPresent(o -> ((Objective) o).getScore(player.getName()).setScore(s));
 						}
 					}
@@ -147,45 +146,34 @@ public class Objects {
 	}
 
 	public boolean isCancelled() {
-		// Do NOT use #isCancelled method, it depends from version
+		// Do NOT use #isCancelled method, version-dependent
 		return task == null;
 	}
 
-	public void unregisterPingTab() {
-		Bukkit.getOnlinePlayers().forEach(this::unregisterPingTab);
+	public void unregisterObjective(final Optional<Objective> obj) {
+		obj.ifPresent(Objective::unregister);
+	}
+
+	public void unregisterObjectiveForEveryone(final ObjectTypes type) {
+		Bukkit.getOnlinePlayers().forEach(p -> unregisterObjective(getObject(p, type)));
 		cancelTask();
 	}
 
-	public void unregisterPingTab(Player p) {
-		getPingObject(p).ifPresent(Objective::unregister);
+	public Optional<Objective> getObject(Player p, ObjectTypes type) {
+		return Optional.ofNullable(p.getScoreboard().getObjective(type.getObjectName()));
 	}
 
-	public void unregisterCustomValue() {
-		Bukkit.getOnlinePlayers().forEach(this::unregisterCustomValue);
-		cancelTask();
-	}
+	public enum ObjectTypes {
+		HEALTH("showhealth"), PING("PingTab"), CUSTOM("customObj");
 
-	public void unregisterCustomValue(Player p) {
-		getCustomObject(p).ifPresent(Objective::unregister);
-	}
+		private String objectName;
 
-	public void unregisterHealthObjective() {
-		Bukkit.getOnlinePlayers().forEach(this::unregisterHealthObjective);
-	}
+		ObjectTypes(String objectName) {
+			this.objectName = objectName;
+		}
 
-	public void unregisterHealthObjective(Player player) {
-		getHealthObject(player).ifPresent(Objective::unregister);
-	}
-
-	public Optional<Objective> getHealthObject(Player p) {
-		return Optional.ofNullable(p.getScoreboard().getObjective("showhealth"));
-	}
-
-	public Optional<Objective> getPingObject(Player p) {
-		return Optional.ofNullable(p.getScoreboard().getObjective("PingTab"));
-	}
-
-	public Optional<Objective> getCustomObject(Player p) {
-		return Optional.ofNullable(p.getScoreboard().getObjective("customObj"));
+		public String getObjectName() {
+			return objectName;
+		}
 	}
 }

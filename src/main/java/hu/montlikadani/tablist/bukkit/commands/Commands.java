@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -26,20 +27,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	private TabList plugin;
 
-	@SuppressWarnings("serial")
-	private final Set<String> subCmds = new HashSet<String>(9) {
-		{
-			add("reload");
-			add("fakeplayers");
-			add("get");
-			add("removegroup");
-			add("setprefix");
-			add("setsuffix");
-			add("setpriority");
-			add("toggle");
-			add("help");
-		}
-	};
+	private final String[] subCmds = { "reload", "fakeplayers", "get", "removegroup", "setprefix", "setsuffix",
+			"setpriority", "toggle", "help" };
 
 	private final Set<ICommand> cmds = new HashSet<>();
 
@@ -178,7 +167,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	private Set<String> getCmds(CommandSender sender) {
 		if (!(sender instanceof Player)) {
-			return subCmds;
+			return Arrays.stream(subCmds).collect(Collectors.toSet());
 		}
 
 		// Don't use stream for tab-complete

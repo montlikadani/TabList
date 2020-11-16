@@ -23,7 +23,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 	private boolean afk;
 
-	private String nick, tabName, customPrefix, customSuffix;
+	private String nick, tabName, customPrefix, customSuffix, playerVaultGroup;
 
 	private int customPriority = Integer.MIN_VALUE;
 
@@ -114,19 +114,35 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				group = team;
 			}
 		} else {
-			String vGroup = "";
-			try {
-				vGroup = plugin.hasVault() ? plugin.getVaultPerm().getPrimaryGroup(player) : "";
-			} catch (UnsupportedOperationException e) { // somehow Vault can't recognise permission plugin sometimes
+			if (plugin.hasVault()) {
+				boolean found = false;
+				if (playerVaultGroup != null) {
+					for (String g : plugin.getVaultPerm().getPlayerGroups(player)) {
+						if (playerVaultGroup.equalsIgnoreCase(g)) {
+							found = true;
+							break;
+						}
+					}
+				}
+
+				// Avoiding verbose spam
+				if (!found) {
+					try {
+						playerVaultGroup = plugin.getVaultPerm().getPrimaryGroup(player);
+					} catch (UnsupportedOperationException e) {
+						// somehow Vault can't recognise permission plugin sometimes
+					}
+				}
 			}
 
-			final String g = vGroup;
 			List<TeamHandler> playerPrimaryVaultGroups;
-			if (g != null && ConfigValues.isPreferPrimaryVaultGroup() && ((playerPrimaryVaultGroups = groupsList.stream()
-					.filter(group -> group.getTeam().equalsIgnoreCase(g)).collect(Collectors.toList())).size() > 0
-					|| (playerPrimaryVaultGroups = groupsList.stream()
-							.filter(group -> StringUtils.containsIgnoreCase(group.getTeam(), g))
-							.collect(Collectors.toList())).size() > 0)) {
+			if (playerVaultGroup != null && ConfigValues.isPreferPrimaryVaultGroup()
+					&& ((playerPrimaryVaultGroups = groupsList.stream()
+							.filter(group -> group.getTeam().equalsIgnoreCase(playerVaultGroup))
+							.collect(Collectors.toList())).size() > 0
+							|| (playerPrimaryVaultGroups = groupsList.stream()
+									.filter(group -> StringUtils.containsIgnoreCase(group.getTeam(), playerVaultGroup))
+									.collect(Collectors.toList())).size() > 0)) {
 				TeamHandler team = playerPrimaryVaultGroups.get(0);
 				if (group != team) {
 					update = true;

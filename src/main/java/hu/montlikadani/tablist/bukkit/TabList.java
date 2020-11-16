@@ -21,6 +21,7 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import hu.montlikadani.tablist.AnimCreator;
+import hu.montlikadani.tablist.bukkit.Objects.ObjectTypes;
 import hu.montlikadani.tablist.bukkit.commands.Commands;
 import hu.montlikadani.tablist.bukkit.commands.TabNameCmd;
 import hu.montlikadani.tablist.bukkit.config.CommentedConfig;
@@ -160,9 +161,9 @@ public class TabList extends JavaPlugin {
 		try {
 			g.cancelUpdate();
 
-			objects.unregisterHealthObjective();
-			objects.unregisterPingTab();
-			objects.unregisterCustomValue();
+			objects.unregisterObjectiveForEveryone(ObjectTypes.HEALTH);
+			objects.unregisterObjectiveForEveryone(ObjectTypes.PING);
+			objects.unregisterObjectiveForEveryone(ObjectTypes.CUSTOM);
 
 			tabManager.saveToggledTabs();
 			tabManager.removeAll();
@@ -303,17 +304,17 @@ public class TabList extends JavaPlugin {
 
 	void updateAll(Player p, boolean reload) {
 		if (!ConfigValues.isTablistObjectiveEnabled()) {
-			objects.unregisterPingTab();
-			objects.unregisterCustomValue();
-			objects.unregisterHealthObjective();
+			for (ObjectTypes t : ObjectTypes.values()) {
+				objects.unregisterObjectiveForEveryone(t);
+			}
 		} else if (!reload) {
-			objects.unregisterPingTab(p);
-			objects.unregisterCustomValue(p);
+			objects.unregisterObjective(objects.getObject(p, ObjectTypes.PING));
+			objects.unregisterObjective(objects.getObject(p, ObjectTypes.CUSTOM));
 
 			switch (ConfigValues.getObjectType().toLowerCase()) {
 			case "ping":
 			case "custom":
-				objects.unregisterHealthObjective();
+				objects.unregisterObjectiveForEveryone(ObjectTypes.HEALTH);
 
 				if (objects.isCancelled()) {
 					objects.startTask();
@@ -370,9 +371,9 @@ public class TabList extends JavaPlugin {
 		}
 
 		if (!ConfigValues.isTablistObjectiveEnabled()) {
-			objects.unregisterHealthObjective();
-			objects.unregisterPingTab();
-			objects.unregisterCustomValue();
+			for (ObjectTypes t : ObjectTypes.values()) {
+				objects.unregisterObjectiveForEveryone(t);
+			}
 		}
 
 		if (hidePlayers.containsKey(p)) {

@@ -79,16 +79,15 @@ public class TabManager {
 	}
 
 	public void removePlayer(Player player) {
-		getPlayerTab(player).ifPresent(tabHandler -> {
-			tabHandler.unregisterTab();
-			tabPlayers.remove(tabHandler);
-		});
+		TabTitle.sendTabTitle(player, "", "");
+
+		getPlayerTab(player).ifPresent(tabPlayers::remove);
 	}
 
 	public void removeAll() {
 		cancelTask();
 
-		tabPlayers.forEach(TabHandler::unregisterTab);
+		tabPlayers.forEach(th -> TabTitle.sendTabTitle(th.getPlayer(), "", ""));
 		tabPlayers.clear();
 	}
 
