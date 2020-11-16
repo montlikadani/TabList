@@ -58,16 +58,16 @@ public class setprefix implements ICommand {
 
 		String name = args[1];
 
-		plugin.getGS().set("groups." + name + ".prefix", prefix);
+		plugin.getConf().getGroups().set("groups." + name + ".prefix", prefix);
 		try {
-			plugin.getGS().save(plugin.getConf().getGroupsFile());
+			plugin.getConf().getGroups().save(plugin.getConf().getGroupsFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
 		Groups groups = plugin.getGroups();
-		String suffix = plugin.getGS().getString("groups." + name + ".suffix", "");
-		int priority = plugin.getGS().getInt("groups." + name + ".sort-priority");
+		String suffix = plugin.getConf().getGroups().getString("groups." + name + ".suffix", "");
+		int priority = plugin.getConf().getGroups().getInt("groups." + name + ".sort-priority");
 
 		TeamHandler team = groups.getTeam(name).orElse(new TeamHandler(name, prefix, suffix, priority));
 

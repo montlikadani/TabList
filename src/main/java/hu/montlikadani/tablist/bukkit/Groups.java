@@ -76,8 +76,8 @@ public class Groups {
 
 		plugin.getConf().createGroupsFile();
 
-		String globPrefix = plugin.getGS().getString("globalGroup.prefix", "");
-		String globSuffix = plugin.getGS().getString("globalGroup.suffix", "");
+		String globPrefix = plugin.getConf().getGroups().getString("globalGroup.prefix", "");
+		String globSuffix = plugin.getConf().getGroups().getString("globalGroup.suffix", "");
 		if (!globPrefix.isEmpty() || !globSuffix.isEmpty()) {
 			TeamHandler team = new TeamHandler("global", globPrefix, globSuffix);
 			team.setGlobal(true);
@@ -86,7 +86,7 @@ public class Groups {
 			return;
 		}
 
-		if (!plugin.getGS().isConfigurationSection("groups")) {
+		if (!plugin.getConf().getGroups().isConfigurationSection("groups")) {
 			return;
 		}
 
@@ -95,7 +95,7 @@ public class Groups {
 			boolean have = false;
 
 			me: for (String s : plugin.getVaultPerm().getGroups()) {
-				for (String g : plugin.getGS().getConfigurationSection("groups").getKeys(false)) {
+				for (String g : plugin.getConf().getGroups().getConfigurationSection("groups").getKeys(false)) {
 					if (s.equalsIgnoreCase(g)) {
 						continue me;
 					}
@@ -107,13 +107,13 @@ public class Groups {
 				ChatColor[] colors = ChatColor.values();
 				ChatColor c = colors[ThreadLocalRandom.current().nextInt(colors.length)];
 
-				plugin.getGS().set(path + "prefix", "&" + c.getChar() + s + "&r - ");
+				plugin.getConf().getGroups().set(path + "prefix", "&" + c.getChar() + s + "&r - ");
 				have = true;
 			}
 
 			if (have) {
 				try {
-					plugin.getGS().save(plugin.getConf().getGroupsFile());
+					plugin.getConf().getGroups().save(plugin.getConf().getGroupsFile());
 				} catch (java.io.IOException e) {
 					e.printStackTrace();
 				}
@@ -121,15 +121,15 @@ public class Groups {
 		}
 
 		int last = 0;
-		for (String g : plugin.getGS().getConfigurationSection("groups").getKeys(false)) {
+		for (String g : plugin.getConf().getGroups().getConfigurationSection("groups").getKeys(false)) {
 			if (g.equalsIgnoreCase("exampleGroup")) {
 				continue;
 			}
 
-			String path = "groups." + g + ".", prefix = plugin.getGS().getString(path + "prefix", ""),
-					suffix = plugin.getGS().getString(path + "suffix", ""),
-					perm = plugin.getGS().getString(path + "permission", "");
-			int priority = plugin.getGS().getInt(path + "sort-priority", last + 1);
+			String path = "groups." + g + ".", prefix = plugin.getConf().getGroups().getString(path + "prefix", ""),
+					suffix = plugin.getConf().getGroups().getString(path + "suffix", ""),
+					perm = plugin.getConf().getGroups().getString(path + "permission", "");
+			int priority = plugin.getConf().getGroups().getInt(path + "sort-priority", last + 1);
 
 			groupsList.add(new TeamHandler(g, prefix, suffix, perm, priority));
 

@@ -211,11 +211,13 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		String path = "change-prefix-suffix-in-tablist.";
 
 		if (ConfigValues.isUseDisabledWorldsAsWhiteList()) {
-			if (!plugin.getC().getStringList(path + "disabled-worlds.list").contains(player.getWorld().getName())) {
+			if (!plugin.getConf().getConfig().getStringList(path + "disabled-worlds.list")
+					.contains(player.getWorld().getName())) {
 				return false;
 			}
 		} else {
-			if (plugin.getC().getStringList(path + "disabled-worlds.list").contains(player.getWorld().getName())) {
+			if (plugin.getConf().getConfig().getStringList(path + "disabled-worlds.list")
+					.contains(player.getWorld().getName())) {
 				nick = null;
 				return false;
 			}
@@ -243,7 +245,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				plugin.makeAnim(customPrefix == null ? group == null ? "" : group.getPrefix() : customPrefix));
 
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			prefix = colorMsg(plugin.getC().getString(
+			prefix = colorMsg(plugin.getConf().getConfig().getString(
 					"placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), "")) + prefix;
 		}
 
@@ -255,7 +257,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				plugin.makeAnim(customSuffix == null ? group == null ? "" : group.getSuffix() : customSuffix));
 
 		if (ConfigValues.isAfkStatusEnabled() && ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			suffix += colorMsg(plugin.getC().getString(
+			suffix += colorMsg(plugin.getConf().getConfig().getString(
 					"placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), ""));
 		}
 

@@ -109,18 +109,11 @@ public class Variables {
 			str = str.replace("%memory_bar%", builder.toString());
 		}
 
-		if (plugin.getC().contains("custom-variables")) { // old
-			for (String custom : plugin.getC().getConfigurationSection("custom-variables").getKeys(true)) {
+		if (plugin.getConf().getTablist().isConfigurationSection("custom-variables")) {
+			for (String custom : plugin.getConf().getTablist().getConfigurationSection("custom-variables")
+					.getKeys(true)) {
 				if (str.contains(custom)) {
-					str = str.replace(custom, plugin.getC().getString("custom-variables." + custom));
-				}
-			}
-		}
-
-		if (plugin.getTabC().isConfigurationSection("custom-variables")) {
-			for (String custom : plugin.getTabC().getConfigurationSection("custom-variables").getKeys(true)) {
-				if (str.contains(custom)) {
-					str = str.replace(custom, plugin.getTabC().getString("custom-variables." + custom));
+					str = str.replace(custom, plugin.getConf().getTablist().getString("custom-variables." + custom));
 				}
 			}
 		}

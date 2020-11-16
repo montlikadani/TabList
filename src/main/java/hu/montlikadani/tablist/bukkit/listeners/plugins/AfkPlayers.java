@@ -14,6 +14,7 @@ import org.bukkit.scoreboard.Team;
 
 import hu.montlikadani.tablist.bukkit.PlayerList;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.CommentedConfig;
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 
 public abstract class AfkPlayers {
@@ -24,7 +25,7 @@ public abstract class AfkPlayers {
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowPlayerGroup()) {
 			boolean rightLeft = ConfigValues.isAfkStatusShowInRightLeftSide();
 
-			org.bukkit.configuration.file.FileConfiguration conf = TabList.getInstance().getC();
+			CommentedConfig conf = TabList.getInstance().getConf().getConfig();
 			String path = "placeholder-format.afk-status.format-" + (value ? "yes" : "no");
 			String result = "";
 

@@ -20,7 +20,7 @@ import hu.montlikadani.tablist.bukkit.TabList;
 public class UpdateDownloader {
 
 	public static void checkFromGithub(org.bukkit.command.CommandSender sender) {
-		if (!TabList.getInstance().getC().getBoolean("check-update")) {
+		if (!TabList.getInstance().getConf().getConfig().getBoolean("check-update")) {
 			return;
 		}
 
@@ -53,7 +53,7 @@ public class UpdateDownloader {
 				String msg = "";
 				if (sender instanceof Player) {
 					msg = Util.colorMsg("&aA new update for TabList is available!&4 Version:&7 " + versionString
-							+ (TabList.getInstance().getC().getBoolean("download-updates", false) ? ""
+							+ (TabList.getInstance().getConf().getConfig().getBoolean("download-updates", false) ? ""
 									: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/"));
 				} else {
 					msg = "New version (" + versionString
@@ -62,7 +62,7 @@ public class UpdateDownloader {
 
 				Util.sendMsg(sender, msg);
 
-				if (!TabList.getInstance().getC().getBoolean("download-updates", false)) {
+				if (!TabList.getInstance().getConf().getConfig().getBoolean("download-updates", false)) {
 					return null;
 				}
 

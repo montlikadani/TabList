@@ -252,7 +252,7 @@ public class fakeplayers implements ICommand {
 				msg += fpl;
 			}
 
-			for (String lpl : plugin.getMsgs().getStringList("fake-player.list")) {
+			for (String lpl : plugin.getConf().getMessages().getStringList("fake-player.list")) {
 				sendMsg(p, Util.colorMsg(lpl.replace("%amount%", fakepls.size() + "").replace("%fake-players%", msg)));
 			}
 		}

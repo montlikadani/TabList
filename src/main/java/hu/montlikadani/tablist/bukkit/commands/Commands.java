@@ -79,22 +79,22 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 			if (sender instanceof Player) {
 				if (args.length == 1) {
-					plugin.getMsgs().getStringList("chat-messages.1")
+					plugin.getConf().getMessages().getStringList("chat-messages.1")
 							.forEach(msg -> sender.sendMessage(colorMsg(msg.replace("%command%", label))));
 				} else if (args.length == 2) {
 					if (args[1].equals("2") || args[1].equals("3")) {
-						plugin.getMsgs().getStringList("chat-messages." + args[1])
+						plugin.getConf().getMessages().getStringList("chat-messages." + args[1])
 								.forEach(msg -> sender.sendMessage(colorMsg(msg.replace("%command%", label))));
 					}
 				}
 			} else {
-				plugin.getMsgs().getStringList("chat-messages.1")
+				plugin.getConf().getMessages().getStringList("chat-messages.1")
 						.forEach(msg -> sender.sendMessage(colorMsg(msg.replace("%command%", label))));
 
-				plugin.getMsgs().getStringList("chat-messages.2")
+				plugin.getConf().getMessages().getStringList("chat-messages.2")
 						.forEach(msg -> sender.sendMessage(colorMsg(msg.replace("%command%", label))));
 
-				plugin.getMsgs().getStringList("chat-messages.3")
+				plugin.getConf().getMessages().getStringList("chat-messages.3")
 						.forEach(msg -> sender.sendMessage(colorMsg(msg.replace("%command%", label))));
 			}
 

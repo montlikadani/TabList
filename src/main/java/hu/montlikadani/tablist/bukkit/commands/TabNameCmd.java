@@ -82,7 +82,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			if (plugin.getC().getStringList("tabname.disabled-worlds").contains(target.getWorld().getName())) {
+			if (plugin.getConf().getConfig().getStringList("tabname.disabled-worlds").contains(target.getWorld().getName())) {
 				sendMsg(sender, plugin.getMsg("tabname.world-disabled", "%world%", target.getWorld().getName()));
 				return true;
 			}
@@ -162,7 +162,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 		}
 
 		if (args.length == 1) {
-			if (plugin.getC().getStringList("tabname.disabled-worlds").contains(p.getWorld().getName())) {
+			if (plugin.getConf().getConfig().getStringList("tabname.disabled-worlds").contains(p.getWorld().getName())) {
 				sendMsg(p, plugin.getMsg("tabname.world-disabled", "%world%", p.getWorld().getName()));
 				return true;
 			}
@@ -202,7 +202,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			if (plugin.getC().getStringList("tabname.disabled-worlds").contains(target.getWorld().getName())) {
+			if (plugin.getConf().getConfig().getStringList("tabname.disabled-worlds").contains(target.getWorld().getName())) {
 				sendMsg(p, plugin.getMsg("tabname.world-disabled", "%world%", target.getWorld().getName()));
 				return true;
 			}

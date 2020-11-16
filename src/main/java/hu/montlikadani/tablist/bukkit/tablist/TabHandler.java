@@ -71,7 +71,7 @@ public class TabHandler implements ITabHandler {
 			return;
 		}
 
-		final FileConfiguration c = plugin.getTabC();
+		final FileConfiguration c = plugin.getConf().getTablist();
 		if (!c.getBoolean("enabled")) {
 			return;
 		}
@@ -218,7 +218,7 @@ public class TabHandler implements ITabHandler {
 			return;
 		}
 
-		final FileConfiguration c = plugin.getTabC();
+		final FileConfiguration c = plugin.getConf().getTablist();
 
 		if ((c.getBoolean("hide-tab-when-player-vanished") && PluginUtils.isVanished(player))
 				|| c.getStringList("disabled-worlds").contains(player.getWorld().getName())

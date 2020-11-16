@@ -24,7 +24,7 @@ public class ConfigValues {
 	private static int tpsSize, groupsRefreshInterval, objectRefreshInterval, tabNameMaxLength, memoryBarSize;
 
 	public static void loadValues() {
-		CommentedConfig c = TabList.getInstance().getC();
+		CommentedConfig c = TabList.getInstance().getConf().getConfig();
 		c.copyDefaults(true);
 
 		c.addComment("hook.placeholderapi", "Hook to PlaceholderAPI to use custom placeholders.");

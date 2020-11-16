@@ -24,7 +24,6 @@ import hu.montlikadani.tablist.AnimCreator;
 import hu.montlikadani.tablist.bukkit.Objects.ObjectTypes;
 import hu.montlikadani.tablist.bukkit.commands.Commands;
 import hu.montlikadani.tablist.bukkit.commands.TabNameCmd;
-import hu.montlikadani.tablist.bukkit.config.CommentedConfig;
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.config.Configuration;
 import hu.montlikadani.tablist.bukkit.listeners.Listeners;
@@ -114,11 +113,12 @@ public class TabList extends JavaPlugin {
 			if (metrics.isEnabled()) {
 				metrics.addCustomChart(new Metrics.SimplePie("using_placeholderapi",
 						() -> String.valueOf(ConfigValues.isPlaceholderAPI())));
-				if (getTabC().getBoolean("enabled")) {
+				if (conf.getTablist().getBoolean("enabled")) {
 					metrics.addCustomChart(
-							new Metrics.SimplePie("tab_interval", () -> getTabC().getString("interval")));
+							new Metrics.SimplePie("tab_interval", () -> conf.getTablist().getString("interval")));
 				}
-				metrics.addCustomChart(new Metrics.SimplePie("enable_tablist", () -> getTabC().getString("enabled")));
+				metrics.addCustomChart(
+						new Metrics.SimplePie("enable_tablist", () -> conf.getTablist().getString("enabled")));
 				metrics.addCustomChart(
 						new Metrics.SimplePie("enable_tabname", () -> String.valueOf(ConfigValues.isTabNameEnabled())));
 				if (ConfigValues.isTablistObjectiveEnabled()) {
@@ -141,7 +141,7 @@ public class TabList extends JavaPlugin {
 						() -> String.valueOf(ConfigValues.isPrefixSuffixEnabled())));
 			}
 
-			if (getC().getBoolean("logconsole")) {
+			if (conf.getConfig().getBoolean("logconsole")) {
 				String msg = "&6&l[&5&lTab&c&lList&6&l]&7&l >&a The plugin successfully enabled&6 v"
 						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)";
 				Util.sendMsg(getServer().getConsoleSender(), colorMsg(msg));
@@ -242,7 +242,7 @@ public class TabList extends JavaPlugin {
 	}
 
 	private void loadValues() {
-		tabRefreshTime = getTabC().getInt("interval", 4);
+		tabRefreshTime = conf.getTablist().getInt("interval", 4);
 
 		variables.loadExpressions();
 		tabNameHandler.loadRestrictedNames();
@@ -335,17 +335,12 @@ public class TabList extends JavaPlugin {
 		}
 
 		if (ConfigValues.isHidePlayersFromTab()) {
-			HidePlayers h;
+			HidePlayers h = hidePlayers.getOrDefault(p, new HidePlayers());
 			if (!hidePlayers.containsKey(p)) {
-				h = new HidePlayers();
 				hidePlayers.put(p, h);
-			} else {
-				h = hidePlayers.get(p);
 			}
 
-			if (h != null) {
-				h.removePlayerFromTab(p);
-			}
+			h.removePlayerFromTab(p);
 		} else {
 			if (hidePlayers.containsKey(p)) {
 				hidePlayers.get(p).addPlayerToTab();
@@ -395,20 +390,20 @@ public class TabList extends JavaPlugin {
 
 		String msg = "";
 
-		if (!getMsgs().contains(key)) {
-			getMsgs().set(key, "");
+		if (!conf.getMessages().contains(key)) {
+			conf.getMessages().set(key, "");
 			try {
-				getMsgs().save(getConf().getMessagesFile());
+				conf.getMessages().save(getConf().getMessagesFile());
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 
-		if (getMsgs().getString(key).isEmpty()) {
+		if (conf.getMessages().getString(key).isEmpty()) {
 			return msg;
 		}
 
-		msg = colorMsg(getMsgs().getString(key));
+		msg = colorMsg(conf.getMessages().getString(key));
 
 		for (int i = 0; i < placeholders.length; i++) {
 			if (placeholders.length >= i + 2) {
@@ -463,22 +458,6 @@ public class TabList extends JavaPlugin {
 
 	public Configuration getConf() {
 		return conf;
-	}
-
-	public CommentedConfig getC() {
-		return conf.getConfig();
-	}
-
-	public CommentedConfig getTabC() {
-		return conf.getTablist();
-	}
-
-	public FileConfiguration getMsgs() {
-		return conf.getMessages();
-	}
-
-	public FileConfiguration getGS() {
-		return conf.getGroups();
 	}
 
 	public Permission getVaultPerm() {

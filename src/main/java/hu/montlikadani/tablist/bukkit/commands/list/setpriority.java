@@ -54,15 +54,15 @@ public class setpriority implements ICommand {
 		String name = args[1];
 		int priority = Integer.parseInt(match);
 
-		plugin.getGS().set("groups." + name + ".sort-priority", priority);
+		plugin.getConf().getGroups().set("groups." + name + ".sort-priority", priority);
 		try {
-			plugin.getGS().save(plugin.getConf().getGroupsFile());
+			plugin.getConf().getGroups().save(plugin.getConf().getGroupsFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		String prefix = plugin.getGS().getString("groups." + name + ".prefix", "");
-		String suffix = plugin.getGS().getString("groups." + name + ".suffix", "");
+		String prefix = plugin.getConf().getGroups().getString("groups." + name + ".prefix", "");
+		String suffix = plugin.getConf().getGroups().getString("groups." + name + ".suffix", "");
 
 		Groups groups = plugin.getGroups();
 		TeamHandler team = groups.getTeam(name).orElse(new TeamHandler(name, prefix, suffix));

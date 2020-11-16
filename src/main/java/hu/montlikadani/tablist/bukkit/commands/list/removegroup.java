@@ -44,14 +44,14 @@ public class removegroup implements ICommand {
 
 		String name = args[1];
 
-		if (!plugin.getGS().contains("groups." + name)) {
+		if (!plugin.getConf().getGroups().contains("groups." + name)) {
 			sendMsg(sender, plugin.getMsg("set-prefix-suffix.remove-group.not-found-in-database", "%group%", name));
 			return false;
 		}
 
-		plugin.getGS().set("groups." + name, null);
+		plugin.getConf().getGroups().set("groups." + name, null);
 		try {
-			plugin.getGS().save(plugin.getConf().getGroupsFile());
+			plugin.getConf().getGroups().save(plugin.getConf().getGroupsFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

@@ -100,7 +100,8 @@ public class TabManager {
 	}
 
 	public void loadToggledTabs() {
-		if (plugin.getTabC() == null || !plugin.getTabC().getBoolean("remember-toggled-tablist-to-file", true)) {
+		if (plugin.getConf().getTablist() == null
+				|| !plugin.getConf().getTablist().getBoolean("remember-toggled-tablist-to-file", true)) {
 			return;
 		}
 
@@ -130,7 +131,8 @@ public class TabManager {
 
 	public void saveToggledTabs() {
 		File f = new File(plugin.getFolder(), "toggledtablists.yml");
-		if (plugin.getTabC() == null || !plugin.getTabC().getBoolean("remember-toggled-tablist-to-file", true)) {
+		if (plugin.getConf().getTablist() == null
+				|| !plugin.getConf().getTablist().getBoolean("remember-toggled-tablist-to-file", true)) {
 			if (f.exists()) {
 				f.delete();
 			}
