@@ -8,9 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import hu.montlikadani.tablist.bukkit.Groups;
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.TeamHandler;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 import hu.montlikadani.tablist.bukkit.tablist.TabTitle;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayers;
@@ -115,18 +113,6 @@ public class TabListAPI {
 		IFakePlayers fp = new FakePlayers(name);
 		fp.createFakePlayer(player);
 		return fp;
-	}
-
-	/**
-	 * Gets a group by name.
-	 * 
-	 * @param name Group name
-	 * @return {@link TeamHandler} if exists
-	 * @deprecated Use {@link Groups#getTeam(String)} instead
-	 */
-	@Deprecated
-	public static TeamHandler getGroup(String name) {
-		return getInstance().getGroups().getTeam(name).get();
 	}
 
 	/**
