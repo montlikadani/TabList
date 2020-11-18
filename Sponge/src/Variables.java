@@ -172,21 +172,14 @@ public class Variables {
 
 	private String parseExpression(int value) {
 		String color = "";
-
 		for (ExpressionNode node : nodes) {
 			if (node.parse(value)) {
 				color = node.getCondition().getColor();
 			}
 		}
 
-		color = color.trim();
-
 		StringBuilder builder = new StringBuilder();
 		if (!color.isEmpty()) {
-			if (color.contains("%player-ping%")) {
-				color = color.replace("%player-ping%", "");
-			}
-
 			builder.append(color.replace('&', '\u00a7'));
 		}
 
