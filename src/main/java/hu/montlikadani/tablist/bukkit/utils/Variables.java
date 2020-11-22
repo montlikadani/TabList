@@ -278,10 +278,19 @@ public class Variables {
 	}
 
 	private String tpsDot(double d) {
-		String ds = formatTPS(d);
+		if (!ConfigValues.isTpsFormatEnabled() || ConfigValues.getTpsColorFormats().isEmpty()) {
+			return "" + d;
+		}
+
+		String ds = parseExpression(d, NodeType.TPS);
 		if (ds.contains(".")) {
-			int size = ConfigValues.getTpsSize();
-			ds = ds.substring(0, (size == 1 ? 3 : ds.indexOf('.')) + (size < 1 ? 2 : size));
+			int tpsSize = ConfigValues.getTpsSize();
+			int size = (tpsSize == 1 ? 3 : ds.indexOf('.')) + (tpsSize < 1 ? 2 : tpsSize);
+			if (size > ds.length()) {
+				size = ds.length();
+			}
+
+			ds = ds.substring(0, size);
 		}
 
 		return ds;
@@ -293,14 +302,6 @@ public class Variables {
 		}
 
 		return parseExpression(ping, NodeType.PING);
-	}
-
-	private String formatTPS(double tps) {
-		if (!ConfigValues.isTpsFormatEnabled() || ConfigValues.getTpsColorFormats().isEmpty()) {
-			return "" + tps;
-		}
-
-		return parseExpression(tps, NodeType.TPS);
 	}
 
 	private String parseExpression(double value, int type) {

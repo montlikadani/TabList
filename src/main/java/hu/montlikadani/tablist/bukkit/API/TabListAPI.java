@@ -33,15 +33,6 @@ public class TabListAPI {
 	}
 
 	/**
-	 * Gets the plugin instance.
-	 * 
-	 * @return TabList instance
-	 */
-	public static TabList getInstance() {
-		return TabList.getInstance();
-	}
-
-	/**
 	 * Checks whatever the tablist toggled for the specified player uuid. This is
 	 * much slower to respond because it converts the string to uuid.
 	 * 
@@ -81,7 +72,7 @@ public class TabListAPI {
 	/**
 	 * Sends the tab header and footer to the given player
 	 * 
-	 * @param p Player
+	 * @param p      Player
 	 * @param string Header
 	 * @param string Footer
 	 */
@@ -105,7 +96,7 @@ public class TabListAPI {
 	 * Creates a new fake player that only appear in tablist.
 	 * 
 	 * @param player the player who's own that player
-	 * @param name the fake player name
+	 * @param name   the fake player name
 	 * @return {@link IFakePlayers}
 	 * @see IFakePlayers#createFakePlayer(Player, String, int)
 	 */
@@ -124,16 +115,15 @@ public class TabListAPI {
 	public static int getPing(Player p) {
 		Validate.notNull(p, "Player can't be null");
 
-		int pingInt = 0;
 		try {
 			Object nmsPlayer = ReflectionUtils.getHandle(p);
 			Field ping = ReflectionUtils.getField(nmsPlayer, "ping", false);
-			pingInt = ping.getInt(nmsPlayer);
+			return ping.getInt(nmsPlayer);
 		} catch (Throwable t) {
 			t.printStackTrace();
 		}
 
-		return pingInt;
+		return 0;
 	}
 
 	/**
@@ -142,15 +132,14 @@ public class TabListAPI {
 	 * @return The current TPS
 	 */
 	public static double getTPS() {
-		double tps = 0d;
 		try {
 			Object mc = ReflectionUtils.invokeMethod(Bukkit.getServer(), "getServer", false);
 			Field rec = ReflectionUtils.getField(mc, "recentTps", false);
 			double[] recentTps = (double[]) rec.get(mc);
-			tps = recentTps[0];
+			return recentTps[0];
 		} catch (Throwable t) {
 		}
 
-		return tps;
+		return 0d;
 	}
 }

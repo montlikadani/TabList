@@ -78,7 +78,7 @@ public class TabList extends JavaPlugin {
 
 			mcVersion = new ServerVersion();
 
-			if (Version.isCurrentLower(Version.v1_8_R1)) {
+			if (mcVersion.getVersion().isLower(Version.v1_8_R1)) {
 				logConsole(Level.SEVERE,
 						"Your server version does not supported by this plugin! Please use 1.8+ or higher versions!",
 						false);

@@ -75,6 +75,28 @@
 			<artifactId>authlib</artifactId>
 			<version>1.6.25</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.code.gson</groupId>
+					<artifactId>gson</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.code.findbugs</groupId>
+					<artifactId>jsr305</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Spigot API -->
 		<dependency>
@@ -89,12 +111,82 @@
 			<artifactId>bungeecord-proxy</artifactId>
 			<version>1.16-R0.4-SNAPSHOT</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>
+						netty-transport-native-epoll
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-codec-http</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-handler</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-codec-haproxy</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sf.jopt-simple</groupId>
+					<artifactId>jopt-simple</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>
+						netty-transport-native-unix-common
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-transport</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-codec</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>se.llbit</groupId>
+					<artifactId>jo-nbt</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.md-5</groupId>
+					<artifactId>bungeecord-chat</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-api</artifactId>
 			<version>1.16-R0.4-SNAPSHOT</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>
+						netty-transport-native-unix-common
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.md-5</groupId>
+					<artifactId>bungeecord-chat</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.ess3</groupId>
@@ -138,6 +230,18 @@
 					<groupId>net.ess3</groupId>
 					<artifactId>1_8Provider</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>NMSReflectionProvider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>BaseProviders</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>PaperProvider</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
@@ -149,6 +253,10 @@
 				<exclusion>
 					<groupId>me.rayzr522</groupId>
 					<artifactId>jsonmessage</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jetbrains</groupId>
+					<artifactId>annotations</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -179,6 +287,12 @@
 			<artifactId>PremiumVanishAPI</artifactId>
 			<version>master-SNAPSHOT</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.code.findbugs</groupId>
+					<artifactId>jsr305</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- New PEX -->
 		<!--<dependency>

@@ -77,6 +77,7 @@ public class CommentedConfig extends YamlConfiguration {
 		try {
 			writer.write(data);
 		} finally {
+			writer.flush();
 			writer.close();
 		}
 	}
