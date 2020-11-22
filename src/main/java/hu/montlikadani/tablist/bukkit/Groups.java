@@ -82,11 +82,13 @@ public class Groups {
 			TeamHandler team = new TeamHandler("global", globPrefix, globSuffix);
 			team.setGlobal(true);
 			groupsList.add(team);
-			startTask();
-			return;
 		}
 
 		if (!plugin.getConf().getGroups().isConfigurationSection("groups")) {
+			if (!groupsList.isEmpty()) {
+				startTask();
+			}
+
 			return;
 		}
 

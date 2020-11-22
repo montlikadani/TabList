@@ -175,14 +175,12 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 						}
 					}
 
-					// Only assign global group to player if don't have any group set before this.
+					// Only assign global group to player if don't match any group.
 					if (team.isGlobal()) {
 						if (group != team) {
 							update = true;
 							group = team;
 						}
-
-						break;
 					}
 				}
 			}

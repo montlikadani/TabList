@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
@@ -320,7 +319,6 @@ public class Variables {
 			builder.append(color.replaceAll("%tps%|%ping%", "").replace('&', '\u00a7'));
 		}
 
-		return (type == NodeType.PING ? builder.append((int) value) : builder.append(value)).append(ChatColor.RESET)
-				.toString();
+		return (type == NodeType.PING ? builder.append((int) value) : builder.append(value)).toString();
 	}
 }
