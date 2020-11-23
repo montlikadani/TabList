@@ -1,13 +1,10 @@
 package hu.montlikadani.tablist.bukkit.tablist;
 
-import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -133,13 +130,7 @@ public class TabHandler implements ITabHandler {
 
 			if ((header == null && footer == null) && c.contains("per-world." + world + ".per-group")
 					&& plugin.hasVault()) {
-				String group = null;
-				try {
-					group = plugin.getVaultPerm().getPrimaryGroup(world, player);
-				} catch (UnsupportedOperationException e) {
-					logConsole(Level.WARNING, "You not using any permission plugin!");
-				}
-
+				String group = plugin.getVaultPerm().getPrimaryGroup(world, player);
 				if (group != null) {
 					group = group.toLowerCase();
 
@@ -182,13 +173,7 @@ public class TabHandler implements ITabHandler {
 		}
 
 		if ((header == null && footer == null) && c.contains("per-group") && plugin.hasVault()) {
-			String group = null;
-			try {
-				group = plugin.getVaultPerm().getPrimaryGroup(player);
-			} catch (UnsupportedOperationException e) {
-				logConsole(Level.WARNING, "You not using any permission plugin!");
-			}
-
+			String group = plugin.getVaultPerm().getPrimaryGroup(player);
 			if (group != null) {
 				group = group.toLowerCase();
 

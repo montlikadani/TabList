@@ -127,11 +127,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 				// Avoiding verbose spam
 				if (!found) {
-					try {
-						playerVaultGroup = plugin.getVaultPerm().getPrimaryGroup(player);
-					} catch (UnsupportedOperationException e) {
-						// somehow Vault can't recognise permission plugin sometimes
-					}
+					playerVaultGroup = plugin.getVaultPerm().getPrimaryGroup(player);
 				}
 			}
 

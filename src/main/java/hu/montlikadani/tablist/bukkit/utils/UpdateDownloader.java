@@ -47,7 +47,7 @@ public class UpdateDownloader {
 				int currentVersion = Integer.parseInt(cVersion);
 
 				if (newVersion <= currentVersion || currentVersion >= newVersion) {
-					return null;
+					return false;
 				}
 
 				String msg = "";
@@ -63,7 +63,7 @@ public class UpdateDownloader {
 				Util.sendMsg(sender, msg);
 
 				if (!TabList.getInstance().getConf().getConfig().getBoolean("download-updates", false)) {
-					return null;
+					return false;
 				}
 
 				final String name = "TabList-v" + versionString;
@@ -77,7 +77,7 @@ public class UpdateDownloader {
 				// Do not attempt to download the file again, when it is already downloaded
 				final File jar = new File(updatesFolder + File.separator + name + ".jar");
 				if (jar.exists()) {
-					return null;
+					return false;
 				}
 
 				Util.logConsole("Downloading new version of TabList...");
@@ -89,13 +89,16 @@ public class UpdateDownloader {
 				Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
 				in.close();
-
-				Util.logConsole("The new TabList has been downloaded to releases folder.");
+				return true;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 
-			return null;
+			return false;
+		}).thenAccept(y -> {
+			if (y) {
+				Util.logConsole("The new TabList has been downloaded to releases folder.");
+			}
 		});
 	}
 }

@@ -37,15 +37,14 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.Variables;
+import hu.montlikadani.tablist.bukkit.utils.plugin.VaultPermission;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
-import net.milkbowl.vault.permission.Permission;
 
 public class TabList extends JavaPlugin {
 
 	private static TabList instance;
 
-	private static Permission perm;
-
+	private VaultPermission vaultPermission;
 	private Objects objects;
 	private Variables variables;
 	private Groups g;
@@ -275,10 +274,8 @@ public class TabList extends JavaPlugin {
 			return false;
 		}
 
-		org.bukkit.plugin.RegisteredServiceProvider<Permission> rsp = getServer().getServicesManager()
-				.getRegistration(Permission.class);
-		perm = rsp == null ? null : rsp.getProvider();
-		return perm != null;
+		vaultPermission = new VaultPermission();
+		return vaultPermission.getPermission() != null;
 	}
 
 	public String makeAnim(String name) {
@@ -460,8 +457,8 @@ public class TabList extends JavaPlugin {
 		return conf;
 	}
 
-	public Permission getVaultPerm() {
-		return perm;
+	public VaultPermission getVaultPerm() {
+		return vaultPermission;
 	}
 
 	ServerVersion getMCVersion() {

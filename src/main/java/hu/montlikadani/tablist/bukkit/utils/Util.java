@@ -67,8 +67,7 @@ public class Util {
 			}
 		}
 
-		str = ChatColor.stripColor(str);
-		return str;
+		return ChatColor.stripColor(str);
 	}
 
 	public static boolean isRealUUID(String uuid) {

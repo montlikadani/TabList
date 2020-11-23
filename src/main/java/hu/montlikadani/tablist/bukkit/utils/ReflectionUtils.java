@@ -5,7 +5,6 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -44,8 +43,7 @@ public class ReflectionUtils {
 					break;
 				}
 
-				// Ignore the last char starting with '&' because color has already
-				// added
+				// Ignore the last char begins with '&'
 				if (charBefore == '&') {
 					charBefore = ' ';
 					continue;
@@ -218,8 +216,6 @@ public class ReflectionUtils {
 		getField(object, fieldName).set(object, fieldValue);
 	}
 
-	private static int a = 0;
-
 	public static void sendPacket(Player player, Object packet) {
 		try {
 			Object playerHandle = getHandle(player);
@@ -228,11 +224,6 @@ public class ReflectionUtils {
 			playerConnection.getClass().getDeclaredMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection,
 					packet);
 		} catch (Exception e) {
-			if (a < 8) {
-				Util.logConsole(Level.WARNING,
-						"You're using a plugin which overwrites sending packets. Remove that plugin.");
-				a++;
-			}
 		}
 	}
 

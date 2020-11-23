@@ -62,20 +62,15 @@ public class TabManager {
 		}
 
 		if (task == null) {
-			task = createTask(() -> {
+			task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
 				if (Bukkit.getOnlinePlayers().isEmpty()) {
 					cancelTask();
 					return;
 				}
 
 				tabPlayers.forEach(TabHandler::sendTab);
-			}, refreshTime);
+			}, refreshTime, refreshTime);
 		}
-	}
-
-	private BukkitTask createTask(Runnable run, int interval) {
-		return plugin.isSpigot() ? Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, run, interval, interval)
-				: Bukkit.getScheduler().runTaskTimer(plugin, run, interval, interval);
 	}
 
 	public void removePlayer(Player player) {
