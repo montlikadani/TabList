@@ -48,6 +48,15 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		return group;
 	}
 
+	public String getFullGroupTeamName() {
+		String name = Integer.toString(100000 + getPriority()) + (group == null ? player.getName() : group.getTeam());
+		if (name.length() > 16) {
+			name = name.substring(0, 16);
+		}
+
+		return name;
+	}
+
 	public void removeGroup() {
 		this.group = null;
 	}
@@ -221,13 +230,10 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			return false;
 		}
 
-		if (ConfigValues.isHideGroupInVanish() && PluginUtils.isVanished(player)) {
-			plugin.getGroups().removePlayerGroup(player);
-			return false;
-		}
-
-		if (ConfigValues.isHideGroupWhenAfk() && PluginUtils.isAfk(player)) {
-			plugin.getGroups().removePlayerGroup(player);
+		if ((ConfigValues.isHideGroupInVanish() && PluginUtils.isVanished(player))
+				|| (ConfigValues.isHideGroupWhenAfk() && PluginUtils.isAfk(player))) {
+			tabTeam.unregisterTeam(getFullGroupTeamName());
+			removeGroup();
 			return false;
 		}
 

@@ -168,18 +168,12 @@ public class Groups {
 			return;
 		}
 
-		String name = Integer.toString(100000 + priority)
-				+ (tabPlayer.getGroup() == null ? player.getName() : tabPlayer.getGroup().getTeam());
-		if (name.length() > 16) {
-			name = name.substring(0, 16);
-		}
-
 		/*Scoreboard tboard = ConfigValues.isUseOwnScoreboard() ? player.getScoreboard() : b;
 		if (tabPlayer.getTabTeam().getScoreboard() != tboard) {
 			tabPlayer.getTabTeam().setScoreboard(tboard);
 		}*/
 
-		tabPlayer.getTabTeam().setTeam(name);
+		tabPlayer.getTabTeam().setTeam(tabPlayer.getFullGroupTeamName());
 	}
 
 	/**
@@ -245,13 +239,7 @@ public class Groups {
 			return result;
 		}
 
-		String name = Integer.toString(100000 + tlp.getPriority())
-				+ (tlp.getGroup() == null ? p.getName() : tlp.getGroup().getTeam());
-		if (name.length() > 16) {
-			name = name.substring(0, 16);
-		}
-
-		tlp.getTabTeam().unregisterTeam(name);
+		tlp.getTabTeam().unregisterTeam(tlp.getFullGroupTeamName());
 		tlp.removeGroup();
 
 		sortedTabListPlayers.remove(tlp);
