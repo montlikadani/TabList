@@ -254,9 +254,7 @@ public class Groups {
 		tlp.getTabTeam().unregisterTeam(name);
 		tlp.removeGroup();
 
-		synchronized (sortedTabListPlayers) {
-			sortedTabListPlayers.remove(tlp);
-		}
+		sortedTabListPlayers.remove(tlp);
 
 		result.complete(true);
 		return result;
