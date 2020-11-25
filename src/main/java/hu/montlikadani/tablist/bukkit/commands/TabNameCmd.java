@@ -14,9 +14,9 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
-import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class TabNameCmd implements CommandExecutor, TabCompleter {
@@ -66,7 +66,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 					return true;
 				}
 
-				plugin.unTabName(target);
+				plugin.getTabNameHandler().unSetTabName(target);
 				sendMsg(sender, plugin.getMsg("tabname.reset.target-name-reseted", "%target%", target.getName()));
 				return true;
 			}
@@ -82,7 +82,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			if (plugin.getC().getStringList("tabname.disabled-worlds").contains(target.getWorld().getName())) {
+			if (plugin.getConf().getConfig().getStringList("tabname.disabled-worlds").contains(target.getWorld().getName())) {
 				sendMsg(sender, plugin.getMsg("tabname.world-disabled", "%world%", target.getWorld().getName()));
 				return true;
 			}
@@ -93,7 +93,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 			}
 
 			String msg = builder.toString();
-			if (isNameDisabled(msg)) {
+			if (plugin.getTabNameHandler().isNameDisabled(msg)) {
 				sendMsg(sender, plugin.getMsg("tabname.name-disabled", "%name%", msg));
 				return true;
 			}
@@ -103,7 +103,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			plugin.setTabName(target, msg);
+			plugin.getTabNameHandler().setTabName(target, msg);
 			sendMsg(target,
 					plugin.getMsg("tabname.target-changed-name-message", "%name%", msg, "%sender%", sender.getName()));
 			sendMsg(sender,
@@ -135,7 +135,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 					return true;
 				}
 
-				plugin.unTabName(p);
+				plugin.getTabNameHandler().unSetTabName(p);
 				sendMsg(p, plugin.getMsg("tabname.reset.name-reseted"));
 			} else {
 				if (!p.hasPermission(Perm.RESETOTHERTAB.getPerm())) {
@@ -154,7 +154,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 					return true;
 				}
 
-				plugin.unTabName(target);
+				plugin.getTabNameHandler().unSetTabName(target);
 				sendMsg(p, plugin.getMsg("tabname.reset.target-name-reseted", "%target%", target.getName()));
 			}
 
@@ -162,7 +162,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 		}
 
 		if (args.length == 1) {
-			if (plugin.getC().getStringList("tabname.disabled-worlds").contains(p.getWorld().getName())) {
+			if (plugin.getConf().getConfig().getStringList("tabname.disabled-worlds").contains(p.getWorld().getName())) {
 				sendMsg(p, plugin.getMsg("tabname.world-disabled", "%world%", p.getWorld().getName()));
 				return true;
 			}
@@ -173,7 +173,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 			}
 
 			String msg = builder.toString();
-			if (isNameDisabled(msg)) {
+			if (plugin.getTabNameHandler().isNameDisabled(msg)) {
 				sendMsg(p, plugin.getMsg("tabname.name-disabled", "%name%", msg));
 				return true;
 			}
@@ -183,7 +183,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			plugin.setTabName(p, msg);
+			plugin.getTabNameHandler().setTabName(p, msg);
 			sendMsg(p, plugin.getMsg("tabname.name-change-success", "%name%", msg));
 		} else {
 			if (!p.hasPermission(Perm.TABNAMEOTHER.getPerm())) {
@@ -202,7 +202,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			if (plugin.getC().getStringList("tabname.disabled-worlds").contains(target.getWorld().getName())) {
+			if (plugin.getConf().getConfig().getStringList("tabname.disabled-worlds").contains(target.getWorld().getName())) {
 				sendMsg(p, plugin.getMsg("tabname.world-disabled", "%world%", target.getWorld().getName()));
 				return true;
 			}
@@ -213,7 +213,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 			}
 
 			String msg = builder.toString();
-			if (isNameDisabled(msg)) {
+			if (plugin.getTabNameHandler().isNameDisabled(msg)) {
 				sendMsg(p, plugin.getMsg("tabname.name-disabled", "%name%", msg));
 				return true;
 			}
@@ -223,7 +223,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			plugin.setTabName(target, msg);
+			plugin.getTabNameHandler().setTabName(target, msg);
 			sendMsg(target,
 					plugin.getMsg("tabname.target-changed-name-message", "%name%", msg, "%sender%", sender.getName()));
 			sendMsg(sender,
@@ -233,29 +233,12 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 		return true;
 	}
 
-	private boolean isNameDisabled(String arg) {
-		String text = Util.stripColor(arg.trim());
-		List<String> restrictedNames = plugin.getC().getStringList("tabname.blacklist-names");
-		if (restrictedNames.isEmpty()) {
-			restrictedNames = plugin.getC().getStringList("tabname.restricted-names");
-		}
-
-		for (String b : restrictedNames) {
-			if (b.equalsIgnoreCase(text)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-		List<String> completionList = new ArrayList<>();
-		List<String> cmds = new ArrayList<>();
-		String partOfCommand = "";
-
 		if (sender.hasPermission(Perm.TABNAME.getPerm())) {
+			List<String> completionList = new ArrayList<>(), cmds = new ArrayList<>();
+			String partOfCommand = "";
+
 			if (args.length == 0) {
 				cmds.add("tabname");
 				cmds.add("tname");
@@ -266,7 +249,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 				return completionList;
 			}
 
-			if (sender.hasPermission(Perm.RESET.getPerm()) && args.length == 1) {
+			if (args.length == 1 && sender.hasPermission(Perm.RESET.getPerm())) {
 				cmds.add("reset");
 				partOfCommand = args[0];
 

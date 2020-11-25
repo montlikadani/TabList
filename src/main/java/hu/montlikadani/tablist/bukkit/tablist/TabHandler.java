@@ -1,7 +1,5 @@
 package hu.montlikadani.tablist.bukkit.tablist;
 
-import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
-
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -10,13 +8,12 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 
 import com.mojang.authlib.GameProfile;
 
@@ -24,6 +21,7 @@ import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.tablist.tabEntry.Rows;
 import hu.montlikadani.tablist.bukkit.tablist.tabEntry.TabEntry;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
+import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import hu.montlikadani.tablist.bukkit.utils.Variables;
 
 public class TabHandler implements ITabHandler {
@@ -31,52 +29,37 @@ public class TabHandler implements ITabHandler {
 	private final TabList plugin;
 	private final Rows[] rows = new Rows[80];
 
-	private Player player;
+	private UUID playerUUID;
+	private TabBuilder builder;
 
-	private List<String> header;
-	private List<String> footer;
+	private boolean worldEnabled = false;
+	private String usedPermission = "";
 
-	private BukkitTask task;
+	private final List<String> worldList = new ArrayList<>();
 
-	public TabHandler(TabList plugin, Player player) {
-		this(plugin, player, null, null);
+	public TabHandler(TabList plugin, UUID playerUUID) {
+		this(plugin, playerUUID, null);
 	}
 
-	public TabHandler(TabList plugin, Player player, List<String> header, List<String> footer) {
+	public TabHandler(TabList plugin, UUID playerUUID, TabBuilder builder) {
 		this.plugin = plugin;
-		this.player = player;
-		this.header = header;
-		this.footer = footer;
+		this.playerUUID = playerUUID;
+		this.builder = builder == null ? TabBuilder.builder().build() : builder;
 	}
 
 	@Override
 	public Player getPlayer() {
-		return player;
+		return Bukkit.getPlayer(playerUUID);
 	}
 
 	@Override
-	public List<String> getHeader() {
-		return header;
+	public UUID getPlayerUUID() {
+		return playerUUID;
 	}
 
 	@Override
-	public void setHeader(List<String> header) {
-		this.header = header;
-	}
-
-	@Override
-	public List<String> getFooter() {
-		return footer;
-	}
-
-	@Override
-	public void setFooter(List<String> footer) {
-		this.footer = footer;
-	}
-
-	@Override
-	public BukkitTask getTask() {
-		return task;
+	public TabBuilder getBuilder() {
+		return builder;
 	}
 
 	public void updateEntries() {
@@ -175,37 +158,35 @@ public class TabHandler implements ITabHandler {
 	}
 
 	public void updateTab() {
+		worldList.clear();
+		worldEnabled = false;
+		usedPermission = "";
+
+		final Player player = getPlayer();
 		if (player == null || !player.isOnline()) {
 			return;
 		}
 
-		unregisterTab();
+		TabTitle.sendTabTitle(player, "", "");
 
-		if (plugin.getConf().getTablistFile() == null || !plugin.getConf().getTablistFile().exists()) {
+		if (!plugin.getConf().getTablistFile().exists()) {
 			return;
 		}
 
-		final FileConfiguration c = plugin.getTabC();
-		if (c == null || !c.getBoolean("enabled")) {
+		final FileConfiguration c = plugin.getConf().getTablist();
+		if (!c.getBoolean("enabled")) {
 			return;
 		}
 
-		final UUID uuid = player.getUniqueId();
 		final String world = player.getWorld().getName();
 		final String pName = player.getName();
 
 		if (c.getStringList("disabled-worlds").contains(world) || c.getStringList("blacklisted-players").contains(pName)
-				|| (TabManager.TABENABLED.containsKey(uuid) && TabManager.TABENABLED.get(uuid))
-				|| plugin.isHookPreventTask(player)) {
+				|| TabManager.TABENABLED.getOrDefault(playerUUID, false) || PluginUtils.isInGame(player)) {
 			return;
 		}
 
-		List<String> header = null;
-		List<String> footer = null;
-
-		boolean worldEnable = false;
-
-		final List<String> worldList = new ArrayList<>();
+		List<String> header = null, footer = null;
 
 		if (c.contains("per-world")) {
 			if (c.contains("per-world." + world + ".per-player." + pName)) {
@@ -215,13 +196,27 @@ public class TabHandler implements ITabHandler {
 				footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
 						: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
 
-				worldEnable = true;
+				worldEnabled = true;
 			}
 
 			if (header == null && footer == null) {
 				if (c.isConfigurationSection("per-world")) {
-					for (String s : c.getConfigurationSection("per-world").getKeys(false)) {
-						worldList.add(s);
+					t: for (String s : c.getConfigurationSection("per-world").getKeys(false)) {
+						for (String split : s.split(", ")) {
+							if (world.equals(split)) {
+								String path = "per-world." + s + ".";
+
+								header = c.isList(path + "header") ? c.getStringList(path + "header")
+										: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header"))
+												: null;
+								footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
+										: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer"))
+												: null;
+
+								worldEnabled = worldList.add(split);
+								break t;
+							}
+						}
 					}
 				}
 
@@ -233,41 +228,17 @@ public class TabHandler implements ITabHandler {
 						footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
 								: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
 
-						worldEnable = true;
-					}
-				} else {
-					t: for (String w : worldList) {
-						for (String split : w.split(", ")) {
-							if (world.equals(split)) {
-								String path = "per-world." + w + ".";
-
-								header = c.isList(path + "header") ? c.getStringList(path + "header")
-										: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header"))
-												: null;
-								footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
-										: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer"))
-												: null;
-
-								worldEnable = true;
-								break t;
-							}
-						}
+						worldEnabled = true;
 					}
 				}
 			}
 
-			if ((header == null && footer == null) && c.contains("per-world." + world + ".per-group")) {
-				String group = null;
-
-				if (plugin.isPluginEnabled("Vault")) {
-					try {
-						group = plugin.getVaultPerm().getPrimaryGroup(world, player);
-					} catch (UnsupportedOperationException e) {
-						logConsole(Level.WARNING, "You not using any permission manager plugin!");
-					}
-				}
-
+			if ((header == null && footer == null) && c.contains("per-world." + world + ".per-group")
+					&& plugin.hasVault()) {
+				String group = plugin.getVaultPerm().getPrimaryGroup(world, player);
 				if (group != null) {
+					group = group.toLowerCase();
+
 					if (c.contains("per-world." + world + ".per-group." + group)) {
 						String path = "per-world." + world + ".per-group." + group + ".";
 						header = c.isList(path + "header") ? c.getStringList(path + "header")
@@ -275,8 +246,23 @@ public class TabHandler implements ITabHandler {
 						footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
 								: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
 
-						worldEnable = true;
+						worldEnabled = true;
 					}
+				}
+			}
+		}
+
+		if ((header == null && footer == null) && c.isConfigurationSection("permissions")) {
+			for (String name : c.getConfigurationSection("permissions").getKeys(false)) {
+				String node = name.startsWith("tablist.") ? name : "tablist." + name;
+				if (PluginUtils.hasPermission(player, node)) {
+					String path = "permissions." + name + ".";
+					header = c.isList(path + "header") ? c.getStringList(path + "header")
+							: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
+					footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
+							: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
+					usedPermission = node;
+					break;
 				}
 			}
 		}
@@ -291,18 +277,11 @@ public class TabHandler implements ITabHandler {
 			}
 		}
 
-		if ((header == null && footer == null) && c.contains("per-group")) {
-			String group = null;
-
-			if (plugin.isPluginEnabled("Vault")) {
-				try {
-					group = plugin.getVaultPerm().getPrimaryGroup(player);
-				} catch (UnsupportedOperationException e) {
-					logConsole(Level.WARNING, "You not using any permission manager plugin!");
-				}
-			}
-
+		if ((header == null && footer == null) && c.contains("per-group") && plugin.hasVault()) {
+			String group = plugin.getVaultPerm().getPrimaryGroup(player);
 			if (group != null) {
+				group = group.toLowerCase();
+
 				if (c.contains("per-group." + group)) {
 					String path = "per-group." + group + ".";
 					header = c.isList(path + "header") ? c.getStringList(path + "header")
@@ -320,139 +299,121 @@ public class TabHandler implements ITabHandler {
 					: c.isString("footer") ? Arrays.asList(c.getString("footer")) : null;
 		}
 
-		setHeader(header);
-		setFooter(footer);
+		this.builder = TabBuilder.builder().header(header).footer(footer).random(c.getBoolean("random")).build();
+	}
 
-		// Splitting the ", " from names
-		List<String> newWorlds = worldList;
-		worldList.clear();
-		for (String w : newWorlds) {
-			for (String split : w.split(", ")) {
-				worldList.add(split);
-			}
-		}
-
-		final int refreshTime = plugin.getTabRefreshTime();
-
-		if (refreshTime < 1) {
-			cancelTask();
-			sendTab(worldEnable, worldList);
+	protected void sendTab() {
+		final Player player = getPlayer();
+		if (player == null || !player.isOnline()) {
 			return;
 		}
 
-		final boolean enableW = worldEnable;
+		final FileConfiguration c = plugin.getConf().getTablist();
 
-		task = createTask(() -> {
-			if (player == null || !player.isOnline()) {
-				unregisterTab();
-				return;
-			}
-
-			if (c.getStringList("disabled-worlds").contains(world)
-					|| c.getStringList("blacklisted-players").contains(pName) || plugin.isHookPreventTask(player)
-					|| (TabManager.TABENABLED.containsKey(uuid) && TabManager.TABENABLED.get(uuid))) {
-				unregisterTab();
-				return;
-			}
-
-			sendTab(enableW, worldList);
-		}, refreshTime);
-	}
-
-	private BukkitTask createTask(Runnable run, int interval) {
-		return plugin.isSpigot() ? Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, run, interval, interval)
-				: Bukkit.getScheduler().runTaskTimer(plugin, run, interval, interval);
-	}
-
-	private void sendTab(boolean yesWorld, List<String> otherWorlds) {
-		if (plugin.isVanished(player, false) && plugin.getTabC().getBoolean("hide-tab-when-player-vanished")) {
+		if ((c.getBoolean("hide-tab-when-player-vanished") && PluginUtils.isVanished(player))
+				|| c.getStringList("disabled-worlds").contains(player.getWorld().getName())
+				|| c.getStringList("blacklisted-players").contains(player.getName()) || PluginUtils.isInGame(player)
+				|| TabManager.TABENABLED.getOrDefault(playerUUID, false)) {
 			TabTitle.sendTabTitle(player, "", "");
 			return;
 		}
 
-		int r = 0;
-		String he = "";
+		// Track player permissions change and update tab if required
+		// Note: avoid using Player#hasPermission which calls multiple times to prevent
+		// verbose logging
+		if (c.isConfigurationSection("permissions")) {
+			boolean foundPerm = false;
+			eff: for (PermissionAttachmentInfo info : player.getEffectivePermissions()) {
+				if (!info.getPermission().startsWith("tablist.")) {
+					continue;
+				}
 
-		if (header != null) {
-			if (plugin.getTabC().getBoolean("random", false)) {
-				he = header.get(ThreadLocalRandom.current().nextInt(header.size()));
+				if (info.getPermission().equalsIgnoreCase(usedPermission)) {
+					foundPerm = true;
+					break;
+				}
+
+				for (String name : c.getConfigurationSection("permissions").getKeys(false)) {
+					String node = name.startsWith("tablist.") ? name : "tablist." + name;
+					if (node.equalsIgnoreCase(info.getPermission()) || node.equalsIgnoreCase(usedPermission)) {
+						foundPerm = true;
+						updateTab();
+						break eff;
+					}
+				}
 			}
 
-			if (he.isEmpty()) {
-				for (String line : header) {
-					r++;
-
-					if (r > 1) {
-						he = he + "\n\u00a7r";
-					}
-
-					he = he + line;
-				}
+			if (!foundPerm && !usedPermission.isEmpty()) {
+				updateTab(); // Back to the original tab
 			}
 		}
 
+		final List<String> header = builder.getHeader(), footer = builder.getFooter();
+		if (header.isEmpty() && footer.isEmpty()) {
+			return;
+		}
+
+		String he = "";
 		String fo = "";
 
-		if (footer != null) {
-			if (plugin.getTabC().getBoolean("random", false)) {
-				fo = footer.get(ThreadLocalRandom.current().nextInt(footer.size()));
-			}
+		if (builder.isRandom()) {
+			he = header.get(ThreadLocalRandom.current().nextInt(header.size()));
+			fo = footer.get(ThreadLocalRandom.current().nextInt(footer.size()));
+		}
 
-			if (fo.isEmpty()) {
-				r = 0;
+		int r = 0;
 
-				for (String line : footer) {
-					r++;
+		if (he.isEmpty()) {
+			for (String line : header) {
+				r++;
 
-					if (r > 1) {
-						fo = fo + "\n\u00a7r";
-					}
-
-					fo = fo + line;
+				if (r > 1) {
+					he += "\n\u00a7r";
 				}
+
+				he += line;
 			}
 		}
 
-		if (!he.trim().isEmpty()) {
-			he = plugin.makeAnim(he);
+		if (fo.isEmpty()) {
+			r = 0;
+
+			for (String line : footer) {
+				r++;
+
+				if (r > 1) {
+					fo += "\n\u00a7r";
+				}
+
+				fo += line;
+			}
 		}
 
-		if (!fo.trim().isEmpty()) {
-			fo = plugin.makeAnim(fo);
-		}
+		he = plugin.makeAnim(he);
+		fo = plugin.makeAnim(fo);
 
-		Variables v = plugin.getPlaceholders();
+		final Variables v = plugin.getPlaceholders();
 
-		if (!yesWorld) {
+		if (!worldEnabled) {
 			TabTitle.sendTabTitle(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
 			return;
 		}
 
-		if (otherWorlds.isEmpty()) {
-			for (Player player : player.getWorld().getPlayers()) {
-				TabTitle.sendTabTitle(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
+		if (worldList.isEmpty()) {
+			for (Player all : player.getWorld().getPlayers()) {
+				TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));
 			}
 
 			return;
 		}
 
-		for (String l : otherWorlds) {
-			for (Player player : Bukkit.getWorld(l).getPlayers()) {
-				TabTitle.sendTabTitle(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
+		for (String l : worldList) {
+			if (Bukkit.getWorld(l) == null)
+				continue;
+
+			for (Player all : Bukkit.getWorld(l).getPlayers()) {
+				TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));
 			}
-		}
-	}
-
-	public void unregisterTab() {
-		cancelTask();
-
-		TabTitle.sendTabTitle(player, "", "");
-	}
-
-	public void cancelTask() {
-		if (task != null) {
-			task.cancel();
-			task = null;
 		}
 	}
 

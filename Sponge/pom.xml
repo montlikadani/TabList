@@ -6,15 +6,21 @@
 	<artifactId>tablist</artifactId>
 	<packaging>jar</packaging>
 	<name>tablist</name>
-	<version>1.0</version>
-	<url>http://maven.apache.org</url>
+	<version>1.0.2</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.release>8</maven.compiler.release>
 	</properties>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>${basedir}</directory>
+				<includes>
+					<include>**.conf</include>
+				</includes>
+			</resource>
+		</resources>
 		<pluginManagement>
 			<plugins>
 				<plugin>
@@ -32,8 +38,8 @@
 
 	<repositories>
 		<repository>
-			<id>sponge</id>
-			<url>https://repo.spongepowered.org/maven</url>
+			<id>sponge-repo</id>
+			<url>https://repo-new.spongepowered.org/maven</url>
 		</repository>
 	</repositories>
 
@@ -42,7 +48,7 @@
 		<dependency>
 			<groupId>org.spongepowered</groupId>
 			<artifactId>spongeapi</artifactId>
-			<version>8.0.0-SNAPSHOT</version>
+			<version>7.2.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

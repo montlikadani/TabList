@@ -1,6 +1,6 @@
 package hu.montlikadani.tablist.bukkit;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -11,7 +11,9 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.RenderType;
 
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.Util;
+import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class Objects {
@@ -23,36 +25,27 @@ public class Objects {
 	@SuppressWarnings("deprecation")
 	void registerHealthTab(Player pl) {
 		String path = "tablist-object-type.object-settings.health.";
-		if (plugin.getC().getStringList(path + "disabled-worlds").contains(pl.getWorld().getName())) {
-			unregisterHealthObjective(pl);
+		if (plugin.getConf().getConfig().getStringList(path + "disabled-worlds").contains(pl.getWorld().getName())
+				|| plugin.getConf().getConfig().getStringList(path + "restricted-players").contains(pl.getName())) {
+			unregisterObjective(getObject(pl, ObjectTypes.HEALTH));
 			return;
 		}
 
-		// For better understand and rule changes
-		List<String> restrictedPlayers = plugin.getC().getStringList(path + "blacklisted-players");
-		if (restrictedPlayers.isEmpty()) {
-			restrictedPlayers = plugin.getC().getStringList(path + "restricted-players");
-		}
-
-		if (restrictedPlayers.contains(pl.getName())) {
-			unregisterHealthObjective(pl);
+		if (PluginUtils.isInGame(pl)) {
 			return;
 		}
 
-		if (plugin.isHookPreventTask(pl)) {
-			return;
-		}
-
-		// TODO Fix not show correctly the health when reload
+		// TODO Fix not show correctly the health after reload
 
 		org.bukkit.scoreboard.Scoreboard board = pl.getScoreboard();
-		Objective objective = getHealthObject(pl);
+		Objective objective = getObject(pl, ObjectTypes.HEALTH).orElse(null);
 		if (objective == null) {
 			String dName = ChatColor.RED + "\u2665";
 			if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
-				objective = board.registerNewObjective("showhealth", "health", dName, RenderType.HEARTS);
+				objective = board.registerNewObjective(ObjectTypes.HEALTH.getObjectName(), "health", dName,
+						RenderType.HEARTS);
 			} else {
-				objective = board.registerNewObjective("showhealth", "health");
+				objective = board.registerNewObjective(ObjectTypes.HEALTH.getObjectName(), "health");
 				objective.setDisplayName(dName);
 			}
 
@@ -78,71 +71,67 @@ public class Objects {
 
 			final String type = ConfigValues.getObjectType().toLowerCase();
 
-			String path = "tablist-object-type.object-settings." + type + ".";
-
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				if (plugin.getC().getStringList(path + "disabled-worlds").contains(player.getWorld().getName())) {
+				if (plugin.getConf().getConfig()
+						.getStringList("tablist-object-type.object-settings." + type + ".disabled-worlds")
+						.contains(player.getWorld().getName()) || PluginUtils.isInGame(player)) {
 					continue;
 				}
 
-				if (plugin.isHookPreventTask(player)) {
-					continue;
-				}
-
-				Objective obj = null;
+				Optional<Objective> obj = Optional.empty();
 				int score = 0;
 
 				if (type.equals("ping")) {
-					obj = getPingObject(player);
-					if (obj == null) {
-						obj = player.getScoreboard().registerNewObjective("PingTab", "dummy");
+					obj = getObject(player, ObjectTypes.PING);
+					if (!obj.isPresent()) {
+						obj = Optional.of(
+								player.getScoreboard().registerNewObjective(ObjectTypes.PING.getObjectName(), "dummy"));
 					}
 
-					if (obj == null) {
+					if (!obj.isPresent()) {
 						continue;
 					}
 
-					obj.setDisplayName("ms");
+					obj.get().setDisplayName("ms");
 
 					score = TabListAPI.getPing(player);
 				} else if (type.equals("custom")) {
-					obj = getCustomObject(player);
-					if (obj == null) {
-						obj = player.getScoreboard().registerNewObjective("customObj", "dummy");
+					obj = getObject(player, ObjectTypes.CUSTOM);
+					if (!obj.isPresent()) {
+						obj = Optional.of(player.getScoreboard()
+								.registerNewObjective(ObjectTypes.CUSTOM.getObjectName(), "dummy"));
 					}
 
-					if (obj == null) {
+					if (!obj.isPresent()) {
 						continue;
 					}
 
 					final String value = ConfigValues.getCustomObjectSetting();
 					String result = plugin.getPlaceholders().replaceVariables(player, value);
-
-					if (result.contains(".")) {
-						result = result.replace(".", "");
-					}
+					result = result.replaceAll("[^\\d]", "");
 
 					try {
 						score = Integer.parseInt(result);
 					} catch (NumberFormatException e) {
 						Util.logConsole("Not correct custom objective: " + value);
+						continue;
 					}
 				}
 
-				if (obj != null) {
-					obj.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+				if (obj.isPresent()) {
+					Objective object = obj.get();
+					object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 
 					if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
-						obj.setRenderType(RenderType.INTEGER);
+						object.setRenderType(RenderType.INTEGER);
 					}
 
-					if (obj.getScore(player.getName()).getScore() != score) {
+					final int s = score;
+					if (object.getScore(player.getName()).getScore() != s) {
 						for (Player p : Bukkit.getOnlinePlayers()) {
-							Objective object = type.equals("custom") ? getCustomObject(p)
-									: (type.equals("ping") ? getPingObject(p) : null);
-							if (object != null) {
-								object.getScore(player.getName()).setScore(score);
-							}
+							(type.equals("custom") ? getObject(p, ObjectTypes.CUSTOM)
+									: (type.equals("ping") ? getObject(p, ObjectTypes.PING) : Optional.empty()))
+											.ifPresent(o -> ((Objective) o).getScore(player.getName()).setScore(s));
 						}
 					}
 				}
@@ -158,55 +147,34 @@ public class Objects {
 	}
 
 	public boolean isCancelled() {
-		// Do NOT use #isCancelled method, it depends from version
+		// Do NOT use #isCancelled method, version-dependent
 		return task == null;
 	}
 
-	public void unregisterPingTab() {
-		Bukkit.getOnlinePlayers().forEach(this::unregisterPingTab);
+	public void unregisterObjective(final Optional<Objective> obj) {
+		obj.ifPresent(Objective::unregister);
+	}
 
+	public void unregisterObjectiveForEveryone(final ObjectTypes type) {
+		Bukkit.getOnlinePlayers().forEach(p -> unregisterObjective(getObject(p, type)));
 		cancelTask();
 	}
 
-	public void unregisterPingTab(Player p) {
-		Objective obj = getPingObject(p);
-		if (obj != null) {
-			obj.unregister();
+	public Optional<Objective> getObject(Player p, ObjectTypes type) {
+		return Optional.ofNullable(p.getScoreboard().getObjective(type.getObjectName()));
+	}
+
+	public enum ObjectTypes {
+		HEALTH("showhealth"), PING("PingTab"), CUSTOM("customObj");
+
+		private String objectName;
+
+		ObjectTypes(String objectName) {
+			this.objectName = objectName;
 		}
-	}
 
-	public void unregisterCustomValue() {
-		Bukkit.getOnlinePlayers().forEach(this::unregisterCustomValue);
-
-		cancelTask();
-	}
-
-	public void unregisterCustomValue(Player p) {
-		Objective obj = getCustomObject(p);
-		if (obj != null) {
-			obj.unregister();
+		public String getObjectName() {
+			return objectName;
 		}
-	}
-
-	public void unregisterHealthObjective() {
-		Bukkit.getOnlinePlayers().forEach(this::unregisterHealthObjective);
-	}
-
-	public void unregisterHealthObjective(Player player) {
-		if (getHealthObject(player) != null) {
-			getHealthObject(player).unregister();
-		}
-	}
-
-	public Objective getHealthObject(Player p) {
-		return p.getScoreboard().getObjective("showhealth");
-	}
-
-	public Objective getPingObject(Player p) {
-		return p.getScoreboard().getObjective("PingTab");
-	}
-
-	public Objective getCustomObject(Player p) {
-		return p.getScoreboard().getObjective("customObj");
 	}
 }

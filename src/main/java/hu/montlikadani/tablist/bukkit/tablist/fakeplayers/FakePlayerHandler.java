@@ -4,15 +4,16 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.ConfigValues;
-import hu.montlikadani.tablist.bukkit.Configuration;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.Configuration;
+import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class FakePlayerHandler {
 
@@ -28,33 +29,62 @@ public class FakePlayerHandler {
 		return fakePlayers;
 	}
 
-	public IFakePlayers getFakePlayerByName(String name) {
+	public Optional<IFakePlayers> getFakePlayerByName(String name) {
 		for (IFakePlayers fp : fakePlayers) {
 			if (fp.getName().equalsIgnoreCase(name)) {
-				return fp;
+				return Optional.ofNullable(fp);
 			}
 		}
 
-		return null;
+		return Optional.empty();
 	}
 
 	public void load() {
+		fakePlayers.clear();
+
 		if (!ConfigValues.isFakePlayers()) {
 			return;
 		}
 
-		fakePlayers.clear();
+		for (String l : getFakePlayersFromConfig()) {
+			String name = l;
+			String headUUID = "";
+			int ping = -1;
+			if (l.contains(";")) {
+				String[] split = l.split(";");
+				name = split[0];
 
-		List<String> fpls = plugin.getConf().getFakeplayers().getStringList("fakeplayers");
-		for (String l : fpls) {
-			IFakePlayers fp = new FakePlayers(colorMsg(l));
+				if (split.length > 0) {
+					headUUID = split[1];
+				}
+
+				if (split.length > 1) {
+					ping = Integer.parseInt(split[2]);
+				}
+			}
+
+			if (name.length() > 16) {
+				name = name.substring(0, 16);
+			}
+
+			final IFakePlayers fp = new FakePlayers(colorMsg(name));
+			final int finalPing = ping;
+			final String finalHeadUUID = headUUID;
+
+			plugin.getServer().getOnlinePlayers().forEach(all -> fp.createFakePlayer(all, finalHeadUUID, finalPing));
 			fakePlayers.add(fp);
-
-			plugin.getServer().getOnlinePlayers().forEach(fp::createFakeplayer);
 		}
 	}
 
 	public boolean createPlayer(Player p, String name) {
+		return createPlayer(p, name, "", -1);
+	}
+
+	public boolean createPlayer(Player p, String name, int ping) {
+		return createPlayer(p, name, "", ping);
+	}
+
+	public boolean createPlayer(Player p, String name, String headUUID, int ping) {
 		if (name == null || name.trim().isEmpty()) {
 			return false;
 		}
@@ -63,15 +93,20 @@ public class FakePlayerHandler {
 			name = name.substring(0, 16);
 		}
 
-		if (getFakePlayerByName(name) != null) {
+		if (getFakePlayerByName(name).isPresent()) {
 			return false;
 		}
 
+		if (!Util.isRealUUID(headUUID)) {
+			p.sendMessage("This uuid not matches to a real player uuid.");
+			return false;
+		}
+
+		List<String> fakepls = getFakePlayersFromConfig();
+		String result = name + ";" + (headUUID.trim().isEmpty() ? "uuid" : headUUID) + (ping > -1 ? ";" + ping : "");
+		fakepls.add(result);
+
 		Configuration conf = plugin.getConf();
-		List<String> fakepls = conf.getFakeplayers().getStringList("fakeplayers");
-
-		fakepls.add(name);
-
 		conf.getFakeplayers().set("fakeplayers", fakepls);
 		try {
 			conf.getFakeplayers().save(conf.getFakeplayersFile());
@@ -83,20 +118,29 @@ public class FakePlayerHandler {
 		name = colorMsg(name);
 
 		IFakePlayers fp = new FakePlayers(name);
+		fp.createFakePlayer(p, headUUID, ping);
 		fakePlayers.add(fp);
-
-		fp.createFakeplayer(p);
 		return true;
 	}
 
-	public void removeAllFakePlayer() {
-		for (IFakePlayers fp : fakePlayers) {
-			if (fp != null) {
-				fp.removeFakePlayer();
-			}
+	public void removeAllFakePlayer(boolean removeFromConfig) {
+		fakePlayers.forEach(IFakePlayers::removeFakePlayer);
+		fakePlayers.clear();
+
+		if (!removeFromConfig) {
+			return;
 		}
 
-		fakePlayers.clear();
+		List<String> fakepls = getFakePlayersFromConfig();
+		fakepls.clear();
+
+		Configuration conf = plugin.getConf();
+		conf.getFakeplayers().set("fakeplayers", fakepls);
+		try {
+			conf.getFakeplayers().save(conf.getFakeplayersFile());
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public boolean removePlayer(String name) {
@@ -104,28 +148,44 @@ public class FakePlayerHandler {
 			return false;
 		}
 
-		Configuration conf = plugin.getConf();
-		List<String> fakepls = conf.getFakeplayers().getStringList("fakeplayers");
+		List<String> fakepls = getFakePlayersFromConfig();
 
-		fakepls.remove(name);
+		String path = "";
+		for (String names : fakepls) {
+			if (!names.contains(";")) {
+				path = names;
+				continue;
+			}
 
-		conf.getFakeplayers().set("fakeplayers", fakepls);
-		try {
-			conf.getFakeplayers().save(conf.getFakeplayersFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return false;
-		}
-
-		for (Iterator<IFakePlayers> it = fakePlayers.iterator(); it.hasNext();) {
-			IFakePlayers fp = it.next();
-			if (fp != null && fp.getName().equalsIgnoreCase(name)) {
-				fp.removeFakePlayer();
-				it.remove();
+			String n = names.split(";")[0];
+			if (n.equalsIgnoreCase(name)) {
+				path = names;
 				break;
 			}
 		}
 
+		if (!path.isEmpty()) {
+			fakepls.remove(path);
+
+			Configuration conf = plugin.getConf();
+			conf.getFakeplayers().set("fakeplayers", fakepls);
+			try {
+				conf.getFakeplayers().save(conf.getFakeplayersFile());
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+
+		getFakePlayerByName(name).ifPresent(fp -> {
+			fp.removeFakePlayer();
+			fakePlayers.remove(fp);
+		});
+
 		return true;
+	}
+
+	public List<String> getFakePlayersFromConfig() {
+		return plugin.getConf().getFakeplayers().getStringList("fakeplayers");
 	}
 }

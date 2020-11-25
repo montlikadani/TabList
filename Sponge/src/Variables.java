@@ -1,57 +1,77 @@
-package hu.montlikadani.tablist.Sponge.src;
+package hu.montlikadani.tablist.sponge;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.data.key.Keys;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.serializer.TextSerializers;
 
+import hu.montlikadani.tablist.sponge.utils.operators.ExpressionNode;
+import hu.montlikadani.tablist.sponge.utils.operators.OperatorNodes;
+
 public class Variables {
 
-	private TabList plugin;
+	private final List<ExpressionNode> nodes = new ArrayList<>();
 
-	public Variables(TabList plugin) {
-		this.plugin = plugin;
+	public void loadExpressions() {
+		nodes.clear();
+
+		if (ConfigValues.isPingFormatEnabled()) {
+			for (String f : ConfigValues.getPingColorFormats()) {
+				nodes.add(new OperatorNodes(f));
+			}
+		}
+
+		// Sort ping in descending order
+		for (int i = 0; i < nodes.size(); i++) {
+			for (int j = nodes.size() - 1; j > i; j--) {
+				ExpressionNode node = nodes.get(i), node2 = nodes.get(j);
+				if (node.getCondition().getSecondCondition() < node2.getCondition().getSecondCondition()) {
+					nodes.set(i, node2);
+					nodes.set(j, node);
+				}
+			}
+		}
 	}
 
 	public Text replaceVariables(Player p, String str) {
-		ConfigManager conf = plugin.getC().getConfig();
-		java.util.Collection<? extends Player> oPls = Sponge.getServer().getOnlinePlayers();
-
 		int staffs = 0;
 		if (str.contains("%staff-online%")) {
-			for (Player all : oPls) {
+			for (Player all : Sponge.getServer().getOnlinePlayers()) {
 				if (all.hasPermission("tablist.onlinestaff")) {
 					staffs++;
 				}
 			}
 		}
 
-		String address = null;
+		String address = "";
 		if (str.contains("%ip-address%")) {
 			address = p.getConnection().getAddress().getAddress().toString();
-			address = address.replaceAll("/", "");
+			address = address.replace("/", "");
 		}
 
-		String t = null;
-		String dt = null;
+		if (str.contains("%tps%")) {
+			DecimalFormat df = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
+			df.applyPattern("#0.00");
+			str = str.replace("%tps%", df.format(Sponge.getServer().getTicksPerSecond()));
+		}
+
+		String t = "", dt = "";
 		if (str.contains("%server-time%") || str.contains("%date%")) {
-			Object path = new Object[] { "placeholder-format", "time" };
-			DateTimeFormatter form = conf.isExistsAndNotEmpty(path, "time-format", "format")
-					? DateTimeFormatter.ofPattern(conf.getString(path, "time-format", "format"))
-					: null;
-
-			DateTimeFormatter form2 = conf.isExistsAndNotEmpty(path, "date-format", "format")
-					? DateTimeFormatter.ofPattern(conf.getString(path, "date-format", "format"))
-					: null;
-
-			TimeZone zone = conf.getBoolean(path, "time-zone", "use-system-zone")
-					? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
-					: TimeZone.getTimeZone(conf.getString(path, "time-zone", "time-zone"));
+			DateTimeFormatter form = DateTimeFormatter.ofPattern(ConfigValues.getTimeFormat()),
+					form2 = DateTimeFormatter.ofPattern(ConfigValues.getDateFormat());
+			TimeZone zone = ConfigValues.isUseSystemZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
+					: TimeZone.getTimeZone(ConfigValues.getTimeZone());
 			LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
 
 			Calendar cal = Calendar.getInstance();
@@ -61,9 +81,9 @@ public class Variables {
 		}
 
 		Runtime r = Runtime.getRuntime();
-		Long fram = Long.valueOf(r.freeMemory() / 1048576L);
-		Long mram = Long.valueOf(r.maxMemory() / 1048576L);
-		Long uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
+		Long fram = Long.valueOf(r.freeMemory() / 1048576L),
+				mram = Long.valueOf(r.maxMemory() / 1048576L),
+				uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
 
 		str = setSymbols(str);
 
@@ -71,8 +91,20 @@ public class Variables {
 			str = str.replace("%player%", p.getName());
 		}
 
+		if (str.contains("%player-ping%")) {
+			str = str.replace("%player-ping%", formatPing(p.getConnection().getLatency()));
+		}
+
 		if (str.contains("%player-uuid%")) {
 			str = str.replace("%player-uuid%", p.getUniqueId().toString());
+		}
+
+		if (str.contains("%player-level%")) {
+			str = str.replace("%player-level%", Integer.toString(p.get(Keys.EXPERIENCE_LEVEL).orElse(0)));
+		}
+
+		if (str.contains("%player-total-level%")) {
+			str = str.replace("%player-total-level%", Integer.toString(p.get(Keys.TOTAL_EXPERIENCE).orElse(0)));
 		}
 
 		if (str.contains("%world%")) {
@@ -80,17 +112,19 @@ public class Variables {
 		}
 
 		if (str.contains("%player-health%")) {
-			str = str.replace("%player-health%", String.valueOf(p.getHealthData().health()));
+			DecimalFormat df = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
+			df.applyPattern("#0.0");
+			str = str.replace("%player-health%", df.format(p.getHealthData().health().get()));
 		}
 
 		if (str.contains("%player-max-health%")) {
-			str = str.replace("%player-max-health%", String.valueOf(p.getHealthData().maxHealth()));
+			str = str.replace("%player-max-health%", Double.toString(p.getHealthData().maxHealth().get()));
 		}
 
-		if (t != null)
+		if (!t.isEmpty())
 			str = str.replace("%server-time%", t);
 
-		if (dt != null)
+		if (!dt.isEmpty())
 			str = str.replace("%date%", dt);
 
 		if (str.contains("%server-ram-free%"))
@@ -103,7 +137,7 @@ public class Variables {
 			str = str.replace("%server-ram-used%", Long.toString(uram.longValue()));
 
 		if (str.contains("%online-players%"))
-			str = str.replace("%online-players%", Integer.toString(oPls.size()));
+			str = str.replace("%online-players%", Integer.toString(Sponge.getServer().getOnlinePlayers().size()));
 
 		if (str.contains("%max-players%"))
 			str = str.replace("%max-players%", Integer.toString(Sponge.getServer().getMaxPlayers()));
@@ -115,7 +149,7 @@ public class Variables {
 			str = str.replace("%staff-online%", Integer.toString(staffs));
 		}
 
-		if (address != null)
+		if (!address.isEmpty())
 			str = str.replace("%ip-address%", address);
 
 		if (str.contains("%mc-version%"))
@@ -126,6 +160,30 @@ public class Variables {
 
 		str = str.replace("\n", "\n");
 		return TextSerializers.FORMATTING_CODE.deserialize(str);
+	}
+
+	private String formatPing(int ping) {
+		if (!ConfigValues.isPingFormatEnabled() || ConfigValues.getPingColorFormats().isEmpty()) {
+			return "" + ping;
+		}
+
+		return parseExpression(ping);
+	}
+
+	private String parseExpression(int value) {
+		String color = "";
+		for (ExpressionNode node : nodes) {
+			if (node.parse(value)) {
+				color = node.getCondition().getColor();
+			}
+		}
+
+		StringBuilder builder = new StringBuilder();
+		if (!color.isEmpty()) {
+			builder.append(color.replace('&', '\u00a7'));
+		}
+
+		return builder.append(value).toString();
 	}
 
 	public String setSymbols(String s) {

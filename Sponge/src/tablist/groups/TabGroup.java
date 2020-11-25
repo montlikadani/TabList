@@ -1,18 +1,19 @@
-package hu.montlikadani.tablist.Sponge.src.tablist.groups;
+package hu.montlikadani.tablist.sponge.tablist.groups;
+
+import java.util.UUID;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.scoreboard.Team;
 import org.spongepowered.api.text.Text;
 
-import hu.montlikadani.tablist.Sponge.src.TabList;
+import hu.montlikadani.tablist.sponge.ConfigValues;
+import hu.montlikadani.tablist.sponge.TabList;
 
 public class TabGroup implements Cloneable {
 
-	private String groupName;
-	private String prefix;
-	private String suffix;
-	private String permission;
+	private String groupName, prefix, suffix, permission;
 
 	private int priority;
 
@@ -45,19 +46,19 @@ public class TabGroup implements Cloneable {
 	}
 
 	public int getPriority() {
-		return priority;
+		return 100000 + priority;
 	}
 
 	public void setPrefix(String prefix) {
-		this.prefix = prefix;
+		this.prefix = prefix == null ? "" : prefix;
 	}
 
 	public void setSuffix(String suffix) {
-		this.suffix = suffix;
+		this.suffix = suffix == null ? "" : suffix;
 	}
 
 	public void setPermission(String permission) {
-		this.permission = permission;
+		this.permission = permission == null ? "" : permission;
 	}
 
 	public void setPriority(int priority) {
@@ -65,49 +66,58 @@ public class TabGroup implements Cloneable {
 	}
 
 	public String getFullGroupName() {
-		return priority + groupName;
+		String name = Integer.toString(getPriority()) + groupName;
+		if (name.length() > 16) {
+			name = name.substring(0, 16);
+		}
+
+		return name;
 	}
 
-	public void setGroup(final Player player) {
-		if (!player.getSubjectData().getPermissions(player.getActiveContexts()).containsKey(permission)
-				&& !player.hasPermission(permission)) {
-			return;
+	public void setTeam(final UUID playerUUID, int priority) {
+		String teamName = Integer.toString(100000 + priority) + groupName;
+		if (teamName.length() > 16) {
+			teamName = teamName.substring(0, 16);
 		}
 
-		final String pref = TabList.get().makeAnim(prefix);
-		final String suf = TabList.get().makeAnim(suffix);
-		final String teamName = getFullGroupName();
+		final String name = teamName;
 
-		Team team = null;
-		if (!TabList.BOARD.getTeam(teamName).isPresent()) {
-			team = Team.builder().name(teamName).build();
-			TabList.BOARD.registerTeam(team);
-		} else {
-			team = TabList.BOARD.getTeam(teamName).get();
-		}
+		Sponge.getServer().getPlayer(playerUUID).ifPresent(player -> {
+			final String pref = TabList.get().makeAnim(prefix), suf = TabList.get().makeAnim(suffix);
+			final Scoreboard b = getScoreboard(player);
 
-		team.addMember(player.getTeamRepresentation());
+			Team team = b.getTeam(name).orElse(Team.builder().name(name).build());
 
-		final Text name = TabList.get().getVariables().replaceVariables(player, pref + player.getName() + suf);
+			if (!b.getTeam(name).isPresent()) {
+				b.registerTeam(team);
+			}
 
-		Sponge.getServer().getOnlinePlayers().forEach(all -> {
-			all.getTabList().getEntry(player.getUniqueId()).ifPresent(te -> {
-				te.setDisplayName(name);
+			/*Text representationName = player.getTeamRepresentation();
+			if (!team.getMembers().contains(representationName)) {
+				team.addMember(representationName);
+			}*/
+
+			final Text resultName = TabList.get().getVariables().replaceVariables(player,
+					pref + player.getName() + suf);
+
+			Sponge.getServer().getOnlinePlayers().forEach(all -> {
+				all.getTabList().getEntry(player.getUniqueId()).ifPresent(te -> {
+					te.setDisplayName(resultName);
+					all.setScoreboard(b);
+				});
 			});
 		});
-
-		setScoreboard(player);
 	}
 
-	public void removeGroup(final Player player) {
-		TabList.BOARD.getTeam(getFullGroupName()).ifPresent(t -> {
+	public void removeTeam(final Player player) {
+		getScoreboard(player).getTeam(getFullGroupName()).ifPresent(t -> {
 			t.removeMember(player.getTeamRepresentation());
-			setScoreboard(player);
+			player.setScoreboard(t.getScoreboard().get());
 		});
 	}
 
-	public void setScoreboard(Player player) {
-		player.setScoreboard(TabList.BOARD);
+	public Scoreboard getScoreboard(Player player) {
+		return ConfigValues.isUseOwnScoreboard() ? player.getScoreboard() : TabList.BOARD;
 	}
 
 	@Override

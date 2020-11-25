@@ -6,7 +6,7 @@
 	<artifactId>tablist</artifactId>
 	<packaging>jar</packaging>
 	<name>tablist</name>
-	<version>5.4.1</version>
+	<version>5.4.9</version>
 	<url>http://maven.apache.org</url>
 
 	<properties>
@@ -14,12 +14,12 @@
 	</properties>
 
 	<build>
+		<directory>target/</directory>
 		<pluginManagement>
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.8.1</version>
 					<configuration>
 						<source>1.8</source>
 						<target>1.8</target>
@@ -35,10 +35,6 @@
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
-			<id>papermc</id>
-			<url>https://papermc.io/repo/repository/maven-public/</url>
-		</repository>
-		<repository>
 			<id>ess-repo</id>
 			<url>https://ci.ender.zone/plugin/repository/everything/</url>
 		</repository>
@@ -49,10 +45,6 @@
 		<repository>
 			<id>bungeecord-repo</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
-		<repository>
-			<id>cubekrowd-repo</id>
-			<url>https://mavenrepo.cubekrowd.net/artifactory/repo/</url>
 		</repository>
 		<repository>
 			<id>codemc-repo</id>
@@ -66,33 +58,140 @@
 			<id>jitpack.io</id>
 			<url>https://jitpack.io</url>
 		</repository>
+		<repository>
+			<id>minecraft-repo</id>
+			<url>https://libraries.minecraft.net/</url>
+		</repository>
+		<!--<repository>
+			<id>pex-repo</id>
+			<url>https://repo.glaremasters.me/repository/permissionsex/</url>
+		</repository>-->
 	</repositories>
 
 	<dependencies>
+		<!-- Mojang -->
+		<dependency>
+			<groupId>com.mojang</groupId>
+			<artifactId>authlib</artifactId>
+			<version>1.6.25</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.code.gson</groupId>
+					<artifactId>gson</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-core</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.code.findbugs</groupId>
+					<artifactId>jsr305</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 		<!-- Spigot API -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
-			<version>1.15.2-R0.1-SNAPSHOT</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/spigot-1.15.2.jar</systemPath>
-		</dependency>
-		<dependency>
-			<groupId>com.destroystokyo.paper</groupId>
-			<artifactId>paper-api</artifactId>
-			<version>1.13.2-R0.1-SNAPSHOT</version>
+			<version>1.16.4-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
+		</dependency>
+		<!-- BungeeCord -->
+		<dependency>
+			<groupId>net.md-5</groupId>
+			<artifactId>bungeecord-proxy</artifactId>
+			<version>1.16-R0.4-SNAPSHOT</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>
+						netty-transport-native-epoll
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-codec-http</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-handler</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-codec-haproxy</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>mysql</groupId>
+					<artifactId>mysql-connector-java</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.sf.jopt-simple</groupId>
+					<artifactId>jopt-simple</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>
+						netty-transport-native-unix-common
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-transport</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>netty-codec</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>se.llbit</groupId>
+					<artifactId>jo-nbt</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.md-5</groupId>
+					<artifactId>bungeecord-chat</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-api</artifactId>
-			<version>1.15-SNAPSHOT</version>
+			<version>1.16-R0.4-SNAPSHOT</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>io.netty</groupId>
+					<artifactId>
+						netty-transport-native-unix-common
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.md-5</groupId>
+					<artifactId>bungeecord-chat</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>net.ess3</groupId>
 			<artifactId>EssentialsX</artifactId>
-			<version>2.17.2</version>
+			<version>2.18.2</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -127,13 +226,39 @@
 					<groupId>io.papermc</groupId>
 					<artifactId>paperlib</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>1_8Provider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>NMSReflectionProvider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>BaseProviders</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>PaperProvider</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
-			<version>2.10.5</version>
+			<version>2.10.9</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>me.rayzr522</groupId>
+					<artifactId>jsonmessage</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.jetbrains</groupId>
+					<artifactId>annotations</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>com.github.MilkBowl</groupId>
@@ -152,11 +277,58 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>de.myzelyam</groupId>
+			<groupId>com.github.MyzelYam</groupId>
 			<artifactId>SuperVanish</artifactId>
-			<version>6.1.3</version>
+			<version>master-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>com.github.MyzelYam</groupId>
+			<artifactId>PremiumVanishAPI</artifactId>
+			<version>master-SNAPSHOT</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>com.google.code.findbugs</groupId>
+					<artifactId>jsr305</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<!-- New PEX -->
+		<!--<dependency>
+			<groupId>ca.stellardrift.permissionsex</groupId>
+			<artifactId>permissionsex-bukkit</artifactId>
+			<version>2.0-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.jetbrains.kotlin</groupId>
+					<artifactId>kotlin-stdlib-jdk8</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>ca.stellardrift.permissionsex</groupId>
+					<artifactId>
+						permissionsex-profile-resolver
+					</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-jdk14</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.spongepowered</groupId>
+					<artifactId>configurate-yaml</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.spongepowered</groupId>
+					<artifactId>configurate-hocon</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.spongepowered</groupId>
+					<artifactId>configurate-gson</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>-->
+		<!-- Old PEX -->
 		<dependency>
 			<groupId>ru.tehkode</groupId>
 			<artifactId>PermissionsEx</artifactId>
@@ -167,13 +339,20 @@
 		<dependency>
 			<groupId>com.github.montlikadani</groupId>
 			<artifactId>RageMode</artifactId>
-			<version>LATEST</version>
+			<version>1.8.7</version>
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>
-			<version>4.5.0</version>
+			<version>4.5.1</version>
+		</dependency>
+		<dependency>
+			<groupId>com.Zrips.CMI.CMI</groupId>
+			<artifactId>CMIAPI</artifactId>
+			<version>7.6.2.0</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/CMIAPI7.6.2.0.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>

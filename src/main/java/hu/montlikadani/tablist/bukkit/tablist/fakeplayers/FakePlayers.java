@@ -1,26 +1,43 @@
 package hu.montlikadani.tablist.bukkit.tablist.fakeplayers;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.lang.reflect.Array;
+import java.net.URL;
+import java.util.List;
+import java.util.NavigableMap;
+import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
+import javax.net.ssl.HttpsURLConnection;
+
+import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
-import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class FakePlayers implements IFakePlayers {
 
 	private String name;
 
-	private Object fakePl = null;
-	private GameProfile profile = null;
-	private Class<?> enumPlayerInfoAction = null;
+	private int ping = -1;
+
+	private Object fakePl;
+	private GameProfile profile;
+	private Class<?> enumPlayerInfoAction;
 
 	public FakePlayers(String name) {
 		this.name = name;
+
+		profile = new GameProfile(UUID.randomUUID(), name);
 	}
 
 	@Override
@@ -29,44 +46,80 @@ public class FakePlayers implements IFakePlayers {
 	}
 
 	@Override
-	public void createFakeplayer(Player p) {
+	public int getPingLatency() {
+		return ping;
+	}
+
+	@Override
+	public void createFakePlayer(Player p) {
+		createFakePlayer(p, "", -1);
+	}
+
+	@Override
+	public void createFakePlayer(Player p, int pingLatency) {
+		createFakePlayer(p, "", pingLatency);
+	}
+
+	@Override
+	public void createFakePlayer(Player p, String headUUID, int pingLatency) {
 		try {
-			Class<?> server = ReflectionUtils.Classes.getMinecraftServer();
-			Object serverIns = ReflectionUtils.Classes.getServer(server);
+			setSkin(headUUID);
 
-			profile = new GameProfile(UUID.randomUUID(), name);
-
-			Class<?> manager = ReflectionUtils.getNMSClass("PlayerInteractManager");
-			Object managerIns = null;
-			Object world = null;
-			if (Version.isCurrentEqualOrHigher(Version.v1_14_R1)) {
-				world = ReflectionUtils.getHandle(p.getWorld());
-				managerIns = manager.getConstructor(world.getClass()).newInstance(world);
-			} else if (Version.isCurrentEqual(Version.v1_13_R1) || Version.isCurrentEqual(Version.v1_13_R2)) {
-				world = ReflectionUtils.getHandle(p.getWorld());
-			} else {
-				world = server.getDeclaredMethod("getWorldServer", int.class).invoke(serverIns, 0);
-			}
-
-			if (managerIns == null) {
-				managerIns = manager.getConstructors()[0].newInstance(world);
-			}
-
-			Object player = ReflectionUtils.getHandle(p);
-			fakePl = player.getClass().getConstructor(server, world.getClass(), profile.getClass(), manager)
-					.newInstance(serverIns, world, profile, managerIns);
+			fakePl = ReflectionUtils.Classes.getPlayerConstructor(p, profile);
 
 			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(profile.getName()));
 
-			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
+			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
+			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction(packetPlayOutPlayerInfoClass);
 
 			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakePl);
 
-			Object packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
+			Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
 					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(ReflectionUtils
 							.getFieldObject(enumPlayerInfoAction, enumPlayerInfoAction.getDeclaredField("ADD_PLAYER")),
 							entityPlayerArray);
+
+			for (Player aOnline : Bukkit.getOnlinePlayers()) {
+				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
+			}
+
+			// Setting ping should be in this place, after the player added
+			setPing(pingLatency);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void setPing(int pingAmount) {
+		if (pingAmount < 0) {
+			return;
+		}
+
+		ping = pingAmount;
+
+		try {
+			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
+			Array.set(entityPlayerArray, 0, fakePl);
+
+			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
+			Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
+					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(ReflectionUtils
+							.getFieldObject(enumPlayerInfoAction, enumPlayerInfoAction.getDeclaredField("UPDATE_LATENCY")),
+							entityPlayerArray);
+
+			@SuppressWarnings("unchecked")
+			List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
+					.get(packetPlayOutPlayerInfo);
+			for (Object infoData : infoList) {
+				Object profile = ReflectionUtils.invokeMethod(infoData, "a");
+				Object id = ReflectionUtils.invokeMethod(profile, "getId");
+				if (id.equals(this.profile.getId())) {
+					ReflectionUtils.modifyFinalField(ReflectionUtils.getField(infoData, "b"), infoData, ping);
+					break;
+				}
+			}
 
 			for (Player aOnline : Bukkit.getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
@@ -77,10 +130,26 @@ public class FakePlayers implements IFakePlayers {
 	}
 
 	@Override
+	public void setSkin(String skinUUID) {
+		if (skinUUID == null || skinUUID.trim().isEmpty() || !Util.isRealUUID(skinUUID)) {
+			return;
+		}
+
+		if (!Bukkit.getServer().getOnlineMode()) {
+			Util.logConsole(java.util.logging.Level.WARNING, "Can't set skin for offline servers.");
+			return;
+		}
+
+		getSkinValue(skinUUID).thenAcceptAsync((map) -> {
+			java.util.Map.Entry<String, String> e = map.pollFirstEntry();
+			profile.getProperties().get("textures").clear();
+			profile.getProperties().put("textures", new Property("textures", e.getKey(), e.getValue()));
+		});
+	}
+
+	@Override
 	public void removeFakePlayer() {
 		try {
-			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(profile.getName()));
-
 			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakePl);
 
@@ -95,5 +164,44 @@ public class FakePlayers implements IFakePlayers {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+	}
+
+	private final JsonParser parser = new JsonParser();
+
+	private CompletableFuture<NavigableMap<String, String>> getSkinValue(String uuid) {
+		return CompletableFuture.supplyAsync(() -> {
+			NavigableMap<String, String> map = new TreeMap<>();
+			String json = getContent("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid);
+			if (json == null) {
+				return map;
+			}
+
+			JsonObject o = parser.parse(json).getAsJsonObject();
+			String value = o.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+
+			o = parser.parse(new String(Base64.decodeBase64(value))).getAsJsonObject();
+			String texture = o.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString();
+			map.put(value, texture);
+			return map;
+		});
+	}
+
+	private String getContent(String link) {
+		try {
+			HttpsURLConnection conn = (HttpsURLConnection) new URL(link).openConnection();
+			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+
+			String inputLine;
+			while ((inputLine = br.readLine()) != null) {
+				return inputLine;
+			}
+
+			br.close();
+			conn.disconnect();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 }

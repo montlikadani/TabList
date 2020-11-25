@@ -3,28 +3,35 @@ package hu.montlikadani.tablist.bukkit;
 public enum Perm {
 
 	ADDFAKEPLAYER("fakeplayers.add"),
-	FAKEPLAYERS("fakeplayers"),
-	GET("get"),
+	SETSKINFAKEPLAYER("fakeplayers.setskin"),
+	SETPINGFAKEPLAYER("fakeplayers.setping"),
+	FAKEPLAYERS,
+	GET,
 	GETO("get.other"),
-	HELP("help"),
+	HELP,
 	LISTFAKEPLAYERS("fakeplayers.list"),
-	RELOAD("reload"),
+	RELOAD,
 	REMOVEFAKEPLAYER("fakeplayers.remove"),
-	RESET("reset"),
+	RESET,
 	RESETOTHERTAB("reset.other"),
-	SETPREFIX("setprefix"),
-	SETPRIORITY("setpriority"),
-	SETSUFFIX("setsuffix"),
-	REMOVEGROUP("removegroup"),
-	TABNAME("tabname"),
+	SETPREFIX,
+	SETPRIORITY,
+	SETSUFFIX,
+	REMOVEGROUP,
+	TABNAME,
 	TABNAMEOTHER("tabname.other"),
-	TOGGLE("toggle"),
-	TOGGLEALL("toggle.all");
+	TOGGLE,
+	TOGGLEALL("toggle.all"),
+	SEESPECTATOR("seespectators");
 
 	private String perm;
 
+	Perm() {
+		this("");
+	}
+
 	Perm(String perm) {
-		this.perm = "tablist." + perm;
+		this.perm = "tablist." + (perm.trim().isEmpty() ? toString().toLowerCase() : perm);
 	}
 
 	public String getPerm() {

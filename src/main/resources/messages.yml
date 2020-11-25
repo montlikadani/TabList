@@ -4,8 +4,6 @@ unknown-sub-command: "&cUnknown sub-command&7 %subcmd%&c."
 no-console: "&cThis command '&7/%command%&c' can only be in-game."
 
 set-prefix-suffix:
-  group-not-found: "&cThis group&7 %group%&c not found."
-  player-not-found: "&cThis player&7 %target%&c not found."
   prefix:
     could-not-be-empty: "&cThe prefix text could not be empty!"
     successfully-set: "&aYou have successfully set prefix for&e %group%&a, with this prefix:&r %tag%"
@@ -50,13 +48,13 @@ toggle:
   player-not-found: "&cThis player&7 %player%&c not found!"
 
 fake-player:
-  usage: "&cUse: '&7/%command% fakeplayers <add/remove/list> [<name>]&c'."
   added: "&aThe fake player&7 %name%&a successfully added!"
   removed: "&cThe fake player&7 %name%&c successfully removed!"
   already-added: "&cThe fake player&7 %name%&c already added."
-  already-removed: "&cThe fake player&7 %name%&c already removed."
+  not-exists: "&cThe fake player with this name not exists."
   no-fake-player: "&cThere is no fake player either."
   disabled: "&cThe fake player is disabled. Please enable in config.yml file."
+  ping-can-not-be-less: "&cThe ping amount should be highest than&e %amount%&c or the value is not a number."
 
   list:
   - "&cFake players&7 (&e%amount%&7):"
@@ -64,24 +62,25 @@ fake-player:
 
 chat-messages:
   1:
-  - "&e&m---------&b> &e[&5Tab&cList&2 Help&e]&b <&e&m----------"
+  - "&e&m---------&r &5Tab&cList&2 Help &e&m----------"
   - ""
-  - "&7-&9 []&7 -&9 optional arguments"
-  - "&7-&c <>&7 -&c required arguments"
+  - "&9 []&7 -&9 optional arguments"
+  - "&c <>&7 -&c required arguments"
   - ""
-  - "&8/&a%command%&b [+TAB]&5 -&6 Main plugin info."
-  - "&8/&a%command% help&9 [2/3]&5 -&6 Help commands."
-  - "&8/&a%command% reload&5 -&6 Reload the plugin."
-  - "&8/&a%command% toggle&9 [player/all]&5 -&6 Toggle on/off tab."
-  - "&8/&a%command% fakeplayers&a add&2/&aremove&c <name>&5 -&6 Create/remove fake player."
-  - "&8/&a%command% fakeplayers list&5 -&6 Lists all fake player."
+  - "&8/&a%command%&b [+TAB]&6 - Main plugin info."
+  - "&8/&a%command% help&9 [2/3]&6 - Help commands."
+  - "&8/&a%command% reload&6 - Reload the plugin."
+  - "&8/&a%command% toggle&9 [player/all]&6 - Toggle on/off tab."
+  - "&8/&a%command% fakeplayers&a add&2/&aremove&c <name>&6 - Create/remove fake player."
+  - "&8/&a%command% fakeplayers list&6 - Lists all fake player."
   2:
-  - "&8/&atabname&c <&9[player]&2/&cname>&c <name>&5 -&6 Change player tab name."
-  - "&8/&atname reset&9 [player]&5 -&6 Resets the given player tab name."
-  - "&8/&a%command% get&9 [player]&5 -&6 Get player tab name."
-  - "&8/&a%command% setprefix&c <player>&9 [group] <prefix>&5 -&6 Sets the given player prefix."
-  - "&8/&a%command% removegroup&c <player>&9 [group]&5 -&6 Removes the given player prefix/suffix."
+  - "&8/&a%command% fakeplayers setskin&c <skinUUID>&6 - Set skin for the fake player from the given real uuid."
+  - "&8/&atabname&c <&9[player]&2/&cname>&c <name>&6 - Change player tab name."
+  - "&8/&atname reset&9 [player]&6 - Resets the given player tab name."
+  - "&8/&a%command% get&9 [player]&6 - Get player tab name."
+  - "&8/&a%command% setprefix&c <player/group> <prefix>&6 - Sets the given player prefix."
+  - "&8/&a%command% removegroup&c <player/group>&6 - Removes the given player prefix/suffix."
   3:
-  - "&8/&a%command% setsuffix&c <player>&9 [group]&c <suffix>&5 -&6 Sets the given player suffix."
-  - "&8/&a%command% setpriority&c <player>&9 [group]&c <priority>&5 -&6 Sets the given player sorting priority."
+  - "&8/&a%command% setsuffix&c <player/group>&c <suffix>&6 - Sets the given player suffix."
+  - "&8/&a%command% setpriority&c <player/group>&c <priority>&6 - Sets the given player sorting priority."
   - "&e&m---------------------------------------------------"

@@ -7,8 +7,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import hu.montlikadani.tablist.Global;
+import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
@@ -16,41 +20,52 @@ import net.md_5.bungee.config.Configuration;
 public class Misc {
 
 	public static String colorMsg(String s) {
+		if (s == null) {
+			return "";
+		}
+
+		if (s.contains("#")) {
+			s = Global.matchColorRegex(s);
+		}
+
 		return ChatColor.translateAlternateColorCodes('&', s);
 	}
 
 	public static void sendMessage(CommandSender s, String path) {
 		if (s != null && path != null && !path.trim().isEmpty()) {
-			s.sendMessage(TabList.getInstance().getComponentBuilder(colorMsg(path)));
+			s.sendMessage(getComponentBuilder(colorMsg(path)));
 		}
+	}
+
+	public static BaseComponent[] getComponentBuilder(String s) {
+		return new ComponentBuilder(s).create();
 	}
 
 	@SuppressWarnings("deprecation")
 	public static String replaceVariables(String str, ProxiedPlayer p) {
 		Runtime r = Runtime.getRuntime();
-		Long fram = Long.valueOf(r.freeMemory() / 1048576L);
-		Long mram = Long.valueOf(r.maxMemory() / 1048576L);
-		Long uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
+		Long fram = Long.valueOf(r.freeMemory() / 1048576L),
+				mram = Long.valueOf(r.maxMemory() / 1048576L),
+				uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
 
 		Configuration conf = TabList.getInstance().getConf();
 
 		if (conf.contains("custom-variables")) {
 			for (String custom : conf.getSection("custom-variables").getKeys()) {
-				if (custom != null && str.contains(custom)) {
-					str = str.replaceAll(custom, conf.getString("custom-variables." + custom));
+				if (str.contains(custom)) {
+					str = str.replace(custom, conf.getString("custom-variables." + custom));
 				}
 			}
 		}
 
-		String t = null;
-		String dt = null;
+		String t = "", dt = "";
 		if (str.contains("%time%") || str.contains("%date%")) {
 			String path = "placeholder-format.time.";
 			DateTimeFormatter form = !conf.getString(path + "time-format", "").isEmpty()
 					? DateTimeFormatter.ofPattern(conf.getString(path + "time-format"))
 					: null;
 
-			DateTimeFormatter form2 = !conf.getString(path + "date-format").isEmpty()
+			DateTimeFormatter form2 = !conf.getString(path + "date-format", "").isEmpty()
 					? DateTimeFormatter.ofPattern(conf.getString(path + "date-format"))
 					: null;
 
@@ -71,10 +86,10 @@ public class Misc {
 
 		String online = info != null ? Integer.toString(info.getPlayers().size()) : "0";
 
-		if (t != null)
+		if (!t.isEmpty())
 			str = str.replace("%time%", t);
 
-		if (dt != null)
+		if (!dt.isEmpty())
 			str = str.replace("%date%", dt);
 
 		if (str.contains("%server%") && info != null)
@@ -85,8 +100,8 @@ public class Misc {
 
 		try {
 			if (str.contains("%max-players%")) {
-				str = str.replace("%max-players%", Integer.toString(TabList.getInstance().getProxy()
-						.getConfigurationAdapter().getListeners().iterator().next().getMaxPlayers()));
+				str = str.replace("%max-players%", Integer.toString(BungeeCord.getInstance().getConfigurationAdapter()
+						.getListeners().iterator().next().getMaxPlayers()));
 			}
 		} catch (Exception e) {
 			// Ignore unknown errors
@@ -131,10 +146,10 @@ public class Misc {
 			str = str.replace("%player-uuid%", p.getUniqueId().toString());
 
 		if (str.contains("%game-version%"))
-			str = str.replace("%game-version%", TabList.getInstance().getProxy().getGameVersion());
+			str = str.replace("%game-version%", BungeeCord.getInstance().getGameVersion());
 
 		if (str.contains("%bungee-online%"))
-			str = str.replace("%bungee-online%", Integer.toString(TabList.getInstance().getProxy().getOnlineCount()));
+			str = str.replace("%bungee-online%", Integer.toString(BungeeCord.getInstance().getOnlineCount()));
 
 		if (str.contains("%bungee-motd%") && info != null)
 			str = str.replace("%bungee-motd%", info.getMotd());
@@ -144,7 +159,7 @@ public class Misc {
 					p.getLocale() == null ? "unknown" : p.getLocale().getDisplayCountry());
 
 		str = str.replace("\\n", "\n");
-		str = hu.montlikadani.tablist.Global.setSymbols(str);
+		str = Global.setSymbols(str);
 
 		return colorMsg(str);
 	}

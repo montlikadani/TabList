@@ -10,9 +10,11 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.Map.Entry;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 
@@ -22,6 +24,7 @@ public class TabManager {
 	public static final Map<UUID, Boolean> TABENABLED = new HashMap<>();
 
 	private TabList plugin;
+	private BukkitTask task;
 
 	private final Set<TabHandler> tabPlayers = new HashSet<>();
 
@@ -38,26 +41,54 @@ public class TabManager {
 		return tabPlayers;
 	}
 
+	public BukkitTask getTask() {
+		return task;
+	}
+
+	public void cancelTask() {
+		if (task != null) {
+			task.cancel();
+			task = null;
+		}
+	}
+
 	public void addPlayer(Player p) {
-		if (isPlayerInTab(p)) {
+		if (p == null || isPlayerInTab(p)) {
 			return;
 		}
 
-		TabHandler tabHandler = new TabHandler(plugin, p);
+		final TabHandler tabHandler = new TabHandler(plugin, p.getUniqueId());
 		tabHandler.updateTab();
-		tabHandler.updateEntries();
 		tabPlayers.add(tabHandler);
+
+		final int refreshTime = plugin.getTabRefreshTime();
+		if (refreshTime < 1) {
+			tabHandler.sendTab();
+			return;
+		}
+
+		if (task == null) {
+			task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+				if (Bukkit.getOnlinePlayers().isEmpty()) {
+					cancelTask();
+					return;
+				}
+
+				tabPlayers.forEach(TabHandler::sendTab);
+			}, refreshTime, refreshTime);
+		}
 	}
 
 	public void removePlayer(Player player) {
-		getPlayerTab(player).ifPresent(tabHandler -> {
-			tabHandler.unregisterTab();
-			tabPlayers.remove(tabHandler);
-		});
+		TabTitle.sendTabTitle(player, "", "");
+
+		getPlayerTab(player).ifPresent(tabPlayers::remove);
 	}
 
-	public void removePlayer() {
-		tabPlayers.forEach(TabHandler::unregisterTab);
+	public void removeAll() {
+		cancelTask();
+
+		tabPlayers.forEach(th -> TabTitle.sendTabTitle(th.getPlayer(), "", ""));
 		tabPlayers.clear();
 	}
 
@@ -65,22 +96,13 @@ public class TabManager {
 		return getPlayerTab(player).isPresent();
 	}
 
-	public Optional<TabHandler> getPlayerTab(Player player) {
-		if (player == null) {
-			return Optional.empty();
-		}
-
-		for (TabHandler tab : tabPlayers) {
-			if (tab.getPlayer().equals(player)) {
-				return Optional.ofNullable(tab);
-			}
-		}
-
-		return Optional.empty();
+	public Optional<TabHandler> getPlayerTab(final Player player) {
+		return tabPlayers.stream().filter(tab -> tab.getPlayer().equals(player)).findFirst();
 	}
 
 	public void loadToggledTabs() {
-		if (plugin.getTabC() == null || !plugin.getTabC().getBoolean("remember-toggled-tablist-to-file", true)) {
+		if (plugin.getConf().getTablist() == null
+				|| !plugin.getConf().getTablist().getBoolean("remember-toggled-tablist-to-file", true)) {
 			return;
 		}
 
@@ -92,18 +114,26 @@ public class TabManager {
 		}
 
 		FileConfiguration t = YamlConfiguration.loadConfiguration(f);
-		if (!t.contains("tablists")) {
+		if (!t.isConfigurationSection("tablists")) {
 			return;
 		}
 
 		for (String uuid : t.getConfigurationSection("tablists").getKeys(false)) {
 			TABENABLED.put(UUID.fromString(uuid), t.getConfigurationSection("tablists").getBoolean(uuid));
 		}
+
+		t.set("tablists", null);
+		try {
+			t.save(f);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void saveToggledTabs() {
 		File f = new File(plugin.getFolder(), "toggledtablists.yml");
-		if (plugin.getTabC() == null || !plugin.getTabC().getBoolean("remember-toggled-tablist-to-file", true)) {
+		if (plugin.getConf().getTablist() == null
+				|| !plugin.getConf().getTablist().getBoolean("remember-toggled-tablist-to-file", true)) {
 			if (f.exists()) {
 				f.delete();
 			}

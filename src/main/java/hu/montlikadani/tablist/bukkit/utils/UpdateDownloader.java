@@ -7,9 +7,9 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
+import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 
@@ -20,90 +20,85 @@ import hu.montlikadani.tablist.bukkit.TabList;
 public class UpdateDownloader {
 
 	public static void checkFromGithub(org.bukkit.command.CommandSender sender) {
-		if (!TabList.getInstance().getC().getBoolean("check-update")) {
+		if (!TabList.getInstance().getConf().getConfig().getBoolean("check-update")) {
 			return;
 		}
 
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				String versionString = "";
+		CompletableFuture.supplyAsync(() -> {
+			try {
+				URL githubUrl = new URL(
+						"https://raw.githubusercontent.com/montlikadani/TabList/master/src/main/resources/plugin.yml");
+				BufferedReader br = new BufferedReader(new InputStreamReader(githubUrl.openStream()));
+				String s;
 				String lineWithVersion = "";
-
-				int newVersion = 0;
-				int currentVersion = 0;
-
-				try {
-					URL githubUrl = new URL(
-							"https://raw.githubusercontent.com/montlikadani/TabList/master/src/main/resources/plugin.yml");
-					BufferedReader br = new BufferedReader(new InputStreamReader(githubUrl.openStream()));
-					String s;
-					while ((s = br.readLine()) != null) {
-						String line = s;
-						if (line.toLowerCase().contains("version")) {
-							lineWithVersion = line;
-							break;
-						}
+				while ((s = br.readLine()) != null) {
+					String line = s;
+					if (line.toLowerCase().contains("version")) {
+						lineWithVersion = line;
+						break;
 					}
-
-					versionString = lineWithVersion.split(": ")[1];
-					String nVersion = versionString.replaceAll("[^0-9]", "");
-					newVersion = Integer.parseInt(nVersion);
-
-					String cVersion = TabList.getInstance().getDescription().getVersion().replaceAll("[^0-9]", "");
-					currentVersion = Integer.parseInt(cVersion);
-
-					if (newVersion <= currentVersion || currentVersion >= newVersion) {
-						return;
-					}
-
-					String msg = "";
-					if (sender instanceof Player) {
-						msg = Util.colorMsg("&8&m&l---------------------------------------------\n"
-								+ "&aA new update for TabList is available!&4 Version:&7 " + versionString
-								+ (TabList.getInstance().getC().getBoolean("download-updates", false) ? ""
-										: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/")
-								+ "\n&8&m&l---------------------------------------------");
-					} else {
-						msg = "New version (" + versionString
-								+ ") is available at https://www.spigotmc.org/resources/46229/";
-					}
-
-					sender.sendMessage(msg);
-
-					if (!TabList.getInstance().getC().getBoolean("download-updates", false)) {
-						return;
-					}
-
-					final String name = "TabList-v" + versionString;
-
-					String updatesFolder = TabList.getInstance().getFolder() + File.separator + "releases";
-					File temp = new File(updatesFolder);
-					if (!temp.exists()) {
-						temp.mkdir();
-					}
-
-					// Do not attempt to download the file again, when it is already downloaded
-					final File jar = new File(updatesFolder + File.separator + name + ".jar");
-					if (jar.exists()) {
-						return;
-					}
-
-					Util.logConsole("Downloading new version of TabList...");
-
-					final URL download = new URL(
-							"https://github.com/montlikadani/TabList/releases/latest/download/" + name + ".jar");
-
-					InputStream in = download.openStream();
-					Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-					in.close();
-
-					Util.logConsole("The new TabList has been downloaded to releases folder.");
-				} catch (Exception e) {
-					e.printStackTrace();
 				}
+
+				String versionString = lineWithVersion.split(": ")[1],
+						nVersion = versionString.replaceAll("[^0-9]", ""),
+						cVersion = TabList.getInstance().getDescription().getVersion().replaceAll("[^0-9]", "");
+
+				int newVersion = Integer.parseInt(nVersion);
+				int currentVersion = Integer.parseInt(cVersion);
+
+				if (newVersion <= currentVersion || currentVersion >= newVersion) {
+					return false;
+				}
+
+				String msg = "";
+				if (sender instanceof Player) {
+					msg = Util.colorMsg("&aA new update for TabList is available!&4 Version:&7 " + versionString
+							+ (TabList.getInstance().getConf().getConfig().getBoolean("download-updates", false) ? ""
+									: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/"));
+				} else {
+					msg = "New version (" + versionString
+							+ ") is available at https://www.spigotmc.org/resources/46229/";
+				}
+
+				Util.sendMsg(sender, msg);
+
+				if (!TabList.getInstance().getConf().getConfig().getBoolean("download-updates", false)) {
+					return false;
+				}
+
+				final String name = "TabList-v" + versionString;
+
+				String updatesFolder = TabList.getInstance().getFolder() + File.separator + "releases";
+				File temp = new File(updatesFolder);
+				if (!temp.exists()) {
+					temp.mkdir();
+				}
+
+				// Do not attempt to download the file again, when it is already downloaded
+				final File jar = new File(updatesFolder + File.separator + name + ".jar");
+				if (jar.exists()) {
+					return false;
+				}
+
+				Util.logConsole("Downloading new version of TabList...");
+
+				final URL download = new URL(
+						"https://github.com/montlikadani/TabList/releases/latest/download/" + name + ".jar");
+
+				InputStream in = download.openStream();
+				Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+				in.close();
+				return true;
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		}.runTaskLaterAsynchronously(TabList.getInstance(), 0);
+
+			return false;
+		}).thenAccept(y -> {
+			if (y) {
+				Util.logConsole("The new TabList has been downloaded to releases folder.");
+			}
+		});
 	}
 }

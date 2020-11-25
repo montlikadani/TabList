@@ -1,13 +1,12 @@
 package hu.montlikadani.tablist.bungee.tablist;
 
+import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import hu.montlikadani.tablist.bungee.Misc;
 import hu.montlikadani.tablist.bungee.TabList;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
@@ -19,7 +18,7 @@ public class TabManager implements ITask {
 	private ScheduledTask task;
 
 	private final Set<UUID> tabenable = new HashSet<>();
-	private final Set<PlayerTab> playerTabs = new HashSet<>();
+	private final Set<PlayerTab> playerTabs = Collections.synchronizedSet(new HashSet<PlayerTab>());
 
 	public TabManager(TabList plugin) {
 		this.plugin = plugin;
@@ -38,24 +37,39 @@ public class TabManager implements ITask {
 		return playerTabs;
 	}
 
-	public Optional<PlayerTab> getPlayerTab(ProxiedPlayer player) {
-		PlayerTab tab = null;
-
-		for (PlayerTab tabs : playerTabs) {
-			if (tabs.getPlayer() == player) {
-				tab = tabs;
-				break;
-			}
+	public void addPlayer(ProxiedPlayer player) {
+		if (!plugin.getConf().getBoolean("tablist.enable", false)) {
+			return;
 		}
 
-		return Optional.ofNullable(tab);
+		synchronized (playerTabs) {
+			PlayerTab tab = getPlayerTab(player).orElse(new PlayerTab(player));
+			if (!playerTabs.contains(tab)) {
+				playerTabs.add(tab);
+			}
+
+			tab.loadTabList();
+		}
+	}
+
+	public void removePlayer(ProxiedPlayer player) {
+		synchronized (playerTabs) {
+			getPlayerTab(player).ifPresent(playerTabs::remove);
+		}
+	}
+
+	public Optional<PlayerTab> getPlayerTab(ProxiedPlayer player) {
+		return playerTabs.stream().filter(g -> g.getPlayer().equals(player)).findFirst();
 	}
 
 	@Override
 	public void start() {
-		cancel();
+		if (!plugin.getConf().getBoolean("tablist.enable", false) || plugin.getProxy().getPlayers().isEmpty()) {
+			cancel();
+			return;
+		}
 
-		if (!plugin.getConf().getBoolean("tablist.enable", false)) {
+		if (task != null) {
 			return;
 		}
 
@@ -65,59 +79,17 @@ public class TabManager implements ITask {
 				return;
 			}
 
-			plugin.getProxy().getPlayers().forEach(this::update);
-		}, 0L, plugin.getConf().getInt("tablist.refresh-interval"), TimeUnit.MILLISECONDS);
-	}
+			synchronized (playerTabs) {
+				playerTabs.stream().filter(t -> {
+					if (!tabenable.contains(t.getPlayer().getUniqueId())) {
+						return true;
+					}
 
-	@Override
-	public void update(final ProxiedPlayer pl) {
-		// To make sure the task is cancelled
-		if (!plugin.getConf().getBoolean("tablist.enable", false)) {
-			cancel();
-			return;
-		}
-
-		if (!getPlayerTab(pl).isPresent()) {
-			PlayerTab tab = new PlayerTab(pl);
-			playerTabs.add(tab);
-			tab.loadTabList();
-		}
-
-		if (tabenable.contains(pl.getUniqueId())) {
-			pl.resetTabHeader();
-			return;
-		}
-
-		if (pl.getServer() != null && plugin.getConf().getStringList("tablist.disabled-servers")
-				.contains(pl.getServer().getInfo().getName())) {
-			pl.resetTabHeader();
-			return;
-		}
-
-		List<String> restrictedPlayers = plugin.getConf().getStringList("tablist.blacklisted-players");
-		if (restrictedPlayers.isEmpty()) {
-			restrictedPlayers = plugin.getConf().getStringList("tablist.restricted-players");
-		}
-
-		if (restrictedPlayers.contains(pl.getName())) {
-			pl.resetTabHeader();
-			return;
-		}
-
-		String[] t = getTablist(pl);
-		if (t != null) {
-			pl.setTabHeader(plugin.getComponentBuilder(Misc.replaceVariables(t[0], pl)),
-					plugin.getComponentBuilder(Misc.replaceVariables(t[1], pl)));
-		}
-	}
-
-	private String[] getTablist(ProxiedPlayer p) {
-		Optional<PlayerTab> tab = getPlayerTab(p);
-		if (tab.isPresent()) {
-			return new String[] { tab.get().getNextHeader(), tab.get().getNextFooter() };
-		}
-
-		return new String[0];
+					t.getPlayer().resetTabHeader();
+					return false;
+				}).forEach(PlayerTab::update);
+			}
+		}, 10L, plugin.getConf().getInt("tablist.refresh-interval"), TimeUnit.MILLISECONDS);
 	}
 
 	@Override
@@ -127,7 +99,9 @@ public class TabManager implements ITask {
 			task = null;
 		}
 
-		plugin.getProxy().getPlayers().forEach(all -> getPlayerTab(all).ifPresent(PlayerTab::clearAll));
-		playerTabs.clear();
+		synchronized (playerTabs) {
+			plugin.getProxy().getPlayers().forEach(all -> getPlayerTab(all).ifPresent(PlayerTab::clearAll));
+			playerTabs.clear();
+		}
 	}
 }

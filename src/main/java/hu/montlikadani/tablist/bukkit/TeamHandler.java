@@ -2,10 +2,9 @@ package hu.montlikadani.tablist.bukkit;
 
 public class TeamHandler implements Cloneable {
 
-	private String team;
-	private String prefix;
-	private String suffix;
-	private String permission;
+	private String team, prefix, suffix, permission;
+
+	private boolean global = false;
 
 	private int priority;
 
@@ -49,12 +48,16 @@ public class TeamHandler implements Cloneable {
 		this.priority = priority;
 	}
 
-	public String getTeam() {
-		return team;
+	public void setGlobal(boolean global) {
+		this.global = global;
 	}
 
-	public String getFullTeamName() {
-		return (1000 + priority) + team;
+	public boolean isGlobal() {
+		return global;
+	}
+
+	public String getTeam() {
+		return team;
 	}
 
 	public String getPrefix() {

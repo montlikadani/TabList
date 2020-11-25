@@ -7,10 +7,10 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class get implements ICommand {
@@ -23,7 +23,7 @@ public class get implements ICommand {
 		}
 
 		if (!ConfigValues.isTabNameEnabled()) {
-			sendMsg(sender, Util.colorMsg("Tabname option is disabled in configuration!"));
+			sendMsg(sender, Util.colorMsg("&cTabname option is disabled in configuration!"));
 			return false;
 		}
 
@@ -39,14 +39,14 @@ public class get implements ICommand {
 					return false;
 				}
 
-				String nam = targ.getName();
-				if (!plugin.getConf().getNames().contains("players." + nam + ".tabname")) {
-					sendMsg(sender, plugin.getMsg("tabname.no-tab-name", "%player%", nam));
+				String tabName = plugin.getTabNameHandler().getTabName(targ);
+				if (tabName.isEmpty()) {
+					sendMsg(sender, plugin.getMsg("tabname.no-tab-name", "%player%", targ.getName()));
 					return false;
 				}
 
-				sendMsg(sender, plugin.getMsg("tabname.get-name.result", "%target%", nam, "%name%",
-						plugin.getConf().getNames().getString("players." + nam + ".tabname")));
+				sendMsg(sender,
+						plugin.getMsg("tabname.get-name.result", "%target%", targ.getName(), "%name%", tabName));
 			}
 
 			return true;
@@ -59,8 +59,7 @@ public class get implements ICommand {
 				return false;
 			}
 
-			sendMsg(p, plugin.getMsg("tabname.get-name.result", "%name%",
-					plugin.getConf().getNames().getString("players." + p.getName() + ".tabname")));
+			sendMsg(p, plugin.getMsg("tabname.get-name.result", "%name%", plugin.getTabNameHandler().getTabName(p)));
 		} else if (args.length == 2) {
 			if (!p.hasPermission(Perm.GETO.getPerm())) {
 				sendMsg(p, plugin.getMsg("no-permission", "%perm%", Perm.GETO.getPerm()));
@@ -73,14 +72,13 @@ public class get implements ICommand {
 				return false;
 			}
 
-			String nam = targ.getName();
-			if (!plugin.getConf().getNames().contains("players." + nam + ".tabname")) {
-				sendMsg(p, plugin.getMsg("tabname.no-tab-name", "%player%", nam));
+			String tabName = plugin.getTabNameHandler().getTabName(targ);
+			if (tabName.isEmpty()) {
+				sendMsg(p, plugin.getMsg("tabname.no-tab-name", "%player%", targ.getName()));
 				return false;
 			}
 
-			sendMsg(p, plugin.getMsg("tabname.get-name.target-result", "%target%", nam, "%name%",
-					plugin.getConf().getNames().getString("players." + nam + ".tabname")));
+			sendMsg(p, plugin.getMsg("tabname.get-name.target-result", "%target%", targ.getName(), "%name%", tabName));
 		}
 
 		return true;

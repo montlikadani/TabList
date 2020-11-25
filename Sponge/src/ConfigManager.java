@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.Sponge.src;
+package hu.montlikadani.tablist.sponge;
 
 import java.io.File;
 import java.io.IOException;
@@ -13,6 +13,7 @@ import org.spongepowered.api.config.DefaultConfig;
 import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
 
+import ninja.leaping.configurate.ConfigurationOptions;
 import ninja.leaping.configurate.commented.CommentedConfigurationNode;
 import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
 import ninja.leaping.configurate.loader.ConfigurationLoader;
@@ -44,8 +45,9 @@ public class ConfigManager {
 			folder.mkdirs();
 		}
 
-		this.file = new File(folder + File.separator + name);
-		this.loader = HoconConfigurationLoader.builder().setFile(file).build();
+		this.file = new File(folder, name);
+		this.loader = HoconConfigurationLoader.builder().setFile(file)
+				.setDefaultOptions(ConfigurationOptions.defaults().setShouldCopyDefaults(true)).build();
 	}
 
 	public String getPath() {
@@ -76,20 +78,18 @@ public class ConfigManager {
 	}
 
 	public void createFile() {
-		if (!file.exists()) {
-			try {
-				InputStream in = TabList.get().getClass().getClassLoader().getResourceAsStream(name);
-				if (in != null) {
-					Files.copy(in, file.toPath());
-					in.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		if (file.exists()) {
+			return;
 		}
 
-		load();
-		save();
+		try (InputStream in = TabList.get().getClass().getClassLoader().getResourceAsStream(name)) {
+			if (in != null) {
+				Files.copy(in, file.toPath());
+				in.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public CommentedConfigurationNode get(Object... path) {
@@ -97,7 +97,7 @@ public class ConfigManager {
 	}
 
 	public void set(Object value, Object... path) {
-		if (!contains(path)) {
+		if (!contains(path) && TabList.get().getC().isSetMissing()) {
 			get(path).setValue(value);
 		}
 	}
@@ -113,6 +113,7 @@ public class ConfigManager {
 	}
 
 	public boolean getBoolean(Boolean defValue, Object... path) {
+		set(defValue, path);
 		return get(path).getBoolean(defValue);
 	}
 
@@ -121,6 +122,7 @@ public class ConfigManager {
 	}
 
 	public int getInt(Integer defValue, Object... path) {
+		set(defValue, path);
 		return get(path).getInt(defValue);
 	}
 
@@ -129,6 +131,7 @@ public class ConfigManager {
 	}
 
 	public String getString(String defValue, Object... path) {
+		set(defValue, path);
 		return get(path).getString(defValue);
 	}
 
@@ -137,18 +140,17 @@ public class ConfigManager {
 	}
 
 	public List<String> getStringList(List<String> def, Object... path) {
-		List<String> list = new ArrayList<>();
 		try {
 			if (def == null) {
-				list.addAll(get(path).getList(TypeToken.of(String.class)));
-			} else {
-				list.addAll(get(path).getList(TypeToken.of(String.class), def));
+				return get(path).getList(TypeToken.of(String.class));
 			}
+
+			return get(path).getList(TypeToken.of(String.class), def);
 		} catch (ObjectMappingException e) {
 			e.printStackTrace();
 		}
 
-		return list;
+		return new ArrayList<>();
 	}
 
 	public boolean contains(Object... path) {

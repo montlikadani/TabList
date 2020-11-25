@@ -1,10 +1,12 @@
 package hu.montlikadani.tablist.bukkit;
 
-import com.earth2me.essentials.Essentials;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.tablist.groups.ITabScoreboard;
+import hu.montlikadani.tablist.bukkit.tablist.groups.ReflectionHandled;
+import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,15 +23,21 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 	private boolean afk;
 
-	private String nick;
-	private String customPrefix;
-	private String customSuffix;
+	private String nick, tabName, customPrefix, customSuffix, playerVaultGroup;
 
 	private int customPriority = Integer.MIN_VALUE;
+
+	private ITabScoreboard tabTeam;
 
 	TabListPlayer(TabList plugin, Player player) {
 		this.plugin = plugin;
 		this.player = player;
+
+		tabTeam = new ReflectionHandled(this);
+	}
+
+	public ITabScoreboard getTabTeam() {
+		return tabTeam;
 	}
 
 	public void setGroup(TeamHandler group) {
@@ -68,6 +76,10 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		this.nick = nick;
 	}
 
+	public void setTabName(String tabName) {
+		this.tabName = tabName;
+	}
+
 	public int getPriority() {
 		return customPriority == Integer.MIN_VALUE ? group == null ? Integer.MAX_VALUE : group.getPriority()
 				: customPriority;
@@ -76,7 +88,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	public boolean update() {
 		boolean update = false;
 
-		if (!isPlayerCanSeeGroup() || ConfigValues.isAfkStatusEnabled() && plugin.isAfk(player, false)
+		if (!isPlayerCanSeeGroup() || ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(player)
 				&& !ConfigValues.isAfkStatusShowPlayerGroup()) {
 			if (group != null) {
 				group = null;
@@ -86,15 +98,15 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			return update;
 		}
 
-		boolean afk = plugin.isAfk(player, false);
+		boolean afk = PluginUtils.isAfk(player);
 		if (this.afk != afk) {
 			this.afk = afk;
 			update = true;
 		}
 
 		List<TeamHandler> groupsList = plugin.getGroups().getGroupsList();
-		List<TeamHandler> playerNameGroups = groupsList.parallelStream()
-				.filter((group) -> group.getTeam().equals(player.getName())).collect(Collectors.toList());
+		List<TeamHandler> playerNameGroups = groupsList.stream()
+				.filter(group -> group.getTeam().equalsIgnoreCase(player.getName())).collect(Collectors.toList());
 		if (playerNameGroups.size() > 0) { // can there be more than 1? probably doesn't matter
 			TeamHandler team = playerNameGroups.get(0);
 			if (group != team) {
@@ -102,24 +114,42 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				group = team;
 			}
 		} else {
+			if (plugin.hasVault()) {
+				boolean found = false;
+				if (playerVaultGroup != null) {
+					for (String g : plugin.getVaultPerm().getPlayerGroups(player)) {
+						if (playerVaultGroup.equalsIgnoreCase(g)) {
+							found = true;
+							break;
+						}
+					}
+				}
+
+				// Avoiding verbose spam
+				if (!found) {
+					playerVaultGroup = plugin.getVaultPerm().getPrimaryGroup(player);
+				}
+			}
+
 			List<TeamHandler> playerPrimaryVaultGroups;
-			if (plugin.isPluginEnabled("Vault") && ConfigValues.isPreferPrimaryVaultGroup()
-					&& (playerPrimaryVaultGroups = groupsList.parallelStream()
-							.filter((group) -> group.getTeam().equals(plugin.getVaultPerm().getPrimaryGroup(player)))
-							.collect(Collectors.toList())).size() > 0) { // can there be more than 1? probably doesn't matter
+			if (playerVaultGroup != null && ConfigValues.isPreferPrimaryVaultGroup()
+					&& ((playerPrimaryVaultGroups = groupsList.stream()
+							.filter(group -> group.getTeam().equalsIgnoreCase(playerVaultGroup))
+							.collect(Collectors.toList())).size() > 0
+							|| (playerPrimaryVaultGroups = groupsList.stream()
+									.filter(group -> StringUtils.containsIgnoreCase(group.getTeam(), playerVaultGroup))
+									.collect(Collectors.toList())).size() > 0)) {
 				TeamHandler team = playerPrimaryVaultGroups.get(0);
 				if (group != team) {
 					update = true;
 					group = team;
 				}
 			} else {
-				for (final TeamHandler team : plugin.getGroups().getGroupsList()) {
+				for (final TeamHandler team : groupsList) {
 					String name = team.getTeam();
 					String perm = team.getPermission();
 
-					if (!perm.isEmpty() && ((plugin.isPluginEnabled("PermissionsEx")
-							&& PermissionsEx.getPermissionManager().has(player, perm))
-							|| (player.isPermissionSet(perm) && player.hasPermission(perm)))) {
+					if (PluginUtils.hasPermission(player, perm)) {
 						if (group != team) {
 							update = true;
 							group = team;
@@ -128,7 +158,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 						break;
 					}
 
-					if (perm.isEmpty() && plugin.isPluginEnabled("Vault")) {
+					if (perm.isEmpty() && plugin.hasVault()) {
 						for (String groups : plugin.getVaultPerm().getPlayerGroups(player)) {
 							if (groups.equalsIgnoreCase(name)) {
 								if (group != team) {
@@ -140,14 +170,30 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 							}
 						}
 					}
+
+					// Only assign global group to player if don't match any group.
+					if (team.isGlobal()) {
+						if (group != team) {
+							update = true;
+							group = team;
+						}
+					}
 				}
 			}
 		}
 
-		if (plugin.isPluginEnabled("Essentials") && ConfigValues.isUseEssentialsNickName()) {
-			String nick = JavaPlugin.getPlugin(Essentials.class).getUser(player).getNickname();
-			if (nick == null && this.nick != null || nick != null && !nick.equals(this.nick)) {
+		if (ConfigValues.isUsePluginNickName()) {
+			String nick = PluginUtils.getNickName(player);
+			if (this.nick != null || !nick.equals(this.nick)) {
 				this.nick = nick;
+				update = true;
+			}
+		}
+
+		if (ConfigValues.isTabNameEnabled() && ConfigValues.isUseTabName()) {
+			String tabName = plugin.getTabNameHandler().getTabName(player);
+			if (tabName.isEmpty() && this.tabName != null || !tabName.isEmpty() && !tabName.equals(this.tabName)) {
+				this.tabName = tabName;
 				update = true;
 			}
 		}
@@ -157,30 +203,31 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 	private boolean isPlayerCanSeeGroup() {
 		String path = "change-prefix-suffix-in-tablist.";
-		Player p = this.player;
 
 		if (ConfigValues.isUseDisabledWorldsAsWhiteList()) {
-			if (!plugin.getC().getStringList(path + "disabled-worlds.list").contains(p.getWorld().getName())) {
+			if (!plugin.getConf().getConfig().getStringList(path + "disabled-worlds.list")
+					.contains(player.getWorld().getName())) {
 				return false;
 			}
 		} else {
-			if (plugin.getC().getStringList(path + "disabled-worlds.list").contains(p.getWorld().getName())) {
+			if (plugin.getConf().getConfig().getStringList(path + "disabled-worlds.list")
+					.contains(player.getWorld().getName())) {
 				nick = null;
 				return false;
 			}
 		}
 
-		if (plugin.isHookPreventTask(p)) {
+		if (PluginUtils.isInGame(player)) {
 			return false;
 		}
 
-		if (ConfigValues.isHideGroupInVanish() && plugin.isVanished(p, false)) {
-			plugin.getGroups().removePlayerGroup(p);
+		if (ConfigValues.isHideGroupInVanish() && PluginUtils.isVanished(player)) {
+			plugin.getGroups().removePlayerGroup(player);
 			return false;
 		}
 
-		if (ConfigValues.isHideGroupWhenAfk() && plugin.isAfk(p, false)) {
-			plugin.getGroups().removePlayerGroup(p);
+		if (ConfigValues.isHideGroupWhenAfk() && PluginUtils.isAfk(player)) {
+			plugin.getGroups().removePlayerGroup(player);
 			return false;
 		}
 
@@ -192,9 +239,8 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				plugin.makeAnim(customPrefix == null ? group == null ? "" : group.getPrefix() : customPrefix));
 
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			prefix = colorMsg(plugin.getC().getString(
-					"placeholder-format.afk-status.format-" + (plugin.isAfk(player, false) ? "yes" : "no"), ""))
-					+ prefix;
+			prefix = colorMsg(plugin.getConf().getConfig().getString(
+					"placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), "")) + prefix;
 		}
 
 		return prefix;
@@ -205,15 +251,15 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				plugin.makeAnim(customSuffix == null ? group == null ? "" : group.getSuffix() : customSuffix));
 
 		if (ConfigValues.isAfkStatusEnabled() && ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			suffix = suffix + colorMsg(plugin.getC().getString(
-					"placeholder-format.afk-status.format-" + (plugin.isAfk(player, false) ? "yes" : "no"), ""));
+			suffix += colorMsg(plugin.getConf().getConfig().getString(
+					"placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), ""));
 		}
 
 		return suffix;
 	}
 
 	public String getPlayerName() {
-		return nick == null ? player.getName() : nick;
+		return nick == null ? tabName == null ? player.getName() : tabName : nick;
 	}
 
 	@Override

@@ -1,6 +1,26 @@
 package hu.montlikadani.tablist;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 public class Global {
+
+	public static String matchColorRegex(String s) {
+		String regex = "#[a-fA-F0-9]{6}";
+		//String regex = "&?#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})";
+		Matcher matcher = Pattern.compile(regex).matcher(s);
+		while (matcher.find()) {
+			String group = matcher.group(0);
+
+			try {
+				s = s.replace(group, net.md_5.bungee.api.ChatColor.of(group) + "");
+			} catch (Exception e) {
+				System.out.println("[TabList] Bad hex color: " + group);
+			}
+		}
+
+		return s;
+	}
 
 	public static String setSymbols(String s) {
 		s = s.replace("<0>", "•");

@@ -9,13 +9,13 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.ConfigValues;
 import hu.montlikadani.tablist.bukkit.Groups;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.TeamHandler;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
+import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class setpriority implements ICommand {
@@ -45,59 +45,48 @@ public class setpriority implements ICommand {
 			return false;
 		}
 
-		Player target = Bukkit.getPlayer(args[1]);
-		if (target == null) {
-			sendMsg(sender, plugin.getMsg("set-prefix-suffix.player-not-found", "%target%", args[1]));
-			return false;
-		}
-
-		String match = args[args.length == 4 ? 3 : 2];
+		String match = args[2];
 		if (!match.matches("[0-9]+")) {
 			sendMsg(sender, plugin.getMsg("set-prefix-suffix.set-priority.priority-must-be-number"));
 			return false;
 		}
 
-		String name = args.length > 3 ? args[2] : target.getName();
+		String name = args[1];
 		int priority = Integer.parseInt(match);
 
-		plugin.getGS().set("groups." + name + ".sort-priority", priority);
+		plugin.getConf().getGroups().set("groups." + name + ".sort-priority", priority);
 		try {
-			plugin.getGS().save(plugin.getConf().getGroupsFile());
+			plugin.getConf().getGroups().save(plugin.getConf().getGroupsFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 
-		String prefix = plugin.getGS().getString("groups." + name + ".prefix", "");
-		String suffix = plugin.getGS().getString("groups." + name + ".suffix", "");
+		String prefix = plugin.getConf().getGroups().getString("groups." + name + ".prefix", "");
+		String suffix = plugin.getConf().getGroups().getString("groups." + name + ".suffix", "");
 
 		Groups groups = plugin.getGroups();
-
-		TeamHandler team = groups.getTeam(name);
-		if (team == null) {
-			team = new TeamHandler(name, prefix, suffix);
-		}
+		TeamHandler team = groups.getTeam(name).orElse(new TeamHandler(name, prefix, suffix));
 
 		team.setPriority(priority);
 
-		if (!prefix.isEmpty()) {
-			prefix = plugin.getPlaceholders().replaceVariables(target, prefix);
+		Player target = Bukkit.getPlayer(name);
+		if (target != null) {
+			if (!prefix.isEmpty()) {
+				prefix = plugin.getPlaceholders().replaceVariables(target, prefix);
+			}
+			if (!suffix.isEmpty()) {
+				suffix = plugin.getPlaceholders().replaceVariables(target, suffix);
+			}
+
+			TabListPlayer tabPlayer = groups.addPlayer(target);
+			tabPlayer.setCustomPrefix(prefix);
+			tabPlayer.setCustomSuffix(suffix);
+			tabPlayer.setCustomPriority(priority);
+			groups.setPlayerTeam(tabPlayer, priority);
 		}
-		if (!suffix.isEmpty()) {
-			suffix = plugin.getPlaceholders().replaceVariables(target, suffix);
-		}
 
-		TabListPlayer tabPlayer = groups.addPlayer(target);
-		tabPlayer.setCustomPrefix(prefix);
-		tabPlayer.setCustomSuffix(suffix);
-		tabPlayer.setCustomPriority(priority);
-		groups.setPlayerTeam(target, prefix, suffix, Integer.toString(100000 + priority)
-				+ (tabPlayer.getGroup() == null ? target.getName() : tabPlayer.getGroup().getTeam()));
-
-		java.util.List<TeamHandler> teams = groups.getGroupsList();
-		teams.add(team);
-
-		groups.getGroupsList().clear();
-		groups.getGroupsList().addAll(teams);
+		groups.getGroupsList().remove(team);
+		groups.getGroupsList().add(team);
 
 		sendMsg(sender,
 				plugin.getMsg("set-prefix-suffix.set-priority.successfully-set", "%group%", name, "%number%", match));

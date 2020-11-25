@@ -1,90 +1,66 @@
 package hu.montlikadani.tablist.bungee.tablist.groups;
 
-import java.util.List;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import hu.montlikadani.tablist.bungee.Misc;
 import hu.montlikadani.tablist.bungee.TabList;
 import hu.montlikadani.tablist.bungee.tablist.ITask;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
-import net.md_5.bungee.chat.ComponentSerializer;
-import net.md_5.bungee.config.Configuration;
-import net.md_5.bungee.protocol.packet.PlayerListItem;
-import net.md_5.bungee.protocol.packet.PlayerListItem.Action;
-import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 
 public class Groups implements ITask {
 
 	private TabList plugin;
-
 	private ScheduledTask task;
 
-	private int y = 0;
-
-	private final Item items = new Item();
-	private final PlayerListItem listItem = new PlayerListItem();
+	private final Set<PlayerGroup> playersGroup = Collections.synchronizedSet(new HashSet<PlayerGroup>());
 
 	public Groups(TabList plugin) {
 		this.plugin = plugin;
 	}
 
+	public Optional<PlayerGroup> getPlayerGroup(ProxiedPlayer player) {
+		return playersGroup.stream().filter(g -> g.getPlayerUUID().equals(player.getUniqueId())).findFirst();
+	}
+
+	public void addPlayer(ProxiedPlayer player) {
+		synchronized (playersGroup) {
+			if (!plugin.getConf().getBoolean("tablist-groups.enabled", false) || !getPlayerGroup(player).isPresent()) {
+				playersGroup.add(new PlayerGroup(player.getUniqueId()));
+			}
+		}
+	}
+
+	public void removePlayer(ProxiedPlayer player) {
+		synchronized (playersGroup) {
+			getPlayerGroup(player).ifPresent(playersGroup::remove);
+		}
+	}
+
 	@Override
 	public void start() {
-		if (!plugin.getConf().getBoolean("tablist-groups.enabled", false)) {
+		if (!plugin.getConf().getBoolean("tablist-groups.enabled", false) || plugin.getProxy().getPlayers().isEmpty()) {
 			cancel();
 			return;
 		}
 
 		if (task != null) {
-			cancel();
+			return;
 		}
 
 		task = plugin.getProxy().getScheduler().schedule(plugin, () -> {
-			if (plugin.getProxy().getPlayers().isEmpty() || !plugin.getConf().getBoolean("tablist-groups.enabled")
-					|| !plugin.getConf().contains("groups")) {
+			if (plugin.getProxy().getPlayers().isEmpty() || !plugin.getConf().contains("groups")) {
 				cancel();
 				return;
 			}
 
-			plugin.getProxy().getPlayers().forEach(this::update);
-		}, 0L, plugin.getConf().getInt("tablist-groups.refresh-time"), TimeUnit.MILLISECONDS);
-	}
-
-	@Override
-	public void update(final ProxiedPlayer pl) {
-		Configuration c = plugin.getConf();
-
-		String name = "";
-		for (String num : c.getSection("groups").getKeys()) {
-			String perm = c.getString("groups." + num + ".permission", "");
-			if (!perm.trim().isEmpty() && !pl.hasPermission(perm)) {
-				continue;
+			synchronized (playersGroup) {
+				playersGroup.forEach(PlayerGroup::update);
 			}
-
-			List<String> list = c.getStringList("groups." + num + ".name");
-			if (!list.isEmpty()) {
-				int gSize = list.size() - 1;
-				if (y < gSize) {
-					y++;
-				} else {
-					y = 0;
-				}
-
-				name = list.get(y);
-			} else if (c.getString("groups." + num + ".name") != null) {
-				name = c.getString("groups." + num + ".name");
-			}
-
-			break;
-		}
-
-		if (name.trim().isEmpty()) {
-			return;
-		}
-
-		sendPacket(pl, name);
+		}, 10L, plugin.getConf().getInt("tablist-groups.refresh-time"), TimeUnit.MILLISECONDS);
 	}
 
 	@Override
@@ -99,21 +75,15 @@ public class Groups implements ITask {
 			task = null;
 		}
 
-		plugin.getProxy().getPlayers().forEach(p -> sendPacket(p, p.getName()));
-	}
+		synchronized (playersGroup) {
+			playersGroup.forEach(g -> {
+				ProxiedPlayer player = plugin.getProxy().getPlayer(g.getPlayerUUID());
+				if (player != null) {
+					g.sendPacket(player, player.getName());
+				}
+			});
 
-	private void sendPacket(ProxiedPlayer p, String name) {
-		if (listItem.getAction() != Action.UPDATE_DISPLAY_NAME) {
-			listItem.setAction(Action.UPDATE_DISPLAY_NAME);
-		}
-
-		items.setUuid(p.getUniqueId());
-		items.setDisplayName(
-				ComponentSerializer.toString(TextComponent.fromLegacyText(Misc.replaceVariables(name, p))));
-
-		listItem.setItems(new Item[] { items });
-		for (ProxiedPlayer pl : plugin.getProxy().getPlayers()) {
-			pl.unsafe().sendPacket(listItem);
+			playersGroup.clear();
 		}
 	}
 }

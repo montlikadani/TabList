@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.tablist.bukkit.TabList
-version: 5.4.1
+version: 5.4.9
 author: montlikadani
 description: An ultimate animated tablist.
 softdepend:
@@ -8,9 +8,11 @@ softdepend:
 - Essentials
 - Vault
 - SuperVanish
-- RageMode
+- PremiumVanish
 - Multiverse-Core # Load this plugin before tablist to prevent issues
 - ProtocolLib
+- PermissionsEx
+- CMI
 api-version: 1.13
 # DO NOT EDIT ANYTHING ABOVE THIS LINE!
 
@@ -40,6 +42,8 @@ permissions:
        tablist.fakeplayers.add: true
        tablist.fakeplayers.remove: true
        tablist.fakeplayers.list: true
+       tablist.fakeplayers.setskin: true
+       tablist.fakeplayers.setping: true
        tablist.setprefix: true
        tablist.setsuffix: true
        tablist.setpriority: true
@@ -82,6 +86,12 @@ permissions:
     default: false
   tablist.fakeplayers.list:
     description: Gives access to use fakeplayers list command.
+    default: false
+  tablist.fakeplayers.setskin:
+    description: Gives access to use fakeplayers setskin command.
+    default: false
+  tablist.fakeplayers.setping:
+    description: Gives access to use fakeplayers setping command.
     default: false
   tablist.setprefix:
     description: Gives access to use /tl setprefix command.

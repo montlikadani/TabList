@@ -1,12 +1,15 @@
 package hu.montlikadani.tablist.bukkit.utils;
 
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public class Util {
 
@@ -23,14 +26,26 @@ public class Util {
 	}
 
 	public static void logConsole(Level level, String msg, boolean loaded) {
-		if ((!loaded || TabList.getInstance().getC().getBoolean("logconsole", true)) && msg != null
+		if ((!loaded || TabList.getInstance().getConf().getConfig().getBoolean("logconsole", true)) && msg != null
 				&& !msg.trim().isEmpty()) {
 			Bukkit.getLogger().log(level != null ? level : Level.INFO, "[TabList] " + msg);
 		}
 	}
 
 	public static String colorMsg(String msg) {
-		return msg == null ? "" : ChatColor.translateAlternateColorCodes('&', msg);
+		return colorMsg(msg, false);
+	}
+
+	public static String colorMsg(String msg, boolean usingNMSHex) {
+		if (msg == null) {
+			return "";
+		}
+
+		if (!usingNMSHex && Version.isCurrentEqualOrHigher(Version.v1_16_R1) && msg.contains("#")) {
+			msg = Global.matchColorRegex(msg);
+		}
+
+		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
 
 	public static void sendMsg(CommandSender sender, String s) {
@@ -46,70 +61,25 @@ public class Util {
 	}
 
 	public static String stripColor(String str) {
-		if (str.contains("&a"))
-			str = str.replace("&a", "");
+		for (ChatColor color : ChatColor.values()) {
+			if (str.contains(("&" + color.getChar()))) {
+				str = str.replace("&" + color.getChar(), "");
+			}
+		}
 
-		if (str.contains("&b"))
-			str = str.replace("&b", "");
+		return ChatColor.stripColor(str);
+	}
 
-		if (str.contains("&c"))
-			str = str.replace("&c", "");
+	public static boolean isRealUUID(String uuid) {
+		if (uuid == null || uuid.trim().isEmpty()) {
+			return true;
+		}
 
-		if (str.contains("&d"))
-			str = str.replace("&d", "");
-
-		if (str.contains("&e"))
-			str = str.replace("&e", "");
-
-		if (str.contains("&f"))
-			str = str.replace("&f", "");
-
-		if (str.contains("&1"))
-			str = str.replace("&1", "");
-
-		if (str.contains("&2"))
-			str = str.replace("&2", "");
-
-		if (str.contains("&3"))
-			str = str.replace("&3", "");
-
-		if (str.contains("&4"))
-			str = str.replace("&4", "");
-
-		if (str.contains("&5"))
-			str = str.replace("&5", "");
-
-		if (str.contains("&6"))
-			str = str.replace("&6", "");
-
-		if (str.contains("&7"))
-			str = str.replace("&7", "");
-
-		if (str.contains("&8"))
-			str = str.replace("&8", "");
-
-		if (str.contains("&9"))
-			str = str.replace("&9", "");
-
-		if (str.contains("&0"))
-			str = str.replace("&0", "");
-
-		if (str.contains("&n"))
-			str = str.replace("&n", "");
-
-		if (str.contains("&o"))
-			str = str.replace("&o", "");
-
-		if (str.contains("&m"))
-			str = str.replace("&m", "");
-
-		if (str.contains("&k"))
-			str = str.replace("&k", "");
-
-		if (str.contains("&l"))
-			str = str.replace("&l", "");
-
-		str = ChatColor.stripColor(str);
-		return str;
+		try {
+			UUID.fromString(uuid);
+			return true;
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
 	}
 }

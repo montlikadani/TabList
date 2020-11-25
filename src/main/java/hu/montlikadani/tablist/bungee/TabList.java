@@ -3,18 +3,17 @@ package hu.montlikadani.tablist.bungee;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
-import hu.montlikadani.tablist.bungee.tablist.PlayerTab;
 import hu.montlikadani.tablist.bungee.tablist.TabManager;
 import hu.montlikadani.tablist.bungee.tablist.groups.Groups;
 import net.md_5.bungee.api.CommandSender;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.event.ProxyReloadEvent;
+import net.md_5.bungee.api.event.ServerDisconnectEvent;
+import net.md_5.bungee.api.event.ServerKickEvent;
+import net.md_5.bungee.api.event.ServerSwitchEvent;
 import net.md_5.bungee.api.plugin.Command;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -40,16 +39,19 @@ public class TabList extends Plugin implements Listener {
 		tab = new TabManager(this);
 		groups = new Groups(this);
 
-		newCommand();
-		reload();
-
 		getProxy().getPluginManager().registerListener(this, this);
+		newCommand();
+
+		reload();
 	}
 
 	@Override
 	public void onDisable() {
 		if (instance == null)
 			return;
+
+		getProxy().getPluginManager().unregisterCommands(this);
+		getProxy().getPluginManager().unregisterListeners(this);
 
 		tab.cancel();
 		groups.cancel();
@@ -77,6 +79,11 @@ public class TabList extends Plugin implements Listener {
 
 		tab.start();
 		groups.start();
+
+		getProxy().getPlayers().forEach(pl -> {
+			tab.addPlayer(pl);
+			groups.addPlayer(pl);
+		});
 	}
 
 	private void loadFile() {
@@ -208,12 +215,32 @@ public class TabList extends Plugin implements Listener {
 	public void onLogin(PostLoginEvent e) {
 		tab.start();
 		groups.start();
+
+		tab.addPlayer(e.getPlayer());
+		groups.addPlayer(e.getPlayer());
 	}
 
 	@EventHandler
-	public void onServerChange(net.md_5.bungee.api.event.ServerConnectedEvent event) {
-		getProxy().getScheduler().schedule(this,
-				() -> tab.getPlayerTab(event.getPlayer()).ifPresent(PlayerTab::loadTabList), 1, TimeUnit.SECONDS);
+	public void onLeave(ServerDisconnectEvent event) {
+		tab.removePlayer(event.getPlayer());
+		groups.removePlayer(event.getPlayer());
+	}
+
+	@EventHandler
+	public void onKick(ServerKickEvent event) {
+		tab.removePlayer(event.getPlayer());
+		groups.removePlayer(event.getPlayer());
+	}
+
+	@EventHandler
+	public void onServerSwitch(ServerSwitchEvent ev) {
+		getProxy().getScheduler().schedule(this, () -> {
+			tab.addPlayer(ev.getPlayer());
+			groups.addPlayer(ev.getPlayer());
+
+			tab.start();
+			groups.start();
+		}, 20L, java.util.concurrent.TimeUnit.MILLISECONDS);
 	}
 
 	/**
@@ -222,9 +249,5 @@ public class TabList extends Plugin implements Listener {
 	@EventHandler
 	public void onProxyReload(ProxyReloadEvent ev) {
 		reload();
-	}
-
-	public BaseComponent[] getComponentBuilder(String s) {
-		return new ComponentBuilder(s).create();
 	}
 }

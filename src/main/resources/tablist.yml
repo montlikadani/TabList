@@ -1,35 +1,41 @@
-# Tablist, header & footer with animation.
+# Tablist header & footer with animations.
 
-# Current plugin placeholders: https://github.com/montlikadani/TabList/wiki/Placeholders
-# Use placeholders: https://github.com/PlaceholderAPI/PlaceholderAPI/wiki/Placeholders
-# Use symbols: https://github.com/montlikadani/TabList/wiki/Symbols
+# Available placeholders: https://github.com/montlikadani/TabList/wiki/Placeholders
+# Available symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 
-# Use %anim:animationName% placeholder to make an animation.
+# Use %anim:animationName% placeholder to make an animation. Must be firstly created in animcreator.yml file!
 
-# How do I use this tab section? Usage: https://github.com/montlikadani/TabList/wiki/TabList-Usage
+# How do I use this tab section? Take a look at this page: https://github.com/montlikadani/TabList/wiki/TabList-Usage
 
-# Enable the tab? (Header & footer)
+# Enable the tab to show for all players? (Header & footer)
 enabled: true
 
-# Save the toggled tablists to a file to load after server restart.
+# Save the toggled tablists to a file and load them after server restart.
 # If this false, if the file is exists, it will be deleted automatically at server restart.
 remember-toggled-tablist-to-file: true
 
 # Hide tab when the player is vanished?
-# Required Essentials plugin!
+# Requires Essentials, CMI or SuperVanish plugin!
 hide-tab-when-player-vanished: false
 
-# What world does not display the tab?
+# In these worlds tab will NOT be displayed
 disabled-worlds:
 - "world1"
 - "worldTest"
 
-# Blacklisted players, where the player not see the tab.
+# For these players tab will NOT be displayed
 blacklisted-players:
 #- myname
 
+# Custom variables that will be replaced in tablist.
+# This is useful when creating a lot of lines with the same content.
+# Usage: <NameOfPlaceholder>: "&6Text..."
+custom-variables:
+  <name>: "&5&o%player%"
+  <lines>: "&5&m======================"
+
 # Tab update time interval. (In ticks!)
-# Set 0 to disable the tab refresh.
+# Set to 0 to disable tab refreshing.
 interval: 4
 
 # Define if the header & footer should be randomized.
@@ -37,15 +43,19 @@ interval: 4
 random: false
 
 header:
-- "<lines>"
-- "%anim:tablist%"
+- "<lines>\n%anim:tablist%"
 - "&7<75> %anim:welcome% %player%&c!&7 <74>\n&6Ping:&r %ping%&7ms"
+- "&8<1>&7 Used ram, free, max:&e %server-ram-max%"
+- "%memory_bar%"
+- "  &e%server-ram-used%         %server-ram-free%"
 
 footer:
 - "<13>&e&l Players:&6 %online-players%&7/&6%max-players%"
 - "&7<28> %anim:website%&7:&2 &nexample.com&7 <28>\n<lines>"
 
-# Per world tablist
+# Defines per world tablist for different worlds
+# You can separate worlds with ", " to show tablist in that worlds
+# You can create as many worlds you want
 per-world:
   my_nether, otherWorld: # you can add multiple worlds here
     header: "&3This is a per world plugin %anim:tablist%&3."
@@ -55,7 +65,7 @@ per-world:
     header: "%anim:perWorld%"
     footer: "&6World:&7 %world%"
 
-    # Per player in per world tablist
+    # Defines per player tablist in this world
     per-player:
       playerName:
         header: "&3This is a per player plugin %anim:tablist%&3."
@@ -64,7 +74,7 @@ per-world:
         - "&aPlayer:&8 %player%"
 
   testWorld:
-    # Per group in per world tablist
+    # Defines per group tablist only in the above world
     # Requires Vault plugin!
     per-group:
       groupName:
@@ -73,13 +83,28 @@ per-world:
         - "&6World:&7 %world%"
         - "&aGroup:&8 %vault_rank%"
 
-# Per player tablist
+# Defines per-permission tablist
+# Any player/group have tablist.name permission node will use the set of tab header/footer.
+permissions:
+  '1':
+    header:
+    - "%anim:tablist%"
+    - ""
+    - "&7<57> &2%player%"
+  node2:
+    header: "%anim:tablist%"
+    footer:
+    - "&c+++++++++++++++"
+    - "&a%player%, &e%world%"
+    - "&c+++++++++++++++"
+
+# Defines per player handled tablist
 per-player:
   testplayer:
     header: "%anim:perPlayer%"
     footer: "<lines>"
 
-# Per group tablist
+# Defines per-grouped tablist for players.
 # Requires Vault plugin!
 per-group:
   vaultGroup:
