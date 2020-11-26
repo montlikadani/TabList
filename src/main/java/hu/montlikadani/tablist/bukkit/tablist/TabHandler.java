@@ -1,8 +1,5 @@
 package hu.montlikadani.tablist.bukkit.tablist;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -10,27 +7,22 @@ import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachmentInfo;
 
-import com.mojang.authlib.GameProfile;
-
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.tablist.tabEntry.Rows;
-import hu.montlikadani.tablist.bukkit.tablist.tabEntry.TabEntry;
-import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
+import hu.montlikadani.tablist.bukkit.tablist.tabentries.TabEntry;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import hu.montlikadani.tablist.bukkit.utils.Variables;
 
 public class TabHandler implements ITabHandler {
 
 	private final TabList plugin;
-	private final Rows[] rows = new Rows[80];
 
 	private UUID playerUUID;
 	private TabBuilder builder;
+	private TabEntry tabEntry;
 
 	private boolean worldEnabled = false;
 	private String usedPermission = "";
@@ -45,6 +37,7 @@ public class TabHandler implements ITabHandler {
 		this.plugin = plugin;
 		this.playerUUID = playerUUID;
 		this.builder = builder == null ? TabBuilder.builder().build() : builder;
+		this.tabEntry = new TabEntry(playerUUID);
 	}
 
 	@Override
@@ -62,99 +55,9 @@ public class TabHandler implements ITabHandler {
 		return builder;
 	}
 
-	public void updateEntries() {
-		if (player == null || !player.isOnline()) {
-			return;
-		}
-
-		final FileConfiguration c = plugin.getTabC();
-		if (c == null || !c.getBoolean("enabled")) {
-			return;
-		}
-
-		try {
-			Class<?> packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
-			Constructor<?> infoData = null;
-			c: for (Class<?> clazz : packetPlayOutPlayerInfo.getClasses()) {
-				for (Constructor<?> co : (Constructor[]) clazz.getConstructors()) {
-					if (co.getParameterCount() == 5) {
-						infoData = co;
-						break c;
-					}
-				}
-			}
-
-			if (infoData == null)
-				return;
-
-			infoData.setAccessible(true);
-
-			GameProfile profile = new GameProfile(UUID.randomUUID(), player.getName());
-			Object constPlayer = ReflectionUtils.Classes.getPlayerContructor(player, profile);
-			Class<?> enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction();
-
-			Object entityPlayerArray = Array.newInstance(constPlayer.getClass(), 1);
-			Array.set(entityPlayerArray, 0, constPlayer);
-
-			Object insPacket = packetPlayOutPlayerInfo
-					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(ReflectionUtils
-							.getFieldObject(enumPlayerInfoAction, enumPlayerInfoAction.getDeclaredField("ADD_PLAYER")),
-							entityPlayerArray);
-
-			Class<?> enumGameMode = ReflectionUtils.getNMSClass("EnumGamemode");
-			if (enumGameMode == null) {
-				enumGameMode = ReflectionUtils.getNMSClass("WorldSettings$EnumGamemode");
-			}
-
-			Object gmNotSet = ReflectionUtils.getField(enumGameMode, "NOT_SET").get(enumGameMode);
-			Field infoList = ReflectionUtils.getField(insPacket, "b");
-
-			TabEntry[] entries = fillRows();
-
-			@SuppressWarnings("unchecked")
-			List<Object> playerInfoDataList = (List<Object>) infoList.get(insPacket);
-			for (Rows row : this.rows) {
-				playerInfoDataList.add(infoData.newInstance(insPacket, row, row.getPing(), gmNotSet,
-						ReflectionUtils.getAsIChatBaseComponent(row.getText())));
-				hu.montlikadani.tablist.bukkit.utils.Util.logConsole(row.getText() + " " + row.getPing());
-			}
-
-			ReflectionUtils.sendPacket(player, insPacket);
-
-			for (int i = 0; i < 80; i++) {
-				Rows row = this.rows[i];
-				String fieldName = "";
-				/*if (row.setHead(entries[i].getHeadSkin())) {
-					fieldName = "ADD_PLAYER";
-				} else {*/
-					if (row.setText(entries[i].getText())) {
-						fieldName = "UPDATE_DISPLAY_NAME";
-					}
-
-					if (row.setPing(entries[i].getPing())) {
-						fieldName = "UPDATE_LATENCY";
-					}
-				//}
-
-				if (!fieldName.isEmpty()) {
-					Object insPacket2 = packetPlayOutPlayerInfo
-							.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
-							.newInstance(ReflectionUtils.getFieldObject(enumPlayerInfoAction,
-									enumPlayerInfoAction.getDeclaredField(fieldName)), entityPlayerArray);
-
-					@SuppressWarnings("unchecked")
-					List<Object> playerInfoData = (List<Object>) infoList.get(insPacket2);
-					for (Rows r : this.rows) {
-						playerInfoData.add(infoData.newInstance(insPacket2, r, r.getPing(), gmNotSet,
-								ReflectionUtils.getAsIChatBaseComponent(r.getText())));
-					}
-
-					ReflectionUtils.sendPacket(player, insPacket2);
-				}
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+	@Override
+	public TabEntry getTabEntry() {
+		return tabEntry;
 	}
 
 	public void updateTab() {
@@ -168,6 +71,7 @@ public class TabHandler implements ITabHandler {
 		}
 
 		TabTitle.sendTabTitle(player, "", "");
+		tabEntry.removeEntries();
 
 		if (!plugin.getConf().getTablistFile().exists()) {
 			return;
@@ -185,6 +89,8 @@ public class TabHandler implements ITabHandler {
 				|| TabManager.TABENABLED.getOrDefault(playerUUID, false) || PluginUtils.isInGame(player)) {
 			return;
 		}
+
+		tabEntry.fillEntries();
 
 		List<String> header = null, footer = null;
 
@@ -415,61 +321,5 @@ public class TabHandler implements ITabHandler {
 				TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));
 			}
 		}
-	}
-
-	public TabEntry[] getTabEntries() {
-		TabEntry[] tabArray = new TabEntry[80];
-
-		ConfigurationSection section = plugin.getTabC().getConfigurationSection("rows");
-		if (section == null) {
-			return tabArray;
-		}
-
-		for (String key : section.getKeys(false)) {
-			int index = 0;
-			try {
-				index = Integer.parseInt(key);
-			} catch (NumberFormatException e) {
-				continue;
-			}
-
-			if (index < 0 || index > 79) {
-				continue;
-			}
-
-			TabEntry entry = new TabEntry().setText(section.getString(key + ".text", ""))
-					.setPing(section.getInt(key + ".ping", -1));
-					/*.setHead(new Property("textures", section.getString(key + ".head.value", ""),
-							section.getString(key + ".head.signature", "")));*/
-			tabArray[index] = entry;
-		}
-
-		for (int i = 0; i < tabArray.length; i++) {
-			if (tabArray[i] == null) {
-				TabEntry entry = new TabEntry().setText(plugin.getTabC().getString("default-row.text", ""))
-						.setPing(plugin.getTabC().getInt("default-row.ping", -1));
-						/*.setHead(new Property("textures", plugin.getTabC().getString("default-row.head.value", ""),
-								plugin.getTabC().getString("default-row.head.signature", ""))*/
-				tabArray[i] = entry;
-			}
-		}
-
-		return tabArray;
-	}
-
-	public TabEntry getEntry(int index) {
-		return getTabEntries()[(index > 79 || index < 0) ? 79 : index];
-	}
-
-	public TabEntry[] fillRows() {
-		TabEntry[] entries = getTabEntries();
-
-		for (int i = 0; i < 80; i++) {
-			TabEntry entry = entries[i];
-			Rows row = new Rows(TabManager.ROWUUIDS[i], i, entry.getText(), entry.getPing(), entry.getHeadSkin());
-			this.rows[i] = row;
-		}
-
-		return entries;
 	}
 }

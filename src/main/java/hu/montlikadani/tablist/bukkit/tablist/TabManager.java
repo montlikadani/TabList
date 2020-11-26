@@ -20,7 +20,6 @@ import hu.montlikadani.tablist.bukkit.TabList;
 
 public class TabManager {
 
-	public static final UUID[] ROWUUIDS = new UUID[80];
 	public static final Map<UUID, Boolean> TABENABLED = new HashMap<>();
 
 	private TabList plugin;
@@ -30,11 +29,6 @@ public class TabManager {
 
 	public TabManager(TabList plugin) {
 		this.plugin = plugin;
-
-		for (int i = 0; i < 80; i++) {
-			ROWUUIDS[i] = UUID.fromString(
-					String.format("00000000-0000-00%s-0000-000000000000", (i < 10) ? ("0" + i) : Integer.toString(i)));
-		}
 	}
 
 	public Set<TabHandler> getTabPlayers() {
@@ -82,13 +76,20 @@ public class TabManager {
 	public void removePlayer(Player player) {
 		TabTitle.sendTabTitle(player, "", "");
 
-		getPlayerTab(player).ifPresent(tabPlayers::remove);
+		getPlayerTab(player).ifPresent(tab -> {
+			tab.getTabEntry().removeEntries();
+			tabPlayers.remove(tab);
+		});
 	}
 
 	public void removeAll() {
 		cancelTask();
 
-		tabPlayers.forEach(th -> TabTitle.sendTabTitle(th.getPlayer(), "", ""));
+		tabPlayers.forEach(th -> {
+			TabTitle.sendTabTitle(th.getPlayer(), "", "");
+			th.getTabEntry().removeEntries();
+		});
+
 		tabPlayers.clear();
 	}
 

@@ -15,6 +15,13 @@ public interface IFakePlayers {
 	String getName();
 
 	/**
+	 * Sets and updates the existing fake player name.
+	 * 
+	 * @param name the new name
+	 */
+	void setName(String name);
+
+	/**
 	 * Gets the fake player ping current set of latency.
 	 * 
 	 * @return the amount of latency
@@ -24,7 +31,7 @@ public interface IFakePlayers {
 	/**
 	 * Attempts to create a fake player for the given player.
 	 * 
-	 * @param p {@link Player}
+	 * @param p {@link Player} the target player where we want to show
 	 * @see #createFakePlayer(Player, int)
 	 */
 	void createFakePlayer(Player p);
@@ -33,7 +40,7 @@ public interface IFakePlayers {
 	 * Attempts to create a fake player for the given player and sets the ping
 	 * latency.
 	 * 
-	 * @param p           {@link Player}
+	 * @param p           {@link Player} the target player where we want to show
 	 * @param pingLatency ping value (> 0)
 	 * @see #createFakePlayer(Player, String, int)
 	 */
@@ -43,7 +50,7 @@ public interface IFakePlayers {
 	 * Attempts to create a fake player for the given player, setting their head
 	 * skin from uuid and ping.
 	 * 
-	 * @param p           {@link Player}
+	 * @param p           {@link Player} the target player where we want to show
 	 * @param headUUID    an uuid of valid user
 	 * @param pingLatency ping value (> 0)
 	 */

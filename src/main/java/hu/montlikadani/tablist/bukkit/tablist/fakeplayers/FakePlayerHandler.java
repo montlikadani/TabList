@@ -63,10 +63,6 @@ public class FakePlayerHandler {
 				}
 			}
 
-			if (name.length() > 16) {
-				name = name.substring(0, 16);
-			}
-
 			final IFakePlayers fp = new FakePlayers(colorMsg(name));
 			final int finalPing = ping;
 			final String finalHeadUUID = headUUID;
@@ -85,15 +81,7 @@ public class FakePlayerHandler {
 	}
 
 	public boolean createPlayer(Player p, String name, String headUUID, int ping) {
-		if (name == null || name.trim().isEmpty()) {
-			return false;
-		}
-
-		if (name.length() > 16) {
-			name = name.substring(0, 16);
-		}
-
-		if (getFakePlayerByName(name).isPresent()) {
+		if (name == null || name.trim().isEmpty() || getFakePlayerByName(name).isPresent()) {
 			return false;
 		}
 
@@ -115,9 +103,7 @@ public class FakePlayerHandler {
 			return false;
 		}
 
-		name = colorMsg(name);
-
-		IFakePlayers fp = new FakePlayers(name);
+		IFakePlayers fp = new FakePlayers(colorMsg(name));
 		fp.createFakePlayer(p, headUUID, ping);
 		fakePlayers.add(fp);
 		return true;
