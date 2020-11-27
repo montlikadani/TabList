@@ -3,10 +3,11 @@ package hu.montlikadani.tablist.bukkit.utils;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 
 import com.google.gson.Gson;
@@ -18,7 +19,7 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 public class ReflectionUtils {
 
 	private static final Gson GSON = new GsonBuilder().create();
-	private static final List<JsonObject> JSONLIST = new ArrayList<>();
+	private static final List<JsonObject> JSONLIST = new CopyOnWriteArrayList<>();
 
 	private ReflectionUtils() {
 	}
@@ -27,15 +28,16 @@ public class ReflectionUtils {
 		return invokeMethod(obj, "getHandle");
 	}
 
-	public static Object getAsIChatBaseComponent(final String text) throws Exception {
+	public synchronized static Object getAsIChatBaseComponent(final String text) throws Exception {
 		Class<?> iChatBaseComponent = getNMSClass("IChatBaseComponent");
 
-		if (Version.isCurrentEqualOrHigher(Version.v1_16_R1) && text.contains("#")) {
+		if (Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
 			JSONLIST.clear();
 
 			JsonObject obj = new JsonObject();
 			StringBuilder builder = new StringBuilder();
 
+			String font = "";
 			String res = text;
 			char charBefore = ' ';
 			for (int i = 0; i < res.length(); i++) {
@@ -50,7 +52,37 @@ public class ReflectionUtils {
 				}
 
 				char charAt = res.charAt(i);
-				if (charAt == '#') {
+				if (charAt == '{') {
+					if (res.regionMatches(true, i, "{font=", 0, 6)) {
+						int closeIndex = res.indexOf('}', i + 6);
+						if (closeIndex >= 0) {
+							font = NamespacedKey.minecraft(res.substring(i + 6, closeIndex)).toString();
+							if (builder.length() > 0) {
+								obj.addProperty("text", builder.toString());
+								JSONLIST.add(obj);
+								builder = new StringBuilder();
+							}
+
+							obj = new JsonObject();
+							obj.addProperty("font", font);
+							i += closeIndex - i;
+						}
+					} else if (res.regionMatches(true, i, "{/font", 0, 6)) {
+						int closeIndex = res.indexOf('}', i + 6);
+						if (closeIndex >= 0) {
+							font = NamespacedKey.minecraft("default").toString();
+							if (builder.length() > 0) {
+								obj.addProperty("text", builder.toString());
+								JSONLIST.add(obj);
+								builder = new StringBuilder();
+							}
+
+							obj = new JsonObject();
+							obj.addProperty("font", font);
+							i += closeIndex - i;
+						}
+					}
+				} else if (charAt == '#') {
 					String hex = res.substring(i, i + 7);
 
 					if (builder.length() > 0) {
@@ -92,6 +124,11 @@ public class ReflectionUtils {
 							obj = new JsonObject();
 							builder = new StringBuilder();
 							obj.addProperty("color", "white");
+
+							if (!font.isEmpty()) {
+								obj.addProperty("font", font);
+							}
+
 							break;
 						default:
 							obj.addProperty("text", builder.toString());
@@ -102,6 +139,11 @@ public class ReflectionUtils {
 
 							String colorName = org.bukkit.ChatColor.getByChar(colorCode).name().toLowerCase();
 							obj.addProperty("color", colorName);
+
+							if (!font.isEmpty()) {
+								obj.addProperty("font", font);
+							}
+
 							break;
 						}
 					}

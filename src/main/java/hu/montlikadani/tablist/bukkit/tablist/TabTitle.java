@@ -3,7 +3,6 @@ package hu.montlikadani.tablist.bukkit.tablist;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
-import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 
 public abstract class TabTitle {
@@ -16,14 +15,13 @@ public abstract class TabTitle {
 		if (header == null) header = "";
 		if (footer == null) footer = "";
 
-		header = Util.colorMsg(header);
-		footer = Util.colorMsg(footer);
+		//header = Util.colorMsg(header);
+		//footer = Util.colorMsg(footer);
 
-		// somehow hex colors not returns the correct colour from ichatbasecomponent so we use this
-		if (Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
+		/*if (Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
 			player.setPlayerListHeaderFooter(header, footer);
 			return;
-		}
+		}*/
 
 		try {
 			java.lang.reflect.Constructor<?> titleConstructor = null;
