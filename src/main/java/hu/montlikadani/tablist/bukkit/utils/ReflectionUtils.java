@@ -37,8 +37,7 @@ public class ReflectionUtils {
 			JsonObject obj = new JsonObject();
 			StringBuilder builder = new StringBuilder();
 
-			String font = "";
-			String res = text;
+			String res = text, font = "", colorName = "";
 			char charBefore = ' ';
 			for (int i = 0; i < res.length(); i++) {
 				if (i >= res.length()) {
@@ -57,6 +56,7 @@ public class ReflectionUtils {
 						int closeIndex = res.indexOf('}', i + 6);
 						if (closeIndex >= 0) {
 							font = NamespacedKey.minecraft(res.substring(i + 6, closeIndex)).toString();
+
 							if (builder.length() > 0) {
 								obj.addProperty("text", builder.toString());
 								JSONLIST.add(obj);
@@ -71,6 +71,7 @@ public class ReflectionUtils {
 						int closeIndex = res.indexOf('}', i + 6);
 						if (closeIndex >= 0) {
 							font = NamespacedKey.minecraft("default").toString();
+
 							if (builder.length() > 0) {
 								obj.addProperty("text", builder.toString());
 								JSONLIST.add(obj);
@@ -83,7 +84,7 @@ public class ReflectionUtils {
 						}
 					}
 				} else if (charAt == '#') {
-					String hex = res.substring(i, i + 7);
+					colorName = res.substring(i, i + 7);
 
 					if (builder.length() > 0) {
 						obj.addProperty("text", builder.toString());
@@ -92,7 +93,7 @@ public class ReflectionUtils {
 					}
 
 					obj = new JsonObject();
-					obj.addProperty("color", hex);
+					obj.addProperty("color", colorName);
 					i += 6; // Increase loop with 6 to ignore hex digit
 				} else if (charAt == '&') {
 					charBefore = charAt;
@@ -101,6 +102,20 @@ public class ReflectionUtils {
 					if (Character.isDigit(colorCode)
 							|| ((colorCode >= 'a' && colorCode <= 'f') || (colorCode == 'k' || colorCode == 'l'
 									|| colorCode == 'm' || colorCode == 'n' || colorCode == 'o' || colorCode == 'r'))) {
+						obj.addProperty("text", builder.toString());
+						JSONLIST.add(obj);
+
+						obj = new JsonObject();
+						builder = new StringBuilder();
+
+						if (!colorName.isEmpty()) {
+							obj.addProperty("color", colorName);
+						}
+
+						if (!font.isEmpty()) {
+							obj.addProperty("font", font);
+						}
+
 						switch (colorCode) {
 						case 'k':
 							obj.addProperty("obfuscated", true);
@@ -118,32 +133,12 @@ public class ReflectionUtils {
 							obj.addProperty("bold", true);
 							break;
 						case 'r':
-							obj.addProperty("text", builder.toString());
-							JSONLIST.add(obj);
-
-							obj = new JsonObject();
-							builder = new StringBuilder();
-							obj.addProperty("color", "white");
-
-							if (!font.isEmpty()) {
-								obj.addProperty("font", font);
-							}
-
+							colorName = "white";
+							obj.addProperty("color", colorName);
 							break;
 						default:
-							obj.addProperty("text", builder.toString());
-							JSONLIST.add(obj);
-
-							obj = new JsonObject();
-							builder = new StringBuilder();
-
-							String colorName = org.bukkit.ChatColor.getByChar(colorCode).name().toLowerCase();
+							colorName = org.bukkit.ChatColor.getByChar(colorCode).name().toLowerCase();
 							obj.addProperty("color", colorName);
-
-							if (!font.isEmpty()) {
-								obj.addProperty("font", font);
-							}
-
 							break;
 						}
 					}
@@ -161,8 +156,8 @@ public class ReflectionUtils {
 
 		if (Version.isCurrentLower(Version.v1_8_R2)) {
 			Class<?> chatSerializer = getNMSClass("ChatSerializer");
-			Method m = chatSerializer.getMethod("a", String.class);
-			return iChatBaseComponent.cast(m.invoke(chatSerializer, "{\"text\":\"" + text + "\"}"));
+			return iChatBaseComponent.cast(
+					chatSerializer.getMethod("a", String.class).invoke(chatSerializer, "{\"text\":\"" + text + "\"}"));
 		}
 
 		Method m = iChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class);
