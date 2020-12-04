@@ -2,6 +2,7 @@ package hu.montlikadani.tablist.bukkit.tablist;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,7 +26,7 @@ public class TabManager {
 	private TabList plugin;
 	private BukkitTask task;
 
-	private final Set<TabHandler> tabPlayers = new HashSet<>();
+	private final Set<TabHandler> tabPlayers = Collections.synchronizedSet(new HashSet<>());
 
 	public TabManager(TabList plugin) {
 		this.plugin = plugin;
@@ -68,7 +69,9 @@ public class TabManager {
 					return;
 				}
 
-				tabPlayers.forEach(TabHandler::sendTab);
+				synchronized (tabPlayers) {
+					tabPlayers.forEach(TabHandler::sendTab);
+				}
 			}, refreshTime, refreshTime);
 		}
 	}

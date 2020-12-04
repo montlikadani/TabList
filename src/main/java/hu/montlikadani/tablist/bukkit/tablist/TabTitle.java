@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public abstract class TabTitle {
 
@@ -15,21 +16,17 @@ public abstract class TabTitle {
 		if (header == null) header = "";
 		if (footer == null) footer = "";
 
-		//header = Util.colorMsg(header);
-		//footer = Util.colorMsg(footer);
-
-		/*if (Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
-			player.setPlayerListHeaderFooter(header, footer);
-			return;
-		}*/
+		if (Version.isCurrentEqualOrLower(Version.v1_15_R2)) {
+			header = Util.colorMsg(header);
+			footer = Util.colorMsg(footer);
+		}
 
 		try {
-			java.lang.reflect.Constructor<?> titleConstructor = null;
+			Class<?> packetPlayOutPlayerListHeaderFooter = ReflectionUtils
+					.getNMSClass("PacketPlayOutPlayerListHeaderFooter");
 
 			try {
-				titleConstructor = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter").getConstructor();
-
-				Object packet = titleConstructor.newInstance(),
+				Object packet = packetPlayOutPlayerListHeaderFooter.getConstructor().newInstance(),
 						tabHeader = ReflectionUtils.getAsIChatBaseComponent(header),
 						tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);
 
@@ -43,22 +40,18 @@ public abstract class TabTitle {
 
 				ReflectionUtils.sendPacket(player, packet);
 			} catch (Exception f) {
+				java.lang.reflect.Constructor<?> titleConstructor = null;
 				if (Version.isCurrentEqualOrHigher(Version.v1_12_R1)) {
-					titleConstructor = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter")
-							.getConstructor();
+					titleConstructor = packetPlayOutPlayerListHeaderFooter.getConstructor();
 				} else if (Version.isCurrentLower(Version.v1_12_R1)) {
-					Object tabHeader = ReflectionUtils.getAsIChatBaseComponent(header);
-					titleConstructor = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter")
-							.getConstructor(tabHeader.getClass());
+					titleConstructor = packetPlayOutPlayerListHeaderFooter
+							.getConstructor(ReflectionUtils.getAsIChatBaseComponent(header).getClass());
 				}
 
-				if (titleConstructor == null) {
-					return;
+				if (titleConstructor != null) {
+					ReflectionUtils.setField(titleConstructor, "b", ReflectionUtils.getAsIChatBaseComponent(footer));
+					ReflectionUtils.sendPacket(player, titleConstructor);
 				}
-
-				Object tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);
-				ReflectionUtils.setField(titleConstructor, "b", tabFooter);
-				ReflectionUtils.sendPacket(player, titleConstructor);
 			}
 		} catch (Throwable t) {
 			t.printStackTrace();

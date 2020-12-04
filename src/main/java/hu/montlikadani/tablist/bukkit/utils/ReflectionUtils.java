@@ -257,7 +257,6 @@ public class ReflectionUtils {
 		try {
 			Object playerHandle = getHandle(player);
 			Object playerConnection = getFieldObject(playerHandle, getField(playerHandle, "playerConnection"));
-
 			playerConnection.getClass().getDeclaredMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection,
 					packet);
 		} catch (Exception e) {
@@ -290,8 +289,7 @@ public class ReflectionUtils {
 					managerIns = manager.getConstructors()[0].newInstance(world);
 				}
 
-				Object playerHandle = getHandle(player);
-				return playerHandle.getClass().getConstructor(server, world.getClass(), profile.getClass(), manager)
+				return getHandle(player).getClass().getConstructor(server, world.getClass(), profile.getClass(), manager)
 						.newInstance(serverIns, world, profile, managerIns);
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -301,54 +299,46 @@ public class ReflectionUtils {
 		}
 
 		public static Class<?> getMinecraftServer() {
-			Class<?> server = null;
-
 			try {
-				server = getNMSClass("MinecraftServer");
+				return getNMSClass("MinecraftServer");
 			} catch (ClassNotFoundException c) {
 				try {
-					server = getNMSClass("DedicatedServer");
+					return getNMSClass("DedicatedServer");
 				} catch (ClassNotFoundException e) {
 				}
 			}
 
-			return server;
+			return null;
 		}
 
 		public static Object getServer(Class<?> server) {
-			Object serverIns = null;
-
 			try {
-				serverIns = server.getMethod("getServer")
+				return server.getMethod("getServer")
 						.invoke(ReflectionUtils.getCraftClass("CraftServer").cast(Bukkit.getServer()));
-			} catch (Exception x) {
+			} catch (ReflectiveOperationException x) {
 				try {
-					serverIns = server.getMethod("getServer").invoke(server);
-				} catch (Exception e) {
+					return server.getMethod("getServer").invoke(server);
+				} catch (ReflectiveOperationException e) {
 				}
 			}
 
-			return serverIns;
+			return null;
 		}
 
 		public static Class<?> getEnumPlayerInfoAction(Class<?> packetPlayOutPlayerInfo) {
-			Class<?> enumPlayerInfoAction = null;
-
 			try {
 				if (Version.isCurrentEqual(Version.v1_8_R1)) {
-					enumPlayerInfoAction = getNMSClass("EnumPlayerInfoAction");
+					return getNMSClass("EnumPlayerInfoAction");
 				} else if (Version.isCurrentEqualOrHigher(Version.v1_11_R1)) {
-					enumPlayerInfoAction = packetPlayOutPlayerInfo.getDeclaredClasses()[1];
+					return packetPlayOutPlayerInfo.getDeclaredClasses()[1];
 				}
 
-				if (enumPlayerInfoAction == null) {
-					enumPlayerInfoAction = packetPlayOutPlayerInfo.getDeclaredClasses()[2];
-				}
-			} catch (Exception e) {
+				return packetPlayOutPlayerInfo.getDeclaredClasses()[2];
+			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
 
-			return enumPlayerInfoAction;
+			return null;
 		}
 	}
 
