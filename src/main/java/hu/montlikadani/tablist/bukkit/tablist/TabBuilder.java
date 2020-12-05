@@ -37,8 +37,8 @@ public class TabBuilder {
 
 	public static class Builder {
 
-		private final List<String> header = new ArrayList<>();
-		private final List<String> footer = new ArrayList<>();
+		private List<String> header;
+		private List<String> footer;
 
 		private String permission = "";
 
@@ -48,14 +48,12 @@ public class TabBuilder {
 		}
 
 		public Builder header(List<String> header) {
-			this.header.clear();
-			this.header.addAll(header == null ? new ArrayList<>() : header);
+			this.header = header == null ? new ArrayList<>() : header;
 			return this;
 		}
 
 		public Builder footer(List<String> footer) {
-			this.footer.clear();
-			this.footer.addAll(footer == null ? new ArrayList<>() : footer);
+			this.footer = footer == null ? new ArrayList<>() : footer;
 			return this;
 		}
 

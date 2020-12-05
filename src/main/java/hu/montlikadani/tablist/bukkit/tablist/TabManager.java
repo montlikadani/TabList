@@ -4,11 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -26,7 +26,7 @@ public class TabManager {
 	private TabList plugin;
 	private BukkitTask task;
 
-	private final Set<TabHandler> tabPlayers = Collections.synchronizedSet(new HashSet<>());
+	private final Set<TabHandler> tabPlayers = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	public TabManager(TabList plugin) {
 		this.plugin = plugin;
@@ -69,9 +69,7 @@ public class TabManager {
 					return;
 				}
 
-				synchronized (tabPlayers) {
-					tabPlayers.forEach(TabHandler::sendTab);
-				}
+				tabPlayers.forEach(TabHandler::sendTab);
 			}, refreshTime, refreshTime);
 		}
 	}
