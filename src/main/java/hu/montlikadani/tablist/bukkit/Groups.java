@@ -60,7 +60,7 @@ public class Groups {
 
 		for (TeamHandler handler : groupsList) {
 			if (handler.getTeam().equalsIgnoreCase(name)) {
-				return Optional.ofNullable(handler);
+				return Optional.of(handler);
 			}
 		}
 

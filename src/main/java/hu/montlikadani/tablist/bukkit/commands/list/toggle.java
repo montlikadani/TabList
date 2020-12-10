@@ -11,19 +11,16 @@ import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 import hu.montlikadani.tablist.bukkit.tablist.TabTitle;
 
+@CommandProcessor(name = "toggle", permission = Perm.TOGGLE)
 public class toggle implements ICommand {
 
 	@Override
 	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player && !sender.hasPermission(Perm.TOGGLE.getPerm())) {
-			sendMsg(sender, plugin.getMsg("no-permission", "%perm%", Perm.TOGGLE.getPerm()));
-			return false;
-		}
-
 		if (args.length == 1) {
 			if (!(sender instanceof Player)) {
 				sendMsg(sender, plugin.getMsg("toggle.console-usage", "%command%", label));

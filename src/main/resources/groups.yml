@@ -1,6 +1,4 @@
 # Global group to display for all players
-# This option will be ignored for a player if have any
-# group and have any prefix set under this option.
 # Leave it empty or remove it, if you don't want to use
 globalGroup:
   prefix: ""

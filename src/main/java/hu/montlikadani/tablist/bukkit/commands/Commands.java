@@ -103,9 +103,21 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		boolean found = false;
 		for (ICommand command : cmds) {
-			if (command.getClass().getSimpleName().equalsIgnoreCase(args[0])) {
-				command.run(plugin, sender, cmd, label, args);
+			CommandProcessor proc = command.getClass().getAnnotation(CommandProcessor.class);
+			if (proc != null && proc.name().equalsIgnoreCase(args[0])) {
 				found = true;
+
+				if (proc.playerOnly() && !(sender instanceof Player)) {
+					sendMsg(sender, plugin.getMsg("no-console", "%command%", label + " " + args[0]));
+					return false;
+				}
+
+				if (sender instanceof Player && !sender.hasPermission(proc.permission().getPerm())) {
+					sendMsg(sender, plugin.getMsg("no-permission", "%perm%", proc.permission().getPerm()));
+					return false;
+				}
+
+				command.run(plugin, sender, cmd, label, args);
 				break;
 			}
 		}

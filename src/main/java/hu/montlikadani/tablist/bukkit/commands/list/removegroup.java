@@ -11,19 +11,16 @@ import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
+@CommandProcessor(name = "removegroup", permission = Perm.REMOVEGROUP)
 public class removegroup implements ICommand {
 
 	@Override
 	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player && !sender.hasPermission(Perm.REMOVEGROUP.getPerm())) {
-			sendMsg(sender, plugin.getMsg("no-permission", "%perm%", Perm.REMOVEGROUP.getPerm()));
-			return false;
-		}
-
 		if (!ConfigValues.isPrefixSuffixEnabled()) {
 			Util.logConsole(
 					"The prefix-suffix is not enabled in the TabList configuration. Without not work this function.");

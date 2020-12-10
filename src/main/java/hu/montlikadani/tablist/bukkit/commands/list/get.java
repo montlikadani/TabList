@@ -9,19 +9,16 @@ import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
+@CommandProcessor(name = "get", permission = Perm.GET)
 public class get implements ICommand {
 
 	@Override
 	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (sender instanceof Player && !sender.hasPermission(Perm.GET.getPerm())) {
-			sendMsg(sender, plugin.getMsg("no-permission", "%perm%", Perm.GET.getPerm()));
-			return false;
-		}
-
 		if (!ConfigValues.isTabNameEnabled()) {
 			sendMsg(sender, Util.colorMsg("&cTabname option is disabled in configuration!"));
 			return false;

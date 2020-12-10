@@ -13,29 +13,19 @@ import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.config.Configuration;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
+@CommandProcessor(name = "fakeplayers", permission = Perm.FAKEPLAYERS, playerOnly = true)
 public class fakeplayers implements ICommand {
 
 	@Override
 	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		if (!(sender instanceof Player)) {
-			sendMsg(sender, plugin.getMsg("no-console", "%command%", label + " " + args[0]));
-			return false;
-		}
-
-		final FakePlayerHandler handler = plugin.getFakePlayerHandler();
-
 		Player p = (Player) sender;
-		if (!p.hasPermission(Perm.FAKEPLAYERS.getPerm())) {
-			sendMsg(p, plugin.getMsg("no-permission", "%perm%", Perm.FAKEPLAYERS.getPerm()));
-			return false;
-		}
-
 		if (!ConfigValues.isFakePlayers()) {
 			sendMsg(p, plugin.getMsg("fake-player.disabled"));
 			return false;
@@ -53,6 +43,7 @@ public class fakeplayers implements ICommand {
 			return false;
 		}
 
+		final FakePlayerHandler handler = plugin.getFakePlayerHandler();
 		if (args[1].equalsIgnoreCase("add")) {
 			if (!p.hasPermission(Perm.ADDFAKEPLAYER.getPerm())) {
 				sendMsg(p, plugin.getMsg("no-permission", "%perm%", Perm.ADDFAKEPLAYER.getPerm()));

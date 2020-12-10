@@ -19,7 +19,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 	private final Player player;
 
-	private TeamHandler group;
+	private TeamHandler group, globalGroup;
 
 	private boolean afk;
 
@@ -58,7 +58,8 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	}
 
 	public void removeGroup() {
-		this.group = null;
+		group = null;
+		globalGroup = null;
 	}
 
 	public Player getPlayer() {
@@ -99,8 +100,8 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 		if (!isPlayerCanSeeGroup() || ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(player)
 				&& !ConfigValues.isAfkStatusShowPlayerGroup()) {
-			if (group != null) {
-				group = null;
+			if (group != null || globalGroup != null) {
+				removeGroup();
 				update = true;
 			}
 
@@ -116,8 +117,17 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		List<TeamHandler> groupsList = plugin.getGroups().getGroupsList();
 		List<TeamHandler> playerNameGroups = groupsList.stream()
 				.filter(group -> group.getTeam().equalsIgnoreCase(player.getName())).collect(Collectors.toList());
-		if (playerNameGroups.size() > 0) { // can there be more than 1? probably doesn't matter
+		if (!playerNameGroups.isEmpty()) {
 			TeamHandler team = playerNameGroups.get(0);
+			if (!team.isGlobal()) {
+				for (TeamHandler t : groupsList) {
+					if (t.isGlobal() && globalGroup != t) {
+						globalGroup = t;
+						break;
+					}
+				}
+			}
+
 			if (group != team) {
 				update = true;
 				group = team;
@@ -142,13 +152,22 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 			List<TeamHandler> playerPrimaryVaultGroups;
 			if (playerVaultGroup != null && ConfigValues.isPreferPrimaryVaultGroup()
-					&& ((playerPrimaryVaultGroups = groupsList.stream()
+					&& (!(playerPrimaryVaultGroups = groupsList.stream()
 							.filter(group -> group.getTeam().equalsIgnoreCase(playerVaultGroup))
-							.collect(Collectors.toList())).size() > 0
-							|| (playerPrimaryVaultGroups = groupsList.stream()
+							.collect(Collectors.toList())).isEmpty()
+							|| !(playerPrimaryVaultGroups = groupsList.stream()
 									.filter(group -> StringUtils.containsIgnoreCase(group.getTeam(), playerVaultGroup))
-									.collect(Collectors.toList())).size() > 0)) {
+									.collect(Collectors.toList())).isEmpty())) {
 				TeamHandler team = playerPrimaryVaultGroups.get(0);
+				if (!team.isGlobal()) {
+					for (TeamHandler t : groupsList) {
+						if (t.isGlobal() && globalGroup != t) {
+							globalGroup = t;
+							break;
+						}
+					}
+				}
+
 				if (group != team) {
 					update = true;
 					group = team;
@@ -157,6 +176,11 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 				for (final TeamHandler team : groupsList) {
 					String name = team.getTeam();
 					String perm = team.getPermission();
+
+					if (team.isGlobal() && globalGroup != team) {
+						globalGroup = team;
+						continue;
+					}
 
 					if (PluginUtils.hasPermission(player, perm)) {
 						if (group != team) {
@@ -177,14 +201,6 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 								break;
 							}
-						}
-					}
-
-					// Only assign global group to player if don't match any group.
-					if (team.isGlobal()) {
-						if (group != team) {
-							update = true;
-							group = team;
 						}
 					}
 				}
@@ -244,6 +260,10 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		String prefix = plugin.getPlaceholders().replaceVariables(player,
 				plugin.makeAnim(customPrefix == null ? group == null ? "" : group.getPrefix() : customPrefix));
 
+		if (globalGroup != null) {
+			prefix = globalGroup.getPrefix() + prefix;
+		}
+
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowInRightLeftSide()) {
 			prefix = colorMsg(plugin.getConf().getConfig().getString(
 					"placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), "")) + prefix;
@@ -255,6 +275,10 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	public String getSuffix() {
 		String suffix = plugin.getPlaceholders().replaceVariables(player,
 				plugin.makeAnim(customSuffix == null ? group == null ? "" : group.getSuffix() : customSuffix));
+
+		if (globalGroup != null) {
+			suffix += globalGroup.getSuffix();
+		}
 
 		if (ConfigValues.isAfkStatusEnabled() && ConfigValues.isAfkStatusShowInRightLeftSide()) {
 			suffix += colorMsg(plugin.getConf().getConfig().getString(
