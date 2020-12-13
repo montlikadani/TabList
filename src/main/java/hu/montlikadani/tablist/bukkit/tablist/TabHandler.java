@@ -9,7 +9,9 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.permissions.PermissionDefault;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
@@ -149,14 +151,15 @@ public class TabHandler implements ITabHandler {
 
 		if ((header == null && footer == null) && c.isConfigurationSection("permissions")) {
 			for (String name : c.getConfigurationSection("permissions").getKeys(false)) {
-				String node = name.startsWith("tablist.") ? name : "tablist." + name;
-				if (PluginUtils.hasPermission(player, node)) {
+				Permission permission = new Permission(name.startsWith("tablist.") ? name : "tablist." + name,
+						PermissionDefault.NOT_OP);
+				if (PluginUtils.hasPermission(player, permission.getName())) {
 					String path = "permissions." + name + ".";
 					header = c.isList(path + "header") ? c.getStringList(path + "header")
 							: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
 					footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
 							: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
-					usedPermission = node;
+					usedPermission = permission.getName();
 					break;
 				}
 			}
