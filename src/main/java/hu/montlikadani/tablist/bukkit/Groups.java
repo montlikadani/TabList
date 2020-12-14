@@ -1,11 +1,9 @@
 package hu.montlikadani.tablist.bukkit;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -18,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.utils.concurrent.SortedArrayBlockingQueue;
 
 public class Groups {
 
@@ -27,8 +26,7 @@ public class Groups {
 
 	private final List<TeamHandler> groupsList = new ArrayList<>();
 	private final HashMap<String, TabListPlayer> tLPlayerMap = new HashMap<>();
-	private final List<TabListPlayer> sortedTabListPlayers = Collections
-			.synchronizedList(new LinkedList<TabListPlayer>());
+	private final SortedArrayBlockingQueue<TabListPlayer> sortedTabListPlayers = new SortedArrayBlockingQueue<>(16);
 
 	//private final Scoreboard b = Bukkit.getScoreboardManager().getNewScoreboard();
 
@@ -199,13 +197,11 @@ public class Groups {
 		tabPlayer.update();
 		addToTabListPlayerList(tabPlayer);
 
-		synchronized (sortedTabListPlayers) {
-			int priority = 0;
-			Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
-			while (it.hasNext()) {
-				setPlayerTeam(it.next(), priority);
-				priority++;
-			}
+		int priority = 0;
+		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
+		while (it.hasNext()) {
+			setPlayerTeam(it.next(), priority);
+			priority++;
 		}
 
 		return tabPlayer;
@@ -309,23 +305,22 @@ public class Groups {
 			}
 		}
 
-		synchronized (sortedTabListPlayers) {
-			int priority = 0;
-			Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
-			while (it.hasNext()) {
-				setPlayerTeam(it.next(), priority);
-				priority++;
-			}
+		int priority = 0;
+		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
+		while (it.hasNext()) {
+			setPlayerTeam(it.next(), priority);
+			priority++;
 		}
 	}
 
 	private void addToTabListPlayerList(TabListPlayer tlp) {
 		int pos = 0;
 
-		synchronized (sortedTabListPlayers) {
-			Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
-			while (it.hasNext()) {
-				if (tlp.compareTo(it.next()) < 0)
+		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
+		while (it.hasNext()) {
+			TabListPlayer tabPlayer = it.next();
+			if (tabPlayer != null) {
+				if (tlp.compareTo(tabPlayer) < 0)
 					break;
 
 				pos++;
