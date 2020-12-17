@@ -106,11 +106,8 @@ public final class SortedArrayBlockingQueue<E> extends ArrayBlockingQueue<E> {
 		private int index = 0;
 
 		public IteratorArray(Object array) {
-			super();
-
 			this.array = array;
 			endIndex = Array.getLength(array);
-			index = 0;
 		}
 
 		@Override

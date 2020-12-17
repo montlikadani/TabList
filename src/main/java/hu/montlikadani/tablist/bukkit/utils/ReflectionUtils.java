@@ -52,36 +52,24 @@ public class ReflectionUtils {
 
 				char charAt = res.charAt(i);
 				if (charAt == '{') {
-					if (res.regionMatches(true, i, "{font=", 0, 6)) {
-						int closeIndex = res.indexOf('}', i + 6);
-						if (closeIndex >= 0) {
-							font = NamespacedKey.minecraft(res.substring(i + 6, closeIndex)).toString();
+					int closeIndex = -1;
+					if (res.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = res.indexOf('}', i + 6)) >= 0) {
+						font = NamespacedKey.minecraft(res.substring(i + 6, closeIndex)).toString();
+					} else if (res.regionMatches(true, i, "{/font", 0, 6)
+							&& (closeIndex = res.indexOf('}', i + 6)) >= 0) {
+						font = NamespacedKey.minecraft("default").toString();
+					}
 
-							if (builder.length() > 0) {
-								obj.addProperty("text", builder.toString());
-								JSONLIST.add(obj);
-								builder = new StringBuilder();
-							}
-
-							obj = new JsonObject();
-							obj.addProperty("font", font);
-							i += closeIndex - i;
+					if (closeIndex >= 0) {
+						if (builder.length() > 0) {
+							obj.addProperty("text", builder.toString());
+							JSONLIST.add(obj);
+							builder = new StringBuilder();
 						}
-					} else if (res.regionMatches(true, i, "{/font", 0, 6)) {
-						int closeIndex = res.indexOf('}', i + 6);
-						if (closeIndex >= 0) {
-							font = NamespacedKey.minecraft("default").toString();
 
-							if (builder.length() > 0) {
-								obj.addProperty("text", builder.toString());
-								JSONLIST.add(obj);
-								builder = new StringBuilder();
-							}
-
-							obj = new JsonObject();
-							obj.addProperty("font", font);
-							i += closeIndex - i;
-						}
+						obj = new JsonObject();
+						obj.addProperty("font", font);
+						i += closeIndex - i;
 					}
 				} else if (charAt == '#') {
 					colorName = res.substring(i, i + 7);

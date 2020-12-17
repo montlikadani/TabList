@@ -67,27 +67,32 @@ public class TabList extends JavaPlugin {
 
 		instance = this;
 
-		try {
-			try { // Supports paper
-				Class.forName("org.spigotmc.SpigotConfig");
-				isSpigot = true;
-			} catch (ClassNotFoundException c) {
-				isSpigot = false;
-			}
+		try { // Supports paper
+			Class.forName("org.spigotmc.SpigotConfig");
+			isSpigot = true;
+		} catch (ClassNotFoundException c) {
+			isSpigot = false;
+		}
 
-			mcVersion = new ServerVersion();
+		mcVersion = new ServerVersion();
 
-			if (mcVersion.getVersion().isLower(Version.v1_8_R1)) {
-				logConsole(Level.SEVERE,
-						"Your server version does not supported by this plugin! Please use 1.8+ or higher versions!",
-						false);
-				getServer().getPluginManager().disablePlugin(this);
-				return;
-			}
+		if (mcVersion.getVersion().isLower(Version.v1_8_R1)) {
+			logConsole(Level.SEVERE,
+					"Your server version does not supported by this plugin! Please use 1.8+ or higher versions!",
+					false);
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 
-			init();
+		conf = new Configuration(this);
+		objects = new Objects();
+		g = new Groups(this);
+		variables = new Variables(this);
+		tabManager = new TabManager(this);
+		fakePlayerHandler = new FakePlayerHandler(this);
+		tabNameHandler = new TabNameHandler(this);
 
-			conf.loadFiles();
+		conf.loadFiles().thenAccept(success -> {
 			loadValues();
 
 			if (ConfigValues.isPlaceholderAPI() && isPluginEnabled("PlaceholderAPI")) {
@@ -145,12 +150,13 @@ public class TabList extends JavaPlugin {
 						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)";
 				Util.sendMsg(getServer().getConsoleSender(), colorMsg(msg));
 			}
-		} catch (Throwable e) {
-			e.printStackTrace();
+		}).exceptionally(t -> {
+			t.printStackTrace();
 			logConsole(Level.WARNING,
 					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues",
 					false);
-		}
+			return null;
+		});
 	}
 
 	@Override
@@ -184,16 +190,6 @@ public class TabList extends JavaPlugin {
 		}
 	}
 
-	private void init() {
-		conf = new Configuration(this);
-		objects = new Objects();
-		g = new Groups(this);
-		variables = new Variables(this);
-		tabManager = new TabManager(this);
-		fakePlayerHandler = new FakePlayerHandler(this);
-		tabNameHandler = new TabNameHandler(this);
-	}
-
 	private void registerCommands() {
 		Optional.ofNullable(getCommand("tablist")).ifPresent(tl -> {
 			Commands cmds = new Commands(this);
@@ -202,9 +198,9 @@ public class TabList extends JavaPlugin {
 		});
 
 		Optional.ofNullable(getCommand("tabname")).ifPresent(tName -> {
-			TabNameCmd tname = new TabNameCmd(this);
-			tName.setExecutor(tname);
-			tName.setTabCompleter(tname);
+			TabNameCmd cmd = new TabNameCmd(this);
+			tName.setExecutor(cmd);
+			tName.setTabCompleter(cmd);
 		});
 	}
 
@@ -231,13 +227,14 @@ public class TabList extends JavaPlugin {
 		g.cancelUpdate();
 
 		loadListeners();
-		conf.loadFiles();
-		loadAnimations();
-		loadValues();
+		conf.loadFiles().thenAccept(success -> {
+			loadAnimations();
+			loadValues();
 
-		g.load();
+			g.load();
 
-		getServer().getOnlinePlayers().forEach(pl -> updateAll(pl, true));
+			getServer().getOnlinePlayers().forEach(pl -> updateAll(pl, true));
+		});
 	}
 
 	private void loadValues() {
@@ -270,12 +267,7 @@ public class TabList extends JavaPlugin {
 	}
 
 	private boolean initVaultPerm() {
-		if (!isPluginEnabled("Vault")) {
-			return false;
-		}
-
-		vaultPermission = new VaultPermission();
-		return vaultPermission.getPermission() != null;
+		return isPluginEnabled("Vault") && (vaultPermission = new VaultPermission()).getPermission() != null;
 	}
 
 	public String makeAnim(String name) {

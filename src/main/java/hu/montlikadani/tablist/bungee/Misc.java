@@ -44,9 +44,9 @@ public class Misc {
 	@SuppressWarnings("deprecation")
 	public static String replaceVariables(String str, ProxiedPlayer p) {
 		Runtime r = Runtime.getRuntime();
-		Long fram = Long.valueOf(r.freeMemory() / 1048576L),
-				mram = Long.valueOf(r.maxMemory() / 1048576L),
-				uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
+		Long fram = r.freeMemory() / 1048576L,
+				mram = r.maxMemory() / 1048576L,
+				uram = (r.totalMemory() - r.freeMemory()) / 1048576L;
 
 		Configuration conf = TabList.getInstance().getConf();
 
@@ -134,13 +134,13 @@ public class Misc {
 			str = str.replace("%ping%", Integer.toString(p.getPing()));
 
 		if (str.contains("%ram-used%"))
-			str = str.replace("%ram-used%", Long.toString(uram.longValue()));
+			str = str.replace("%ram-used%", Long.toString(uram));
 
 		if (str.contains("%ram-max%"))
-			str = str.replace("%ram-max%", Long.toString(mram.longValue()));
+			str = str.replace("%ram-max%", Long.toString(mram));
 
 		if (str.contains("%ram-free%"))
-			str = str.replace("%ram-free%", Long.toString(fram.longValue()));
+			str = str.replace("%ram-free%", Long.toString(fram));
 
 		if (str.contains("%player-uuid%"))
 			str = str.replace("%player-uuid%", p.getUniqueId().toString());

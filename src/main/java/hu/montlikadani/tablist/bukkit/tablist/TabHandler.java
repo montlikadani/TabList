@@ -117,16 +117,14 @@ public class TabHandler implements ITabHandler {
 					}
 				}
 
-				if (worldList.isEmpty()) {
-					if (c.contains("per-world." + world)) {
-						String path = "per-world." + world + ".";
-						header = c.isList(path + "header") ? c.getStringList(path + "header")
-								: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
-						footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
-								: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
+				if (worldList.isEmpty() && c.contains("per-world." + world)) {
+					String path = "per-world." + world + ".";
+					header = c.isList(path + "header") ? c.getStringList(path + "header")
+							: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
+					footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
+							: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
 
-						worldEnabled = true;
-					}
+					worldEnabled = true;
 				}
 			}
 
@@ -165,14 +163,12 @@ public class TabHandler implements ITabHandler {
 			}
 		}
 
-		if ((header == null && footer == null) && c.contains("per-player")) {
-			if (c.contains("per-player." + pName)) {
-				String path = "per-player." + pName + ".";
-				header = c.isList(path + "header") ? c.getStringList(path + "header")
-						: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
-				footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
-						: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
-			}
+		if (((header == null && footer == null) && c.contains("per-player")) && c.contains("per-player." + pName)) {
+			String path = "per-player." + pName + ".";
+			header = c.isList(path + "header") ? c.getStringList(path + "header")
+					: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
+			footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
+					: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
 		}
 
 		if ((header == null && footer == null) && c.contains("per-group") && plugin.hasVault()) {

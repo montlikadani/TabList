@@ -218,6 +218,7 @@ public class ConfigValues {
 		objectRefreshInterval = c.get("tablist-object-type.refresh-interval", 3);
 		tabNameMaxLength = c.get("tabname.max-name-length", 200);
 
+		c.cleanUp();
 		c.save();
 	}
 

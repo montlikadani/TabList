@@ -25,13 +25,8 @@ public class CommentedConfig extends YamlConfiguration {
 	private File file;
 
 	public CommentedConfig(File file) {
-		super();
-
 		this.file = file;
-
-		if (file != null) {
-			this.config = getYml(file);
-		}
+		this.config = getYml();
 	}
 
 	public YamlConfiguration getConfig() {
@@ -71,7 +66,6 @@ public class CommentedConfig extends YamlConfiguration {
 
 		Files.createParentDirs(file);
 		String data = insertComments(saveToString());
-		// 2. arg should be string for j8 users
 		PrintWriter writer = new PrintWriter(file, StandardCharsets.UTF_8.name());
 
 		try {
@@ -230,8 +224,29 @@ public class CommentedConfig extends YamlConfiguration {
 		comments.put(path, comment.toString());
 	}
 
-	public YamlConfiguration getYml(File file) {
+	public void cleanUp() {
+		// Get rid of removed options by cleaning the file content
+		PrintWriter writer = null;
+		try {
+			writer = new PrintWriter(file);
+			writer.write("");
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (writer != null) {
+				writer.close();
+			}
+		}
+
+		load();
+	}
+
+	public YamlConfiguration getYml() {
 		YamlConfiguration config = new YamlConfiguration();
+		if (file == null) {
+			return config;
+		}
+
 		FileInputStream inputStream = null;
 
 		try {
@@ -284,12 +299,12 @@ public class CommentedConfig extends YamlConfiguration {
 	public List<String> get(String path, List<String> def) {
 		path = process(path, def);
 
-		List<String> ls = config.getStringList(path);
-		for (int p = 0; p < ls.size(); p++) {
-			ls.set(p, ls.get(p));
+		List<String> value = config.getStringList(path);
+		for (int p = 0; p < value.size(); p++) {
+			value.set(p, value.get(p));
 		}
 
-		return ls;
+		return value;
 	}
 
 	public String get(String path, String def) {
@@ -302,7 +317,7 @@ public class CommentedConfig extends YamlConfiguration {
 		return config.getDouble(path);
 	}
 
-	private synchronized void copySetting(String path) {
+	private void copySetting(String path) {
 		set(path, config.get(path));
 	}
 }

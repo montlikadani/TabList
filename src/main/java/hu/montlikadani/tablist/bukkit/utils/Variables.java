@@ -156,9 +156,9 @@ public class Variables {
 			dt = form2 != null ? now.format(form2) : cal.get(Calendar.YEAR) + "/" + cal.get(Calendar.DATE);
 		}
 
-		Long fram = Long.valueOf(r.freeMemory() / 1048576L),
-				mram = Long.valueOf(r.maxMemory() / 1048576L),
-				uram = Long.valueOf((r.totalMemory() - r.freeMemory()) / 1048576L);
+		Long fram = r.freeMemory() / 1048576L,
+				mram = r.maxMemory() / 1048576L,
+				uram = (r.totalMemory() - r.freeMemory()) / 1048576L;
 
 		str = setPlaceholders(pl, str);
 		str = Global.setSymbols(str);
@@ -170,13 +170,13 @@ public class Variables {
 			str = str.replace("%date%", dt);
 
 		if (str.contains("%server-ram-free%"))
-			str = str.replace("%server-ram-free%", Long.toString(fram.longValue()));
+			str = str.replace("%server-ram-free%", Long.toString(fram));
 
 		if (str.contains("%server-ram-max%"))
-			str = str.replace("%server-ram-max%", Long.toString(mram.longValue()));
+			str = str.replace("%server-ram-max%", Long.toString(mram));
 
 		if (str.contains("%server-ram-used%"))
-			str = str.replace("%server-ram-used%", Long.toString(uram.longValue()));
+			str = str.replace("%server-ram-used%", Long.toString(uram));
 
 		if (str.contains("%online-players%"))
 			str = str.replace("%online-players%", Integer.toString(PluginUtils.countVanishedPlayers()));
