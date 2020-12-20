@@ -92,7 +92,7 @@ public class TabManager {
 	}
 
 	public Optional<TabHandler> getPlayerTab(final Player player) {
-		return tabPlayers.stream().filter(tab -> tab.getPlayer().equals(player)).findFirst();
+		return tabPlayers.stream().filter(tab -> tab.getPlayer() == player).findFirst();
 	}
 
 	public void loadToggledTabs() {

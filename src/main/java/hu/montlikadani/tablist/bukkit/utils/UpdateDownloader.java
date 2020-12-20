@@ -68,14 +68,13 @@ public class UpdateDownloader {
 
 				final String name = "TabList-v" + versionString;
 
-				String updatesFolder = TabList.getInstance().getFolder() + File.separator + "releases";
-				File temp = new File(updatesFolder);
+				File temp = new File(TabList.getInstance().getFolder(), "releases");
 				if (!temp.exists()) {
 					temp.mkdir();
 				}
 
 				// Do not attempt to download the file again, when it is already downloaded
-				final File jar = new File(updatesFolder + File.separator + name + ".jar");
+				final File jar = new File(temp, name + ".jar");
 				if (jar.exists()) {
 					return false;
 				}

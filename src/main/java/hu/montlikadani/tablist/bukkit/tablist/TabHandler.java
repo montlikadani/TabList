@@ -25,6 +25,7 @@ public class TabHandler implements ITabHandler {
 	private TabBuilder builder;
 
 	private boolean worldEnabled = false;
+	private boolean tabEmpty = false;
 	private String usedPermission = "";
 
 	private final List<String> worldList = new ArrayList<>();
@@ -57,6 +58,7 @@ public class TabHandler implements ITabHandler {
 	public void updateTab() {
 		worldList.clear();
 		worldEnabled = false;
+		tabEmpty = false;
 		usedPermission = "";
 
 		final Player player = getPlayer();
@@ -208,7 +210,11 @@ public class TabHandler implements ITabHandler {
 				|| c.getStringList("disabled-worlds").contains(player.getWorld().getName())
 				|| c.getStringList("blacklisted-players").contains(player.getName()) || PluginUtils.isInGame(player)
 				|| TabManager.TABENABLED.getOrDefault(playerUUID, false)) {
-			TabTitle.sendTabTitle(player, "", "");
+			if (!tabEmpty) { // Only send it once to allow other plugins to overwrite tablist
+				TabTitle.sendTabTitle(player, "", "");
+				tabEmpty = true;
+			}
+
 			return;
 		}
 

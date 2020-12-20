@@ -250,7 +250,7 @@ public class Groups {
 	 * @param teamName
 	 */
 	public void removeGroup(String teamName) {
-		getTeam(teamName).ifPresent(th -> groupsList.remove(th));
+		getTeam(teamName).ifPresent(groupsList::remove);
 	}
 
 	/**
