@@ -1,6 +1,6 @@
 # TabList [![GitHub release](https://img.shields.io/github/release/montlikadani/TabList.svg)](https://github.com/montlikadani/TabList/releases) [![Github All Releases](https://img.shields.io/github/downloads/montlikadani/TabList/total.svg)](https://github.com/montlikadani/TabList/releases) [![GitHub issues](https://img.shields.io/github/issues/montlikadani/TabList.svg)](https://github.com/montlikadani/TabList/issues)
 
-[![bStats](https://img.shields.io/badge/bStats-1.7-brightgreen)](https://bstats.org/plugin/bukkit/TabList)
+[![bStats](https://img.shields.io/badge/bStats-1.8-brightgreen)](https://bstats.org/plugin/bukkit/TabList)
 
 ***
 
