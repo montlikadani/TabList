@@ -21,7 +21,7 @@ import org.bukkit.util.StringUtil;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
-import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils.ClassMethods;
+import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils.JavaAccessibilities;
 
 public class Commands implements CommandExecutor, TabCompleter {
 
@@ -48,7 +48,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 					continue;
 				}
 
-				if (ClassMethods.getCurrentVersion() >= 9) {
+				if (JavaAccessibilities.getCurrentVersion() >= 9) {
 					cmds.add((ICommand) c.getDeclaredConstructor().newInstance());
 				} else {
 					cmds.add((ICommand) c.newInstance());
@@ -62,15 +62,16 @@ public class Commands implements CommandExecutor, TabCompleter {
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
 		if (args.length == 0) {
-			sendMsg(sender, colorMsg("&e&l[&9&lTab&4&lList&b&l Info&e&l]"));
+			sendMsg(sender, colorMsg("&e[&9&lTab&4&lList&e]"));
 			sendMsg(sender, colorMsg("&5Version:&a " + plugin.getDescription().getVersion()));
 			sendMsg(sender, colorMsg("&5Author, created by:&a montlikadani"));
 			sendMsg(sender, colorMsg("&5Commands:&8 /&7" + label + "&a help"));
 			sendMsg(sender, colorMsg(
-					"&4If you find a bug, send issue here:&e &nhttps://github.com/montlikadani/TabList/issues"));
+					"&4If you find a bug, make issue here:&e &nhttps://github.com/montlikadani/TabList/issues"));
 			return true;
 		}
 
+		// TODO get rid from this
 		if (args[0].equalsIgnoreCase("help")) {
 			if (sender instanceof Player && !sender.hasPermission(Perm.HELP.getPerm())) {
 				sendMsg(sender, plugin.getMsg("no-permission", "%perm%", Perm.HELP.getPerm()));

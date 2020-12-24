@@ -5,7 +5,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
 import hu.montlikadani.tablist.bukkit.TabListPlayer;
-import hu.montlikadani.tablist.bukkit.utils.NMS;
+import hu.montlikadani.tablist.bukkit.utils.Misc;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
 /**
@@ -39,7 +39,7 @@ public class BukkitHandled implements ITabScoreboard {
 			team = board.registerNewTeam(teamName);
 		}
 
-		NMS.addEntry(tabPlayer.getPlayer(), team);
+		Misc.addEntry(tabPlayer.getPlayer(), team);
 	}
 
 	@Override
@@ -62,7 +62,7 @@ public class BukkitHandled implements ITabScoreboard {
 		Player player = tabPlayer.getPlayer();
 		player.setPlayerListName(player.getName());
 
-		NMS.removeEntry(player, board);
+		Misc.removeEntry(player, board);
 		team.unregister();
 		player.setScoreboard(board);
 	}

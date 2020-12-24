@@ -50,7 +50,7 @@ public final class SortedArrayBlockingQueue<E> extends ArrayBlockingQueue<E> {
 		}
 
 		if (add(e)) {
-			if (index > objects.length) {
+			if (index >= objects.length) {
 				objects = copyOf(index);
 			}
 

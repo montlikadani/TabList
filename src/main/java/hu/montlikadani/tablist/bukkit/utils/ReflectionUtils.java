@@ -194,7 +194,7 @@ public class ReflectionUtils {
 	}
 
 	public static void modifyFinalField(Field field, Object target, Object newValue) throws Exception {
-		if (!ClassMethods.isAccessible(field, target)) {
+		if (!JavaAccessibilities.isAccessible(field, target)) {
 			field.setAccessible(true);
 		}
 
@@ -207,8 +207,17 @@ public class ReflectionUtils {
 		try {
 			modifiersField = getField(Field.class, "modifiers");
 		} catch (NoSuchFieldException e) { // Java 12+
+			if (JavaAccessibilities.getCurrentVersion() >= 14) { // k, no
+				java.lang.invoke.MethodHandles.Lookup lookup = java.lang.invoke.MethodHandles
+						.privateLookupIn(Field.class, java.lang.invoke.MethodHandles.lookup());
+				java.lang.invoke.VarHandle varHandle = lookup.findVarHandle(Field.class, "modifiers", int.class);
+				varHandle.set(field, mods & ~Modifier.FINAL);
+				field.set(target, newValue);
+				return;
+			}
+
 			Method meth = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
-			boolean accessibleBeforeSet = ClassMethods.isAccessible(meth, null);
+			boolean accessibleBeforeSet = JavaAccessibilities.isAccessible(meth, null);
 			meth.setAccessible(true);
 
 			Field[] fields = (Field[]) meth.invoke(Field.class, false);
@@ -226,7 +235,7 @@ public class ReflectionUtils {
 			return;
 		}
 
-		boolean accessibleBeforeSet = ClassMethods.isAccessible(modifiersField, null);
+		boolean accessibleBeforeSet = JavaAccessibilities.isAccessible(modifiersField, null);
 		modifiersField.setAccessible(true);
 		modifiersField.setInt(field, mods & ~Modifier.FINAL);
 		modifiersField.setAccessible(accessibleBeforeSet);
@@ -331,7 +340,7 @@ public class ReflectionUtils {
 	}
 
 	@SuppressWarnings("deprecation")
-	public abstract static class ClassMethods {
+	public abstract static class JavaAccessibilities {
 
 		public static boolean isAccessible(Field field, Object target) {
 			return getCurrentVersion() >= 9 && target != null ? field.canAccess(target) : field.isAccessible();

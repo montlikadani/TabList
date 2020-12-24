@@ -48,10 +48,10 @@ public class Groups {
 	}
 
 	/**
-	 * Returns the team by name.
+	 * Returns the team by name
 	 * 
 	 * @param name Team name
-	 * @return {@link Optional} -> {@link TeamHandler}
+	 * @return {@link TeamHandler} if present, otherwise {@link Optional#empty()}
 	 */
 	public Optional<TeamHandler> getTeam(String name) {
 		Validate.notEmpty(name, "The team name can't be empty/null");
@@ -150,7 +150,8 @@ public class Groups {
 	}
 
 	/**
-	 * Sets the player prefix/suffix<br><br>
+	 * Sets the player prefix/suffix
+	 * <p>
 	 * If the player is hidden using {@link TabList#getHidePlayers()}, returned.
 	 * 
 	 * @param tabPlayer {@link TabListPlayer}
@@ -175,10 +176,11 @@ public class Groups {
 	}
 
 	/**
-	 * Adds a new player to groups.<br>
+	 * Adds a new player to groups.
+	 * <p>
 	 * If the given player is not exists in the list it will be instantiated to a new one and
 	 * making this <code>synchronized</code> to not cause {@link ConcurrentModificationException}.
-	 * <br><br>
+	 * <p>
 	 * After adding/or the player existing, their groups will get updated once to retrieve the
 	 * approximately group and sets the prefix/suffix to be shown in player list. see {@link #setPlayerTeam(TabListPlayer, int)}
 	 * 
@@ -215,7 +217,8 @@ public class Groups {
 	}
 
 	/**
-	 * Removes the given player's group.<br><br>
+	 * Removes the given player's group.
+	 * <p>
 	 * If the player does not have any groups this future will completes and returns false.
 	 * Otherwise returns true if the player have any groups and its being removed from list.
 	 * 

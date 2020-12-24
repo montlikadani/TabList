@@ -7,7 +7,7 @@ import hu.montlikadani.tablist.bukkit.TabList;
 
 public class ConfigValues {
 
-	private static boolean placeholderAPI, ragemodeHook, perWorldPlayerList, fakePlayers, removeGrayColorFromTabInSpec,
+	private static boolean placeholderAPI, perWorldPlayerList, fakePlayers, removeGrayColorFromTabInSpec,
 			ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled,
 			afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone, pingFormatEnabled,
 			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish,
@@ -151,7 +151,6 @@ public class ConfigValues {
 		c.addComment("logconsole", "Log plugin messages to console?");
 
 		placeholderAPI = c.get("hook.placeholderapi", false);
-		ragemodeHook = c.get("hook.RageMode", false);
 		perWorldPlayerList = c.get("per-world-player-list", false);
 		fakePlayers = c.get("enable-fake-players", false);
 		removeGrayColorFromTabInSpec = c.get("remove-gray-color-from-tab-in-spectator", false);
@@ -248,10 +247,6 @@ public class ConfigValues {
 
 	public static boolean isPlaceholderAPI() {
 		return placeholderAPI;
-	}
-
-	public static boolean isRagemodeHook() {
-		return ragemodeHook;
 	}
 
 	public static boolean isPerWorldPlayerList() {

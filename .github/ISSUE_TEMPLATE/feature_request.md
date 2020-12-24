@@ -17,4 +17,4 @@ labels: 'Type: Enhancement'
 ```
 boo: true
 ```
-block to make the example more readable. -->
+block to make it readable. -->

@@ -195,16 +195,8 @@
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>net.ess3</groupId>
-					<artifactId>1_8_R2Provider</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.ess3</groupId>
-					<artifactId>1_8_R1Provider</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.ess3</groupId>
-					<artifactId>NMSProvider</artifactId>
+					<groupId>org.bstats</groupId>
+					<artifactId>bstats-bukkit</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>net.ess3</groupId>
@@ -212,7 +204,11 @@
 				</exclusion>
 				<exclusion>
 					<groupId>net.ess3</groupId>
-					<artifactId>ReflectionProvider</artifactId>
+					<artifactId>1_8_R1Provider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>1_8_R2Provider</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>net.ess3</groupId>
@@ -220,7 +216,7 @@
 				</exclusion>
 				<exclusion>
 					<groupId>net.ess3</groupId>
-					<artifactId>FlattenedProvider</artifactId>
+					<artifactId>NMSProvider</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>io.papermc</groupId>
@@ -228,15 +224,31 @@
 				</exclusion>
 				<exclusion>
 					<groupId>net.ess3</groupId>
+					<artifactId>ReflectionProvider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
+					<artifactId>FlattenedProvider</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.googlecode.json-simple</groupId>
+					<artifactId>json-simple</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.google.guava</groupId>
+					<artifactId>guava</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.ess3</groupId>
 					<artifactId>1_8Provider</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>net.ess3</groupId>
-					<artifactId>NMSReflectionProvider</artifactId>
+					<artifactId>BaseProviders</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>net.ess3</groupId>
-					<artifactId>BaseProviders</artifactId>
+					<artifactId>NMSReflectionProvider</artifactId>
 				</exclusion>
 				<exclusion>
 					<groupId>net.ess3</groupId>

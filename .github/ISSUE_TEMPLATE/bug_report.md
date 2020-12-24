@@ -19,13 +19,12 @@ Relevant plugins<!-- (optional)-->:
 
 ### Console error
 ```
-Send the console error if you have it.
+Insert here the console error if you have it.
 ```
 
 ### Configuration file(s)
-<!--Send the configuration file(s) to [pastebin.com](pastebin.com) or [hastebin.com](hastebin.com) or to other sites.-->
+<!--Insert here the configuration file(s) to [pastebin.com](pastebin.com) or [hastebin.com](hastebin.com) or to other sites.-->
 configuration file: 
-<!--Or if you using bungee or sponge then insert here the main config-->
 
 ### Screenshots (optional)
 <!--Send a few pictures about the problem if you can.-->

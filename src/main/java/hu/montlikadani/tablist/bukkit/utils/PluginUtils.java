@@ -122,7 +122,7 @@ public class PluginUtils {
 	}
 
 	public static boolean isInGame(Player p) {
-		return ConfigValues.isRagemodeHook() && plugin.isPluginEnabled("RageMode") && GameUtils.isPlayerPlaying(p)
-				&& GameUtils.getGameByPlayer(p).isGameRunning();
+		return plugin.isPluginEnabled("RageMode") && hu.montlikadani.ragemode.config.ConfigValues.isTabEnabled()
+				&& GameUtils.isPlayerPlaying(p) && GameUtils.getGameByPlayer(p).isGameRunning();
 	}
 }

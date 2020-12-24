@@ -161,7 +161,7 @@ public class TabNameCmd implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
-		if (args.length == 1) {
+		if (args.length >= 1) {
 			if (plugin.getConf().getConfig().getStringList("tabname.disabled-worlds").contains(p.getWorld().getName())) {
 				sendMsg(p, plugin.getMsg("tabname.world-disabled", "%world%", p.getWorld().getName()));
 				return true;

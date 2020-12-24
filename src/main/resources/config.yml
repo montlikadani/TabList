@@ -2,11 +2,6 @@ hook:
   # Hook to PlaceholderAPI to use custom placeholders.
   placeholderapi: true
 
-  # Hook to my RageMode plugin. (https://www.spigotmc.org/resources/69169/)
-  # If true, then tablist, groups and tablist objects will be disabled while
-  # running a game.
-  RageMode: false
-
 # Different player list in different world.
 per-world-player-list: false
 
