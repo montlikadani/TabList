@@ -4,7 +4,6 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -23,78 +22,74 @@ public class Configuration {
 		this.plugin = plugin;
 	}
 
-	public CompletableFuture<Boolean> loadFiles() {
-		return CompletableFuture.supplyAsync(() -> {
-			File folder = plugin.getFolder();
+	public void loadFiles() {
+		File folder = plugin.getFolder();
 
-			if (config_file == null) {
-				config_file = new File(folder, "config.yml");
-			}
+		if (config_file == null) {
+			config_file = new File(folder, "config.yml");
+		}
 
-			if (messages_file == null) {
-				messages_file = new File(folder, "messages.yml");
-			}
+		if (messages_file == null) {
+			messages_file = new File(folder, "messages.yml");
+		}
 
-			if (animation_file == null) {
-				animation_file = new File(folder, "animcreator.yml");
-			}
+		if (animation_file == null) {
+			animation_file = new File(folder, "animcreator.yml");
+		}
 
-			if (!config_file.exists()) {
-				plugin.saveResource("config.yml", false);
-			}
+		if (!config_file.exists()) {
+			plugin.saveResource("config.yml", false);
+		}
 
-			config = new CommentedConfig(config_file);
-			ConfigValues.loadValues();
+		config = new CommentedConfig(config_file);
+		ConfigValues.loadValues();
 
-			if (tablist_file == null) {
-				tablist_file = new File(folder, "tablist.yml");
-			}
+		if (tablist_file == null) {
+			tablist_file = new File(folder, "tablist.yml");
+		}
 
-			if (!tablist_file.exists()) {
-				plugin.saveResource("tablist.yml", false);
-			}
+		if (!tablist_file.exists()) {
+			plugin.saveResource("tablist.yml", false);
+		}
 
-			tablist = new CommentedConfig(tablist_file);
-			tablist.load();
+		tablist = new CommentedConfig(tablist_file);
+		tablist.load();
 
-			try {
-				messages = createFile(messages_file, "messages.yml", false);
-				messages.save(messages_file);
+		try {
+			messages = createFile(messages_file, "messages.yml", false);
+			messages.save(messages_file);
 
-				animCreator = createFile(animation_file, "animcreator.yml", false);
-				animCreator.load(animation_file);
+			animCreator = createFile(animation_file, "animcreator.yml", false);
+			animCreator.load(animation_file);
 
-				if (ConfigValues.isTabNameEnabled()) {
-					if (names_file == null) {
-						names_file = new File(folder, "names.yml");
-					}
-
-					names = createFile(names_file, "names.yml", true);
-					names.save(names_file);
+			if (ConfigValues.isTabNameEnabled()) {
+				if (names_file == null) {
+					names_file = new File(folder, "names.yml");
 				}
 
-				if (ConfigValues.isPrefixSuffixEnabled()) {
-					if (groups_file == null) {
-						groups_file = new File(folder, "groups.yml");
-					}
-
-					groups = createFile(groups_file, "groups.yml", false);
-					groups.load(groups_file);
-				}
-
-				if (ConfigValues.isFakePlayers()) {
-					if (fakeplayers_file == null) {
-						fakeplayers_file = new File(folder, "fakeplayers.yml");
-					}
-
-					fakeplayers = createFile(fakeplayers_file, "fakeplayers.yml", true);
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
+				names = createFile(names_file, "names.yml", true);
+				names.save(names_file);
 			}
 
-			return true;
-		});
+			if (ConfigValues.isPrefixSuffixEnabled()) {
+				if (groups_file == null) {
+					groups_file = new File(folder, "groups.yml");
+				}
+
+				groups = createFile(groups_file, "groups.yml", false);
+				groups.load(groups_file);
+			}
+
+			if (ConfigValues.isFakePlayers()) {
+				if (fakeplayers_file == null) {
+					fakeplayers_file = new File(folder, "fakeplayers.yml");
+				}
+
+				fakeplayers = createFile(fakeplayers_file, "fakeplayers.yml", true);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void createNamesFile() {

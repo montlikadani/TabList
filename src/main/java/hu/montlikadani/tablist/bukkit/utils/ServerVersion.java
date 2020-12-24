@@ -31,7 +31,7 @@ public class ServerVersion {
 
 		private Integer value;
 		private String shortVersion;
-		private static Version current = null;
+		private static Version current;
 
 		Version() {
 			value = Integer.valueOf(name().replaceAll("[^\\d.]", ""));

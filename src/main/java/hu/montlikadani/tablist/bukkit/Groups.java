@@ -3,10 +3,10 @@ package hu.montlikadani.tablist.bukkit;
 import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang.Validate;
@@ -16,7 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
-import hu.montlikadani.tablist.bukkit.utils.concurrent.SortedArrayBlockingQueue;
 
 public class Groups {
 
@@ -26,7 +25,7 @@ public class Groups {
 
 	private final List<TeamHandler> groupsList = new ArrayList<>();
 	private final HashMap<String, TabListPlayer> tLPlayerMap = new HashMap<>();
-	private final SortedArrayBlockingQueue<TabListPlayer> sortedTabListPlayers = new SortedArrayBlockingQueue<>(16);
+	private final ConcurrentLinkedDeque<TabListPlayer> sortedTabListPlayers = new ConcurrentLinkedDeque<>();
 
 	//private final Scoreboard b = Bukkit.getScoreboardManager().getNewScoreboard();
 
@@ -140,8 +139,9 @@ public class Groups {
 	}
 
 	/**
-	 * Loads the group(s) for the given player. If the player have before group set, that group getting remove.
-	 * The scheduler task will get started to update continuously.
+	 * Loads the group(s) for the given player. If the player have before group set,
+	 * that group getting remove. The scheduler task will get started to update
+	 * continuously.
 	 * 
 	 * @param p {@link Player}
 	 */
@@ -178,11 +178,13 @@ public class Groups {
 	/**
 	 * Adds a new player to groups.
 	 * <p>
-	 * If the given player is not exists in the list it will be instantiated to a new one and
-	 * making this <code>synchronized</code> to not cause {@link ConcurrentModificationException}.
+	 * If the given player is not exists in the list it will be instantiated to a
+	 * new one and making this <code>synchronized</code> to not cause
+	 * {@link ConcurrentModificationException}.
 	 * <p>
-	 * After adding/or the player existing, their groups will get updated once to retrieve the
-	 * approximately group and sets the prefix/suffix to be shown in player list. see {@link #setPlayerTeam(TabListPlayer, int)}
+	 * After adding/or the player existing, their groups will get updated once to
+	 * retrieve the approximately group and sets the prefix/suffix to be shown in
+	 * player list. see {@link #setPlayerTeam(TabListPlayer, int)}
 	 * 
 	 * @param player {@link Player}
 	 * @return {@link TabListPlayer} if ever exists or not
@@ -200,9 +202,8 @@ public class Groups {
 		addToTabListPlayerList(tabPlayer);
 
 		int priority = 0;
-		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
-		while (it.hasNext()) {
-			setPlayerTeam(it.next(), priority);
+		for (TabListPlayer tlp : sortedTabListPlayers) {
+			setPlayerTeam(tlp, priority);
 			priority++;
 		}
 
@@ -219,8 +220,9 @@ public class Groups {
 	/**
 	 * Removes the given player's group.
 	 * <p>
-	 * If the player does not have any groups this future will completes and returns false.
-	 * Otherwise returns true if the player have any groups and its being removed from list.
+	 * If the player does not have any groups this future will completes and returns
+	 * false. Otherwise returns true if the player have any groups and its being
+	 * removed from list.
 	 * 
 	 * @param p {@link Player}
 	 * @return {@link CompletableFuture}
@@ -309,9 +311,8 @@ public class Groups {
 		}
 
 		int priority = 0;
-		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
-		while (it.hasNext()) {
-			setPlayerTeam(it.next(), priority);
+		for (TabListPlayer tabPlayer : sortedTabListPlayers) {
+			setPlayerTeam(tabPlayer, priority);
 			priority++;
 		}
 	}
@@ -319,17 +320,17 @@ public class Groups {
 	private void addToTabListPlayerList(TabListPlayer tlp) {
 		int pos = 0;
 
-		Iterator<TabListPlayer> it = sortedTabListPlayers.iterator();
-		while (it.hasNext()) {
-			TabListPlayer tabPlayer = it.next();
-			if (tabPlayer != null) {
-				if (tlp.compareTo(tabPlayer) < 0)
-					break;
+		for (TabListPlayer tabPlayer : sortedTabListPlayers) {
+			if (tlp.compareTo(tabPlayer) < 0)
+				break;
 
-				pos++;
-			}
+			pos++;
 		}
 
-		sortedTabListPlayers.add(pos, tlp);
+		if (pos > 0) {
+			sortedTabListPlayers.offerFirst(tlp);
+		} else {
+			sortedTabListPlayers.offerLast(tlp);
+		}
 	}
 }

@@ -80,10 +80,7 @@ public class Misc {
 			dt = form2 != null ? now.format(form2) : cal.get(Calendar.YEAR) + "/" + cal.get(Calendar.DATE);
 		}
 
-		ServerInfo info = null;
-		if (p.getServer() != null)
-			info = p.getServer().getInfo();
-
+		ServerInfo info = p.getServer() != null ? p.getServer().getInfo() : null;
 		String online = info != null ? Integer.toString(info.getPlayers().size()) : "0";
 
 		if (!t.isEmpty())
@@ -92,7 +89,7 @@ public class Misc {
 		if (!dt.isEmpty())
 			str = str.replace("%date%", dt);
 
-		if (str.contains("%server%") && info != null)
+		if (info != null && str.contains("%server%"))
 			str = str.replace("%server%", info.getName());
 
 		if (str.contains("%server-online%"))
@@ -151,7 +148,7 @@ public class Misc {
 		if (str.contains("%bungee-online%"))
 			str = str.replace("%bungee-online%", Integer.toString(BungeeCord.getInstance().getOnlineCount()));
 
-		if (str.contains("%bungee-motd%") && info != null)
+		if (info != null && str.contains("%bungee-motd%"))
 			str = str.replace("%bungee-motd%", info.getMotd());
 
 		if (str.contains("%player-country%"))

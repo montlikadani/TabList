@@ -67,32 +67,33 @@ public class TabList extends JavaPlugin {
 
 		instance = this;
 
-		try { // Supports paper
+		try {
 			Class.forName("org.spigotmc.SpigotConfig");
 			isSpigot = true;
 		} catch (ClassNotFoundException c) {
 			isSpigot = false;
 		}
 
-		mcVersion = new ServerVersion();
+		try {
+			mcVersion = new ServerVersion();
 
-		if (mcVersion.getVersion().isLower(Version.v1_8_R1)) {
-			logConsole(Level.SEVERE,
-					"Your server version does not supported by this plugin! Please use 1.8+ or higher versions!",
-					false);
-			getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
+			if (mcVersion.getVersion().isLower(Version.v1_8_R1)) {
+				logConsole(Level.SEVERE,
+						"Your server version does not supported by this plugin! Please use 1.8+ or higher versions!",
+						false);
+				getServer().getPluginManager().disablePlugin(this);
+				return;
+			}
 
-		conf = new Configuration(this);
-		objects = new Objects();
-		g = new Groups(this);
-		variables = new Variables(this);
-		tabManager = new TabManager(this);
-		fakePlayerHandler = new FakePlayerHandler(this);
-		tabNameHandler = new TabNameHandler(this);
+			conf = new Configuration(this);
+			objects = new Objects();
+			g = new Groups(this);
+			variables = new Variables(this);
+			tabManager = new TabManager(this);
+			fakePlayerHandler = new FakePlayerHandler(this);
+			tabNameHandler = new TabNameHandler(this);
 
-		conf.loadFiles().thenAccept(success -> {
+			conf.loadFiles();
 			loadValues();
 
 			if (ConfigValues.isPlaceholderAPI() && isPluginEnabled("PlaceholderAPI")) {
@@ -150,13 +151,12 @@ public class TabList extends JavaPlugin {
 						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)";
 				Util.sendMsg(getServer().getConsoleSender(), colorMsg(msg));
 			}
-		}).exceptionally(t -> {
+		} catch (Throwable t) {
 			t.printStackTrace();
 			logConsole(Level.WARNING,
 					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues",
 					false);
-			return null;
-		});
+		}
 	}
 
 	@Override
@@ -227,14 +227,13 @@ public class TabList extends JavaPlugin {
 		g.cancelUpdate();
 
 		loadListeners();
-		conf.loadFiles().thenAccept(success -> {
-			loadAnimations();
-			loadValues();
+		conf.loadFiles();
+		loadAnimations();
+		loadValues();
 
-			g.load();
+		g.load();
 
-			getServer().getOnlinePlayers().forEach(pl -> updateAll(pl, true));
-		});
+		getServer().getOnlinePlayers().forEach(pl -> updateAll(pl, true));
 	}
 
 	private void loadValues() {

@@ -208,9 +208,6 @@ public class TabList extends Plugin implements Listener {
 		});
 	}
 
-	/**
-	 * @param e
-	 */
 	@EventHandler
 	public void onLogin(PostLoginEvent e) {
 		tab.start();
@@ -243,9 +240,6 @@ public class TabList extends Plugin implements Listener {
 		}, 20L, java.util.concurrent.TimeUnit.MILLISECONDS);
 	}
 
-	/**
-	 * @param ev
-	 */
 	@EventHandler
 	public void onProxyReload(ProxyReloadEvent ev) {
 		reload();
