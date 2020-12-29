@@ -177,7 +177,6 @@ public class TabHandler implements ITabHandler {
 			String group = plugin.getVaultPerm().getPrimaryGroup(player);
 			if (group != null) {
 				group = group.toLowerCase();
-
 				if (c.contains("per-group." + group)) {
 					String path = "per-group." + group + ".";
 					header = c.isList(path + "header") ? c.getStringList(path + "header")

@@ -1,7 +1,6 @@
 package hu.montlikadani.tablist.bukkit;
 
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
@@ -140,8 +139,8 @@ public class Groups {
 
 	/**
 	 * Loads the group(s) for the given player. If the player have before group set,
-	 * that group getting remove. The scheduler task will get started to update
-	 * continuously.
+	 * that group getting remove. After completion the scheduler task will get
+	 * started to update continuously.
 	 * 
 	 * @param p {@link Player}
 	 */
@@ -177,10 +176,6 @@ public class Groups {
 
 	/**
 	 * Adds a new player to groups.
-	 * <p>
-	 * If the given player is not exists in the list it will be instantiated to a
-	 * new one and making this <code>synchronized</code> to not cause
-	 * {@link ConcurrentModificationException}.
 	 * <p>
 	 * After adding/or the player existing, their groups will get updated once to
 	 * retrieve the approximately group and sets the prefix/suffix to be shown in

@@ -32,7 +32,7 @@ public class FakePlayerHandler {
 	public Optional<IFakePlayers> getFakePlayerByName(String name) {
 		for (IFakePlayers fp : fakePlayers) {
 			if (fp.getName().equalsIgnoreCase(name)) {
-				return Optional.ofNullable(fp);
+				return Optional.of(fp);
 			}
 		}
 

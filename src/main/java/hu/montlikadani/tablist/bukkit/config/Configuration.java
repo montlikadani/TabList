@@ -89,6 +89,9 @@ public class Configuration {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			logConsole(java.util.logging.Level.WARNING,
+					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues",
+					false);
 		}
 	}
 

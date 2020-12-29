@@ -62,7 +62,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
 		if (args.length == 0) {
-			sendMsg(sender, colorMsg("&e[&9&lTab&4&lList&e]"));
+			sendMsg(sender, colorMsg("&9&lTab&4&lList"));
 			sendMsg(sender, colorMsg("&5Version:&a " + plugin.getDescription().getVersion()));
 			sendMsg(sender, colorMsg("&5Author, created by:&a montlikadani"));
 			sendMsg(sender, colorMsg("&5Commands:&8 /&7" + label + "&a help"));

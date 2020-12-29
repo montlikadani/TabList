@@ -207,15 +207,6 @@ public class ReflectionUtils {
 		try {
 			modifiersField = getField(Field.class, "modifiers");
 		} catch (NoSuchFieldException e) { // Java 12+
-			if (JavaAccessibilities.getCurrentVersion() >= 14) { // k, no
-				java.lang.invoke.MethodHandles.Lookup lookup = java.lang.invoke.MethodHandles
-						.privateLookupIn(Field.class, java.lang.invoke.MethodHandles.lookup());
-				java.lang.invoke.VarHandle varHandle = lookup.findVarHandle(Field.class, "modifiers", int.class);
-				varHandle.set(field, mods & ~Modifier.FINAL);
-				field.set(target, newValue);
-				return;
-			}
-
 			Method meth = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
 			boolean accessibleBeforeSet = JavaAccessibilities.isAccessible(meth, null);
 			meth.setAccessible(true);
