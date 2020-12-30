@@ -1,7 +1,5 @@
 package hu.montlikadani.tablist.utils.operators;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class OperatorNodes implements ExpressionNode {
 
 	private Condition condition;
@@ -15,7 +13,7 @@ public class OperatorNodes implements ExpressionNode {
 
 	@Override
 	public void setParseExpression(String parseExpression) {
-		if (!StringUtils.isEmpty(parseExpression)) {
+		if (parseExpression != null && !parseExpression.isEmpty()) {
 			this.parseExpression = parseExpression;
 			condition = makeConditionFromInput(parseExpression);
 		}

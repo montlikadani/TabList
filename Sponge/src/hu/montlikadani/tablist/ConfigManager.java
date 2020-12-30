@@ -9,15 +9,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.spongepowered.api.config.DefaultConfig;
+import org.spongepowered.configurate.CommentedConfigurationNode;
+import org.spongepowered.configurate.ConfigurationOptions;
+import org.spongepowered.configurate.hocon.HoconConfigurationLoader;
+import org.spongepowered.configurate.loader.ConfigurationLoader;
+import org.spongepowered.configurate.serialize.SerializationException;
 
-import com.google.common.reflect.TypeToken;
 import com.google.inject.Inject;
-
-import ninja.leaping.configurate.ConfigurationOptions;
-import ninja.leaping.configurate.commented.CommentedConfigurationNode;
-import ninja.leaping.configurate.hocon.HoconConfigurationLoader;
-import ninja.leaping.configurate.loader.ConfigurationLoader;
-import ninja.leaping.configurate.objectmapping.ObjectMappingException;
 
 public class ConfigManager {
 
@@ -46,8 +44,8 @@ public class ConfigManager {
 		}
 
 		this.file = new File(folder, name);
-		this.loader = HoconConfigurationLoader.builder().setFile(file)
-				.setDefaultOptions(ConfigurationOptions.defaults().setShouldCopyDefaults(true)).build();
+		this.loader = HoconConfigurationLoader.builder().file(file)
+				.defaultOptions(ConfigurationOptions.defaults().shouldCopyDefaults(true)).build();
 	}
 
 	public String getPath() {
@@ -93,18 +91,22 @@ public class ConfigManager {
 	}
 
 	public CommentedConfigurationNode get(Object... path) {
-		return node.getNode(path);
+		return node.node(path);
 	}
 
 	public void set(Object value, Object... path) {
 		if (!contains(path) && TabList.get().getC().isSetMissing()) {
-			get(path).setValue(value);
+			try {
+				get(path).set(Object.class, value);
+			} catch (SerializationException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
 	public void setComment(String comment, Object... path) {
 		if (comment != null && !comment.trim().isEmpty()) {
-			get(path).setComment(comment);
+			get(path).comment(comment);
 		}
 	}
 
@@ -142,11 +144,11 @@ public class ConfigManager {
 	public List<String> getStringList(List<String> def, Object... path) {
 		try {
 			if (def == null) {
-				return get(path).getList(TypeToken.of(String.class));
+				return get(path).getList(String.class);
 			}
 
-			return get(path).getList(TypeToken.of(String.class), def);
-		} catch (ObjectMappingException e) {
+			return get(path).getList(String.class, def);
+		} catch (SerializationException e) {
 			e.printStackTrace();
 		}
 
@@ -154,7 +156,7 @@ public class ConfigManager {
 	}
 
 	public boolean contains(Object... path) {
-		return !get(path).isVirtual();
+		return !get(path).virtual();
 	}
 
 	public boolean isExistsAndNotEmpty(Object... path) {
@@ -162,12 +164,12 @@ public class ConfigManager {
 	}
 
 	public boolean isString(Object... path) {
-		Object val = get(path).getValue();
+		Object val = get(path).raw();
 		return val instanceof String;
 	}
 
 	public boolean isList(Object... path) {
-		Object val = get(path).getValue();
+		Object val = get(path).raw();
 		return val instanceof List;
 	}
 

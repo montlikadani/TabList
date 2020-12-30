@@ -6,20 +6,22 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.ScheduledTask;
 import org.spongepowered.api.scheduler.Task;
 
 import hu.montlikadani.tablist.ConfigValues;
 import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.player.ITabPlayer;
 
 public class TabHandler {
 
 	public static final Map<UUID, Boolean> TABENABLED = new HashMap<>();
 
 	private TabList plugin;
-	private Task task;
+	private ScheduledTask task;
 
 	private final Set<TabListManager> tabPlayers = new HashSet<>();
 
@@ -31,7 +33,7 @@ public class TabHandler {
 		return tabPlayers;
 	}
 
-	public Optional<Task> getTask() {
+	public Optional<ScheduledTask> getTask() {
 		return Optional.ofNullable(task);
 	}
 
@@ -42,12 +44,12 @@ public class TabHandler {
 		}
 	}
 
-	public void addPlayer(Player p) {
+	public void addPlayer(ITabPlayer p) {
 		if (p == null || isPlayerInTab(p)) {
 			return;
 		}
 
-		final TabListManager tabManager = new TabListManager(plugin, p.getUniqueId());
+		final TabListManager tabManager = new TabListManager(plugin, p);
 		tabManager.loadTab();
 		tabPlayers.add(tabManager);
 
@@ -58,18 +60,19 @@ public class TabHandler {
 		}
 
 		if (task == null) {
-			task = Task.builder().async().intervalTicks(refreshTime).execute(task -> {
-				if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
-					cancelTask();
-					return;
-				}
+			task = Sponge.getServer().getGame().getAsyncScheduler()
+					.submit(Task.builder().interval(refreshTime, TimeUnit.MILLISECONDS).execute(task -> {
+						if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
+							cancelTask();
+							return;
+						}
 
-				tabPlayers.forEach(TabListManager::sendTab);
-			}).submit(plugin);
+						tabPlayers.forEach(TabListManager::sendTab);
+					}).build());
 		}
 	}
 
-	public void removePlayer(Player player) {
+	public void removePlayer(ITabPlayer player) {
 		getPlayerTab(player).ifPresent(tabManager -> {
 			tabManager.sendTabList(player, "", "");
 			tabPlayers.remove(tabManager);
@@ -83,11 +86,12 @@ public class TabHandler {
 		tabPlayers.clear();
 	}
 
-	public boolean isPlayerInTab(Player player) {
+	public boolean isPlayerInTab(ITabPlayer player) {
 		return getPlayerTab(player).isPresent();
 	}
 
-	public Optional<TabListManager> getPlayerTab(final Player player) {
-		return tabPlayers.stream().filter(tab -> tab.getPlayerUuid().equals(player.getUniqueId())).findFirst();
+	public Optional<TabListManager> getPlayerTab(final ITabPlayer player) {
+		return tabPlayers.stream().filter(tab -> tab.getPlayer().getPlayerUUID().equals(player.getPlayerUUID()))
+				.findFirst();
 	}
 }

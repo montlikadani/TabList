@@ -3,13 +3,13 @@ package hu.montlikadani.tablist.tablist.groups;
 import java.util.UUID;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.scoreboard.Scoreboard;
 import org.spongepowered.api.scoreboard.Team;
-import org.spongepowered.api.text.Text;
 
 import hu.montlikadani.tablist.ConfigValues;
 import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.player.ITabPlayer;
+import net.kyori.adventure.text.Component;
 
 public class TabGroup implements Cloneable {
 
@@ -82,9 +82,9 @@ public class TabGroup implements Cloneable {
 
 		final String name = teamName;
 
-		Sponge.getServer().getPlayer(playerUUID).ifPresent(player -> {
+		TabList.get().getTabPlayer(playerUUID).ifPresent(tabPlayer -> tabPlayer.asServerPlayer().ifPresent(player -> {
 			final String pref = TabList.get().makeAnim(prefix), suf = TabList.get().makeAnim(suffix);
-			final Scoreboard b = getScoreboard(player);
+			final Scoreboard b = getScoreboard(tabPlayer);
 
 			Team team = b.getTeam(name).orElse(Team.builder().name(name).build());
 
@@ -92,32 +92,28 @@ public class TabGroup implements Cloneable {
 				b.registerTeam(team);
 			}
 
-			/*Text representationName = player.getTeamRepresentation();
-			if (!team.getMembers().contains(representationName)) {
-				team.addMember(representationName);
-			}*/
-
-			final Text resultName = TabList.get().getVariables().replaceVariables(player,
+			final Component resultName = TabList.get().getVariables().replaceVariables(player,
 					pref + player.getName() + suf);
 
-			Sponge.getServer().getOnlinePlayers().forEach(all -> {
-				all.getTabList().getEntry(player.getUniqueId()).ifPresent(te -> {
-					te.setDisplayName(resultName);
-					all.setScoreboard(b);
-				});
-			});
-		});
+			Sponge.getServer().getOnlinePlayers()
+					.forEach(all -> all.getTabList().getEntry(player.getUniqueId()).ifPresent(te -> {
+						te.setDisplayName(resultName);
+						all.setScoreboard(b);
+					}));
+		}));
 	}
 
-	public void removeTeam(final Player player) {
-		getScoreboard(player).getTeam(getFullGroupName()).ifPresent(t -> {
-			t.removeMember(player.getTeamRepresentation());
-			player.setScoreboard(t.getScoreboard().get());
-		});
+	public void removeTeam(final TabUser tabUser) {
+		getScoreboard(tabUser).getTeam(getFullGroupName()).ifPresent(t -> tabUser.asServerPlayer().ifPresent(sp -> {
+			t.removeMember(sp.getTeamRepresentation());
+			t.getScoreboard().ifPresent(sb -> sp.setScoreboard(sb));
+		}));
 	}
 
-	public Scoreboard getScoreboard(Player player) {
-		return ConfigValues.isUseOwnScoreboard() ? player.getScoreboard() : TabList.BOARD;
+	public Scoreboard getScoreboard(final ITabPlayer tabPlayer) {
+		return ConfigValues.isUseOwnScoreboard() && tabPlayer.asServerPlayer().isPresent()
+				? tabPlayer.asServerPlayer().get().getScoreboard()
+				: TabList.board;
 	}
 
 	@Override

@@ -20,7 +20,7 @@ public class ConfigHandlers {
 	}
 
 	public void createFile() {
-		path = Sponge.getGame().getConfigManager().getPluginConfig(plugin).getDirectory();
+		path = Sponge.getGame().getConfigManager().getPluginConfig(plugin.getPluginContainer()).getDirectory();
 		config = new ConfigManager(path.toString(), name);
 		config.createFile();
 	}

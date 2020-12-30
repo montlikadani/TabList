@@ -4,27 +4,28 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
+import org.spongepowered.api.scheduler.ScheduledTask;
 import org.spongepowered.api.scheduler.Task;
 import org.spongepowered.api.scoreboard.Score;
 import org.spongepowered.api.scoreboard.Scoreboard;
-import org.spongepowered.api.scoreboard.critieria.Criteria;
+import org.spongepowered.api.scoreboard.criteria.Criteria;
 import org.spongepowered.api.scoreboard.displayslot.DisplaySlots;
 import org.spongepowered.api.scoreboard.objective.Objective;
 import org.spongepowered.api.scoreboard.objective.displaymode.ObjectiveDisplayModes;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.format.TextColors;
-import org.spongepowered.api.text.serializer.TextSerializers;
 
 import hu.montlikadani.tablist.ConfigValues;
 import hu.montlikadani.tablist.Debug;
 import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.player.ITabPlayer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 
 public class TabListObjects {
 
 	private TabList plugin;
 
-	private Task task;
+	private ScheduledTask task;
 
 	private ObjectType type = ObjectType.NONE;
 
@@ -32,7 +33,7 @@ public class TabListObjects {
 		this.plugin = plugin;
 	}
 
-	public Optional<Task> getTask() {
+	public Optional<ScheduledTask> getTask() {
 		return Optional.ofNullable(task);
 	}
 
@@ -57,34 +58,36 @@ public class TabListObjects {
 		}
 	}
 
-	public void unregisterAllObjective(Player player) {
+	public void unregisterAllObjective(ITabPlayer player) {
 		for (ObjectType types : ObjectType.values()) {
 			unregisterObjective(player, types.getName());
 		}
 	}
 
 	public void unregisterObjective(String objectName) {
-		TabList.BOARD.clearSlot(DisplaySlots.LIST);
-		getObjective(objectName).ifPresent(TabList.BOARD::removeObjective);
+		TabList.board.clearSlot(DisplaySlots.LIST);
+		getObjective(objectName).ifPresent(TabList.board::removeObjective);
 	}
 
-	public void unregisterObjective(Player player, String objectName) {
-		Scoreboard b = player.getScoreboard();
-		synchronized (b) { // Avoiding concurrentModify
-			b.clearSlot(DisplaySlots.LIST);
-		}
+	public void unregisterObjective(final ITabPlayer player, final String objectName) {
+		player.asServerPlayer().ifPresent(sp -> {
+			Scoreboard b = sp.getScoreboard();
+			synchronized (b) { // Avoiding concurrentModify
+				b.clearSlot(DisplaySlots.LIST);
+			}
 
-		b.getObjective(objectName).ifPresent(b::removeObjective);
+			b.getObjective(objectName).ifPresent(b::removeObjective);
+		});
 	}
 
 	public Optional<Objective> getObjective(String name) {
-		return TabList.BOARD.getObjective(name);
+		return TabList.board.getObjective(name);
 	}
 
 	public void loadObjects() {
 		cancelTask();
 
-		if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
+		if (plugin.getTabPlayers().isEmpty()) {
 			return;
 		}
 
@@ -94,7 +97,7 @@ public class TabListObjects {
 		}
 
 		if (type == ObjectType.HEARTH) {
-			Sponge.getServer().getOnlinePlayers().forEach(this::loadHealthObject);
+			plugin.getTabPlayers().forEach(this::loadHealthObject);
 			return;
 		}
 
@@ -103,66 +106,70 @@ public class TabListObjects {
 			return;
 		}
 
-		task = Task.builder().async().interval(interval, TimeUnit.SECONDS).execute(() -> {
-			if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
-				cancelTask();
-				return;
-			}
-
-			Sponge.getServer().getOnlinePlayers().forEach(all -> {
-				int score = 0;
-				if (type == ObjectType.PING) {
-					score = all.getConnection().getLatency();
-				} else if (type == ObjectType.CUSTOM) {
-					String result = TextSerializers.PLAIN
-							.serialize(plugin.getVariables().replaceVariables(all, ConfigValues.getCustomObject()));
-
-					result = result.replaceAll("[^\\d]", "");
-
-					try {
-						score = Integer.parseInt(result);
-					} catch (NumberFormatException e) {
-						Debug.warn("Not correct custom objective: " + ConfigValues.getCustomObject());
+		task = Sponge.getServer().getGame().getAsyncScheduler()
+				.submit(Task.builder().interval(interval, TimeUnit.SECONDS).execute(() -> {
+					if (plugin.getTabPlayers().isEmpty()) {
+						cancelTask();
+						return;
 					}
-				}
 
-				final String objName = type.getName();
-				final Objective object = getObjective(objName)
-						.orElse(Objective.builder().displayName(Text.of("tabObjects")).name(objName)
+					plugin.getTabPlayers().forEach(all -> all.asServerPlayer().ifPresent(sp -> {
+						int score = 0;
+						if (type == ObjectType.PING) {
+							score = sp.getConnection().getLatency();
+						} else if (type == ObjectType.CUSTOM) {
+							String result = PlainComponentSerializer.plain().serialize(
+									plugin.getVariables().replaceVariables(sp, ConfigValues.getCustomObject()));
+
+							result = result.replaceAll("[^\\d]", "");
+
+							try {
+								score = Integer.parseInt(result);
+							} catch (NumberFormatException e) {
+								Debug.warn("Not correct custom objective: " + ConfigValues.getCustomObject());
+							}
+						}
+
+						final String objName = type.getName();
+						final Objective object = getObjective(objName).orElse(Objective.builder()
+								.displayName(Component.text("tabObjects")).name(objName)
 								.objectiveDisplayMode(ObjectiveDisplayModes.INTEGER).criterion(Criteria.DUMMY).build());
-				final Scoreboard board = TabList.BOARD;
+						final Scoreboard board = TabList.board;
 
-				if (!board.getObjective(objName).isPresent()) {
-					board.addObjective(object);
-				}
+						if (!board.getObjective(objName).isPresent()) {
+							board.addObjective(object);
+						}
 
-				board.updateDisplaySlot(object, DisplaySlots.LIST);
+						board.updateDisplaySlot(object, DisplaySlots.LIST);
 
-				final int fScore = score;
-				Optional<Score> s = object.getScore(Text.of(all.getName()));
-				if (!s.isPresent() || s.get().getScore() != fScore) {
-					Sponge.getServer().getOnlinePlayers().forEach(p -> {
-						getObjective(objName).ifPresent(obj -> {
-							obj.getOrCreateScore(Text.of(all.getName())).setScore(fScore);
-							p.setScoreboard(board);
-						});
-					});
-				}
-			});
-		}).submit(plugin);
+						final int fScore = score;
+						Optional<Score> s = object.getScore(Component.text(sp.getName()));
+						if (!s.isPresent() || s.get().getScore() != fScore) {
+							plugin.getTabPlayers().forEach(tabP -> tabP.asServerPlayer()
+									.ifPresent(serverPlayer -> getObjective(objName).ifPresent(obj -> {
+										obj.getOrCreateScore(Component.text(sp.getName())).setScore(fScore);
+										serverPlayer.setScoreboard(board);
+									})));
+						}
+					}));
+				}).build());
 	}
 
-	public void loadHealthObject(Player p) {
-		String objName = ObjectType.HEARTH.getName();
-		Objective object = getObjective(objName)
-				.orElse(Objective.builder().displayName(Text.of(TextColors.RED, "\u2665")).name(objName)
-						.objectiveDisplayMode(ObjectiveDisplayModes.HEARTS).criterion(Criteria.HEALTH).build());
-
-		if (!TabList.BOARD.getObjective(objName).isPresent()) {
-			TabList.BOARD.addObjective(object);
+	public void loadHealthObject(ITabPlayer p) {
+		if (!p.asServerPlayer().isPresent()) {
+			return;
 		}
 
-		TabList.BOARD.updateDisplaySlot(object, DisplaySlots.LIST);
-		p.setScoreboard(TabList.BOARD);
+		String objName = ObjectType.HEARTH.getName();
+		Objective object = getObjective(objName)
+				.orElse(Objective.builder().displayName(Component.text("\u2665", NamedTextColor.RED)).name(objName)
+						.objectiveDisplayMode(ObjectiveDisplayModes.HEARTS).criterion(Criteria.HEALTH).build());
+
+		if (!TabList.board.getObjective(objName).isPresent()) {
+			TabList.board.addObjective(object);
+		}
+
+		TabList.board.updateDisplaySlot(object, DisplaySlots.LIST);
+		p.asServerPlayer().get().setScoreboard(TabList.board);
 	}
 }

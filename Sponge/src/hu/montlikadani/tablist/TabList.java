@@ -1,22 +1,25 @@
 package hu.montlikadani.tablist;
 
+import org.spongepowered.api.Server;
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
-import org.spongepowered.api.event.game.GameReloadEvent;
-import org.spongepowered.api.event.game.state.GameInitializationEvent;
-import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
-import org.spongepowered.api.event.game.state.GameStartedServerEvent;
-import org.spongepowered.api.event.game.state.GameStoppingEvent;
-import org.spongepowered.api.plugin.Dependency;
-import org.spongepowered.api.plugin.Plugin;
-import org.spongepowered.api.plugin.PluginContainer;
-import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.event.Order;
+import org.spongepowered.api.event.lifecycle.ConstructPluginEvent;
+import org.spongepowered.api.event.lifecycle.LoadedGameEvent;
+import org.spongepowered.api.event.lifecycle.RefreshGameEvent;
+import org.spongepowered.api.event.lifecycle.StartingEngineEvent;
+import org.spongepowered.api.event.lifecycle.StoppingEngineEvent;
+import org.spongepowered.api.scheduler.ScheduledTask;
 import org.spongepowered.api.scoreboard.Scoreboard;
+import org.spongepowered.plugin.PluginContainer;
+import org.spongepowered.plugin.jvm.Plugin;
 
 import com.google.inject.Inject;
 
 import hu.montlikadani.tablist.commands.SpongeCommands;
+import hu.montlikadani.tablist.player.ITabPlayer;
+import hu.montlikadani.tablist.player.TabPlayer;
 import hu.montlikadani.tablist.tablist.TabHandler;
 import hu.montlikadani.tablist.tablist.groups.GroupTask;
 import hu.montlikadani.tablist.tablist.groups.TabGroup;
@@ -27,9 +30,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
-@Plugin(id = "tablist", name = "TabList", version = "1.0.2", description = "An ultimate animated tablist", authors = "montlikadani", dependencies = @Dependency(id = "spongeapi", version = "7.2.0"))
+@Plugin("tablist")
 public class TabList {
 
 	private static TabList instance;
@@ -44,21 +49,30 @@ public class TabList {
 	private GroupTask groupTask;
 	private TabListObjects objects;
 
+	private final Set<ITabPlayer> tabPlayers = new HashSet<>();
 	private final Set<TabGroup> groupsList = new HashSet<>();
 	private final Set<AnimCreator> animations = Collections.synchronizedSet(new HashSet<AnimCreator>());
 
-	public static final Scoreboard BOARD = Sponge.getServer().getServerScoreboard()
-			.orElse(Scoreboard.builder().build());
+	public static Scoreboard board;
 
-	@Listener
-	public void onPluginPreInit(GamePreInitializationEvent e) {
+	static {
+		board = Sponge.getServer().getServerScoreboard().orElse(null);
+		if (board == null) {
+			board = Scoreboard.builder().build();
+		}
+	}
+
+	@Listener(order = Order.PRE)
+	public void onPluginPreInit(ConstructPluginEvent e) {
 		instance = this;
 	}
 
-	@Listener
-	public void onPluginInit(GameInitializationEvent ev) {
+	@Listener(order = Order.AFTER_PRE)
+	public void onPluginInit(StartingEngineEvent<Server> ev) {
 		initConfigs();
 		new SpongeCommands(this);
+
+		Sponge.getEventManager().registerListeners(pc, new EventListeners());
 
 		tabHandler = new TabHandler(this);
 		variables = new Variables();
@@ -66,24 +80,25 @@ public class TabList {
 	}
 
 	@Listener
-	public void onServerStarted(GameStartedServerEvent event) {
-		Sponge.getEventManager().registerListeners(this, new EventListeners());
-		reload();
+	public void onServerStarted(LoadedGameEvent event) {
+		loadAnimations();
+		loadGroups();
+		variables.loadExpressions();
+		updateAll();
 	}
 
 	@Listener
-	public void onPluginStop(GameStoppingEvent e) {
+	public void onPluginStop(StoppingEngineEvent<Server> e) {
 		cancelAll();
 
 		Sponge.getEventManager().unregisterListeners(this);
-		Sponge.getCommandManager().getOwnedBy(this).forEach(Sponge.getCommandManager()::removeMapping);
-		Sponge.getScheduler().getScheduledTasks(this).forEach(Task::cancel);
+		Sponge.getAsyncScheduler().getTasksByPlugin(pc).forEach(ScheduledTask::cancel);
 
 		instance = null;
 	}
 
 	@Listener
-	public void onReload(GameReloadEvent event) {
+	public void onReload(RefreshGameEvent event) {
 		reload();
 	}
 
@@ -119,7 +134,7 @@ public class TabList {
 			groupTask.cancel();
 		}
 
-		Sponge.getScheduler().getScheduledTasks(this).forEach(Task::cancel);
+		Sponge.getAsyncScheduler().getTasksByPlugin(pc).forEach(ScheduledTask::cancel);
 
 		initConfigs();
 		loadAnimations();
@@ -136,7 +151,7 @@ public class TabList {
 		}
 
 		int last = 0;
-		for (Object gr : groupsFile.getConfig().get("groups").getChildrenMap().keySet()) {
+		for (Object gr : groupsFile.getConfig().get("groups").childrenMap().keySet()) {
 			String name = (String) gr;
 
 			if (name.equalsIgnoreCase("exampleGroup")) {
@@ -167,7 +182,7 @@ public class TabList {
 			return;
 		}
 
-		for (Object o : c.get("animations").getChildrenMap().keySet()) {
+		for (Object o : c.get("animations").childrenMap().keySet()) {
 			String name = (String) o;
 			List<String> texts = c.getStringList("animations", name, "texts");
 			if (texts.isEmpty()) {
@@ -206,15 +221,21 @@ public class TabList {
 	}
 
 	public void updateAll(final Player player) {
-		tabHandler.addPlayer(player);
+		ITabPlayer tabPlayer = getTabPlayer(player.getUniqueId()).orElse(null);
+		if (tabPlayer == null) {
+			tabPlayer = new TabPlayer(player.getUniqueId());
+			tabPlayers.add(tabPlayer);
+		}
+
+		tabHandler.addPlayer(tabPlayer);
 
 		if (groupTask != null) {
-			groupTask.removePlayer(player);
+			groupTask.removePlayer(tabPlayer);
 		} else {
 			groupTask = new GroupTask();
 		}
 
-		groupTask.addPlayer(player);
+		groupTask.addPlayer(tabPlayer);
 		groupTask.runTask();
 
 		if (objects == null) {
@@ -223,7 +244,7 @@ public class TabList {
 
 		for (ObjectType t : ObjectType.values()) {
 			if (t != ObjectType.HEARTH) {
-				objects.unregisterObjective(player, t.getName());
+				objects.unregisterObjective(tabPlayer, t.getName());
 			}
 		}
 
@@ -233,15 +254,26 @@ public class TabList {
 	}
 
 	public void onQuit(Player player) {
-		tabHandler.removePlayer(player);
+		if (player == null) {
+			return;
+		}
+
+		ITabPlayer tabPlayer = getTabPlayer(player.getUniqueId()).orElse(null);
+		if (tabPlayer == null) {
+			return;
+		}
+
+		tabHandler.removePlayer(tabPlayer);
 
 		if (groupTask != null) {
-			groupTask.removePlayer(player);
+			groupTask.removePlayer(tabPlayer);
 		}
 
 		if (objects != null) {
-			objects.unregisterAllObjective(player);
+			objects.unregisterAllObjective(tabPlayer);
 		}
+
+		tabPlayers.remove(tabPlayer);
 	}
 
 	public void cancelAll() {
@@ -254,10 +286,23 @@ public class TabList {
 
 		if (groupTask != null) {
 			groupTask.cancel();
-			Sponge.getServer().getOnlinePlayers().forEach(groupTask::removePlayer);
+			tabPlayers.forEach(pl -> groupTask.removePlayer(pl));
 		}
 
 		groupsList.clear();
+		tabPlayers.clear();
+	}
+
+	public Optional<ITabPlayer> getTabPlayer(UUID uuid) {
+		if (uuid != null) {
+			for (ITabPlayer tabPlayer : tabPlayers) {
+				if (tabPlayer.getPlayerUUID().equals(uuid)) {
+					return Optional.of(tabPlayer);
+				}
+			}
+		}
+
+		return Optional.empty();
 	}
 
 	public Set<AnimCreator> getAnimations() {
@@ -266,6 +311,10 @@ public class TabList {
 
 	public Set<TabGroup> getGroupsList() {
 		return groupsList;
+	}
+
+	public Set<ITabPlayer> getTabPlayers() {
+		return tabPlayers;
 	}
 
 	public GroupTask getGroupTask() {

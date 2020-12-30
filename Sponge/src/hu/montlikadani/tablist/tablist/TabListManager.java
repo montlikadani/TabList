@@ -4,35 +4,41 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
+import org.spongepowered.api.ResourceKey;
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
+
+import com.google.common.base.Preconditions;
 
 import hu.montlikadani.tablist.ConfigManager;
 import hu.montlikadani.tablist.ConfigValues;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.Variables;
+import hu.montlikadani.tablist.player.ITabPlayer;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 
 public class TabListManager {
 
 	private TabList plugin;
-	private UUID playerUuid;
+	private ITabPlayer tabPlayer;
 	private List<String> header;
 	private List<String> footer;
 
 	private final List<String> worldList = new ArrayList<>();
 
-	public TabListManager(TabList plugin, UUID playerUuid) {
-		this(plugin, playerUuid, null, null);
+	public TabListManager(TabList plugin, ITabPlayer player) {
+		this(plugin, player, null, null);
 	}
 
-	public TabListManager(TabList plugin, UUID playerUuid, List<String> header, List<String> footer) {
+	public TabListManager(TabList plugin, ITabPlayer tabPlayer, List<String> header, List<String> footer) {
+		Preconditions.checkNotNull(tabPlayer, "tabPlayer cannot be null");
+
 		this.plugin = plugin;
-		this.playerUuid = playerUuid;
 		this.header = header;
+		this.tabPlayer = tabPlayer;
 		this.footer = footer;
 	}
 
@@ -52,22 +58,20 @@ public class TabListManager {
 		this.footer = footer;
 	}
 
-	public UUID getPlayerUuid() {
-		return playerUuid;
+	public ITabPlayer getPlayer() {
+		return tabPlayer;
 	}
 
 	public void loadTab() {
 		worldList.clear();
 
-		Player p = Sponge.getServer().getPlayer(playerUuid).orElse(null);
-
-		if (!ConfigValues.isTablistEnabled() || p == null) {
+		if (!ConfigValues.isTablistEnabled()) {
 			return;
 		}
 
-		sendTabList(p, "", "");
+		sendTabList(tabPlayer, "", "");
 
-		if (TabHandler.TABENABLED.getOrDefault(playerUuid, false)) {
+		if (TabHandler.TABENABLED.getOrDefault(tabPlayer.getPlayerUUID(), false)) {
 			return;
 		}
 
@@ -82,10 +86,10 @@ public class TabListManager {
 						? Arrays.asList(conf.getString(new Object[] { "tablist", "footer" }))
 						: null;
 
-		if (conf.contains("tablist", "per-world") && conf.get("tablist", "per-world").hasMapChildren()) {
-			t: for (Object w : conf.get("tablist", "per-world").getChildrenMap().keySet()) {
+		if (conf.contains("tablist", "per-world") && conf.get("tablist", "per-world").isMap()) {
+			t: for (Object w : conf.get("tablist", "per-world").childrenMap().keySet()) {
 				for (String split : w.toString().split(", ")) {
-					if (p.getWorld().getName().equals(split)) {
+					if (tabPlayer.getServerWorldName().equals(split)) {
 						header = conf.isList("tablist", "per-world", w, "header")
 								? conf.getStringList("tablist", "per-world", w, "header")
 								: conf.isString("tablist", "per-world", w, "header")
@@ -107,16 +111,16 @@ public class TabListManager {
 	}
 
 	protected void sendTab() {
-		final Player player = Sponge.getServer().getPlayer(playerUuid).orElse(null);
+		ServerPlayer player = tabPlayer.asServerPlayer().orElse(null);
 		if (player == null || !player.isOnline()) {
 			return;
 		}
 
 		final ConfigManager conf = plugin.getC().getConfig();
-		if (conf.getStringList("tablist", "disabled-worlds").contains(player.getWorld().getName())
+		if (conf.getStringList("tablist", "disabled-worlds").contains(tabPlayer.getServerWorldName())
 				|| conf.getStringList("tablist", "restricted-players").contains(player.getName())
-				|| TabHandler.TABENABLED.getOrDefault(playerUuid, false)) {
-			sendTabList(player, "", "");
+				|| TabHandler.TABENABLED.getOrDefault(player.getUniqueId(), false)) {
+			sendTabList(tabPlayer, "", "");
 			return;
 		}
 
@@ -181,29 +185,27 @@ public class TabListManager {
 
 		if (!worldList.isEmpty()) {
 			for (String l : worldList) {
-				Sponge.getServer().getWorld(l).ifPresent(w -> {
-					for (Player pl : w.getPlayers()) {
-						sendTabList(pl, v.replaceVariables(pl, resultHeader), v.replaceVariables(pl, resultFooter));
-					}
-				});
+				Sponge.getServer().getWorldManager().getWorld(ResourceKey.minecraft(l))
+						.ifPresent(w -> w.getPlayers().forEach(pl -> sendTabList(Optional.ofNullable(pl),
+								v.replaceVariables(pl, resultHeader), v.replaceVariables(pl, resultFooter))));
 			}
 
 			return;
 		}
 
-		Sponge.getServer().getPlayer(playerUuid).ifPresent(
-				p -> sendTabList(p, v.replaceVariables(p, resultHeader), v.replaceVariables(p, resultFooter)));
+		sendTabList(tabPlayer.asServerPlayer(), v.replaceVariables(player, resultHeader),
+				v.replaceVariables(player, resultFooter));
 	}
 
-	public void sendTabList(Player p, String header, String footer) {
-		sendTabList(p, Text.of(header), Text.of(footer));
+	public void sendTabList(ITabPlayer p, String header, String footer) {
+		sendTabList(p.asServerPlayer(), Component.text(header), Component.text(footer));
 	}
 
-	public void sendTabList(Player p, Text header, Text footer) {
-		p.getTabList().setHeaderAndFooter(header, footer);
+	public void sendTabList(Optional<ServerPlayer> p, TextComponent header, TextComponent footer) {
+		p.ifPresent(sp -> sp.getTabList().setHeaderAndFooter(header, footer));
 	}
 
 	public void clearTab() {
-		Sponge.getServer().getPlayer(playerUuid).ifPresent(p -> sendTabList(p, "", ""));
+		sendTabList(tabPlayer, "", "");
 	}
 }

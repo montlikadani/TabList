@@ -1,57 +1,57 @@
 package hu.montlikadani.tablist.commands;
 
+import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.command.CommandCallable;
+import org.spongepowered.api.command.Command;
 import org.spongepowered.api.command.CommandResult;
-import org.spongepowered.api.command.CommandSource;
-import org.spongepowered.api.command.args.CommandContext;
-import org.spongepowered.api.command.args.GenericArguments;
-import org.spongepowered.api.command.spec.CommandSpec;
+import org.spongepowered.api.command.manager.CommandMapping;
+import org.spongepowered.api.command.parameter.CommandContext;
+import org.spongepowered.api.command.parameter.Parameter;
+import org.spongepowered.api.command.parameter.managed.Flag;
 import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
+import org.spongepowered.api.event.Listener;
+import org.spongepowered.api.event.lifecycle.RegisterCommandEvent;
+import org.spongepowered.plugin.PluginContainer;
 
 import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.player.ITabPlayer;
 import hu.montlikadani.tablist.tablist.TabHandler;
+import net.kyori.adventure.identity.Identity;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 
-@Command(name = "tablist", aliases = { "tablist", "tl" }, subCommands = "toggle")
-public final class SpongeCommands extends ICommand implements Supplier<CommandCallable> {
+public final class SpongeCommands {
 
 	private TabList plugin;
 
-	private CommandCallable toggleCmd;
-
 	public SpongeCommands() {
-		throw new IllegalAccessError(toString() + " can't be instantiated.");
+		throw new IllegalAccessError(toString() + " cannot be instantiated.");
 	}
 
 	public SpongeCommands(TabList plugin) {
 		this.plugin = plugin;
 
-		toggleCmd = CommandSpec.builder().description(Text.of("Toggle on/off the tablist."))
-				.arguments(GenericArguments.optional(GenericArguments.firstParsing(
-						GenericArguments.onlyOne(GenericArguments.player(Text.of("player"))),
-						GenericArguments.string(Text.of("all")))))
-				.permission("tablist.toggle").executor(this::handleToggle).build();
+		Sponge.getEventManager().registerListeners(plugin.getPluginContainer(),
+				new CommandRegisterListener(plugin.getPluginContainer(),
+						Command.builder().flag(Flag.builder().aliases("tablist", "tl").build())
+								.parameter(Parameter.builder(CommandMapping.class).setKey("toggle").build()).build()));
 
-		Sponge.getCommandManager().register(plugin, get(), getClass().getAnnotation(Command.class).aliases());
+		Command.builder().setShortDescription(Component.text("Toggle on/off the tablist."))
+				.parameters(Parameter.playerOrTarget().optional().build(),
+						Parameter.string().setKey("all").optional().build())
+				.setPermission("tablist.toggle").setExecutor(e -> handleToggle(e)).build();
 	}
 
-	private CommandResult handleToggle(CommandSource src, CommandContext args) {
-		if ("all".equalsIgnoreCase(args.<String>getOne("all").orElse(""))) {
-			if (!hasPerm(src, "tablist.toggle.all")) {
+	private CommandResult handleToggle(CommandContext context) {
+		if ("all".equalsIgnoreCase(context.<String>getOne(Parameter.key("all", String.class)).orElse(""))) {
+			if (!context.hasPermission("tablist.toggle.all")) {
 				return CommandResult.empty();
 			}
 
-			for (Player pl : Sponge.getServer().getOnlinePlayers()) {
-				if (!plugin.getTabHandler().isPlayerInTab(pl)) {
-					continue;
-				}
-
-				UUID uuid = pl.getUniqueId();
-
+			plugin.getTabPlayers().stream().filter(pl -> plugin.getTabHandler().isPlayerInTab(pl)).forEach(pl -> {
+				UUID uuid = pl.getPlayerUUID();
 				boolean changed = TabHandler.TABENABLED.containsKey(uuid) ? !TabHandler.TABENABLED.get(uuid) : true;
 				if (changed) {
 					TabHandler.TABENABLED.put(uuid, true);
@@ -59,62 +59,81 @@ public final class SpongeCommands extends ICommand implements Supplier<CommandCa
 					TabHandler.TABENABLED.remove(uuid);
 					plugin.getTabHandler().getPlayerTab(pl).get().loadTab();
 				}
-			}
+			});
 
-			sendMsg(src, Sponge.getServer().getOnlinePlayers().isEmpty() ? "&cNo one on the server"
-					: "&2Tab has been toggled for everyone!");
+			context.sendMessage(Identity.nil(),
+					plugin.getTabPlayers().isEmpty() ? Component.text("No one on the server", NamedTextColor.RED)
+							: Component.text("Tab has been toggled for everyone!", NamedTextColor.DARK_GREEN));
 			return CommandResult.success();
 		}
 
-		if (args.<Player>getOne("player").isPresent()) {
-			Player p = args.<Player>getOne("player").get();
-			if (!plugin.getTabHandler().isPlayerInTab(p)) {
+		if (context.<Player>getOne(Parameter.key("player", Player.class)).isPresent()) {
+			Player player = context.<Player>getOne(Parameter.key("player", Player.class)).get();
+			Optional<ITabPlayer> tabPlayer = plugin.getTabPlayer(player.getUniqueId());
+			if (!tabPlayer.isPresent() || !plugin.getTabHandler().isPlayerInTab(tabPlayer.get())) {
 				return CommandResult.empty();
 			}
 
-			UUID uuid = p.getUniqueId();
+			UUID uuid = player.getUniqueId();
 
 			boolean changed = TabHandler.TABENABLED.containsKey(uuid) ? !TabHandler.TABENABLED.get(uuid) : true;
 			if (changed) {
 				TabHandler.TABENABLED.put(uuid, true);
-				sendMsg(src, "&cTab has been disabled for &e" + p.getName() + "&c!");
+				context.sendMessage(Identity.nil(), Component.text("Tab has been disabled for ", NamedTextColor.RED)
+						.append(Component.text().color(NamedTextColor.YELLOW).content(player.getName())));
 			} else {
 				TabHandler.TABENABLED.remove(uuid);
-				plugin.getTabHandler().getPlayerTab(p).get().loadTab();
-				sendMsg(src, "&aTab has been enabled for &e" + p.getName() + "&a!");
+				plugin.getTabHandler().getPlayerTab(tabPlayer.get()).get().loadTab();
+				context.sendMessage(Identity.nil(), Component.text("Tab has been enabled for ", NamedTextColor.GREEN)
+						.append(Component.text().color(NamedTextColor.YELLOW).content(player.getName())));
 			}
 
 			return CommandResult.success();
 		}
 
-		if (src instanceof Player) {
-			Player p = (Player) src;
-			if (!plugin.getTabHandler().isPlayerInTab(p)) {
+		if (context instanceof Player) {
+			Player player = (Player) context;
+			Optional<ITabPlayer> tabPlayer = plugin.getTabPlayer(player.getUniqueId());
+			if (!tabPlayer.isPresent() || !plugin.getTabHandler().isPlayerInTab(tabPlayer.get())) {
 				return CommandResult.empty();
 			}
 
-			UUID uuid = p.getUniqueId();
+			UUID uuid = player.getUniqueId();
 
 			boolean changed = TabHandler.TABENABLED.containsKey(uuid) ? !TabHandler.TABENABLED.get(uuid) : true;
 			if (changed) {
 				TabHandler.TABENABLED.put(uuid, true);
-				sendMsg(src, "&cTab has been disabled in yourself.");
+				context.sendMessage(player, Component.text("Tab has been disabled in yourself.", NamedTextColor.RED));
 			} else {
 				TabHandler.TABENABLED.remove(uuid);
-				plugin.getTabHandler().getPlayerTab(p).get().loadTab();
-				sendMsg(src, "&aTab has been enabled in yourself.");
+				plugin.getTabHandler().getPlayerTab(tabPlayer.get()).get().loadTab();
+				context.sendMessage(player, Component.text("Tab has been enabled in yourself.", NamedTextColor.GREEN));
 			}
 
 			return CommandResult.success();
 		}
 
-		sendMsg(src, "&cUsage: /" + args.<String>getOne("tablist").orElse("tablist") + " toggle <player;all>");
+		context.sendMessage(Identity.nil(),
+				Component.text("Usage: /", NamedTextColor.RED)
+						.append(Component
+								.text(context.<String>getOne(Parameter.key("tablist", String.class)).orElse("tablist"))
+								.append(Component.text(" toggle <player;all>", NamedTextColor.GRAY))));
 		return CommandResult.empty();
 	}
 
-	@Override
-	public CommandCallable get() {
-		return CommandSpec.builder().child(toggleCmd, "toggle").description(Text.of("Toggling tablist visibility"))
-				.build();
+	final class CommandRegisterListener {
+
+		private PluginContainer container;
+		private Command command;
+
+		public CommandRegisterListener(PluginContainer container, Command command) {
+			this.container = container;
+			this.command = command;
+		}
+
+		@Listener
+		public void onCommandRegister(RegisterCommandEvent<Command> event) {
+			event.register(container, command, "tablist", "tl");
+		}
 	}
 }

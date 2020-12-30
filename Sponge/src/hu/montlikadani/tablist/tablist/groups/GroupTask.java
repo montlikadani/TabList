@@ -4,68 +4,74 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.spongepowered.api.Sponge;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.scheduler.Task;
+import org.spongepowered.api.scheduler.ScheduledTask;
 
 import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.player.ITabPlayer;
+import hu.montlikadani.tablist.utils.SchedulerUtil;
 
-public class GroupTask implements Consumer<Task> {
+public class GroupTask implements Consumer<ScheduledTask> {
 
-	private final HashMap<String, TabPlayer> tabPlayers = new HashMap<>();
-	private final List<TabPlayer> sortedTabPlayers = Collections.synchronizedList(new LinkedList<TabPlayer>());
+	private final HashMap<String, TabUser> tabUsers = new HashMap<>();
+	private final List<TabUser> sortedTabUsers = Collections.synchronizedList(new LinkedList<TabUser>());
 
-	private Task task;
+	private ScheduledTask task;
 
-	public Task getTask() {
-		return task;
+	public Optional<ScheduledTask> getTask() {
+		return Optional.ofNullable(task);
 	}
 
-	public HashMap<String, TabPlayer> getTabPlayers() {
-		return tabPlayers;
+	public HashMap<String, TabUser> getTabUsers() {
+		return tabUsers;
 	}
 
-	public TabPlayer addPlayer(Player player) {
-		String uuid = player.getUniqueId().toString();
+	public Optional<TabUser> getTabUser(ITabPlayer player) {
+		return player != null ? Optional.of(tabUsers.get(player.getPlayerUUID().toString())) : Optional.empty();
+	}
 
-		if (tabPlayers.containsKey(uuid)) {
-			return tabPlayers.get(uuid);
+	public TabUser addPlayer(ITabPlayer player) {
+		String uuid = player.getPlayerUUID().toString();
+
+		if (tabUsers.containsKey(uuid)) {
+			return tabUsers.get(uuid);
 		}
 
-		TabPlayer tabPlayer = new TabPlayer(player.getUniqueId());
-		tabPlayer.update();
-		tabPlayers.put(uuid, tabPlayer);
-		addToTabListPlayerList(tabPlayer);
+		TabUser tabUser = new TabUser(player.getPlayerUUID());
+		tabUser.updateGroup();
+		tabUsers.put(uuid, tabUser);
+		addToTabListPlayerList(tabUser);
 
-		synchronized (sortedTabPlayers) {
+		synchronized (sortedTabUsers) {
 			int priority = 0;
-			for (TabPlayer tabPl : sortedTabPlayers) {
-				if (!tabPl.getGroup().isPresent())
+			for (TabUser tabUs : sortedTabUsers) {
+				if (!tabUs.getGroup().isPresent())
 					continue;
 
-				tabPl.getGroup().get().setTeam(tabPl.getPlayerUUID(), priority);
+				tabUs.getGroup().get().setTeam(tabUs.getPlayerUUID(), priority);
 				priority++;
 			}
 		}
 
-		return tabPlayer;
+		return tabUser;
 	}
 
-	public void removePlayer(Player player) {
-		TabPlayer tabPlayer = tabPlayers.remove(player.getUniqueId().toString());
-		if (tabPlayer != null) {
-			tabPlayer.getGroup().ifPresent(g -> g.removeTeam(player));
-			sortedTabPlayers.remove(tabPlayer);
+	public void removePlayer(ITabPlayer player) {
+		TabUser tabU = tabUsers.remove(player.getPlayerUUID().toString());
+		if (tabU != null) {
+			tabU.getGroup().ifPresent(g -> g.removeTeam(tabU));
+			sortedTabUsers.remove(tabU);
 		}
 	}
 
-	private void addToTabListPlayerList(TabPlayer tlp) {
+	private void addToTabListPlayerList(TabUser tlp) {
 		int pos = 0;
 
-		synchronized (sortedTabPlayers) {
-			for (TabPlayer p : sortedTabPlayers) {
+		synchronized (sortedTabUsers) {
+			for (TabUser p : sortedTabUsers) {
 				if (tlp.compareTo(p) < 0)
 					break;
 
@@ -73,12 +79,12 @@ public class GroupTask implements Consumer<Task> {
 			}
 		}
 
-		sortedTabPlayers.add(pos, tlp);
+		sortedTabUsers.add(pos, tlp);
 	}
 
 	public void runTask() {
 		if (!isRunning()) {
-			task = Task.builder().async().intervalTicks(4).execute(this::accept).submit(TabList.get());
+			task = SchedulerUtil.submitScheduleAsyncTask(4, TimeUnit.MILLISECONDS, this::accept);
 		}
 	}
 
@@ -96,30 +102,29 @@ public class GroupTask implements Consumer<Task> {
 	}
 
 	@Override
-	public void accept(Task t) {
-		if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
-			// cancel(); // Do not cancel task, due to player respawn
+	public void accept(ScheduledTask t) {
+		if (TabList.get().getTabPlayers().isEmpty()) {
 			return;
 		}
 
-		for (Player pl : Sponge.getServer().getOnlinePlayers()) {
-			TabPlayer tp = tabPlayers.get(pl.getUniqueId().toString());
+		for (ITabPlayer tabPlayer : TabList.get().getTabPlayers()) {
+			TabUser tp = tabUsers.get(tabPlayer.getPlayerUUID().toString());
 			if (tp == null) {
-				tp = new TabPlayer(pl.getUniqueId());
+				tp = new TabUser(tabPlayer.getPlayerUUID());
 
-				tabPlayers.put(pl.getUniqueId().toString(), tp);
+				tabUsers.put(tabPlayer.getPlayerUUID().toString(), tp);
 
-				tp.update();
+				tp.updateGroup();
 				addToTabListPlayerList(tp);
-			} else if (tp.update()) {
-				sortedTabPlayers.remove(tp);
+			} else if (tp.updateGroup()) {
+				sortedTabUsers.remove(tp);
 				addToTabListPlayerList(tp);
 			}
 		}
 
-		synchronized (sortedTabPlayers) {
+		synchronized (sortedTabUsers) {
 			int priority = 0;
-			for (TabPlayer tabPl : sortedTabPlayers) {
+			for (TabUser tabPl : sortedTabUsers) {
 				if (!tabPl.getGroup().isPresent())
 					continue;
 

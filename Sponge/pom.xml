@@ -7,6 +7,7 @@
 	<packaging>jar</packaging>
 	<name>tablist-sponge</name>
 	<version>1.0.2</version>
+	<description>An ultimate animated tablist</description>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,7 +40,7 @@
 		<dependency>
 			<groupId>org.spongepowered</groupId>
 			<artifactId>spongeapi</artifactId>
-			<version>7.2.0-SNAPSHOT</version>
+			<version>8.0.0-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 	</dependencies>

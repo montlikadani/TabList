@@ -11,13 +11,14 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import org.spongepowered.api.Sponge;
-import org.spongepowered.api.data.key.Keys;
-import org.spongepowered.api.entity.living.player.Player;
-import org.spongepowered.api.text.Text;
-import org.spongepowered.api.text.serializer.TextSerializers;
+import org.spongepowered.api.data.Keys;
+import org.spongepowered.api.entity.living.player.server.ServerPlayer;
 
+import hu.montlikadani.tablist.player.ITabPlayer;
 import hu.montlikadani.tablist.utils.operators.ExpressionNode;
 import hu.montlikadani.tablist.utils.operators.OperatorNodes;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 
 public class Variables {
 
@@ -44,11 +45,11 @@ public class Variables {
 		}
 	}
 
-	public Text replaceVariables(Player p, String str) {
+	public TextComponent replaceVariables(ServerPlayer player, String str) {
 		int staffs = 0;
 		if (str.contains("%staff-online%")) {
-			for (Player all : Sponge.getServer().getOnlinePlayers()) {
-				if (all.hasPermission("tablist.onlinestaff")) {
+			for (ITabPlayer all : TabList.get().getTabPlayers()) {
+				if (all.asServerPlayer().isPresent() && all.asServerPlayer().get().hasPermission("tablist.onlinestaff")) {
 					staffs++;
 				}
 			}
@@ -56,7 +57,7 @@ public class Variables {
 
 		String address = "";
 		if (str.contains("%ip-address%")) {
-			address = p.getConnection().getAddress().getAddress().toString();
+			address = player.getConnection().getAddress().getAddress().toString();
 			address = address.replace("/", "");
 		}
 
@@ -88,37 +89,37 @@ public class Variables {
 		str = setSymbols(str);
 
 		if (str.contains("%player%")) {
-			str = str.replace("%player%", p.getName());
+			str = str.replace("%player%", player.getName());
 		}
 
 		if (str.contains("%player-ping%")) {
-			str = str.replace("%player-ping%", formatPing(p.getConnection().getLatency()));
+			str = str.replace("%player-ping%", formatPing(player.getConnection().getLatency()));
 		}
 
 		if (str.contains("%player-uuid%")) {
-			str = str.replace("%player-uuid%", p.getUniqueId().toString());
+			str = str.replace("%player-uuid%", player.getUniqueId().toString());
 		}
 
 		if (str.contains("%player-level%")) {
-			str = str.replace("%player-level%", Integer.toString(p.get(Keys.EXPERIENCE_LEVEL).orElse(0)));
+			str = str.replace("%player-level%", Integer.toString(player.get(Keys.EXPERIENCE_LEVEL).orElse(0)));
 		}
 
 		if (str.contains("%player-total-level%")) {
-			str = str.replace("%player-total-level%", Integer.toString(p.get(Keys.TOTAL_EXPERIENCE).orElse(0)));
+			str = str.replace("%player-total-level%", Integer.toString(player.get(Keys.EXPERIENCE_FROM_START_OF_LEVEL).orElse(0)));
 		}
 
 		if (str.contains("%world%")) {
-			str = str.replace("%world%", p.getWorld().getName());
+			str = str.replace("%world%", player.getWorld().getContext().getKey());
 		}
 
 		if (str.contains("%player-health%")) {
 			DecimalFormat df = (DecimalFormat) NumberFormat.getNumberInstance(Locale.US);
 			df.applyPattern("#0.0");
-			str = str.replace("%player-health%", df.format(p.getHealthData().health().get()));
+			str = str.replace("%player-health%", df.format(player.health().get()));
 		}
 
 		if (str.contains("%player-max-health%")) {
-			str = str.replace("%player-max-health%", Double.toString(p.getHealthData().maxHealth().get()));
+			str = str.replace("%player-max-health%", Double.toString(player.maxHealth().get()));
 		}
 
 		if (!t.isEmpty())
@@ -156,10 +157,10 @@ public class Variables {
 			str = str.replace("%mc-version%", Sponge.getGame().getPlatform().getMinecraftVersion().getName());
 
 		if (str.contains("%motd%"))
-			str = str.replace("%motd%", Sponge.getServer().getMotd().toPlain());
+			str = str.replace("%motd%", PlainComponentSerializer.plain().serialize(Sponge.getServer().getMOTD()));
 
 		str = str.replace("\n", "\n");
-		return TextSerializers.FORMATTING_CODE.deserialize(str);
+		return PlainComponentSerializer.plain().deserialize(str);
 	}
 
 	private String formatPing(int ping) {
