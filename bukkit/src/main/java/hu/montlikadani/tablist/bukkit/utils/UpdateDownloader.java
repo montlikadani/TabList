@@ -2,6 +2,7 @@ package hu.montlikadani.tablist.bukkit.utils;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -27,7 +28,7 @@ public class UpdateDownloader {
 		CompletableFuture.supplyAsync(() -> {
 			try {
 				URL githubUrl = new URL(
-						"https://raw.githubusercontent.com/montlikadani/TabList/master/src/main/resources/plugin.yml");
+						"https://raw.githubusercontent.com/montlikadani/TabList/master/bukkit/src/main/resources/plugin.yml");
 				BufferedReader br = new BufferedReader(new InputStreamReader(githubUrl.openStream()));
 				String s;
 				String lineWithVersion = "";
@@ -89,6 +90,7 @@ public class UpdateDownloader {
 
 				in.close();
 				return true;
+			} catch (FileNotFoundException f) {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
