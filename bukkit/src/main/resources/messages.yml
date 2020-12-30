@@ -1,0 +1,85 @@
+reload-config: "&aThe plugin successfully reloaded!"
+no-permission: "&cYou don't have permission for that!&7 (%perm%)"
+unknown-sub-command: "&cUnknown sub-command&7 %subcmd%&c."
+no-console: "&cThis command '&7/%command%&c' can only be in-game."
+
+set-prefix-suffix:
+  prefix:
+    could-not-be-empty: "&cThe prefix text could not be empty!"
+    successfully-set: "&aYou have successfully set prefix for&e %group%&a, with this prefix:&r %tag%"
+  suffix:
+    could-not-be-empty: "&cThe suffix text could not be empty!"
+    successfully-set: "&aYou have successfully set suffix for&e %group%&a, with this suffix:&r %tag%"
+  set-priority:
+    priority-must-be-number: "&cThe priority must be a number!"
+    successfully-set: "&aYou have successfully set priority for&e %group%&a, with priority&r %number%"
+  remove-group:
+    not-found-in-database: "&cThis group&7 %group%&c not found in the database."
+    successfully-removed: "&cYou have successfully removed&7 %group%&c group."
+
+tabname:
+  console-usage: "&cUse: '&7/%command% <player> <name>&c'."
+  player-not-online: "&cThis player&7 %player%&c not online."
+  no-tab-name: "&7%player%&c has no name set for this player."
+  name-disabled: "&cThis name&7 %name%&c is disabled."
+  name-change-success: "&aYour name has been changed to&r %name%&a."
+  target-name-change-success: "&aYou successfully changed&6 %target%&a name to&r %name%&a."
+  target-changed-name-message: "&3Your name is changed to&r %name%&3 by&e %sender%&3."
+  name-too-long: "&cName too long! Only&6 %max%&c characters."
+  world-disabled: "&cThis command is disabled in this world&7 %world%&c."
+
+  reset:
+    console-usage: "&cUse: '&7/%command% reset <player>&c'."
+    no-reset: "&cCould not reset your tab name."
+    no-reset-target: "&cCould not reset&7 %player%&c tab name."
+    name-reseted: "&aYour name has been successfully reseted."
+    target-name-reseted: "&aYou have been reseted&7 %target%&a name."
+
+  get-name:
+    no-console: "&cYou are not a player! Use: '&7/%command% get <player>&c'."
+    result: "&2%target%&9 tab name:&r %name%"
+    target-result: "&aYour tab name:&r %name%"
+
+toggle:
+  console-usage: "&cUse: &7/%command% toggle <player/all>"
+  enabled: "&aThe tab is successfully turned on!"
+  disabled: "&cThe tab is successfully turned off!"
+  no-player: "&cThere is no player available on the server."
+  player-not-found: "&cThis player&7 %player%&c not found!"
+
+fake-player:
+  added: "&aThe fake player&7 %name%&a successfully added!"
+  removed: "&cThe fake player&7 %name%&c successfully removed!"
+  already-added: "&cThe fake player&7 %name%&c already added."
+  not-exists: "&cThe fake player with this name not exists."
+  no-fake-player: "&cThere is no fake player either."
+  disabled: "&cThe fake player is disabled. Please enable in config.yml file."
+  ping-can-not-be-less: "&cThe ping amount should be highest than&e %amount%&c or the value is not a number."
+
+  list:
+  - "&cFake players&7 (&e%amount%&7):"
+  - "&r%fake-players%"
+
+chat-messages:
+  1:
+  - "&e&m---------&r &5Tab&cList&2 Help &e&m----------"
+  - ""
+  - "&9 []&7 -&9 optional arguments"
+  - "&c <>&7 -&c required arguments"
+  - ""
+  - "&8/&a%command%&b [+TAB]&6 - Main plugin info."
+  - "&8/&a%command% help&9 [2/3]&6 - Help commands."
+  - "&8/&a%command% reload&6 - Reload the plugin."
+  - "&8/&a%command% toggle&9 [player/all]&6 - Toggle on/off tab."
+  - "&8/&a%command% fakeplayers&a add&2/&aremove&c <name>&6 - Create/remove fake player."
+  - "&8/&a%command% fakeplayers list&6 - Lists all fake player."
+  2:
+  - "&8/&a%command% fakeplayers setskin&c <skinUUID>&6 - Set skin for the fake player from the given real uuid."
+  - "&8/&atabname&c <&9[player]&2/&cname>&c <name>&6 - Change player tab name."
+  - "&8/&atname reset&9 [player]&6 - Resets the given player tab name."
+  - "&8/&a%command% get&9 [player]&6 - Get player tab name."
+  - "&8/&a%command% setprefix&c <player/group> <prefix>&6 - Sets the given player prefix."
+  - "&8/&a%command% removegroup&c <player/group>&6 - Removes the given player prefix/suffix."
+  3:
+  - "&8/&a%command% setsuffix&c <player/group>&c <suffix>&6 - Sets the given player suffix."
+  - "&e&m---------------------------------------------------"
