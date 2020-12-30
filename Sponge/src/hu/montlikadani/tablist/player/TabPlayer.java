@@ -34,12 +34,8 @@ public class TabPlayer implements ITabPlayer {
 
 	@Override
 	public Optional<Player> asPlayer() {
-		Optional<ServerPlayer> sp = asServerPlayer();
-		if (sp.isPresent() && sp.get() instanceof Player) {
-			return Optional.of((Player) sp.get());
-		}
-
-		return Optional.empty();
+		ServerPlayer sp = asServerPlayer().orElse(null);
+		return sp instanceof Player ? Optional.of((Player) sp) : Optional.empty();
 	}
 
 	@Override
