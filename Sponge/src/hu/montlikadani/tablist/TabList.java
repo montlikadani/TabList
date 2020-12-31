@@ -221,11 +221,11 @@ public class TabList {
 	}
 
 	public void updateAll(final Player player) {
-		ITabPlayer tabPlayer = getTabPlayer(player.getUniqueId()).orElse(null);
-		if (tabPlayer == null) {
-			tabPlayer = new TabPlayer(player.getUniqueId());
-			tabPlayers.add(tabPlayer);
-		}
+		ITabPlayer tabPlayer = getTabPlayer(player.getUniqueId()).orElseGet(() -> {
+			ITabPlayer ty = new TabPlayer(player.getUniqueId());
+			tabPlayers.add(ty);
+			return ty;
+		});
 
 		tabHandler.addPlayer(tabPlayer);
 

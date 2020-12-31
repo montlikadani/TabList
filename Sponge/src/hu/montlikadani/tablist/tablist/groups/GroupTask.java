@@ -14,7 +14,7 @@ import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.player.ITabPlayer;
 import hu.montlikadani.tablist.utils.SchedulerUtil;
 
-public class GroupTask implements Consumer<ScheduledTask> {
+public final class GroupTask implements Consumer<ScheduledTask> {
 
 	private final HashMap<String, TabUser> tabUsers = new HashMap<>();
 	private final List<TabUser> sortedTabUsers = Collections.synchronizedList(new LinkedList<TabUser>());
@@ -30,7 +30,7 @@ public class GroupTask implements Consumer<ScheduledTask> {
 	}
 
 	public Optional<TabUser> getTabUser(ITabPlayer player) {
-		return player != null ? Optional.of(tabUsers.get(player.getPlayerUUID().toString())) : Optional.empty();
+		return player != null ? Optional.ofNullable(tabUsers.get(player.getPlayerUUID().toString())) : Optional.empty();
 	}
 
 	public TabUser addPlayer(ITabPlayer player) {

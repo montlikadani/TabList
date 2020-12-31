@@ -10,11 +10,11 @@ import java.util.concurrent.TimeUnit;
 
 import org.spongepowered.api.Sponge;
 import org.spongepowered.api.scheduler.ScheduledTask;
-import org.spongepowered.api.scheduler.Task;
 
 import hu.montlikadani.tablist.ConfigValues;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.player.ITabPlayer;
+import hu.montlikadani.tablist.utils.SchedulerUtil;
 
 public class TabHandler {
 
@@ -60,15 +60,14 @@ public class TabHandler {
 		}
 
 		if (task == null) {
-			task = Sponge.getServer().getGame().getAsyncScheduler()
-					.submit(Task.builder().interval(refreshTime, TimeUnit.MILLISECONDS).execute(task -> {
-						if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
-							cancelTask();
-							return;
-						}
+			task = SchedulerUtil.submitScheduleAsyncTask(refreshTime, TimeUnit.MILLISECONDS, task -> {
+				if (Sponge.getServer().getOnlinePlayers().isEmpty()) {
+					cancelTask();
+					return;
+				}
 
-						tabPlayers.forEach(TabListManager::sendTab);
-					}).build());
+				tabPlayers.forEach(TabListManager::sendTab);
+			});
 		}
 	}
 
