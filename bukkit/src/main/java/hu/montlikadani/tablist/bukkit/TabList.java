@@ -163,31 +163,24 @@ public class TabList extends JavaPlugin {
 	public void onDisable() {
 		if (instance == null) return;
 
-		try {
-			g.cancelUpdate();
+		g.cancelUpdate();
 
-			objects.unregisterObjectiveForEveryone(ObjectTypes.HEALTH);
-			objects.unregisterObjectiveForEveryone(ObjectTypes.PING);
-			objects.unregisterObjectiveForEveryone(ObjectTypes.CUSTOM);
+		objects.unregisterObjectiveForEveryone(ObjectTypes.HEALTH);
+		objects.unregisterObjectiveForEveryone(ObjectTypes.PING);
+		objects.unregisterObjectiveForEveryone(ObjectTypes.CUSTOM);
 
-			tabManager.saveToggledTabs();
-			tabManager.removeAll();
+		tabManager.saveToggledTabs();
+		tabManager.removeAll();
 
-			if (fakePlayerHandler != null) {
-				fakePlayerHandler.removeAllFakePlayer(false);
-			}
-
-			addBackAllHiddenPlayers();
-
-			HandlerList.unregisterAll(this);
-			getServer().getScheduler().cancelTasks(this);
-			instance = null;
-		} catch (Throwable e) {
-			e.printStackTrace();
-			logConsole(Level.WARNING,
-					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues",
-					false);
+		if (fakePlayerHandler != null) {
+			fakePlayerHandler.removeAllFakePlayer(false);
 		}
+
+		addBackAllHiddenPlayers();
+
+		HandlerList.unregisterAll(this);
+		getServer().getScheduler().cancelTasks(this);
+		instance = null;
 	}
 
 	private void registerCommands() {

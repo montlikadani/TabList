@@ -3,10 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>hu.montlikadani</groupId>
-	<artifactId>tablist</artifactId>
+	<artifactId>TabList</artifactId>
 	<packaging>jar</packaging>
-	<name>tablist</name>
-	<version>5.5.0</version>
+	<name>TabList</name>
+	<version>5.5.1</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

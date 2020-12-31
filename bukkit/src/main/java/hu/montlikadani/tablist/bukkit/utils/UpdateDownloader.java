@@ -14,11 +14,7 @@ import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 
-/**
- * @author montlikadani
- *
- */
-public class UpdateDownloader {
+public abstract class UpdateDownloader {
 
 	public static void checkFromGithub(org.bukkit.command.CommandSender sender) {
 		if (!TabList.getInstance().getConf().getConfig().getBoolean("check-update")) {
