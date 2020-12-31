@@ -253,27 +253,24 @@ public class TabList {
 		}
 	}
 
-	public void onQuit(Player player) {
+	public void onQuit(final Player player) {
 		if (player == null) {
 			return;
 		}
 
-		ITabPlayer tabPlayer = getTabPlayer(player.getUniqueId()).orElse(null);
-		if (tabPlayer == null) {
-			return;
-		}
+		getTabPlayer(player.getUniqueId()).ifPresent(tabPlayer -> {
+			tabHandler.removePlayer(tabPlayer);
 
-		tabHandler.removePlayer(tabPlayer);
+			if (groupTask != null) {
+				groupTask.removePlayer(tabPlayer);
+			}
 
-		if (groupTask != null) {
-			groupTask.removePlayer(tabPlayer);
-		}
+			if (objects != null) {
+				objects.unregisterAllObjective(tabPlayer);
+			}
 
-		if (objects != null) {
-			objects.unregisterAllObjective(tabPlayer);
-		}
-
-		tabPlayers.remove(tabPlayer);
+			tabPlayers.remove(tabPlayer);
+		});
 	}
 
 	public void cancelAll() {
