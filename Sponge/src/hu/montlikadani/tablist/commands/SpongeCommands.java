@@ -41,7 +41,7 @@ public final class SpongeCommands {
 		Command.builder().setShortDescription(Component.text("Toggle on/off the tablist."))
 				.parameters(Parameter.playerOrTarget().optional().build(),
 						Parameter.string().setKey("all").optional().build())
-				.setPermission("tablist.toggle").setExecutor(e -> handleToggle(e)).build();
+				.setPermission("tablist.toggle").setExecutor(this::handleToggle).build();
 	}
 
 	private CommandResult handleToggle(CommandContext context) {

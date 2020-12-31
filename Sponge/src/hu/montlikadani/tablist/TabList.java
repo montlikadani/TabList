@@ -286,7 +286,7 @@ public class TabList {
 
 		if (groupTask != null) {
 			groupTask.cancel();
-			tabPlayers.forEach(pl -> groupTask.removePlayer(pl));
+			tabPlayers.forEach(groupTask::removePlayer);
 		}
 
 		groupsList.clear();
