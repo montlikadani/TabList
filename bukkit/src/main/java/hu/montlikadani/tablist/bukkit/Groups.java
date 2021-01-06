@@ -75,10 +75,9 @@ public class Groups {
 		String globPrefix = plugin.getConf().getGroups().getString("globalGroup.prefix", ""),
 				globSuffix = plugin.getConf().getGroups().getString("globalGroup.suffix", "");
 		if (!globPrefix.isEmpty() || !globSuffix.isEmpty()) {
-			String customTabName = plugin.getConf().getGroups().getString("globalGroup.tabname", "");
 			TeamHandler team = new TeamHandler("global", globPrefix, globSuffix);
 			team.setGlobal(true);
-			team.setTabName(customTabName);
+			team.setTabName(plugin.getConf().getGroups().getString("globalGroup.tabname", ""));
 			groupsList.add(team);
 		}
 

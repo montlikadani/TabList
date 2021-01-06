@@ -21,7 +21,7 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: tablist-dev
-        path: ${{ github.workspace }}/bukkit/target/tablist*.jar
+        path: ${{ github.workspace }}/bukkit/target/TabList*.jar
     - name: Build Sponge with Maven
       run: mvn -B package --file ${{ github.workspace }}/Sponge/pom.xml
     - name: Upload Sponge Artifact

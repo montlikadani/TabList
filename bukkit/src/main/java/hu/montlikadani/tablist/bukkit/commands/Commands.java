@@ -31,8 +31,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	private TabList plugin;
 
-	private final ImmutableList<String> subCmds = ImmutableList.<String>builder().add("reload", "fakeplayers", "get",
-			"removegroup", "setprefix", "setsuffix", "setpriority", "toggle", "help").build();
+	private final ImmutableList<String> subCmds = ImmutableList.<String>builder()
+			.add("reload", "fakeplayers", "removegroup", "setprefix", "setsuffix", "setpriority", "toggle", "help")
+			.build();
 
 	private final Set<ICommand> cmds = new HashSet<>();
 
