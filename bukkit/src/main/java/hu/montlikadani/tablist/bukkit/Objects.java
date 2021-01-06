@@ -25,8 +25,8 @@ public class Objects {
 	@SuppressWarnings("deprecation")
 	void registerHealthTab(Player pl) {
 		String path = "tablist-object-type.object-settings.health.";
-		if (plugin.getConf().getConfig().getStringList(path + "disabled-worlds").contains(pl.getWorld().getName())
-				|| plugin.getConf().getConfig().getStringList(path + "restricted-players").contains(pl.getName())) {
+		if (plugin.getConfig().getStringList(path + "disabled-worlds").contains(pl.getWorld().getName())
+				|| plugin.getConfig().getStringList(path + "restricted-players").contains(pl.getName())) {
 			unregisterObjective(getObject(pl, ObjectTypes.HEALTH));
 			return;
 		}
@@ -72,8 +72,7 @@ public class Objects {
 			final String type = ConfigValues.getObjectType().toLowerCase();
 
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				if (plugin.getConf().getConfig()
-						.getStringList("tablist-object-type.object-settings." + type + ".disabled-worlds")
+				if (plugin.getConfig().getStringList("tablist-object-type.object-settings." + type + ".disabled-worlds")
 						.contains(player.getWorld().getName()) || PluginUtils.isInGame(player)) {
 					continue;
 				}

@@ -6,7 +6,6 @@ import org.bukkit.scoreboard.Team;
 
 import hu.montlikadani.tablist.bukkit.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.utils.Misc;
-import hu.montlikadani.tablist.bukkit.utils.Util;
 
 /**
  * This class is superfluous because it makes no sense to instantiate it as long
@@ -44,8 +43,7 @@ public class BukkitHandled implements ITabScoreboard {
 
 	@Override
 	public void setTeam(String teamName) {
-		tabPlayer.getPlayer().setPlayerListName(
-				Util.colorMsg(tabPlayer.getPrefix() + tabPlayer.getPlayerName() + tabPlayer.getSuffix()));
+		tabPlayer.getPlayer().setPlayerListName(tabPlayer.getCustomTabName());
 
 		if (board != null) {
 			tabPlayer.getPlayer().setScoreboard(board);

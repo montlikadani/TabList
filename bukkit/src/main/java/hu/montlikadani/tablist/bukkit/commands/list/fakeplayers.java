@@ -2,33 +2,43 @@ package hu.montlikadani.tablist.bukkit.commands.list;
 
 import static hu.montlikadani.tablist.bukkit.utils.Util.sendMsg;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.google.common.reflect.TypeToken;
+
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
-import hu.montlikadani.tablist.bukkit.config.Configuration;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler;
+import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler.EditingContextError;
+import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.IFakePlayers;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
 @CommandProcessor(name = "fakeplayers", permission = Perm.FAKEPLAYERS, playerOnly = true)
 public class fakeplayers implements ICommand {
 
+	private enum Actions {
+		ADD, RENAME, SETDISPLAYNAME, SETSKIN, SETPING, REMOVE, LIST;
+	}
+
+	@SuppressWarnings("serial")
 	@Override
 	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
 		Player p = (Player) sender;
+
 		if (!ConfigValues.isFakePlayers()) {
 			sendMsg(p, plugin.getMsg("fake-player.disabled"));
-			return false;
+			return true;
 		}
 
 		plugin.getConf().createFakePlayersFile();
@@ -40,212 +50,139 @@ public class fakeplayers implements ICommand {
 				Bukkit.dispatchCommand(sender, "tl help");
 			}
 
-			return false;
+			return true;
+		}
+
+		Actions action = Actions.valueOf(args[1].toUpperCase());
+		if (action == null) {
+			action = Actions.ADD;
+		}
+
+		if (action != Actions.LIST && args.length < 3) {
+			if (sender instanceof Player) {
+				((Player) sender).performCommand("tl help");
+			} else {
+				Bukkit.dispatchCommand(sender, "tl help");
+			}
+
+			return true;
 		}
 
 		final FakePlayerHandler handler = plugin.getFakePlayerHandler();
-		if (args[1].equalsIgnoreCase("add")) {
-			if (!p.hasPermission(Perm.ADDFAKEPLAYER.getPerm())) {
-				sendMsg(p, plugin.getMsg("no-permission", "%perm%", Perm.ADDFAKEPLAYER.getPerm()));
-				return false;
-			}
+		EditingContextError output;
 
-			if (args.length < 3) {
-				if (sender instanceof Player) {
-					((Player) sender).performCommand("tl help");
-				} else {
-					Bukkit.dispatchCommand(sender, "tl help");
-				}
-
-				return false;
-			}
-
+		switch (action) {
+		case ADD:
 			String name = args[2];
-			if (handler.getFakePlayerByName(name).isPresent()) {
-				sendMsg(p, plugin.getMsg("fake-player.already-added", "%name%", name));
-				return false;
-			}
-
-			String headUUID = args.length > 3 ? args[3] : "";
 			int ping = -1;
 			try {
 				ping = args.length > 4 ? Integer.parseInt(args[4]) : -1;
 			} catch (NumberFormatException e) {
 			}
 
-			if (handler.createPlayer(p, name, headUUID, ping)) {
+			output = handler.createPlayer(p, name, name, args.length > 3 ? args[3] : "", ping);
+			if (output == EditingContextError.ALREADY_EXIST) {
+				sendMsg(p, plugin.getMsg("fake-player.already-added", "%name%", name));
+				return true;
+			}
+
+			if (output == EditingContextError.OK) {
 				sendMsg(p, plugin.getMsg("fake-player.added", "%name%", name));
 			}
-		} else if (args[1].equalsIgnoreCase("setskin")) {
-			if (!p.hasPermission(Perm.SETSKINFAKEPLAYER.getPerm())) {
-				sendMsg(p, plugin.getMsg("no-permission", "%perm%", Perm.SETSKINFAKEPLAYER.getPerm()));
-				return false;
+
+			break;
+		case REMOVE:
+			output = handler.removePlayer(args[2]);
+			if (output == EditingContextError.NOT_EXIST) {
+				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
+				return true;
 			}
 
-			if (args.length < 3) {
-				if (sender instanceof Player) {
-					((Player) sender).performCommand("tl help");
-				} else {
-					Bukkit.dispatchCommand(sender, "tl help");
+			if (output == EditingContextError.OK) {
+				sendMsg(p, plugin.getMsg("fake-player.removed", "%name%", args[2]));
+			}
+
+			break;
+		case RENAME:
+			if (args.length < 4) {
+				return true;
+			}
+
+			output = handler.renamePlayer(args[2], args[3]);
+
+			if (output == EditingContextError.NOT_EXIST) {
+				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
+				return true;
+			}
+
+			if (output == EditingContextError.OK) {
+				sendMsg(p, Util.colorMsg("&2Old name: &e" + args[2] + "&2, new name: &e" + args[3]));
+			}
+
+			break;
+		case LIST:
+			Set<IFakePlayers> list = handler.getFakePlayers();
+			if (list.isEmpty()) {
+				sendMsg(p, plugin.getMsg("fake-player.no-fake-player"));
+				return true;
+			}
+
+			Collections.sort(list.stream().map(IFakePlayers::getName).collect(Collectors.toList()));
+
+			String msg = "";
+			for (IFakePlayers one : list) {
+				if (!msg.isEmpty()) {
+					msg += "&r, ";
 				}
 
-				return false;
+				msg += one.getName();
 			}
 
-			if (!handler.getFakePlayerByName(args[2]).isPresent()) {
+			plugin.getMsg(new TypeToken<List<String>>() {}.getSubtype(List.class),
+					"fake-player.list", "%amount%", list.size(), "%fake-players%", msg)
+					.forEach(line -> sendMsg(p, Util.colorMsg(line)));
+			break;
+		case SETSKIN:
+			output = handler.setSkin(args[2], args[3]);
+
+			if (output == EditingContextError.NOT_EXIST) {
 				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
-				return false;
+				return true;
 			}
 
-			String uuid = args[3];
-			if (!Util.isRealUUID(uuid)) {
+			if (output == EditingContextError.UUID_MATCH_ERROR) {
 				p.sendMessage("This uuid not matches to a real player uuid.");
-				return false;
 			}
 
-			handler.getFakePlayerByName(args[2]).get().setSkin(uuid);
-
-			String result = "";
-			List<String> fakepls = handler.getFakePlayersFromConfig();
-			int i = 0;
-			for (; i < fakepls.size(); i++) {
-				String l = fakepls.get(i);
-				String[] split = l.contains(";") ? l.split(";") : new String[] { l };
-				String name = split[0];
-				if (name.equalsIgnoreCase(args[2])) {
-					result = name + ";" + uuid + (split.length > 2 ? ";" + split[2] : "");
-					break;
-				}
-			}
-
-			if (result.isEmpty()) {
-				return false;
-			}
-
-			fakepls.remove(i);
-			fakepls.add(result);
-
-			Configuration conf = plugin.getConf();
-			conf.getFakeplayers().set("fakeplayers", fakepls);
-			try {
-				conf.getFakeplayers().save(conf.getFakeplayersFile());
-			} catch (IOException e) {
-				e.printStackTrace();
-				return false;
-			}
-		} else if (args[1].equalsIgnoreCase("setping")) {
-			if (!p.hasPermission(Perm.SETPINGFAKEPLAYER.getPerm())) {
-				sendMsg(p, plugin.getMsg("no-permission", "%perm%", Perm.SETPINGFAKEPLAYER.getPerm()));
-				return false;
-			}
-
-			if (args.length < 3) {
-				if (sender instanceof Player) {
-					((Player) sender).performCommand("tl help");
-				} else {
-					Bukkit.dispatchCommand(sender, "tl help");
-				}
-
-				return false;
-			}
-
-			if (!handler.getFakePlayerByName(args[2]).isPresent()) {
-				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
-				return false;
-			}
-
+			break;
+		case SETPING:
 			int amount = -1;
 			try {
 				amount = Integer.parseInt(args[3]);
 			} catch (NumberFormatException e) {
 			}
 
-			if (amount < 0) {
-				sendMsg(p, plugin.getMsg("fake-player.ping-can-not-be-less", "%amount%", amount));
-				return false;
-			}
-
-			handler.getFakePlayerByName(args[2]).get().setPing(amount);
-
-			String result = "";
-			List<String> fakepls = handler.getFakePlayersFromConfig();
-			int i = 0;
-			for (; i < fakepls.size(); i++) {
-				String l = fakepls.get(i);
-				String[] split = l.contains(";") ? l.split(";") : new String[] { l };
-				String name = split[0];
-				if (name.equalsIgnoreCase(args[2])) {
-					result = name + ";" + (split.length > 1 ? split[1] : "uuid") + ";" + amount;
-					break;
-				}
-			}
-
-			if (result.isEmpty()) {
-				return false;
-			}
-
-			fakepls.remove(i);
-			fakepls.add(result);
-
-			Configuration conf = plugin.getConf();
-			conf.getFakeplayers().set("fakeplayers", fakepls);
-			try {
-				conf.getFakeplayers().save(conf.getFakeplayersFile());
-			} catch (IOException e) {
-				e.printStackTrace();
-				return false;
-			}
-		} else if (args[1].equalsIgnoreCase("remove")) {
-			if (!p.hasPermission(Perm.REMOVEFAKEPLAYER.getPerm())) {
-				sendMsg(p, plugin.getMsg("no-permission", "%perm%", Perm.REMOVEFAKEPLAYER.getPerm()));
+			output = handler.setPing(args[2], amount);
+			if (output == EditingContextError.NOT_EXIST) {
+				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
 				return true;
 			}
 
-			if (args.length < 3) {
-				if (sender instanceof Player) {
-					((Player) sender).performCommand("tl help");
-				} else {
-					Bukkit.dispatchCommand(sender, "tl help");
-				}
-
-				return false;
+			if (output == EditingContextError.PING_AMOUNT) {
+				sendMsg(p, plugin.getMsg("fake-player.ping-can-not-be-less", "%amount%", amount));
 			}
 
-			String name = args[2];
-			if (handler.getFakePlayerByName(name).isPresent()) {
+			break;
+		case SETDISPLAYNAME:
+			output = handler.setDisplayName(args[2], args[3]);
+
+			if (output == EditingContextError.NOT_EXIST) {
 				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
-				return false;
 			}
 
-			if (handler.removePlayer(name)) {
-				sendMsg(p, plugin.getMsg("fake-player.removed", "%name%", name));
-			}
-		} else if (args[1].equalsIgnoreCase("list")) {
-			if (!p.hasPermission(Perm.LISTFAKEPLAYERS.getPerm())) {
-				sendMsg(p, plugin.getMsg("no-permission", "%perm%", Perm.LISTFAKEPLAYERS.getPerm()));
-				return false;
-			}
-
-			List<String> fakepls = handler.getFakePlayersFromConfig();
-			if (fakepls.isEmpty()) {
-				sendMsg(p, plugin.getMsg("fake-player.no-fake-player"));
-				return false;
-			}
-
-			Collections.sort(fakepls);
-
-			String msg = "";
-			for (String fpl : fakepls) {
-				if (!msg.isEmpty()) {
-					msg += "&r, ";
-				}
-
-				msg += fpl;
-			}
-
-			for (String lpl : plugin.getConf().getMessages().getStringList("fake-player.list")) {
-				sendMsg(p, Util.colorMsg(lpl.replace("%amount%", fakepls.size() + "").replace("%fake-players%", msg)));
-			}
+			break;
+		default:
+			break;
 		}
 
 		return true;

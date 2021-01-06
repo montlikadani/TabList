@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -72,11 +72,13 @@ public class Groups {
 
 		plugin.getConf().createGroupsFile();
 
-		String globPrefix = plugin.getConf().getGroups().getString("globalGroup.prefix", "");
-		String globSuffix = plugin.getConf().getGroups().getString("globalGroup.suffix", "");
+		String globPrefix = plugin.getConf().getGroups().getString("globalGroup.prefix", ""),
+				globSuffix = plugin.getConf().getGroups().getString("globalGroup.suffix", "");
 		if (!globPrefix.isEmpty() || !globSuffix.isEmpty()) {
+			String customTabName = plugin.getConf().getGroups().getString("globalGroup.tabname", "");
 			TeamHandler team = new TeamHandler("global", globPrefix, globSuffix);
 			team.setGlobal(true);
+			team.setTabName(customTabName);
 			groupsList.add(team);
 		}
 
@@ -118,18 +120,22 @@ public class Groups {
 			}
 		}
 
+		ConfigurationSection cs = plugin.getConf().getGroups().getConfigurationSection("groups");
 		int last = 0;
-		for (String g : plugin.getConf().getGroups().getConfigurationSection("groups").getKeys(false)) {
+		for (String g : cs.getKeys(false)) {
 			if (g.equalsIgnoreCase("exampleGroup")) {
 				continue;
 			}
 
-			String path = "groups." + g + ".", prefix = plugin.getConf().getGroups().getString(path + "prefix", ""),
-					suffix = plugin.getConf().getGroups().getString(path + "suffix", ""),
-					perm = plugin.getConf().getGroups().getString(path + "permission", "");
-			int priority = plugin.getConf().getGroups().getInt(path + "sort-priority", last + 1);
+			String path = g + ".", prefix = cs.getString(path + "prefix", ""),
+					suffix = cs.getString(path + "suffix", ""),
+					tabName = cs.getString(path + "tabname", ""),
+					perm = cs.getString(path + "permission", "");
+			int priority = cs.getInt(path + "sort-priority", last + 1);
 
-			groupsList.add(new TeamHandler(g, prefix, suffix, perm, priority));
+			TeamHandler th = new TeamHandler(g, prefix, suffix, perm, priority);
+			th.setTabName(tabName);
+			groupsList.add(th);
 
 			last = priority;
 		}
@@ -139,13 +145,14 @@ public class Groups {
 
 	/**
 	 * Loads the group(s) for the given player. If the player have before group set,
-	 * that group getting remove. After completion the scheduler task will get
-	 * started to update continuously.
+	 * that group get removing. After remove the scheduler task will get started to
+	 * update repeatedly.
 	 * 
 	 * @param p {@link Player}
 	 */
 	public void loadGroupForPlayer(Player p) {
-		removePlayerGroup(p).thenAccept(e -> startTask());
+		removePlayerGroup(p);
+		startTask();
 	}
 
 	/**
@@ -214,34 +221,24 @@ public class Groups {
 
 	/**
 	 * Removes the given player's group.
-	 * <p>
-	 * If the player does not have any groups this future will completes and returns
-	 * false. Otherwise returns true if the player have any groups and its being
-	 * removed from list.
 	 * 
 	 * @param p {@link Player}
-	 * @return {@link CompletableFuture}
 	 */
-	public CompletableFuture<Boolean> removePlayerGroup(Player p) {
-		CompletableFuture<Boolean> result = new CompletableFuture<>();
+	public void removePlayerGroup(Player p) {
 		if (p == null) {
-			result.complete(false);
-			return result;
+			return;
 		}
 
 		TabListPlayer tlp = tLPlayerMap.remove(p.getUniqueId().toString());
 		if (tlp == null) {
-			result.complete(false);
-			return result;
+			return;
 		}
 
 		tlp.getTabTeam().unregisterTeam(tlp.getFullGroupTeamName());
 		tlp.removeGroup();
 
 		sortedTabListPlayers.remove(tlp);
-
-		result.complete(true);
-		return result;
+		return;
 	}
 
 	/**

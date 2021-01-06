@@ -9,10 +9,42 @@ public interface IFakePlayers {
 
 	/**
 	 * Gets the fake player name.
+	 * <p>
+	 * This should <b>not be confused</b> with display name!
 	 * 
 	 * @return the name of the fake player
 	 */
 	String getName();
+
+	/**
+	 * Sets the name of this fake player.
+	 * 
+	 * @param name the new name
+	 */
+	void setName(String name);
+
+	/**
+	 * Returns the identifier of this fake player.
+	 * 
+	 * @return the id of fake player
+	 */
+	int getId();
+
+	/**
+	 * Gets the display name of the fake player.
+	 * 
+	 * @return display name of fake player
+	 */
+	String getDisplayName();
+
+	/**
+	 * Sets the display name of the fake player.
+	 * <p>
+	 * Display name maximum characters limit is 16
+	 * 
+	 * @param displayName the new name
+	 */
+	void setDisplayName(String displayName);
 
 	/**
 	 * Gets the fake player ping current set of latency.

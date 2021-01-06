@@ -3,6 +3,7 @@
 globalGroup:
   prefix: ""
   suffix: ""
+  tabname: ""
 
 groups:
   # Group name, you can write anything in here.
@@ -11,6 +12,7 @@ groups:
   exampleGroup:
     prefix: "&a[&cStaff&a]&6 "
     suffix: "&7 <12>"
+    tabname: "%player-displayname%"
     # (Optional)
     # This permission must be set in the permission system.
     #permission: tablist.staff
@@ -20,5 +22,6 @@ groups:
   Admin:
     prefix: "&7<62>&r %anim:Admin%"
     suffix: "&7 <62>"
+    tabname: "%player%"
   PlayerName:
     prefix: "&a[MyGroup]&7"

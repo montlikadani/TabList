@@ -23,7 +23,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 	private boolean afk;
 
-	private String nick, tabName, customPrefix, customSuffix, playerVaultGroup;
+	private String customPrefix, customSuffix, playerVaultGroup;
 
 	private int customPriority = Integer.MIN_VALUE;
 
@@ -80,14 +80,6 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 	public void setCustomPriority(int customPriority) {
 		this.customPriority = customPriority;
-	}
-
-	public void setNick(String nick) {
-		this.nick = nick;
-	}
-
-	public void setTabName(String tabName) {
-		this.tabName = tabName;
 	}
 
 	public int getPriority() {
@@ -207,22 +199,6 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			}
 		}
 
-		if (ConfigValues.isUsePluginNickName()) {
-			String nick = PluginUtils.getNickName(player);
-			if (this.nick != null || !nick.equals(this.nick)) {
-				this.nick = nick;
-				update = true;
-			}
-		}
-
-		if (ConfigValues.isTabNameEnabled() && ConfigValues.isUseTabName()) {
-			String tabName = plugin.getTabNameHandler().getTabName(player);
-			if (tabName.isEmpty() && this.tabName != null || !tabName.isEmpty() && !tabName.equals(this.tabName)) {
-				this.tabName = tabName;
-				update = true;
-			}
-		}
-
 		return update;
 	}
 
@@ -230,14 +206,12 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		String path = "change-prefix-suffix-in-tablist.";
 
 		if (ConfigValues.isUseDisabledWorldsAsWhiteList()) {
-			if (!plugin.getConf().getConfig().getStringList(path + "disabled-worlds.list")
+			if (!plugin.getConfig().getStringList(path + "disabled-worlds.list")
 					.contains(player.getWorld().getName())) {
 				return false;
 			}
 		} else {
-			if (plugin.getConf().getConfig().getStringList(path + "disabled-worlds.list")
-					.contains(player.getWorld().getName())) {
-				nick = null;
+			if (plugin.getConfig().getStringList(path + "disabled-worlds.list").contains(player.getWorld().getName())) {
 				return false;
 			}
 		}
@@ -265,7 +239,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		}
 
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			prefix = colorMsg(plugin.getConf().getConfig().getString(
+			prefix = colorMsg(plugin.getConfig().getString(
 					"placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), "")) + prefix;
 		}
 
@@ -281,15 +255,18 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		}
 
 		if (ConfigValues.isAfkStatusEnabled() && ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			suffix += colorMsg(plugin.getConf().getConfig().getString(
+			suffix += colorMsg(plugin.getConfig().getString(
 					"placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), ""));
 		}
 
 		return suffix;
 	}
 
-	public String getPlayerName() {
-		return nick == null ? tabName == null ? player.getName() : tabName : nick;
+	public String getCustomTabName() {
+		String tabName = group.getTabName().isEmpty() ? player.getName()
+				: plugin.getPlaceholders().replaceVariables(player,
+						plugin.makeAnim(group == null ? "" : group.getTabName()));
+		return getPrefix() + tabName + getSuffix();
 	}
 
 	@Override
@@ -302,8 +279,8 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		int ownPriority = this.getPriority();
 		int tlpPriority = tlp.getPriority();
 
-		if (ownPriority == tlpPriority)
-			return this.getPlayerName().compareTo(tlp.getPlayerName());
+		//if (ownPriority == tlpPriority)
+			//return this.getPlayerName().compareTo(tlp.getPlayerName());
 
 		return ownPriority - tlpPriority;
 	}

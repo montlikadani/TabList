@@ -151,15 +151,6 @@ change-prefix-suffix-in-tablist:
   # Requires Essentials or CMI plugin!
   hide-group-when-player-afk: false
 
-  # Use another plugin nickname instead of player's original name?
-  # true - Using this format: "prefix playerNickName suffix"
-  # false - Using this format: "prefix playerOriginalName suffix"
-  # Requires Essentials or CMI plugin!
-  use-plugin-nickname: false
-
-  # Use tab name instead of player's original name?
-  use-tab-name: false
-
   # Prefer player's primary Vault group when assigning tablist group from groups.yml?
   # true - player will be assigned their primary vault group where possible, after that
   # groups from groups.yml will be applied in descending order.
@@ -199,39 +190,6 @@ tablist-object-type:
     # If it is double-number ending, it will remove the dot "." from the number.
     custom:
       value: "%level%"
-
-# Changing player's tablist name with unlimited characters.
-tabname:
-  enable: false
-
-  # Use another plugin nickname instead of tab name?
-  # Requires Essentials or CMI plugin!
-  use-plugin-nickname: false
-
-  # How many characters should be allowed?
-  max-name-length: 200
-
-  # When the player lefts the server, delete his tab name?
-  clear-player-tabname-on-quit: false
-
-  # Enable color codes in tab names?
-  # false - disables all placeholders, symbols and color codes.
-  enable-color-code: true
-
-  # Enable default color? (If the player has not written a color code, this color will be given by default.)
-  default-color:
-    enable: false
-    color: "&6"
-
-  # In these worlds you can't change the tab name
-  disabled-worlds:
-  - myWorldWithUpper
-
-  # Which names can not be used? Supports regexes
-  # For example if you have "[^name]" every character are ignored except the name.
-  restricted-names:
-  - "[^tabname]"
-  - "namesHere"
 
 # Check for updates?
 check-update: true

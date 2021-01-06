@@ -14,9 +14,9 @@ public class Configuration {
 
 	private TabList plugin;
 
-	private FileConfiguration messages, names, groups, fakeplayers, animCreator;
+	private FileConfiguration messages, groups, fakeplayers, animCreator;
 	private CommentedConfig config, tablist;
-	private File config_file, messages_file, animation_file, tablist_file, groups_file, names_file, fakeplayers_file;
+	private File config_file, messages_file, animation_file, tablist_file, groups_file, fakeplayers_file;
 
 	public Configuration(TabList plugin) {
 		this.plugin = plugin;
@@ -41,6 +41,12 @@ public class Configuration {
 			plugin.saveResource("config.yml", false);
 		}
 
+		// Monument
+		File names = new File(folder, "names.yml");
+		if (names.exists()) {
+			names.delete();
+		}
+
 		config = new CommentedConfig(config_file);
 		ConfigValues.loadValues();
 
@@ -61,15 +67,6 @@ public class Configuration {
 
 			animCreator = createFile(animation_file, "animcreator.yml", false);
 			animCreator.load(animation_file);
-
-			if (ConfigValues.isTabNameEnabled()) {
-				if (names_file == null) {
-					names_file = new File(folder, "names.yml");
-				}
-
-				names = createFile(names_file, "names.yml", true);
-				names.save(names_file);
-			}
 
 			if (ConfigValues.isPrefixSuffixEnabled()) {
 				if (groups_file == null) {
@@ -93,18 +90,6 @@ public class Configuration {
 					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues",
 					false);
 		}
-	}
-
-	public void createNamesFile() {
-		if (names_file != null && names_file.exists()) {
-			return;
-		}
-
-		if (names_file == null) {
-			names_file = new File(plugin.getFolder(), "names.yml");
-		}
-
-		names = createFile(names_file, "names.yml", true);
 	}
 
 	public void createGroupsFile() {
@@ -157,10 +142,6 @@ public class Configuration {
 		return messages;
 	}
 
-	public FileConfiguration getNames() {
-		return names;
-	}
-
 	public FileConfiguration getGroups() {
 		return groups;
 	}
@@ -195,10 +176,6 @@ public class Configuration {
 
 	public File getGroupsFile() {
 		return groups_file;
-	}
-
-	public File getNamesFile() {
-		return names_file;
 	}
 
 	public File getFakeplayersFile() {

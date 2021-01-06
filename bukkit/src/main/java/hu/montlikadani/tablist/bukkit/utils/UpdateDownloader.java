@@ -16,12 +16,15 @@ import hu.montlikadani.tablist.bukkit.TabList;
 
 public abstract class UpdateDownloader {
 
+	private static final File RELEASESFOLDER = new File(TabList.getInstance().getFolder(), "releases");
+
 	public static void checkFromGithub(org.bukkit.command.CommandSender sender) {
-		if (!TabList.getInstance().getConf().getConfig().getBoolean("check-update")) {
+		if (!TabList.getInstance().getConfig().getBoolean("check-update")) {
+			deleteDirectory();
 			return;
 		}
 
-		CompletableFuture.supplyAsync(() -> {
+		CompletableFuture<?> comp = CompletableFuture.supplyAsync(() -> {
 			try {
 				URL githubUrl = new URL(
 						"https://raw.githubusercontent.com/montlikadani/TabList/master/bukkit/src/main/resources/plugin.yml");
@@ -50,7 +53,7 @@ public abstract class UpdateDownloader {
 				String msg = "";
 				if (sender instanceof Player) {
 					msg = Util.colorMsg("&aA new update for TabList is available!&4 Version:&7 " + versionString
-							+ (TabList.getInstance().getConf().getConfig().getBoolean("download-updates", false) ? ""
+							+ (TabList.getInstance().getConfig().getBoolean("download-updates", false) ? ""
 									: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/"));
 				} else {
 					msg = "New version (" + versionString
@@ -59,19 +62,19 @@ public abstract class UpdateDownloader {
 
 				Util.sendMsg(sender, msg);
 
-				if (!TabList.getInstance().getConf().getConfig().getBoolean("download-updates", false)) {
+				if (!TabList.getInstance().getConfig().getBoolean("download-updates", false)) {
+					deleteDirectory();
 					return false;
 				}
 
 				final String name = "TabList-v" + versionString;
 
-				File temp = new File(TabList.getInstance().getFolder(), "releases");
-				if (!temp.exists()) {
-					temp.mkdir();
+				if (!RELEASESFOLDER.exists()) {
+					RELEASESFOLDER.mkdir();
 				}
 
 				// Do not attempt to download the file again, when it is already downloaded
-				final File jar = new File(temp, name + ".jar");
+				final File jar = new File(RELEASESFOLDER, name + ".jar");
 				if (jar.exists()) {
 					return false;
 				}
@@ -82,9 +85,12 @@ public abstract class UpdateDownloader {
 						"https://github.com/montlikadani/TabList/releases/latest/download/" + name + ".jar");
 
 				InputStream in = download.openStream();
-				Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				try {
+					Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				} finally {
+					in.close();
+				}
 
-				in.close();
 				return true;
 			} catch (FileNotFoundException f) {
 			} catch (Exception e) {
@@ -97,5 +103,41 @@ public abstract class UpdateDownloader {
 				Util.logConsole("The new TabList has been downloaded to releases folder.");
 			}
 		});
+
+		// no
+		new Thread(() -> {
+			int tries = 0;
+
+			while (!comp.isDone()) {
+				try {
+					Thread.sleep(50);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				if (tries++ > 15) {
+					comp.cancel(true);
+					break;
+				}
+			}
+		}).start();
+	}
+
+	private static void deleteDirectory() {
+		if (!RELEASESFOLDER.exists()) {
+			return;
+		}
+
+		for (File file : RELEASESFOLDER.listFiles()) {
+			try {
+				file.delete();
+			} catch (SecurityException e) {
+			}
+		}
+
+		try {
+			RELEASESFOLDER.delete();
+		} catch (SecurityException e) {
+		}
 	}
 }

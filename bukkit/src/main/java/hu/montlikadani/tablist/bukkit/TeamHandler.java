@@ -2,7 +2,7 @@ package hu.montlikadani.tablist.bukkit;
 
 public class TeamHandler implements Cloneable {
 
-	private String team, prefix, suffix, permission;
+	private String team, prefix, suffix, tabName, permission;
 
 	private boolean global = false;
 
@@ -40,6 +40,10 @@ public class TeamHandler implements Cloneable {
 		this.suffix = suffix;
 	}
 
+	public void setTabName(String tabName) {
+		this.tabName = tabName;
+	}
+
 	public void setPermission(String permission) {
 		this.permission = permission;
 	}
@@ -66,6 +70,10 @@ public class TeamHandler implements Cloneable {
 
 	public String getSuffix() {
 		return suffix;
+	}
+
+	public String getTabName() {
+		return tabName;
 	}
 
 	public String getPermission() {

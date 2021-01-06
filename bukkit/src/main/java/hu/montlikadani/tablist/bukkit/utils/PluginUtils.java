@@ -89,23 +89,6 @@ public class PluginUtils {
 		return 0;
 	}
 
-	public static String getNickName(Player player) {
-		String nick = player.getName();
-
-		if (plugin.isPluginEnabled("Essentials")) {
-			nick = JavaPlugin.getPlugin(Essentials.class).getUser(player).getNickname();
-			if (nick != null) {
-				nick = nick.replace("\u00A7x", "#").replace('\u00A7', '&');
-			}
-		}
-
-		if (plugin.isPluginEnabled("CMI") && CMI.getInstance() != null) {
-			nick = CMI.getInstance().getNickNameManager().getNickNameFormat();
-		}
-
-		return nick == null ? player.getName() : nick;
-	}
-
 	public static boolean hasPermission(Player player, String perm) {
 		if (perm.isEmpty())
 			return false;

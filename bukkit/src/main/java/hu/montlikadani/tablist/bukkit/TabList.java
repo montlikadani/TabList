@@ -20,17 +20,18 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.google.common.reflect.TypeToken;
+
 import hu.montlikadani.tablist.AnimCreator;
 import hu.montlikadani.tablist.bukkit.Objects.ObjectTypes;
 import hu.montlikadani.tablist.bukkit.commands.Commands;
-import hu.montlikadani.tablist.bukkit.commands.TabNameCmd;
+import hu.montlikadani.tablist.bukkit.config.CommentedConfig;
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.config.Configuration;
 import hu.montlikadani.tablist.bukkit.listeners.Listeners;
 import hu.montlikadani.tablist.bukkit.listeners.plugins.CMIAfkStatus;
 import hu.montlikadani.tablist.bukkit.listeners.plugins.EssAfkStatus;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
-import hu.montlikadani.tablist.bukkit.tablist.TabNameHandler;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler;
 import hu.montlikadani.tablist.bukkit.utils.Metrics;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
@@ -52,7 +53,6 @@ public class TabList extends JavaPlugin {
 	private Configuration conf;
 	private TabManager tabManager;
 	private FakePlayerHandler fakePlayerHandler;
-	private TabNameHandler tabNameHandler;
 
 	private boolean isSpigot = false;
 	private boolean hasVault = false;
@@ -91,7 +91,6 @@ public class TabList extends JavaPlugin {
 			variables = new Variables(this);
 			tabManager = new TabManager(this);
 			fakePlayerHandler = new FakePlayerHandler(this);
-			tabNameHandler = new TabNameHandler(this);
 
 			conf.loadFiles();
 			loadValues();
@@ -124,8 +123,6 @@ public class TabList extends JavaPlugin {
 				}
 				metrics.addCustomChart(
 						new Metrics.SimplePie("enable_tablist", () -> conf.getTablist().getString("enabled")));
-				metrics.addCustomChart(
-						new Metrics.SimplePie("enable_tabname", () -> String.valueOf(ConfigValues.isTabNameEnabled())));
 				if (ConfigValues.isTablistObjectiveEnabled()) {
 					metrics.addCustomChart(new Metrics.SimplePie("object_type", () -> {
 						switch (ConfigValues.getObjectType()) {
@@ -146,7 +143,7 @@ public class TabList extends JavaPlugin {
 						() -> String.valueOf(ConfigValues.isPrefixSuffixEnabled())));
 			}
 
-			if (conf.getConfig().getBoolean("logconsole")) {
+			if (getConfig().getBoolean("logconsole")) {
 				String msg = "&6&l[&5&lTab&c&lList&6&l]&7&l >&a The plugin successfully enabled&6 v"
 						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)";
 				Util.sendMsg(getServer().getConsoleSender(), colorMsg(msg));
@@ -183,17 +180,16 @@ public class TabList extends JavaPlugin {
 		instance = null;
 	}
 
+	@Override
+	public CommentedConfig getConfig() {
+		return conf.getConfig();
+	}
+
 	private void registerCommands() {
 		Optional.ofNullable(getCommand("tablist")).ifPresent(tl -> {
 			Commands cmds = new Commands(this);
 			tl.setExecutor(cmds);
 			tl.setTabCompleter(cmds);
-		});
-
-		Optional.ofNullable(getCommand("tabname")).ifPresent(tName -> {
-			TabNameCmd cmd = new TabNameCmd(this);
-			tName.setExecutor(cmd);
-			tName.setTabCompleter(cmd);
 		});
 	}
 
@@ -233,7 +229,6 @@ public class TabList extends JavaPlugin {
 		tabRefreshTime = conf.getTablist().getInt("interval", 4);
 
 		variables.loadExpressions();
-		tabNameHandler.loadRestrictedNames();
 	}
 
 	private void loadAnimations() {
@@ -336,16 +331,10 @@ public class TabList extends JavaPlugin {
 			}
 		}
 
-		tabNameHandler.loadTabName(p);
 		tabManager.addPlayer(p);
 	}
 
 	public void onPlayerQuit(Player p) {
-		if (ConfigValues.isTabNameEnabled() && ConfigValues.isClearTabNameOnQuit()
-				&& conf.getNames().contains("players." + p.getName() + ".tabname")) {
-			tabNameHandler.unSetTabName(p);
-		}
-
 		if (!ConfigValues.isTablistObjectiveEnabled()) {
 			for (ObjectTypes t : ObjectTypes.values()) {
 				objects.unregisterObjectiveForEveryone(t);
@@ -366,35 +355,73 @@ public class TabList extends JavaPlugin {
 	}
 
 	public String getMsg(String key, Object... placeholders) {
-		if (!conf.getMessagesFile().exists())
-			return "FILENF";
+		return getMsg(TypeToken.of(String.class), key, placeholders);
+	}
 
-		String msg = "";
-
-		if (!conf.getMessages().contains(key)) {
-			conf.getMessages().set(key, "");
-			try {
-				conf.getMessages().save(getConf().getMessagesFile());
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	@SuppressWarnings("unchecked")
+	public <T> T getMsg(TypeToken<T> type, String key, Object... placeholders) {
+		if (key == null || key.trim().isEmpty()) {
+			return (T) "null";
 		}
 
-		if (conf.getMessages().getString(key).isEmpty()) {
-			return msg;
-		}
-
-		msg = colorMsg(conf.getMessages().getString(key));
-
-		for (int i = 0; i < placeholders.length; i++) {
-			if (placeholders.length >= i + 2) {
-				msg = msg.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
+		if (type.getRawType().isAssignableFrom(String.class)) {
+			if (!conf.getMessagesFile().exists()) {
+				return (T) "FILENF";
 			}
 
-			i++;
+			String msg = "";
+
+			if (!conf.getMessages().contains(key)) {
+				conf.getMessages().set(key, "");
+				try {
+					conf.getMessages().save(conf.getMessagesFile());
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (conf.getMessages().getString(key).isEmpty()) {
+				return (T) msg;
+			}
+
+			msg = colorMsg(conf.getMessages().getString(key));
+
+			for (int i = 0; i < placeholders.length; i++) {
+				if (placeholders.length >= i + 2) {
+					msg = msg.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
+				}
+
+				i++;
+			}
+
+			return (T) msg;
 		}
 
-		return msg;
+		if (type.getRawType().isAssignableFrom(List.class)) {
+			if (!conf.getMessagesFile().exists()) {
+				return (T) new ArrayList<>();
+			}
+
+			List<String> list = new ArrayList<>();
+
+			for (String one : conf.getMessages().getStringList(key)) {
+				one = colorMsg(one);
+
+				for (int i = 0; i < placeholders.length; i++) {
+					if (placeholders.length >= i + 2) {
+						one = one.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
+					}
+
+					i++;
+				}
+
+				list.add(one);
+			}
+
+			return (T) list;
+		}
+
+		return (T) "no msg";
 	}
 
 	public Map<Player, HidePlayers> getHidePlayers() {
@@ -423,10 +450,6 @@ public class TabList extends JavaPlugin {
 
 	public TabManager getTabManager() {
 		return tabManager;
-	}
-
-	public TabNameHandler getTabNameHandler() {
-		return tabNameHandler;
 	}
 
 	public Groups getGroups() {

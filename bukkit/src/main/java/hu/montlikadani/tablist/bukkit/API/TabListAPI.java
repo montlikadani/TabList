@@ -19,7 +19,6 @@ import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
  * The API methods for TabList.
  * 
  * @author montlikadani
- *
  */
 public class TabListAPI {
 
@@ -95,14 +94,15 @@ public class TabListAPI {
 	/**
 	 * Creates a new fake player that only appear in tablist.
 	 * 
-	 * @param player the player who's own that player
-	 * @param name   the fake player name
+	 * @param who  the player who's own that player
+	 * @param name the fake player name
 	 * @return {@link IFakePlayers}
 	 * @see IFakePlayers#createFakePlayer(Player, String, int)
 	 */
-	public static IFakePlayers createFakePlayer(Player player, String name) {
-		IFakePlayers fp = new FakePlayers(name);
-		fp.createFakePlayer(player);
+	public static IFakePlayers createFakePlayer(Player who, String name) {
+		IFakePlayers fp = new FakePlayers();
+		fp.setName(name);
+		fp.createFakePlayer(who);
 		return fp;
 	}
 

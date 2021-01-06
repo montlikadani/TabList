@@ -31,7 +31,7 @@ public class Listeners implements Listener {
 
 		if (ConfigValues.isFakePlayers()) {
 			plugin.getConf().createFakePlayersFile();
-			plugin.getFakePlayerHandler().load();
+			plugin.getFakePlayerHandler().display();
 		}
 
 		if (p.isOp()) {

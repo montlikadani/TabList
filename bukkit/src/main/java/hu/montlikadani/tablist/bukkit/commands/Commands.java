@@ -18,17 +18,21 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.reflect.TypeToken;
+
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.IFakePlayers;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils.JavaAccessibilities;
 
 public class Commands implements CommandExecutor, TabCompleter {
 
 	private TabList plugin;
 
-	private final String[] subCmds = { "reload", "fakeplayers", "get", "removegroup", "setprefix", "setsuffix",
-			"setpriority", "toggle", "help" };
+	private final ImmutableList<String> subCmds = ImmutableList.<String>builder().add("reload", "fakeplayers", "get",
+			"removegroup", "setprefix", "setsuffix", "setpriority", "toggle", "help").build();
 
 	private final Set<ICommand> cmds = new HashSet<>();
 
@@ -59,6 +63,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 	}
 
+	@SuppressWarnings("serial")
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
 		if (args.length == 0) {
@@ -71,32 +76,14 @@ public class Commands implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
-		// TODO get rid from this
 		if (args[0].equalsIgnoreCase("help")) {
 			if (sender instanceof Player && !sender.hasPermission(Perm.HELP.getPerm())) {
 				sendMsg(sender, plugin.getMsg("no-permission", "%perm%", Perm.HELP.getPerm()));
 				return true;
 			}
 
-			if (sender instanceof Player) {
-				if (args.length == 1) {
-					plugin.getConf().getMessages().getStringList("chat-messages.1")
-							.forEach(msg -> sender.sendMessage(colorMsg(msg.replace("%command%", label))));
-				} else if (args.length == 2 && (args[1].equals("2") || args[1].equals("3"))) {
-					plugin.getConf().getMessages().getStringList("chat-messages." + args[1])
-							.forEach(msg -> sender.sendMessage(colorMsg(msg.replace("%command%", label))));
-				}
-			} else {
-				plugin.getConf().getMessages().getStringList("chat-messages.1")
-						.forEach(msg -> sender.sendMessage(colorMsg(msg.replace("%command%", label))));
-
-				plugin.getConf().getMessages().getStringList("chat-messages.2")
-						.forEach(msg -> sender.sendMessage(colorMsg(msg.replace("%command%", label))));
-
-				plugin.getConf().getMessages().getStringList("chat-messages.3")
-						.forEach(msg -> sender.sendMessage(colorMsg(msg.replace("%command%", label))));
-			}
-
+			plugin.getMsg(new TypeToken<List<String>>() {}.getSubtype(List.class), "chat-messages", "%command%", label)
+				.forEach(s -> sendMsg(sender, s));
 			return true;
 		}
 
@@ -163,8 +150,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		if (args.length == 3 && ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
 			if (args[1].equalsIgnoreCase("remove") || args[1].equalsIgnoreCase("setskin")
 					|| args[1].equalsIgnoreCase("setping")) {
-				plugin.getFakePlayerHandler().getFakePlayersFromConfig().stream()
-						.map(fp -> fp.contains(";") ? fp.split(";")[0] : fp).forEach(cmds::add);
+				plugin.getFakePlayerHandler().getFakePlayers().stream().map(IFakePlayers::getName).forEach(cmds::add);
 				partOfCommand = args[2];
 			}
 
@@ -178,7 +164,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	private Set<String> getCmds(CommandSender sender) {
 		if (!(sender instanceof Player)) {
-			return Arrays.stream(subCmds).collect(Collectors.toSet());
+			return subCmds.stream().collect(Collectors.toSet());
 		}
 
 		// Don't use stream for tab-complete

@@ -237,8 +237,7 @@ public class Variables {
 	}
 
 	public String setPlaceholders(Player p, String s) {
-		if (ConfigValues.isPlaceholderAPI() && plugin.isPluginEnabled("PlaceholderAPI")
-				&& PlaceholderAPI.containsPlaceholders(s)) {
+		if (ConfigValues.isPlaceholderAPI() && plugin.isPluginEnabled("PlaceholderAPI")) {
 			s = PlaceholderAPI.setPlaceholders(p, s);
 		}
 

@@ -26,7 +26,9 @@ import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class FakePlayers implements IFakePlayers {
 
-	private String name;
+	private String name, displayName = "";
+
+	private static int id = 0;
 
 	private int ping = -1;
 
@@ -34,15 +36,73 @@ public class FakePlayers implements IFakePlayers {
 	private GameProfile profile;
 	private Class<?> enumPlayerInfoAction;
 
-	public FakePlayers(String name) {
-		this.name = name;
-
-		profile = new GameProfile(UUID.randomUUID(), name);
+	public FakePlayers() {
+		id++;
 	}
 
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public void setName(String name) {
+		this.name = name == null ? "" : name;
+
+		if (displayName == null || this.name.equals(displayName)) {
+			setDisplayName(this.name);
+		}
+	}
+
+	@Override
+	public int getId() {
+		return id;
+	}
+
+	@Override
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	@Override
+	public void setDisplayName(String displayName) {
+		if (displayName == null) {
+			this.displayName = name;
+		} else {
+			if (displayName.length() > 16) {
+				displayName = displayName.substring(0, 16);
+			}
+
+			// TODO we need here DI with netty#Channel from playerConnection in order to
+			// replace all player placeholders, can do it with async scheduler but we don't
+			// want another running thread
+
+			displayName = Util.colorMsg(displayName);
+			this.displayName = displayName;
+		}
+
+		if (fakePl != null) {
+			try {
+				ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(displayName));
+
+				Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
+
+				Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
+				Array.set(entityPlayerArray, 0, fakePl);
+
+				Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
+						.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(
+								ReflectionUtils.getFieldObject(enumPlayerInfoAction,
+										enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME")),
+								entityPlayerArray);
+
+				for (Player aOnline : Bukkit.getOnlinePlayers()) {
+					ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
+				}
+			} catch (Throwable e) {
+				e.printStackTrace();
+			}
+		}
 	}
 
 	@Override
@@ -62,12 +122,16 @@ public class FakePlayers implements IFakePlayers {
 
 	@Override
 	public void createFakePlayer(Player p, String headUUID, int pingLatency) {
+		if (profile == null) {
+			profile = new GameProfile(UUID.randomUUID(), name);
+		}
+
 		try {
 			setSkin(headUUID);
 
 			fakePl = ReflectionUtils.Classes.getPlayerConstructor(p, profile);
 
-			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(profile.getName()));
+			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(displayName));
 
 			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
 			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction(packetPlayOutPlayerInfoClass);
@@ -93,7 +157,7 @@ public class FakePlayers implements IFakePlayers {
 
 	@Override
 	public void setPing(int pingAmount) {
-		if (pingAmount < 0) {
+		if (profile == null || pingAmount < 0) {
 			return;
 		}
 
@@ -105,9 +169,9 @@ public class FakePlayers implements IFakePlayers {
 
 			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
 			Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
-					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(ReflectionUtils
-							.getFieldObject(enumPlayerInfoAction, enumPlayerInfoAction.getDeclaredField("UPDATE_LATENCY")),
-							entityPlayerArray);
+					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
+					.newInstance(ReflectionUtils.getFieldObject(enumPlayerInfoAction,
+							enumPlayerInfoAction.getDeclaredField("UPDATE_LATENCY")), entityPlayerArray);
 
 			@SuppressWarnings("unchecked")
 			List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
@@ -131,7 +195,7 @@ public class FakePlayers implements IFakePlayers {
 
 	@Override
 	public void setSkin(String skinUUID) {
-		if (skinUUID == null || skinUUID.trim().isEmpty() || !Util.isRealUUID(skinUUID)) {
+		if (profile == null || skinUUID == null || skinUUID.trim().isEmpty() || !Util.isRealUUID(skinUUID)) {
 			return;
 		}
 
@@ -140,7 +204,7 @@ public class FakePlayers implements IFakePlayers {
 			return;
 		}
 
-		getSkinValue(skinUUID).thenAcceptAsync((map) -> {
+		getSkinValue(skinUUID).thenAcceptAsync(map -> {
 			java.util.Map.Entry<String, String> e = map.pollFirstEntry();
 			profile.getProperties().get("textures").clear();
 			profile.getProperties().put("textures", new Property("textures", e.getKey(), e.getValue()));
@@ -149,6 +213,10 @@ public class FakePlayers implements IFakePlayers {
 
 	@Override
 	public void removeFakePlayer() {
+		if (fakePl == null) {
+			return;
+		}
+
 		try {
 			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakePl);

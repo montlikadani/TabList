@@ -11,20 +11,19 @@ public class ConfigValues {
 			ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled,
 			afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone, pingFormatEnabled,
 			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish,
-			hideGroupWhenAfk, usePluginNickName, useTabName, preferPrimaryVaultGroup, tablistObjectiveEnabled,
-			tabNameEnabled, tabNameUsePluginNickName, clearTabNameOnQuit, tabNameColorCodeEnabled, defaultColorEnabled,
+			hideGroupWhenAfk, preferPrimaryVaultGroup, tablistObjectiveEnabled,
 			tpsCanBeHigher;
 
 	private static String afkFormatYes, afkFormatNo, timeZone, timeFormat, dateFormat, objectType, customObjectSetting,
-			defaultTabNameColor, memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor,
+			memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor,
 			memoryBarReleasedColor;
 
-	private static List<String> tpsColorFormats, pingColorFormats, restrictedTabNames;
+	private static List<String> tpsColorFormats, pingColorFormats;
 
-	private static int tpsSize, groupsRefreshInterval, objectRefreshInterval, tabNameMaxLength, memoryBarSize;
+	private static int tpsSize, groupsRefreshInterval, objectRefreshInterval, memoryBarSize;
 
 	public static void loadValues() {
-		CommentedConfig c = TabList.getInstance().getConf().getConfig();
+		CommentedConfig c = TabList.getInstance().getConfig();
 		c.copyDefaults(true);
 
 		c.addComment("hook.placeholderapi", "Hook to PlaceholderAPI to use custom placeholders.");
@@ -105,12 +104,6 @@ public class ConfigValues {
 				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!");
 		c.addComment("change-prefix-suffix-in-tablist.hide-group-when-player-afk",
 				"Hide player's group in player list when the player is AFK?", "Requires Essentials or CMI plugin!");
-		c.addComment("change-prefix-suffix-in-tablist.use-plugin-nickname",
-				"Use another plugin nickname instead of player's original name?",
-				"true - Using this format: \"prefix playerNickName suffix\"",
-				"false - Using this format: \"prefix playerOriginalName suffix\"",
-				"Requires Essentials or CMI plugin!");
-		c.addComment("change-prefix-suffix-in-tablist.use-tab-name", "Use tab name instead of player's original name?");
 		c.addComment("change-prefix-suffix-in-tablist.prefer-primary-vault-group",
 				"Prefer player's primary Vault group when assigning tablist group from groups.yml?",
 				"true - player will be assigned their primary vault group where possible, after that",
@@ -132,19 +125,6 @@ public class ConfigValues {
 		c.addComment("tablist-object-type.object-settings.custom",
 				"Custom placeholder - accepts only number-ending placeholders, like %level%.",
 				"If it is double-number ending, it will remove the dot \".\" from the number.");
-		c.addComment("tabname", "Tabname settings for /tabname command.",
-				"Changing player's tablist name with unlimited characters.");
-		c.addComment("tabname.use-plugin-nickname", "Use another plugin nickname instead of tab name?",
-				"Requires Essentials or CMI plugin!");
-		c.addComment("tabname.max-name-length", "How many characters should be allowed?");
-		c.addComment("tabname.clear-player-tabname-on-quit", "When the player lefts the server, delete his tab name?");
-		c.addComment("tabname.enable-color-code", "Enable color codes in tab names?",
-				"false - disables all placeholders, symbols and color codes.");
-		c.addComment("tabname.default-color",
-				"Enable default color? (If the player has not written a color code, this color will be given by default.)");
-		c.addComment("tabname.disabled-worlds", "In these worlds you can't change the tab name");
-		c.addComment("tabname.restricted-names", "Which names can not be used? Supports regexes",
-				"For example if you have \"[^name]\" every character are ignored except the name.");
 		c.addComment("check-update", "Check for updates?");
 		c.addComment("download-updates", "Download new releases to \"releases\" folder?",
 				"This only works if the \"check-update\" is true.");
@@ -171,15 +151,8 @@ public class ConfigValues {
 		syncPluginsGroups = c.get("change-prefix-suffix-in-tablist.sync-plugins-groups-with-tablist", true);
 		hideGroupInVanish = c.get("change-prefix-suffix-in-tablist.hide-group-when-player-vanished", false);
 		hideGroupWhenAfk = c.get("change-prefix-suffix-in-tablist.hide-group-when-player-afk", false);
-		usePluginNickName = c.get("change-prefix-suffix-in-tablist.use-plugin-nickname", false);
-		useTabName = c.get("change-prefix-suffix-in-tablist.use-tab-name", false);
 		preferPrimaryVaultGroup = c.get("change-prefix-suffix-in-tablist.prefer-primary-vault-group", true);
 		tablistObjectiveEnabled = c.get("tablist-object-type.enable", false);
-		tabNameEnabled = c.get("tabname.enable", false);
-		tabNameUsePluginNickName = c.get("tabname.use-plugin-nickname", false);
-		clearTabNameOnQuit = c.get("tabname.clear-player-tabname-on-quit", false);
-		tabNameColorCodeEnabled = c.get("tabname.enable-color-code", false);
-		defaultColorEnabled = c.get("tabname.default-color.enable", false);
 
 		c.get("check-update", true);
 		c.get("download-updates", false);
@@ -198,7 +171,6 @@ public class ConfigValues {
 		memoryBarReleasedColor = c.get("placeholder-format.memory-bar.colors.released", "&6");
 		objectType = c.get("tablist-object-type.type", "ping");
 		customObjectSetting = c.get("tablist-object-type.object-settings.custom.value", "%level%");
-		defaultTabNameColor = c.get("tabname.default-color.color", "&6");
 
 		tpsColorFormats = c.get("placeholder-format.tps.formats",
 				Arrays.asList("18.0 > &a", "16.0 == &6", "16.0 < &c"));
@@ -208,14 +180,11 @@ public class ConfigValues {
 		c.get("change-prefix-suffix-in-tablist.disabled-worlds.list", Arrays.asList("myWorldWithUpper"));
 		c.get("tablist-object-type.object-settings.health.restricted-players",
 				Arrays.asList("exampleplayer", "players"));
-		c.get("tabname.disabled-worlds", Arrays.asList("myWorldWithUpper"));
-		restrictedTabNames = c.get("tabname.restricted-names", Arrays.asList("[^tabname]", "namesHere"));
 
 		tpsSize = c.get("placeholder-format.tps.size", 2);
 		memoryBarSize = c.get("placeholder-format.memory-bar.size", 80);
 		groupsRefreshInterval = c.get("change-prefix-suffix-in-tablist.refresh-interval", 30);
 		objectRefreshInterval = c.get("tablist-object-type.refresh-interval", 3);
-		tabNameMaxLength = c.get("tabname.max-name-length", 200);
 
 		c.cleanUp();
 		c.save();
@@ -347,14 +316,6 @@ public class ConfigValues {
 		return hideGroupWhenAfk;
 	}
 
-	public static boolean isUsePluginNickName() {
-		return usePluginNickName;
-	}
-
-	public static boolean isUseTabName() {
-		return useTabName;
-	}
-
 	public static boolean isPreferPrimaryVaultGroup() { return preferPrimaryVaultGroup;}
 
 	public static boolean isTablistObjectiveEnabled() {
@@ -373,34 +334,6 @@ public class ConfigValues {
 		return customObjectSetting;
 	}
 
-	public static boolean isTabNameEnabled() {
-		return tabNameEnabled;
-	}
-
-	public static boolean isTabNameUsePluginNickName() {
-		return tabNameUsePluginNickName;
-	}
-
-	public static int getTabNameMaxLength() {
-		return tabNameMaxLength;
-	}
-
-	public static boolean isClearTabNameOnQuit() {
-		return clearTabNameOnQuit;
-	}
-
-	public static boolean isTabNameColorCodeEnabled() {
-		return tabNameColorCodeEnabled;
-	}
-
-	public static boolean isDefaultColorEnabled() {
-		return defaultColorEnabled;
-	}
-
-	public static String getDefaultTabNameColor() {
-		return defaultTabNameColor;
-	}
-
 	public static int getTpsSize() {
 		return tpsSize;
 	}
@@ -415,9 +348,5 @@ public class ConfigValues {
 
 	public static boolean isTpsCanBeHigher() {
 		return tpsCanBeHigher;
-	}
-
-	public static List<String> getRestrictedTabNames() {
-		return restrictedTabNames;
 	}
 }
