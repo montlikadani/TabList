@@ -239,8 +239,9 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		}
 
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			prefix = colorMsg(plugin.getConfig().getString(
-					"placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), "")) + prefix;
+			prefix = colorMsg(plugin.getConfig()
+					.get("placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), ""))
+					+ prefix;
 		}
 
 		return prefix;
@@ -255,17 +256,16 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 		}
 
 		if (ConfigValues.isAfkStatusEnabled() && ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			suffix += colorMsg(plugin.getConfig().getString(
-					"placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), ""));
+			suffix += colorMsg(plugin.getConfig()
+					.get("placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), ""));
 		}
 
 		return suffix;
 	}
 
 	public String getCustomTabName() {
-		String tabName = group.getTabName().isEmpty() ? player.getName()
-				: plugin.getPlaceholders().replaceVariables(player,
-						plugin.makeAnim(group == null ? "" : group.getTabName()));
+		String tabName = (group == null || group.getTabName().isEmpty()) ? player.getName()
+				: plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(group.getTabName()));
 		return getPrefix() + tabName + getSuffix();
 	}
 

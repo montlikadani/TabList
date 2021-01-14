@@ -26,7 +26,7 @@ public class Util {
 	}
 
 	public static void logConsole(Level level, String msg, boolean loaded) {
-		if ((!loaded || TabList.getInstance().getConfig().getBoolean("logconsole", true)) && msg != null
+		if ((!loaded || TabList.getInstance().getConfig().get("logconsole", true)) && msg != null
 				&& !msg.trim().isEmpty()) {
 			Bukkit.getLogger().log(level != null ? level : Level.INFO, "[TabList] " + msg);
 		}

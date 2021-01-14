@@ -124,18 +124,8 @@ public class TabList extends JavaPlugin {
 				metrics.addCustomChart(
 						new Metrics.SimplePie("enable_tablist", () -> conf.getTablist().getString("enabled")));
 				if (ConfigValues.isTablistObjectiveEnabled()) {
-					metrics.addCustomChart(new Metrics.SimplePie("object_type", () -> {
-						switch (ConfigValues.getObjectType()) {
-						case "ping":
-							return "ping";
-						case "health":
-							return "health";
-						case "custom":
-							return "custom";
-						default:
-							return "";
-						}
-					}));
+					metrics.addCustomChart(
+							new Metrics.SimplePie("object_type", () -> objects.getCurrentObjectType().toString()));
 				}
 				metrics.addCustomChart(new Metrics.SimplePie("enable_fake_players",
 						() -> String.valueOf(ConfigValues.isFakePlayers())));
@@ -143,7 +133,7 @@ public class TabList extends JavaPlugin {
 						() -> String.valueOf(ConfigValues.isPrefixSuffixEnabled())));
 			}
 
-			if (getConfig().getBoolean("logconsole")) {
+			if (getConfig().get("logconsole", false)) {
 				String msg = "&6&l[&5&lTab&c&lList&6&l]&7&l >&a The plugin successfully enabled&6 v"
 						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)";
 				Util.sendMsg(getServer().getConsoleSender(), colorMsg(msg));
@@ -227,7 +217,6 @@ public class TabList extends JavaPlugin {
 
 	private void loadValues() {
 		tabRefreshTime = conf.getTablist().getInt("interval", 4);
-
 		variables.loadExpressions();
 	}
 

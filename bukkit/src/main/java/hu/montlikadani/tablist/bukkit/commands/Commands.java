@@ -121,46 +121,40 @@ public class Commands implements CommandExecutor, TabCompleter {
 		List<String> completionList = new ArrayList<>(), cmds = new ArrayList<>();
 		String partOfCommand = "";
 
-		if (args.length == 1) {
+		switch (args.length) {
+		case 1:
 			getCmds(sender).forEach(cmds::add);
 			partOfCommand = args[0];
-
-			StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
-			Collections.sort(completionList);
-			return completionList;
-		}
-
-		if (args.length == 2) {
+			break;
+		case 2:
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
 				Arrays.asList("add", "remove", "list", "setskin", "setping").forEach(cmds::add);
-				partOfCommand = args[1];
-
-				StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
-				Collections.sort(completionList);
-				return completionList;
 			} else if (args[0].equalsIgnoreCase("toggle")) {
 				cmds.add("all");
-				partOfCommand = args[1];
-
-				StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
-				Collections.sort(completionList);
-				return completionList;
 			}
-		}
 
-		if (args.length == 3 && ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
-			if (args[1].equalsIgnoreCase("remove") || args[1].equalsIgnoreCase("setskin")
-					|| args[1].equalsIgnoreCase("setping")) {
+			partOfCommand = args[1];
+			break;
+		case 3:
+			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")
+					&& (args[1].equalsIgnoreCase("remove") || args[1].equalsIgnoreCase("setskin")
+							|| args[1].equalsIgnoreCase("setping"))) {
 				plugin.getFakePlayerHandler().getFakePlayers().stream().map(IFakePlayers::getName).forEach(cmds::add);
 				partOfCommand = args[2];
 			}
 
-			StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
-			Collections.sort(completionList);
-			return completionList;
+			break;
+		default:
+			break;
 		}
 
-		return null;
+		if (partOfCommand == null || cmds.isEmpty()) {
+			return null;
+		}
+
+		StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
+		Collections.sort(completionList);
+		return completionList;
 	}
 
 	private Set<String> getCmds(CommandSender sender) {

@@ -19,7 +19,7 @@ public abstract class UpdateDownloader {
 	private static final File RELEASESFOLDER = new File(TabList.getInstance().getFolder(), "releases");
 
 	public static void checkFromGithub(org.bukkit.command.CommandSender sender) {
-		if (!TabList.getInstance().getConfig().getBoolean("check-update")) {
+		if (!TabList.getInstance().getConfig().get("check-update", false)) {
 			deleteDirectory();
 			return;
 		}
@@ -47,13 +47,14 @@ public abstract class UpdateDownloader {
 				int currentVersion = Integer.parseInt(cVersion);
 
 				if (newVersion <= currentVersion || currentVersion >= newVersion) {
+					deleteDirectory();
 					return false;
 				}
 
 				String msg = "";
 				if (sender instanceof Player) {
 					msg = Util.colorMsg("&aA new update for TabList is available!&4 Version:&7 " + versionString
-							+ (TabList.getInstance().getConfig().getBoolean("download-updates", false) ? ""
+							+ (TabList.getInstance().getConfig().get("download-updates", false) ? ""
 									: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/"));
 				} else {
 					msg = "New version (" + versionString
@@ -62,7 +63,7 @@ public abstract class UpdateDownloader {
 
 				Util.sendMsg(sender, msg);
 
-				if (!TabList.getInstance().getConfig().getBoolean("download-updates", false)) {
+				if (!TabList.getInstance().getConfig().get("download-updates", false)) {
 					deleteDirectory();
 					return false;
 				}
@@ -98,8 +99,8 @@ public abstract class UpdateDownloader {
 			}
 
 			return false;
-		}).thenAccept(y -> {
-			if (y) {
+		}).thenAccept(success -> {
+			if (success) {
 				Util.logConsole("The new TabList has been downloaded to releases folder.");
 			}
 		});
@@ -117,7 +118,7 @@ public abstract class UpdateDownloader {
 
 				if (tries++ > 15) {
 					comp.cancel(true);
-					break;
+					return;
 				}
 			}
 		}).start();

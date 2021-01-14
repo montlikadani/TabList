@@ -65,12 +65,10 @@ public class BukkitHandled implements ITabScoreboard {
 		player.setScoreboard(board);
 	}
 
-	@Override
 	public Scoreboard getScoreboard() {
 		return board;
 	}
 
-	@Override
 	public void setScoreboard(Scoreboard board) {
 		this.board = board;
 	}

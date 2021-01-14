@@ -90,18 +90,25 @@ public class ReflectionUtils {
 					if (Character.isDigit(colorCode)
 							|| ((colorCode >= 'a' && colorCode <= 'f') || (colorCode == 'k' || colorCode == 'l'
 									|| colorCode == 'm' || colorCode == 'n' || colorCode == 'o' || colorCode == 'r'))) {
-						obj.addProperty("text", builder.toString());
-						JSONLIST.add(obj);
-
-						obj = new JsonObject();
-						builder = new StringBuilder();
-
-						if (!colorName.isEmpty()) {
-							obj.addProperty("color", colorName);
+						if (builder.toString().trim().isEmpty()) {
+							builder = new StringBuilder();
+							continue;
 						}
 
-						if (!font.isEmpty()) {
-							obj.addProperty("font", font);
+						if (builder.length() > 0) {
+							obj.addProperty("text", builder.toString());
+							JSONLIST.add(obj);
+
+							obj = new JsonObject();
+							builder = new StringBuilder();
+
+							if (!colorName.isEmpty()) {
+								obj.addProperty("color", colorName);
+							}
+
+							if (!font.isEmpty()) {
+								obj.addProperty("font", font);
+							}
 						}
 
 						switch (colorCode) {
@@ -163,7 +170,11 @@ public class ReflectionUtils {
 	public static Object invokeMethod(Object obj, String name, boolean declared, boolean superClass) throws Exception {
 		Class<?> c = superClass ? obj.getClass().getSuperclass() : obj.getClass();
 		Method met = declared ? c.getDeclaredMethod(name) : c.getMethod(name);
-		met.setAccessible(true);
+
+		if (!JavaAccessibilities.isAccessible(met, obj)) {
+			met.setAccessible(true);
+		}
+
 		return met.invoke(obj);
 	}
 
@@ -189,48 +200,56 @@ public class ReflectionUtils {
 
 	public static Field getField(Class<?> clazz, String name, boolean declared) throws Exception {
 		Field field = declared ? clazz.getDeclaredField(name) : clazz.getField(name);
-		field.setAccessible(true);
+
+		if (!JavaAccessibilities.isAccessible(field, null)) {
+			field.setAccessible(true);
+		}
+
 		return field;
 	}
 
 	public static void modifyFinalField(Field field, Object target, Object newValue) throws Exception {
-		if (!JavaAccessibilities.isAccessible(field, target)) {
-			field.setAccessible(true);
-		}
-
-		int mods = field.getModifiers();
-		if (!Modifier.isFinal(mods)) {
-			return;
-		}
-
 		Field modifiersField = null;
 		try {
-			modifiersField = getField(Field.class, "modifiers");
+			modifiersField = Field.class.getDeclaredField("modifiers");
 		} catch (NoSuchFieldException e) { // Java 12+
+			if (JavaAccessibilities.getCurrentVersion() < 12) {
+				return; // To make sure we're on 12 or higher
+			}
+
 			Method meth = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
 			boolean accessibleBeforeSet = JavaAccessibilities.isAccessible(meth, null);
+
 			meth.setAccessible(true);
 
 			Field[] fields = (Field[]) meth.invoke(Field.class, false);
-			meth.setAccessible(accessibleBeforeSet);
-
 			for (Field f : fields) {
 				if ("modifiers".equals(f.getName())) {
 					modifiersField = f;
 					break;
 				}
 			}
+
+			meth.setAccessible(accessibleBeforeSet);
 		}
 
 		if (modifiersField == null) {
 			return;
 		}
 
-		boolean accessibleBeforeSet = JavaAccessibilities.isAccessible(modifiersField, null);
-		modifiersField.setAccessible(true);
-		modifiersField.setInt(field, mods & ~Modifier.FINAL);
-		modifiersField.setAccessible(accessibleBeforeSet);
-		field.set(target, newValue);
+		field.setAccessible(true);
+
+		if (JavaAccessibilities.getCurrentVersion() < 13) {
+			modifiersField.setAccessible(true);
+			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+			field.set(target, newValue);
+		} else {
+			boolean accessibleBeforeSet = JavaAccessibilities.isAccessible(modifiersField, null);
+			modifiersField.setAccessible(true);
+			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+			field.set(target, newValue);
+			modifiersField.setAccessible(accessibleBeforeSet);
+		}
 	}
 
 	public static Object getFieldObject(Object object, Field field) throws Exception {
@@ -277,7 +296,8 @@ public class ReflectionUtils {
 					managerIns = manager.getConstructors()[0].newInstance(world);
 				}
 
-				return getHandle(player).getClass().getConstructor(server, world.getClass(), profile.getClass(), manager)
+				return getHandle(player).getClass()
+						.getConstructor(server, world.getClass(), profile.getClass(), manager)
 						.newInstance(serverIns, world, profile, managerIns);
 			} catch (Exception e) {
 				e.printStackTrace();

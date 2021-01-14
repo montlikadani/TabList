@@ -20,14 +20,21 @@ public class Objects {
 
 	private final TabList plugin = TabListAPI.getPlugin();
 
+	private ObjectTypes currentObjectType = ObjectTypes.PING;
 	private BukkitTask task;
+
+	public ObjectTypes getCurrentObjectType() {
+		return currentObjectType;
+	}
 
 	@SuppressWarnings("deprecation")
 	void registerHealthTab(Player pl) {
+		currentObjectType = ObjectTypes.HEALTH;
+
 		String path = "tablist-object-type.object-settings.health.";
 		if (plugin.getConfig().getStringList(path + "disabled-worlds").contains(pl.getWorld().getName())
 				|| plugin.getConfig().getStringList(path + "restricted-players").contains(pl.getName())) {
-			unregisterObjective(getObject(pl, ObjectTypes.HEALTH));
+			unregisterObjective(getObject(pl, currentObjectType));
 			return;
 		}
 
@@ -38,14 +45,14 @@ public class Objects {
 		// TODO Fix not show correctly the health after reload
 
 		org.bukkit.scoreboard.Scoreboard board = pl.getScoreboard();
-		Objective objective = getObject(pl, ObjectTypes.HEALTH).orElse(null);
+		Objective objective = getObject(pl, currentObjectType).orElse(null);
 		if (objective == null) {
 			String dName = ChatColor.RED + "\u2665";
 			if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
-				objective = board.registerNewObjective(ObjectTypes.HEALTH.getObjectName(), "health", dName,
+				objective = board.registerNewObjective(currentObjectType.getObjectName(), "health", dName,
 						RenderType.HEARTS);
 			} else {
-				objective = board.registerNewObjective(ObjectTypes.HEALTH.getObjectName(), "health");
+				objective = board.registerNewObjective(currentObjectType.getObjectName(), "health");
 				objective.setDisplayName(dName);
 			}
 
@@ -63,16 +70,21 @@ public class Objects {
 
 		final int timer = 20 * ConfigValues.getObjectRefreshInterval();
 
+		currentObjectType = ObjectTypes.valueOf(ConfigValues.getObjectType().toUpperCase());
+		if (currentObjectType == null) {
+			currentObjectType = ObjectTypes.PING;
+		}
+
 		task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
 			if (Bukkit.getOnlinePlayers().isEmpty()) {
 				cancelTask();
 				return;
 			}
 
-			final String type = ConfigValues.getObjectType().toLowerCase();
-
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				if (plugin.getConfig().getStringList("tablist-object-type.object-settings." + type + ".disabled-worlds")
+				if (plugin.getConfig()
+						.getStringList("tablist-object-type.object-settings." + currentObjectType.name().toLowerCase()
+								+ ".disabled-worlds")
 						.contains(player.getWorld().getName()) || PluginUtils.isInGame(player)) {
 					continue;
 				}
@@ -80,11 +92,11 @@ public class Objects {
 				Optional<Objective> obj = Optional.empty();
 				int score = 0;
 
-				if (type.equals("ping")) {
-					obj = getObject(player, ObjectTypes.PING);
+				if (currentObjectType == ObjectTypes.PING) {
+					obj = getObject(player, currentObjectType);
 					if (!obj.isPresent()) {
-						obj = Optional.of(
-								player.getScoreboard().registerNewObjective(ObjectTypes.PING.getObjectName(), "dummy"));
+						obj = Optional.of(player.getScoreboard().registerNewObjective(currentObjectType.getObjectName(),
+								"dummy"));
 					}
 
 					if (!obj.isPresent()) {
@@ -94,11 +106,11 @@ public class Objects {
 					obj.get().setDisplayName("ms");
 
 					score = TabListAPI.getPing(player);
-				} else if (type.equals("custom")) {
-					obj = getObject(player, ObjectTypes.CUSTOM);
+				} else if (currentObjectType == ObjectTypes.CUSTOM) {
+					obj = getObject(player, currentObjectType);
 					if (!obj.isPresent()) {
-						obj = Optional.of(player.getScoreboard()
-								.registerNewObjective(ObjectTypes.CUSTOM.getObjectName(), "dummy"));
+						obj = Optional.of(player.getScoreboard().registerNewObjective(currentObjectType.getObjectName(),
+								"dummy"));
 					}
 
 					if (!obj.isPresent()) {
@@ -117,23 +129,19 @@ public class Objects {
 					}
 				}
 
-				if (obj.isPresent()) {
-					Objective object = obj.get();
+				final int s = score;
+				obj.ifPresent(object -> {
 					object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 
 					if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
 						object.setRenderType(RenderType.INTEGER);
 					}
 
-					final int s = score;
 					if (object.getScore(player.getName()).getScore() != s) {
-						for (Player p : Bukkit.getOnlinePlayers()) {
-							(type.equals("custom") ? getObject(p, ObjectTypes.CUSTOM)
-									: (type.equals("ping") ? getObject(p, ObjectTypes.PING) : Optional.empty()))
-											.ifPresent(o -> ((Objective) o).getScore(player.getName()).setScore(s));
-						}
+						Bukkit.getOnlinePlayers().forEach(all -> getObject(all, currentObjectType)
+								.ifPresent(o -> o.getScore(player.getName()).setScore(s)));
 					}
-				}
+				});
 			}
 		}, timer, timer);
 	}

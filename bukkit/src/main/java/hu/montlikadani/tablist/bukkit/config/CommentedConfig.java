@@ -65,7 +65,13 @@ public class CommentedConfig extends YamlConfiguration {
 		Validate.notNull(file, "File cannot be null");
 
 		Files.createParentDirs(file);
-		String data = insertComments(saveToString());
+
+		String saveToString = saveToString();
+		if (saveToString.trim().isEmpty()) {
+			return;
+		}
+
+		String data = insertComments(saveToString);
 		PrintWriter writer = new PrintWriter(file, StandardCharsets.UTF_8.name());
 
 		try {
@@ -237,24 +243,20 @@ public class CommentedConfig extends YamlConfiguration {
 				writer.close();
 			}
 		}
-
-		load();
 	}
 
 	public YamlConfiguration getYml() {
 		YamlConfiguration config = new YamlConfiguration();
-		if (file == null) {
+		if (file == null || !file.exists()) {
 			return config;
 		}
 
 		FileInputStream inputStream = null;
+		InputStreamReader reader = null;
 
 		try {
-			inputStream = new FileInputStream(file);
-			InputStreamReader read = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-
-			config.load(read);
-			read.close();
+			reader = new InputStreamReader(inputStream = new FileInputStream(file), StandardCharsets.UTF_8);
+			config.load(reader);
 		} catch (FileNotFoundException e) {
 		} catch (InvalidConfigurationException | IOException e) {
 			System.out.println(e.getLocalizedMessage());
@@ -262,6 +264,14 @@ public class CommentedConfig extends YamlConfiguration {
 			if (inputStream != null) {
 				try {
 					inputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (reader != null) {
+				try {
+					reader.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}

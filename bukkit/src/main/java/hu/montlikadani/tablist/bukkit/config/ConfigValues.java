@@ -186,6 +186,7 @@ public class ConfigValues {
 		groupsRefreshInterval = c.get("change-prefix-suffix-in-tablist.refresh-interval", 30);
 		objectRefreshInterval = c.get("tablist-object-type.refresh-interval", 3);
 
+		c.save();
 		c.cleanUp();
 		c.save();
 	}

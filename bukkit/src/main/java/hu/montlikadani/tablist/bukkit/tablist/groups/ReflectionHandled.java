@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Scoreboard;
 
 import hu.montlikadani.tablist.bukkit.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
@@ -119,14 +118,6 @@ public class ReflectionHandled implements ITabScoreboard {
 			return;
 		}
 
-		// Colorize '&' codes before hex
-		if (!name.contains("#")) {
-			name = hu.montlikadani.tablist.bukkit.utils.Util.colorMsg(name, true);
-		}
-
-		Object iChatBaseComponentName = ReflectionUtils.getAsIChatBaseComponent(name);
-		//ReflectionUtils.setField(playerConst, "listName", iChatBaseComponentName);
-
 		@SuppressWarnings("unchecked")
 		List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
 				.get(packetPlayOutPlayerInfo);
@@ -135,18 +126,9 @@ public class ReflectionHandled implements ITabScoreboard {
 			Object id = ReflectionUtils.invokeMethod(profile, "getId");
 			if (id.equals(tabPlayer.getPlayer().getUniqueId())) {
 				ReflectionUtils.modifyFinalField(ReflectionUtils.getField(infoData, "e"), infoData,
-						iChatBaseComponentName);
+						ReflectionUtils.getAsIChatBaseComponent(name));
 				break;
 			}
 		}
-	}
-
-	@Override
-	public Scoreboard getScoreboard() {
-		return null;
-	}
-
-	@Override
-	public void setScoreboard(Scoreboard board) {
 	}
 }
