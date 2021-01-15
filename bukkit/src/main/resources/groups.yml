@@ -1,27 +1,29 @@
-# Global group to display for all players
-# Leave it empty or remove it, if you don't want to use
+# Format of the displayed name: prefix - tabname - suffix
+# This will be applied to all players without any other group assigned
 globalGroup:
   prefix: ""
-  suffix: ""
   tabname: ""
+  suffix: ""
 
 groups:
-  # Group name, you can write anything in here.
-  # If you use a player name instead, it will apply only for the player.
-  # This will be ignored by default.
+  # Vault group name OR player name OR custom group name (custom is assigned via permission)
   exampleGroup:
     prefix: "&a[&cStaff&a]&6 "
-    suffix: "&7 <12>"
     tabname: "%player-displayname%"
-    # (Optional)
-    # This permission must be set in the permission system.
+    suffix: "&7 <12>"
     #permission: tablist.staff
 
   Default:
     prefix: "&7"
+    tabname: "%player%"
+    suffix: ""
+
   Admin:
     prefix: "&7<62>&r %anim:Admin%"
-    suffix: "&7 <62>"
     tabname: "%player%"
+    suffix: "&7 <62>"
+
   PlayerName:
     prefix: "&a[MyGroup]&7"
+    tabname: "%player%"
+    suffix: ""
