@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -18,7 +17,6 @@ import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.reflect.TypeToken;
 
 import hu.montlikadani.tablist.bukkit.Perm;
@@ -31,17 +29,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	private TabList plugin;
 
-	private final ImmutableList<String> subCmds = ImmutableList.<String>builder()
-			.add("reload", "fakeplayers", "removegroup", "setprefix", "setsuffix", "setpriority", "toggle", "help")
-			.build();
-
 	private final Set<ICommand> cmds = new HashSet<>();
 
-	@SuppressWarnings("deprecation")
 	public Commands(TabList plugin) {
 		this.plugin = plugin;
 
-		for (String s : subCmds) {
+		for (String s : Arrays.asList("reload", "fakeplayers", "player", "group", "toggle", "help")) {
 			try {
 				Class<?> c = null;
 				try {
@@ -128,7 +121,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 			break;
 		case 2:
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
-				Arrays.asList("add", "remove", "list", "setskin", "setping").forEach(cmds::add);
+				Arrays.asList("add", "remove", "list", "setskin", "setping", "setdisplayname", "rename")
+						.forEach(cmds::add);
 			} else if (args[0].equalsIgnoreCase("toggle")) {
 				cmds.add("all");
 			}
@@ -137,12 +131,13 @@ public class Commands implements CommandExecutor, TabCompleter {
 			break;
 		case 3:
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")
-					&& (args[1].equalsIgnoreCase("remove") || args[1].equalsIgnoreCase("setskin")
-							|| args[1].equalsIgnoreCase("setping"))) {
+					&& !args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("list")) {
 				plugin.getFakePlayerHandler().getFakePlayers().stream().map(IFakePlayers::getName).forEach(cmds::add);
-				partOfCommand = args[2];
+			} else if (args[0].equalsIgnoreCase("group") || args[0].equalsIgnoreCase("player")) {
+				Arrays.asList(ContextArguments.values()).forEach(ca -> cmds.add(ca.toString().toLowerCase()));
 			}
 
+			partOfCommand = args[2];
 			break;
 		default:
 			break;
@@ -158,18 +153,22 @@ public class Commands implements CommandExecutor, TabCompleter {
 	}
 
 	private Set<String> getCmds(CommandSender sender) {
-		if (!(sender instanceof Player)) {
-			return subCmds.stream().collect(Collectors.toSet());
-		}
-
-		// Don't use stream for tab-complete
+		// Try to avoid using stream for tab-complete
 		Set<String> c = new HashSet<>();
-		for (String name : subCmds) {
-			if (sender.hasPermission("tablist." + name)) {
-				c.add(name);
+
+		for (ICommand cmd : cmds) {
+			if (cmd.getClass().isAnnotationPresent(CommandProcessor.class)) {
+				CommandProcessor proc = cmd.getClass().getAnnotation(CommandProcessor.class);
+				if (!(sender instanceof Player) || sender.hasPermission("tablist." + proc.permission().getPerm())) {
+					c.add(proc.name());
+				}
 			}
 		}
 
 		return c;
+	}
+
+	public enum ContextArguments {
+		PREFIX, SUFFIX, PRIORITY, TABNAME, REMOVE;
 	}
 }

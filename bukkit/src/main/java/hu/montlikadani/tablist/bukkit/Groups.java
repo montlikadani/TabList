@@ -26,8 +26,6 @@ public class Groups {
 	private final HashMap<String, TabListPlayer> tLPlayerMap = new HashMap<>();
 	private final ConcurrentLinkedDeque<TabListPlayer> sortedTabListPlayers = new ConcurrentLinkedDeque<>();
 
-	//private final Scoreboard b = Bukkit.getScoreboardManager().getNewScoreboard();
-
 	public Groups(TabList plugin) {
 		this.plugin = plugin;
 	}
@@ -163,21 +161,9 @@ public class Groups {
 	 * @param priority
 	 */
 	public void setPlayerTeam(TabListPlayer tabPlayer, int priority) {
-		if (tabPlayer == null) {
-			return;
+		if (tabPlayer != null && !plugin.getHidePlayers().containsKey(tabPlayer.getPlayer())) {
+			tabPlayer.getTabTeam().setTeam(tabPlayer.getFullGroupTeamName());
 		}
-
-		Player player = tabPlayer.getPlayer();
-		if (plugin.getHidePlayers().containsKey(player)) {
-			return;
-		}
-
-		/*Scoreboard tboard = ConfigValues.isUseOwnScoreboard() ? player.getScoreboard() : b;
-		if (tabPlayer.getTabTeam().getScoreboard() != tboard) {
-			tabPlayer.getTabTeam().setScoreboard(tboard);
-		}*/
-
-		tabPlayer.getTabTeam().setTeam(tabPlayer.getFullGroupTeamName());
 	}
 
 	/**

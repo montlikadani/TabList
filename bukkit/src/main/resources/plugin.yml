@@ -21,10 +21,6 @@ commands:
     description: The main command for TabList.
     usage: <command>
     aliases: [tl]
-  tabname:
-    description: Set the player name for the tab.
-    usage: <command>
-    aliases: [tname]
 
 permissions:
   tablist.*:
@@ -32,11 +28,9 @@ permissions:
      children:
        tablist.toggle: true
        tablist.toggle.all: true
+       tablist.groupmeta: true
+       tablist.playermeta: true
        tablist.fakeplayers: true
-       tablist.setprefix: true
-       tablist.setsuffix: true
-       tablist.setpriority: true
-       tablist.removegroup: true
        tablist.onlinestaff: true
        tablist.reload: true
        tablist.help: true
@@ -46,25 +40,19 @@ permissions:
   tablist.toggle.all:
     description: Gives access to use /tl toggle all command.
     default: false
+  tablist.groupmeta:
+    description: Gives access to /tl group commands
+    default: false
+  tablist.playermeta:
+    description: Gives access to /tl player commands
+    default: false
   tablist.fakeplayers:
     description: Gives access to use fakeplayers command.
     default: false
-  tablist.setprefix:
-    description: Gives access to use /tl setprefix command.
-    default: false
-  tablist.setsuffix:
-    description: Gives access to use /tl setsuffix command.
-    default: false
-  tablist.setpriority:
-    description: Gives access to use /tl setpriority command.
-    default: false
-  tablist.removegroup:
-    description: Gives access to use /tl removegroup command.
-    default: false
   tablist.onlinestaff:
-    description: Online staffs permission.
+    description: Online staffs permission
   tablist.help:
-    description: Help commands for TabList.
+    description: List of available commands
     default: false
   tablist.reload:
     description: Gives access to use /tl reload command.

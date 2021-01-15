@@ -3,19 +3,12 @@ no-permission: "&cYou don't have permission for that!&7 (%perm%)"
 unknown-sub-command: "&cUnknown sub-command&7 %subcmd%&c."
 no-console: "&cThis command '&7/%command%&c' can only be in-game."
 
-set-prefix-suffix:
-  prefix:
-    could-not-be-empty: "&cThe prefix text could not be empty!"
-    successfully-set: "&aYou have successfully set prefix for&e %group%&a, with this prefix:&r %tag%"
-  suffix:
-    could-not-be-empty: "&cThe suffix text could not be empty!"
-    successfully-set: "&aYou have successfully set suffix for&e %group%&a, with this suffix:&r %tag%"
-  set-priority:
-    priority-must-be-number: "&cThe priority must be a number!"
-    successfully-set: "&aYou have successfully set priority for&e %group%&a, with priority&r %number%"
-  remove-group:
-    not-found-in-database: "&cThis group&7 %group%&c not found in the database."
-    successfully-removed: "&cYou have successfully removed&7 %group%&c group."
+set-group:
+  meta-could-not-be-empty: "&cThe prefix text could not be empty!"
+  meta-set: "&aYou have set meta for&e %team%&a, with this:&r %meta%"
+  priority-must-be-number: "&cThe priority must be a number!"
+  not-found: "&cThis team&7 %team%&c not found."
+  removed: "&cTeam with name&7 %team%&c removed."
 
 toggle:
   console-usage: "&cUse: &7/%command% toggle <player/all>"
@@ -40,9 +33,11 @@ fake-player:
 chat-messages:
 - "&7/%command% reload&6 - Reload the plugin."
 - "&7/%command% toggle [player/all]&6 - Toggle on/off tab."
+- "&7/%command% group/player <name> prefix <prefix>&6 - Sets the given group prefix."
+- "&7/%command% group/player <name> suffix <suffix>&6 - Sets the given group suffix."
+- "&7/%command% group/player <name> remove&6 - Removes the given group entirely."
 - "&7/%command% fakeplayers add/remove <name>&6 - Create/remove fake player."
 - "&7/%command% fakeplayers list&6 - Lists all fake player."
-- "&7/%command% fakeplayers setskin <skinUUID>&6 - Set skin for the fake player from the given real uuid."
-- "&7/%command% setprefix <player/group> <prefix>&6 - Sets the given player prefix."
-- "&7/%command% removegroup <player/group>&6 - Removes the given player prefix/suffix."
-- "&7/%command% setsuffix <player/group> <suffix>&6 - Sets the given player suffix."
+- "&7/%command% fakeplayers rename <oldName> <newName>&6 - Renames the given fake player name to a new one."
+- "&7/%command% fakeplayers setdisplayname <name> <displayName>&6 - Sets the display name for the given fake player."
+- "&7/%command% fakeplayers setskin <name> <skinUUID>&6 - Set skin for the fake player from the given real uuid."

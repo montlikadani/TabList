@@ -108,7 +108,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 
 		List<TeamHandler> groupsList = plugin.getGroups().getGroupsList();
 		List<TeamHandler> playerNameGroups = groupsList.stream()
-				.filter(group -> group.getTeam().equalsIgnoreCase(player.getName())).collect(Collectors.toList());
+				.filter(group -> player.getName().equalsIgnoreCase(group.getTeam())).collect(Collectors.toList());
 		if (!playerNameGroups.isEmpty()) {
 			TeamHandler team = playerNameGroups.get(0);
 			if (!team.isGlobal()) {
@@ -145,7 +145,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 			List<TeamHandler> playerPrimaryVaultGroups;
 			if (playerVaultGroup != null && ConfigValues.isPreferPrimaryVaultGroup()
 					&& (!(playerPrimaryVaultGroups = groupsList.stream()
-							.filter(group -> group.getTeam().equalsIgnoreCase(playerVaultGroup))
+							.filter(group -> playerVaultGroup.equalsIgnoreCase(group.getTeam()))
 							.collect(Collectors.toList())).isEmpty()
 							|| !(playerPrimaryVaultGroups = groupsList.stream()
 									.filter(group -> StringUtils.containsIgnoreCase(group.getTeam(), playerVaultGroup))
@@ -231,8 +231,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	}
 
 	public String getPrefix() {
-		String prefix = plugin.getPlaceholders().replaceVariables(player,
-				plugin.makeAnim(customPrefix == null ? group == null ? "" : group.getPrefix() : customPrefix));
+		String prefix = customPrefix == null ? group == null ? "" : group.getPrefix() : customPrefix;
 
 		if (globalGroup != null) {
 			prefix = globalGroup.getPrefix() + prefix;
@@ -244,12 +243,11 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 					+ prefix;
 		}
 
-		return prefix;
+		return prefix.isEmpty() ? prefix : plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(prefix));
 	}
 
 	public String getSuffix() {
-		String suffix = plugin.getPlaceholders().replaceVariables(player,
-				plugin.makeAnim(customSuffix == null ? group == null ? "" : group.getSuffix() : customSuffix));
+		String suffix = customSuffix == null ? group == null ? "" : group.getSuffix() : customSuffix;
 
 		if (globalGroup != null) {
 			suffix += globalGroup.getSuffix();
@@ -260,7 +258,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 					.get("placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), ""));
 		}
 
-		return suffix;
+		return suffix.isEmpty() ? suffix : plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(suffix));
 	}
 
 	public String getCustomTabName() {
@@ -272,15 +270,15 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	@Override
 	public int compareTo(TabListPlayer tlp) {
 		if (ConfigValues.isAfkSortLast()) {
-			int comp = Boolean.compare(this.isAfk(), tlp.isAfk());
+			int comp = Boolean.compare(isAfk(), tlp.isAfk());
 			if (comp != 0) return comp;
 		}
 
 		int ownPriority = this.getPriority();
 		int tlpPriority = tlp.getPriority();
 
-		//if (ownPriority == tlpPriority)
-			//return this.getPlayerName().compareTo(tlp.getPlayerName());
+		if (ownPriority == tlpPriority)
+			return getCustomTabName().compareTo(tlp.getCustomTabName());
 
 		return ownPriority - tlpPriority;
 	}

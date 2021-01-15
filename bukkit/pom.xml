@@ -308,12 +308,6 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.MyzelYam</groupId>
-			<artifactId>SuperVanish</artifactId>
-			<version>master-SNAPSHOT</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.github.MyzelYam</groupId>
 			<artifactId>PremiumVanishAPI</artifactId>
 			<version>master-SNAPSHOT</version>
 			<scope>provided</scope>

@@ -90,25 +90,18 @@ public class ReflectionUtils {
 					if (Character.isDigit(colorCode)
 							|| ((colorCode >= 'a' && colorCode <= 'f') || (colorCode == 'k' || colorCode == 'l'
 									|| colorCode == 'm' || colorCode == 'n' || colorCode == 'o' || colorCode == 'r'))) {
-						if (builder.toString().trim().isEmpty()) {
-							builder = new StringBuilder();
-							continue;
+						obj.addProperty("text", builder.toString());
+						JSONLIST.add(obj);
+
+						obj = new JsonObject();
+						builder = new StringBuilder();
+
+						if (!colorName.isEmpty()) {
+							obj.addProperty("color", colorName);
 						}
 
-						if (builder.length() > 0) {
-							obj.addProperty("text", builder.toString());
-							JSONLIST.add(obj);
-
-							obj = new JsonObject();
-							builder = new StringBuilder();
-
-							if (!colorName.isEmpty()) {
-								obj.addProperty("color", colorName);
-							}
-
-							if (!font.isEmpty()) {
-								obj.addProperty("font", font);
-							}
+						if (!font.isEmpty()) {
+							obj.addProperty("font", font);
 						}
 
 						switch (colorCode) {
@@ -350,15 +343,33 @@ public class ReflectionUtils {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	public abstract static class JavaAccessibilities {
 
 		public static boolean isAccessible(Field field, Object target) {
-			return getCurrentVersion() >= 9 && target != null ? field.canAccess(target) : field.isAccessible();
+			if (getCurrentVersion() >= 9 && target != null) {
+				try {
+					return (boolean) field.getClass().getDeclaredMethod("canAccess", Object.class).invoke(field, target);
+				} catch (NoSuchMethodException e) {
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			return field.isAccessible();
 		}
 
 		public static boolean isAccessible(Method method, Object target) {
-			return getCurrentVersion() >= 9 && target != null ? method.canAccess(target) : method.isAccessible();
+			if (getCurrentVersion() >= 9 && target != null) {
+				try {
+					return (boolean) method.getClass().getDeclaredMethod("canAccess", Object.class).invoke(method,
+							target);
+				} catch (NoSuchMethodException e) {
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+
+			return method.isAccessible();
 		}
 
 		public static int getCurrentVersion() {

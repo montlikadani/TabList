@@ -8,16 +8,11 @@ public class TeamHandler implements Cloneable {
 
 	private int priority;
 
+	public TeamHandler() {
+	}
+
 	public TeamHandler(String team, String prefix, String suffix) {
-		this(team, prefix, suffix, "");
-	}
-
-	public TeamHandler(String team, String prefix, String suffix, int priority) {
-		this(team, prefix, suffix, "", priority);
-	}
-
-	public TeamHandler(String team, String prefix, String suffix, String permission) {
-		this(team, prefix, suffix, permission, 0);
+		this(team, prefix, suffix, "", 0);
 	}
 
 	public TeamHandler(String team, String prefix, String suffix, String permission, int priority) {

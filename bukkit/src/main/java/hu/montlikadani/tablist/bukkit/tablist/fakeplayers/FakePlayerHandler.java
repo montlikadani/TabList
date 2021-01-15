@@ -110,7 +110,7 @@ public class FakePlayerHandler {
 	}
 
 	public void display() {
-		fakePlayers.forEach(fpl -> plugin.getServer().getOnlinePlayers().forEach(all -> fpl.createFakePlayer(all)));
+		fakePlayers.forEach(fpl -> plugin.getServer().getOnlinePlayers().forEach(fpl::createFakePlayer));
 	}
 
 	public EditingContextError createPlayer(Player p, String name, String displayName) {
