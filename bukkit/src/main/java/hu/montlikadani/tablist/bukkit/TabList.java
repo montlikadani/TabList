@@ -152,9 +152,9 @@ public class TabList extends JavaPlugin {
 
 		g.cancelUpdate();
 
-		objects.unregisterObjectiveForEveryone(ObjectTypes.HEALTH);
-		objects.unregisterObjectiveForEveryone(ObjectTypes.PING);
-		objects.unregisterObjectiveForEveryone(ObjectTypes.CUSTOM);
+		for (ObjectTypes ot : ObjectTypes.values()) {
+			objects.unregisterObjectiveForEveryone(ot);
+		}
 
 		tabManager.saveToggledTabs();
 		tabManager.removeAll();
@@ -272,7 +272,9 @@ public class TabList extends JavaPlugin {
 			for (ObjectTypes t : ObjectTypes.values()) {
 				objects.unregisterObjectiveForEveryone(t);
 			}
-		} else if (!reload) {
+		} else {
+			objects.cancelTask();
+
 			objects.unregisterObjective(objects.getObject(p, ObjectTypes.PING));
 			objects.unregisterObjective(objects.getObject(p, ObjectTypes.CUSTOM));
 
@@ -287,7 +289,10 @@ public class TabList extends JavaPlugin {
 
 				break;
 			case "health":
-				objects.registerHealthTab(p);
+				if (!reload) {
+					objects.registerHealthTab(p);
+				}
+
 				break;
 			default:
 				break;

@@ -1,6 +1,7 @@
 package hu.montlikadani.tablist.bukkit;
 
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,6 +20,7 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 public class Objects {
 
 	private final TabList plugin = TabListAPI.getPlugin();
+	private final AtomicInteger objectScore = new AtomicInteger();
 
 	private ObjectTypes currentObjectType = ObjectTypes.PING;
 	private BukkitTask task;
@@ -90,7 +92,6 @@ public class Objects {
 				}
 
 				Optional<Objective> obj = Optional.empty();
-				int score = 0;
 
 				if (currentObjectType == ObjectTypes.PING) {
 					obj = getObject(player, currentObjectType);
@@ -105,7 +106,7 @@ public class Objects {
 
 					obj.get().setDisplayName("ms");
 
-					score = TabListAPI.getPing(player);
+					objectScore.set(TabListAPI.getPing(player));
 				} else if (currentObjectType == ObjectTypes.CUSTOM) {
 					obj = getObject(player, currentObjectType);
 					if (!obj.isPresent()) {
@@ -122,14 +123,13 @@ public class Objects {
 					result = result.replaceAll("[^\\d]", "");
 
 					try {
-						score = Integer.parseInt(result);
+						objectScore.set(Integer.parseInt(result));
 					} catch (NumberFormatException e) {
 						Util.logConsole("Not correct custom objective: " + value);
 						continue;
 					}
 				}
 
-				final int s = score;
 				obj.ifPresent(object -> {
 					object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 
@@ -137,9 +137,9 @@ public class Objects {
 						object.setRenderType(RenderType.INTEGER);
 					}
 
-					if (object.getScore(player.getName()).getScore() != s) {
+					if (object.getScore(player.getName()).getScore() != objectScore.get()) {
 						Bukkit.getOnlinePlayers().forEach(all -> getObject(all, currentObjectType)
-								.ifPresent(o -> o.getScore(player.getName()).setScore(s)));
+								.ifPresent(o -> o.getScore(player.getName()).setScore(objectScore.get())));
 					}
 				});
 			}
