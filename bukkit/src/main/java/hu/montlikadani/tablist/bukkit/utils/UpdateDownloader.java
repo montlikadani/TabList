@@ -24,7 +24,7 @@ public abstract class UpdateDownloader {
 			return;
 		}
 
-		CompletableFuture<?> comp = CompletableFuture.supplyAsync(() -> {
+		CompletableFuture.supplyAsync(() -> {
 			try {
 				URL githubUrl = new URL(
 						"https://raw.githubusercontent.com/montlikadani/TabList/master/bukkit/src/main/resources/plugin.yml");
@@ -104,24 +104,6 @@ public abstract class UpdateDownloader {
 				Util.logConsole("The new TabList has been downloaded to releases folder.");
 			}
 		});
-
-		// no
-		new Thread(() -> {
-			int tries = 0;
-
-			while (!comp.isDone()) {
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-
-				if (tries++ > 15) {
-					comp.cancel(true);
-					return;
-				}
-			}
-		}).start();
 	}
 
 	private static void deleteDirectory() {

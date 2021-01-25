@@ -85,18 +85,7 @@ per-world:
 
 # Defines per-permission tablist
 # Any player/group have tablist.name permission node will use the set of tab header/footer.
-permissions:
-  '1':
-    header:
-    - "%anim:tablist%"
-    - ""
-    - "&7<57> &2%player%"
-  node2:
-    header: "%anim:tablist%"
-    footer:
-    - "&c+++++++++++++++"
-    - "&a%player%, &e%world%"
-    - "&c+++++++++++++++"
+#permissions:
 
 # Defines per player handled tablist
 per-player:

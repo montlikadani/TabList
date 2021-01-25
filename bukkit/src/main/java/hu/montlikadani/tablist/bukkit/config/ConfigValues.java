@@ -176,6 +176,12 @@ public class ConfigValues {
 				Arrays.asList("18.0 > &a", "16.0 == &6", "16.0 < &c"));
 		pingColorFormats = c.get("placeholder-format.ping.formats",
 				Arrays.asList("200 <= &a", "400 >= &6", "500 > &c"));
+		for (String f : pingColorFormats) { // TODO remove in the future
+			if (!f.contains("%ping%")) {
+				c.set("placeholder-format.ping.formats", Arrays.asList("&a%ping% <= 200", "&6%ping% >= 200", "&c%ping% > 500"));
+				break;
+			}
+		}
 
 		c.get("change-prefix-suffix-in-tablist.disabled-worlds.list", Arrays.asList("myWorldWithUpper"));
 		c.get("tablist-object-type.object-settings.health.restricted-players",

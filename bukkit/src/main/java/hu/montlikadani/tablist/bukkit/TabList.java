@@ -124,8 +124,8 @@ public class TabList extends JavaPlugin {
 				metrics.addCustomChart(
 						new Metrics.SimplePie("enable_tablist", () -> conf.getTablist().getString("enabled")));
 				if (ConfigValues.isTablistObjectiveEnabled()) {
-					metrics.addCustomChart(
-							new Metrics.SimplePie("object_type", () -> objects.getCurrentObjectType().toString()));
+					metrics.addCustomChart(new Metrics.SimplePie("object_type",
+							() -> objects.getCurrentObjectType().toString().toLowerCase()));
 				}
 				metrics.addCustomChart(new Metrics.SimplePie("enable_fake_players",
 						() -> String.valueOf(ConfigValues.isFakePlayers())));
@@ -251,7 +251,7 @@ public class TabList extends JavaPlugin {
 			return "";
 		}
 
-		while (name.contains("%anim:")) { // when using multiple animations
+		while (name.contains("%anim:") && !animations.isEmpty()) { // when using multiple animations
 			synchronized (animations) {
 				for (AnimCreator ac : animations) {
 					name = name.replace("%anim:" + ac.getAnimName() + "%",

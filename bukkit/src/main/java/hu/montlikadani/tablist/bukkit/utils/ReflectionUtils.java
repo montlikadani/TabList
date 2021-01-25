@@ -210,12 +210,18 @@ public class ReflectionUtils {
 				return; // To make sure we're on 12 or higher
 			}
 
-			Method meth = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
-			boolean accessibleBeforeSet = JavaAccessibilities.isAccessible(meth, null);
+			Method meth;
+			if (JavaAccessibilities.getCurrentVersion() >= 15) {
+				meth = Class.class.getDeclaredMethod("getDeclaredFieldsImpl");
+			} else {
+				meth = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
+			}
 
+			boolean accessibleBeforeSet = JavaAccessibilities.isAccessible(meth, null);
 			meth.setAccessible(true);
 
-			Field[] fields = (Field[]) meth.invoke(Field.class, false);
+			Field[] fields = (Field[]) (JavaAccessibilities.getCurrentVersion() >= 15 ? meth.invoke(Field.class)
+					: meth.invoke(Field.class, false));
 			for (Field f : fields) {
 				if ("modifiers".equals(f.getName())) {
 					modifiersField = f;
@@ -372,7 +378,13 @@ public class ReflectionUtils {
 			return method.isAccessible();
 		}
 
+		private static int jVersion = 0;
+
 		public static int getCurrentVersion() {
+			if (jVersion != 0) {
+				return jVersion;
+			}
+
 			String currentVersion = System.getProperty("java.version");
 			if (currentVersion.contains("_")) {
 				currentVersion = currentVersion.split("_")[0];
@@ -382,7 +394,7 @@ public class ReflectionUtils {
 
 			for (int i = 8; i <= 18; i++) {
 				if (currentVersion.contains(Integer.toString(i))) {
-					return i;
+					return jVersion = i;
 				}
 			}
 

@@ -25,7 +25,7 @@ public abstract class AfkPlayers {
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowPlayerGroup()) {
 			boolean rightLeft = ConfigValues.isAfkStatusShowInRightLeftSide();
 
-			CommentedConfig conf = TabList.getInstance().getConf().getConfig();
+			CommentedConfig conf = TabList.getInstance().getConfig();
 			String path = "placeholder-format.afk-status.format-" + (value ? "yes" : "no");
 			String result = "";
 
