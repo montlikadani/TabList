@@ -27,7 +27,12 @@
 		</pluginManagement>
 	</build>
 
+
 	<repositories>
+		<repository>
+			<id>bungeecord-repo</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</repository>
 		<repository>
 			<id>spigot-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
@@ -39,14 +44,6 @@
 		<repository>
 			<id>papi-repo</id>
 			<url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-		</repository>
-		<repository>
-			<id>bungeecord-repo</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-		</repository>
-		<repository>
-			<id>bungeecord-api-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/sonatype-nexus-snapshots/</url>
 		</repository>
 		<repository>
 			<id>dmulloy2-repo</id>
