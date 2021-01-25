@@ -27,7 +27,6 @@
 		</pluginManagement>
 	</build>
 
-
 	<repositories>
 		<repository>
 			<id>bungeecord-repo</id>
@@ -101,65 +100,13 @@
 			<scope>provided</scope>
 		</dependency>
 		<!-- BungeeCord -->
+		<!-- TODO use repo in future, currently the repo is trash -->
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-proxy</artifactId>
-			<version>1.16-R0.4-SNAPSHOT</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>
-						netty-transport-native-epoll
-					</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>netty-codec-http</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>netty-handler</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>netty-codec-haproxy</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>mysql</groupId>
-					<artifactId>mysql-connector-java</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.sf.jopt-simple</groupId>
-					<artifactId>jopt-simple</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>
-						netty-transport-native-unix-common
-					</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>netty-transport</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>netty-codec</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>se.llbit</groupId>
-					<artifactId>jo-nbt</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.md-5</groupId>
-					<artifactId>bungeecord-chat</artifactId>
-				</exclusion>
-			</exclusions>
+			<version>1.16-R0.5-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/lib/bungeecord-proxy-1.16-R0.5-SNAPSHOT.jar</systemPath>
 		</dependency>
 		<dependency>
 			<groupId>net.md-5</groupId>
