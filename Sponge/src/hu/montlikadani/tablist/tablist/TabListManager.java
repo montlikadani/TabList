@@ -185,7 +185,7 @@ public class TabListManager {
 
 		if (!worldList.isEmpty()) {
 			for (String l : worldList) {
-				Sponge.getServer().getWorldManager().getWorld(ResourceKey.minecraft(l))
+				Sponge.getServer().getWorldManager().world(ResourceKey.minecraft(l))
 						.ifPresent(w -> w.getPlayers().forEach(pl -> sendTabList(Optional.ofNullable(pl),
 								v.replaceVariables(pl, resultHeader), v.replaceVariables(pl, resultFooter))));
 			}

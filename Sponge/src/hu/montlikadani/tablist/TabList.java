@@ -204,7 +204,7 @@ public class TabList {
 			return "";
 		}
 
-		while (name.contains("%anim:")) { // when using multiple animations
+		while (name.contains("%anim:") && !animations.isEmpty()) { // when using multiple animations
 			synchronized (animations) {
 				for (AnimCreator ac : animations) {
 					name = name.replace("%anim:" + ac.getAnimName() + "%",
@@ -293,7 +293,7 @@ public class TabList {
 	public Optional<ITabPlayer> getTabPlayer(UUID uuid) {
 		if (uuid != null) {
 			for (ITabPlayer tabPlayer : tabPlayers) {
-				if (tabPlayer.getPlayerUUID().equals(uuid)) {
+				if (uuid.equals(tabPlayer.getPlayerUUID())) {
 					return Optional.of(tabPlayer);
 				}
 			}

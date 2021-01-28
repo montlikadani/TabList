@@ -27,7 +27,7 @@ public final class SpongeCommands {
 	private TabList plugin;
 
 	public SpongeCommands() {
-		throw new IllegalAccessError(toString() + " cannot be instantiated.");
+		throw new IllegalAccessError(getClass().getSimpleName() + " cannot be instantiated.");
 	}
 
 	public SpongeCommands(TabList plugin) {
