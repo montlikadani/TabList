@@ -20,8 +20,7 @@ hide-tab-when-player-vanished: false
 
 # In these worlds tab will NOT be displayed
 disabled-worlds:
-- "world1"
-- "worldTest"
+#- "world1"
 
 # For these players tab will NOT be displayed
 blacklisted-players:

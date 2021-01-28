@@ -19,7 +19,7 @@ public enum Perm {
 	}
 
 	Perm(String perm) {
-		this.perm = "tablist." + (perm.trim().isEmpty() ? toString().toLowerCase() : perm);
+		this.perm = "tablist." + (perm.isEmpty() ? toString().toLowerCase() : perm);
 	}
 
 	public String getPerm() {

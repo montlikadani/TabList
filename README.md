@@ -44,7 +44,7 @@ dependencies {
 }
 ```
 
-For API methods: [TabListAPI](https://github.com/montlikadani/TabList/blob/master/src/main/java/hu/montlikadani/tablist/bukkit/API/TabListAPI.java)
+For API methods: [TabListAPI](https://github.com/montlikadani/TabList/blob/master/bukkit/src/main/java/hu/montlikadani/tablist/bukkit/API/TabListAPI.java)
 
 ### Bug report/feature request
 If you find a bug about the plugin, please make an issue here: https://github.com/montlikadani/TabList/issues

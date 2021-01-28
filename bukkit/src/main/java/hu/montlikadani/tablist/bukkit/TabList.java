@@ -125,7 +125,7 @@ public class TabList extends JavaPlugin {
 						new Metrics.SimplePie("enable_tablist", () -> conf.getTablist().getString("enabled")));
 				if (ConfigValues.isTablistObjectiveEnabled()) {
 					metrics.addCustomChart(new Metrics.SimplePie("object_type",
-							() -> objects.getCurrentObjectType().toString().toLowerCase()));
+							objects.getCurrentObjectType().toString()::toLowerCase));
 				}
 				metrics.addCustomChart(new Metrics.SimplePie("enable_fake_players",
 						() -> String.valueOf(ConfigValues.isFakePlayers())));
