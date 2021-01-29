@@ -15,6 +15,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.logging.Level;
 
+import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -33,7 +34,6 @@ import hu.montlikadani.tablist.bukkit.listeners.plugins.CMIAfkStatus;
 import hu.montlikadani.tablist.bukkit.listeners.plugins.EssAfkStatus;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler;
-import hu.montlikadani.tablist.bukkit.utils.Metrics;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
 import hu.montlikadani.tablist.bukkit.utils.Util;
@@ -113,25 +113,7 @@ public class TabList extends JavaPlugin {
 
 			UpdateDownloader.checkFromGithub(getServer().getConsoleSender());
 
-			Metrics metrics = new Metrics(this, 1479);
-			if (metrics.isEnabled()) {
-				metrics.addCustomChart(new Metrics.SimplePie("using_placeholderapi",
-						() -> String.valueOf(ConfigValues.isPlaceholderAPI())));
-				if (conf.getTablist().getBoolean("enabled")) {
-					metrics.addCustomChart(
-							new Metrics.SimplePie("tab_interval", () -> conf.getTablist().getString("interval")));
-				}
-				metrics.addCustomChart(
-						new Metrics.SimplePie("enable_tablist", () -> conf.getTablist().getString("enabled")));
-				if (ConfigValues.isTablistObjectiveEnabled()) {
-					metrics.addCustomChart(new Metrics.SimplePie("object_type",
-							objects.getCurrentObjectType().toString()::toLowerCase));
-				}
-				metrics.addCustomChart(new Metrics.SimplePie("enable_fake_players",
-						() -> String.valueOf(ConfigValues.isFakePlayers())));
-				metrics.addCustomChart(new Metrics.SimplePie("enable_groups",
-						() -> String.valueOf(ConfigValues.isPrefixSuffixEnabled())));
-			}
+			beginDataCollection();
 
 			if (getConfig().get("logconsole", false)) {
 				String msg = "&6&l[&5&lTab&c&lList&6&l]&7&l >&a The plugin successfully enabled&6 v"
@@ -173,6 +155,32 @@ public class TabList extends JavaPlugin {
 	@Override
 	public CommentedConfig getConfig() {
 		return conf.getConfig();
+	}
+
+	private void beginDataCollection() {
+		Metrics metrics = new Metrics(this, 1479);
+
+		metrics.addCustomChart(new org.bstats.charts.SimplePie("using_placeholderapi",
+				() -> String.valueOf(ConfigValues.isPlaceholderAPI())));
+
+		if (conf.getTablist().getBoolean("enabled")) {
+			metrics.addCustomChart(
+					new org.bstats.charts.SimplePie("tab_interval", () -> conf.getTablist().getString("interval")));
+		}
+
+		metrics.addCustomChart(
+				new org.bstats.charts.SimplePie("enable_tablist", () -> conf.getTablist().getString("enabled")));
+
+		if (ConfigValues.isTablistObjectiveEnabled()) {
+			metrics.addCustomChart(new org.bstats.charts.SimplePie("object_type",
+					objects.getCurrentObjectType().toString()::toLowerCase));
+		}
+
+		metrics.addCustomChart(new org.bstats.charts.SimplePie("enable_fake_players",
+				() -> String.valueOf(ConfigValues.isFakePlayers())));
+
+		metrics.addCustomChart(new org.bstats.charts.SimplePie("enable_groups",
+				() -> String.valueOf(ConfigValues.isPrefixSuffixEnabled())));
 	}
 
 	private void registerCommands() {
