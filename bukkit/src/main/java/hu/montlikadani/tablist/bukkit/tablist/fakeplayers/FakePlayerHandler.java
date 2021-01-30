@@ -286,8 +286,12 @@ public class FakePlayerHandler {
 			return EditingContextError.NOT_EXIST;
 		}
 
-		if (displayName != null && displayName.length() > 16) {
-			displayName = displayName.substring(0, 16);
+		if (displayName != null) {
+			if (displayName.length() > 16) {
+				displayName = displayName.substring(0, 16);
+			}
+
+			displayName = displayName.replace("\"", "");
 		}
 
 		FileConfiguration c = plugin.getConf().getFakeplayers();

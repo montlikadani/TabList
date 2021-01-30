@@ -59,6 +59,10 @@ public class ServerVersion {
 				}
 			}
 
+			if (current == null) { // It is possible when immo not added a new version enum
+				current = Version.v1_16_R3;
+			}
+
 			return current;
 		}
 
