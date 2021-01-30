@@ -174,7 +174,12 @@ public class fakeplayers implements ICommand {
 
 			break;
 		case SETDISPLAYNAME:
-			output = handler.setDisplayName(args[2], args[3]);
+			StringBuilder builder = new StringBuilder();
+			for (int i = 3; i < args.length; i++) {
+				builder.append(args[i] + (i + 1 < args.length ? " " : ""));
+			}
+
+			output = handler.setDisplayName(args[2], builder.toString().replace("\"", ""));
 
 			if (output == EditingContextError.NOT_EXIST) {
 				sendMsg(p, plugin.getMsg("fake-player.not-exists"));

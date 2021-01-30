@@ -69,10 +69,6 @@ public class FakePlayers implements IFakePlayers {
 		if (displayName == null) {
 			this.displayName = name;
 		} else {
-			if (displayName.length() > 16) {
-				displayName = displayName.substring(0, 16);
-			}
-
 			// TODO we need here DI with netty#Channel from playerConnection in order to
 			// replace all player placeholders, can do it with async scheduler but we don't
 			// want another running thread

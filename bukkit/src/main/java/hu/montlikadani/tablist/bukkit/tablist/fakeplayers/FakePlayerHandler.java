@@ -88,10 +88,6 @@ public class FakePlayerHandler {
 			final String headUUID = cs.getString(name + ".headuuid", "");
 			final int ping = cs.getInt(name + ".ping", -1);
 
-			if (displayName.length() > 16) {
-				displayName = displayName.substring(0, 16);
-			}
-
 			final IFakePlayers fp = new FakePlayers();
 			fp.setName(name);
 			fp.setDisplayName(displayName);
@@ -133,10 +129,6 @@ public class FakePlayerHandler {
 
 		if (!Util.isRealUUID(headUUID)) {
 			return EditingContextError.UUID_MATCH_ERROR;
-		}
-
-		if (displayName != null && displayName.length() > 16) {
-			displayName = displayName.substring(0, 16);
 		}
 
 		String path = "list." + name + ".";
@@ -242,11 +234,10 @@ public class FakePlayerHandler {
 			return EditingContextError.UUID_MATCH_ERROR;
 		}
 
-		FileConfiguration c = plugin.getConf().getFakeplayers();
-		c.set("list." + name + ".headuuid", uuid);
+		plugin.getConf().getFakeplayers().set("list." + name + ".headuuid", uuid);
 
 		try {
-			c.save(plugin.getConf().getFakeplayersFile());
+			plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 			return EditingContextError.UNKNOWN;
@@ -266,11 +257,10 @@ public class FakePlayerHandler {
 			return EditingContextError.PING_AMOUNT;
 		}
 
-		FileConfiguration c = plugin.getConf().getFakeplayers();
-		c.set("list." + name + ".ping", amount);
+		plugin.getConf().getFakeplayers().set("list." + name + ".ping", amount);
 
 		try {
-			c.save(plugin.getConf().getFakeplayersFile());
+			plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 			return EditingContextError.UNKNOWN;
@@ -286,19 +276,10 @@ public class FakePlayerHandler {
 			return EditingContextError.NOT_EXIST;
 		}
 
-		if (displayName != null) {
-			if (displayName.length() > 16) {
-				displayName = displayName.substring(0, 16);
-			}
-
-			displayName = displayName.replace("\"", "");
-		}
-
-		FileConfiguration c = plugin.getConf().getFakeplayers();
-		c.set("list." + name + ".displayname", displayName);
+		plugin.getConf().getFakeplayers().set("list." + name + ".displayname", displayName);
 
 		try {
-			c.save(plugin.getConf().getFakeplayersFile());
+			plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 			return EditingContextError.UNKNOWN;
