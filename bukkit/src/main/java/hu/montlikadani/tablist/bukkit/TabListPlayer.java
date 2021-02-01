@@ -243,7 +243,18 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 					+ prefix;
 		}
 
-		return prefix.isEmpty() ? prefix : plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(prefix));
+		if (prefix.isEmpty()) {
+			return prefix;
+		}
+
+		prefix = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(prefix));
+
+		// Replace other plugin's bul...s with only #
+		if (prefix.contains("&#")) {
+			prefix = prefix.replace("&#", "#");
+		}
+
+		return prefix;
 	}
 
 	public String getSuffix() {
@@ -258,12 +269,32 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 					.get("placeholder-format.afk-status.format-" + (PluginUtils.isAfk(player) ? "yes" : "no"), ""));
 		}
 
-		return suffix.isEmpty() ? suffix : plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(suffix));
+		if (suffix.isEmpty()) {
+			return suffix;
+		}
+
+		suffix = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(suffix));
+
+		if (suffix.contains("&#")) {
+			suffix = suffix.replace("&#", "#");
+		}
+
+		return suffix;
 	}
 
 	public String getCustomTabName() {
-		String tabName = (group == null || group.getTabName().isEmpty()) ? player.getName()
-				: plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(group.getTabName()));
+		String tabName = player.getName();
+
+		if (globalGroup != null && !globalGroup.getTabName().isEmpty()) {
+			tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(globalGroup.getTabName()));
+		} else if (group != null && !group.getTabName().isEmpty()) {
+			tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(group.getTabName()));
+		}
+
+		if (tabName.contains("&#")) {
+			tabName = tabName.replace("&#", "#");
+		}
+
 		return getPrefix() + tabName + getSuffix();
 	}
 
