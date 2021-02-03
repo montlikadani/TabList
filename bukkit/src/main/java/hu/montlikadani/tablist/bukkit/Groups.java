@@ -260,7 +260,7 @@ public class Groups {
 
 		if (animationTask == null) {
 			animationTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-				if (Bukkit.getOnlinePlayers().isEmpty()) {
+				if (Bukkit.getOnlinePlayers().isEmpty() && animationTask != null) {
 					animationTask.cancel();
 					animationTask = null;
 					return;
