@@ -223,7 +223,6 @@ public class Groups {
 		tlp.removeGroup();
 
 		sortedTabListPlayers.remove(tlp);
-		return;
 	}
 
 	/**
@@ -239,12 +238,18 @@ public class Groups {
 	 * Cancels the current running task of groups and removes from players.
 	 */
 	public void cancelUpdate() {
+		cancelTask();
+		removeGroupsFromAll();
+	}
+
+	/**
+	 * Cancels the current running task of groups
+	 */
+	public void cancelTask() {
 		if (animationTask != null) {
 			animationTask.cancel();
 			animationTask = null;
 		}
-
-		removeGroupsFromAll();
 	}
 
 	private void startTask() {
@@ -260,9 +265,8 @@ public class Groups {
 
 		if (animationTask == null) {
 			animationTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-				if (Bukkit.getOnlinePlayers().isEmpty() && animationTask != null) {
-					animationTask.cancel();
-					animationTask = null;
+				if (Bukkit.getOnlinePlayers().isEmpty()) {
+					cancelTask();
 					return;
 				}
 

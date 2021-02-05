@@ -116,9 +116,8 @@ public class TabList extends JavaPlugin {
 			beginDataCollection();
 
 			if (getConfig().get("logconsole", false)) {
-				String msg = "&6&l[&5&lTab&c&lList&6&l]&7&l >&a The plugin successfully enabled&6 v"
-						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)";
-				Util.sendMsg(getServer().getConsoleSender(), colorMsg(msg));
+				Util.sendMsg(getServer().getConsoleSender(), colorMsg("&6&l[&5&lTab&c&lList&6&l]&7&l >&a Enabled&6 v"
+						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)"));
 			}
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -149,6 +148,14 @@ public class TabList extends JavaPlugin {
 
 		HandlerList.unregisterAll(this);
 		getServer().getScheduler().cancelTasks(this);
+
+		// Async tasks can't be cancelled sometimes, with this we forcedly interrupts the active ones
+		for (org.bukkit.scheduler.BukkitWorker worker : getServer().getScheduler().getActiveWorkers()) {
+			if (worker.getOwner() == this && !worker.getThread().isInterrupted()) {
+				worker.getThread().interrupt();
+			}
+		}
+
 		instance = null;
 	}
 

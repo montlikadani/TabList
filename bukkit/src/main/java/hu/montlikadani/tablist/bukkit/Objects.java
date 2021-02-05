@@ -33,9 +33,8 @@ public class Objects {
 	void registerHealthTab(Player pl) {
 		currentObjectType = ObjectTypes.HEALTH;
 
-		String path = "tablist-object-type.object-settings.health.";
-		if (plugin.getConfig().getStringList(path + "disabled-worlds").contains(pl.getWorld().getName())
-				|| plugin.getConfig().getStringList(path + "restricted-players").contains(pl.getName())) {
+		if (ConfigValues.getObjectsDisabledWorlds().contains(pl.getWorld().getName())
+				|| ConfigValues.getHealthObjectRestricted().contains(pl.getName())) {
 			unregisterObjective(getObject(pl, currentObjectType));
 			return;
 		}
@@ -84,10 +83,8 @@ public class Objects {
 			}
 
 			for (Player player : Bukkit.getOnlinePlayers()) {
-				if (plugin.getConfig()
-						.getStringList("tablist-object-type.object-settings." + currentObjectType.name().toLowerCase()
-								+ ".disabled-worlds")
-						.contains(player.getWorld().getName()) || PluginUtils.isInGame(player)) {
+				if (ConfigValues.getObjectsDisabledWorlds().contains(player.getWorld().getName())
+						|| PluginUtils.isInGame(player)) {
 					continue;
 				}
 

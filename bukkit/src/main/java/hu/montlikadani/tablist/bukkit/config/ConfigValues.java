@@ -11,14 +11,13 @@ public class ConfigValues {
 			ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled,
 			afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone, pingFormatEnabled,
 			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish,
-			hideGroupWhenAfk, preferPrimaryVaultGroup, tablistObjectiveEnabled,
-			tpsCanBeHigher;
+			hideGroupWhenAfk, preferPrimaryVaultGroup, tablistObjectiveEnabled, tpsCanBeHigher;
 
 	private static String afkFormatYes, afkFormatNo, timeZone, timeFormat, dateFormat, objectType, customObjectSetting,
-			memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor,
-			memoryBarReleasedColor;
+			memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
 
-	private static List<String> tpsColorFormats, pingColorFormats;
+	private static List<String> tpsColorFormats, pingColorFormats, groupsDisabledWorlds, healthObjectRestricted,
+			objectsDisabledWorlds;
 
 	private static int tpsSize, groupsRefreshInterval, objectRefreshInterval, memoryBarSize;
 
@@ -183,9 +182,10 @@ public class ConfigValues {
 			}
 		}
 
-		c.get("change-prefix-suffix-in-tablist.disabled-worlds.list", Arrays.asList("myWorldWithUpper"));
-		c.get("tablist-object-type.object-settings.health.restricted-players",
+		groupsDisabledWorlds = c.get("change-prefix-suffix-in-tablist.disabled-worlds.list", Arrays.asList("myWorldWithUpper"));
+		healthObjectRestricted = c.get("tablist-object-type.object-settings.health.restricted-players",
 				Arrays.asList("exampleplayer", "players"));
+		objectsDisabledWorlds = c.get("tablist-object-type.disabled-worlds", Arrays.asList("testingWorld"));
 
 		tpsSize = c.get("placeholder-format.tps.size", 2);
 		memoryBarSize = c.get("placeholder-format.memory-bar.size", 80);
@@ -355,5 +355,17 @@ public class ConfigValues {
 
 	public static boolean isTpsCanBeHigher() {
 		return tpsCanBeHigher;
+	}
+
+	public static List<String> getGroupsDisabledWorlds() {
+		return groupsDisabledWorlds;
+	}
+
+	public static List<String> getHealthObjectRestricted() {
+		return healthObjectRestricted;
+	}
+
+	public static List<String> getObjectsDisabledWorlds() {
+		return objectsDisabledWorlds;
 	}
 }

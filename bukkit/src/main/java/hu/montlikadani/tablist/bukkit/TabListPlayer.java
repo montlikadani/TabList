@@ -203,17 +203,11 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	}
 
 	private boolean isPlayerCanSeeGroup() {
-		String path = "change-prefix-suffix-in-tablist.";
-
-		if (ConfigValues.isUseDisabledWorldsAsWhiteList()) {
-			if (!plugin.getConfig().getStringList(path + "disabled-worlds.list")
-					.contains(player.getWorld().getName())) {
-				return false;
-			}
-		} else {
-			if (plugin.getConfig().getStringList(path + "disabled-worlds.list").contains(player.getWorld().getName())) {
-				return false;
-			}
+		if ((ConfigValues.isUseDisabledWorldsAsWhiteList()
+				&& !ConfigValues.getGroupsDisabledWorlds().contains(player.getWorld().getName()))
+				|| (!ConfigValues.isUseDisabledWorldsAsWhiteList()
+						&& ConfigValues.getGroupsDisabledWorlds().contains(player.getWorld().getName()))) {
+			return false;
 		}
 
 		if (PluginUtils.isInGame(player)) {
