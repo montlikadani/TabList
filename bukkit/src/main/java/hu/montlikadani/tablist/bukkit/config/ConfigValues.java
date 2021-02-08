@@ -11,7 +11,7 @@ public class ConfigValues {
 			ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled,
 			afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone, pingFormatEnabled,
 			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish,
-			hideGroupWhenAfk, preferPrimaryVaultGroup, tablistObjectiveEnabled, tpsCanBeHigher;
+			hideGroupWhenAfk, preferPrimaryVaultGroup, tablistObjectiveEnabled, tpsCanBeHigher, assignGlobalGroup;
 
 	private static String afkFormatYes, afkFormatNo, timeZone, timeFormat, dateFormat, objectType, customObjectSetting,
 			memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
@@ -103,6 +103,9 @@ public class ConfigValues {
 				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!");
 		c.addComment("change-prefix-suffix-in-tablist.hide-group-when-player-afk",
 				"Hide player's group in player list when the player is AFK?", "Requires Essentials or CMI plugin!");
+		c.addComment("change-prefix-suffix-in-tablist.assign-global-group-to-normal", "Do you want to assign global group to normal groups?",
+				"true - \"globalGroupPrefix + normalGroupPrefix\"",
+				"false - \"normalGroupPrefix\"");
 		c.addComment("change-prefix-suffix-in-tablist.prefer-primary-vault-group",
 				"Prefer player's primary Vault group when assigning tablist group from groups.yml?",
 				"true - player will be assigned their primary vault group where possible, after that",
@@ -150,6 +153,7 @@ public class ConfigValues {
 		syncPluginsGroups = c.get("change-prefix-suffix-in-tablist.sync-plugins-groups-with-tablist", true);
 		hideGroupInVanish = c.get("change-prefix-suffix-in-tablist.hide-group-when-player-vanished", false);
 		hideGroupWhenAfk = c.get("change-prefix-suffix-in-tablist.hide-group-when-player-afk", false);
+		assignGlobalGroup = c.get("change-prefix-suffix-in-tablist.assign-global-group-to-normal", false);
 		preferPrimaryVaultGroup = c.get("change-prefix-suffix-in-tablist.prefer-primary-vault-group", true);
 		tablistObjectiveEnabled = c.get("tablist-object-type.enable", false);
 
@@ -367,5 +371,9 @@ public class ConfigValues {
 
 	public static List<String> getObjectsDisabledWorlds() {
 		return objectsDisabledWorlds;
+	}
+
+	public static boolean isAssignGlobalGroup() {
+		return assignGlobalGroup;
 	}
 }

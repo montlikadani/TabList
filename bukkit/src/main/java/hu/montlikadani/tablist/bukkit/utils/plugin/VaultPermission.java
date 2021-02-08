@@ -13,7 +13,9 @@ public final class VaultPermission {
 	public VaultPermission() {
 		org.bukkit.plugin.RegisteredServiceProvider<Permission> rsp = Bukkit.getServer().getServicesManager()
 				.getRegistration(Permission.class);
-		this.perm = rsp == null ? null : rsp.getProvider();
+		if (rsp != null) {
+			this.perm = rsp.getProvider();
+		}
 	}
 
 	public Permission getPermission() {

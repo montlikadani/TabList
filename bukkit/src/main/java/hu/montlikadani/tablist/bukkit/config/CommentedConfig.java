@@ -291,7 +291,7 @@ public class CommentedConfig extends YamlConfiguration {
 		return path;
 	}
 
-	public Boolean get(String path, boolean def) {
+	public boolean get(String path, boolean def) {
 		path = process(path, def);
 		return config.getBoolean(path);
 	}
@@ -322,7 +322,7 @@ public class CommentedConfig extends YamlConfiguration {
 		return config.getString(path);
 	}
 
-	public Double get(String path, Double def) {
+	public double get(String path, Double def) {
 		path = process(path, def);
 		return config.getDouble(path);
 	}

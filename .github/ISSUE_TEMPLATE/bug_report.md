@@ -19,7 +19,7 @@ Relevant plugins<!-- (optional)-->:
 
 ### Console error
 ```
-Insert here the console error if you have it.
+Insert here the console error if you have it or use paste server.
 ```
 
 ### Configuration file(s)

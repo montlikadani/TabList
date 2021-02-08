@@ -227,7 +227,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	public String getPrefix() {
 		String prefix = customPrefix == null ? group == null ? "" : group.getPrefix() : customPrefix;
 
-		if (globalGroup != null) {
+		if (ConfigValues.isAssignGlobalGroup() && globalGroup != null) {
 			prefix = globalGroup.getPrefix() + prefix;
 		}
 
@@ -254,7 +254,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	public String getSuffix() {
 		String suffix = customSuffix == null ? group == null ? "" : group.getSuffix() : customSuffix;
 
-		if (globalGroup != null) {
+		if (ConfigValues.isAssignGlobalGroup() && globalGroup != null) {
 			suffix += globalGroup.getSuffix();
 		}
 
@@ -279,7 +279,7 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	public String getCustomTabName() {
 		String tabName = player.getName();
 
-		if (globalGroup != null && !globalGroup.getTabName().isEmpty()) {
+		if (ConfigValues.isAssignGlobalGroup() && globalGroup != null && !globalGroup.getTabName().isEmpty()) {
 			tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(globalGroup.getTabName()));
 		} else if (group != null && !group.getTabName().isEmpty()) {
 			tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(group.getTabName()));

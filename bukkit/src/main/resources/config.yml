@@ -151,6 +151,11 @@ change-prefix-suffix-in-tablist:
   # Requires Essentials or CMI plugin!
   hide-group-when-player-afk: false
 
+  # Do you want to assign global group to normal groups?
+  # true - "globalGroupPrefix + normalGroupPrefix"
+  # false - "normalGroupPrefix"
+  assign-global-group-to-normal: false
+
   # Prefer player's primary Vault group when assigning tablist group from groups.yml?
   # true - player will be assigned their primary vault group where possible, after that
   # groups from groups.yml will be applied in descending order.
