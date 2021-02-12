@@ -127,16 +127,14 @@ public class TabManager {
 
 	public void saveToggledTabs() {
 		File f = new File(plugin.getFolder(), "toggledtablists.yml");
+
 		if (plugin.getConf().getTablist() == null
-				|| !plugin.getConf().getTablist().getBoolean("remember-toggled-tablist-to-file", true)) {
+				|| !plugin.getConf().getTablist().getBoolean("remember-toggled-tablist-to-file", true)
+				|| TABENABLED.isEmpty()) {
 			if (f.exists()) {
 				f.delete();
 			}
 
-			return;
-		}
-
-		if (TABENABLED.isEmpty()) {
 			return;
 		}
 

@@ -72,7 +72,7 @@ public class Variables {
 	public String replaceVariables(Player pl, String str) {
 		Runtime r = Runtime.getRuntime();
 
-		if (str.contains("%memory_bar%") && !ConfigValues.getMemoryBarChar().isEmpty()) {
+		if (!ConfigValues.getMemoryBarChar().isEmpty() && str.contains("%memory_bar%")) {
 			StringBuilder builder = new StringBuilder();
 
 			int barSize = ConfigValues.getMemoryBarSize(),

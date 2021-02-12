@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class ReflectionHandled implements ITabScoreboard {
 
@@ -112,6 +114,10 @@ public class ReflectionHandled implements ITabScoreboard {
 	private void updateName(String name) throws Throwable {
 		if (packetPlayOutPlayerInfo == null) {
 			return;
+		}
+
+		if (Version.isCurrentLower(Version.v1_16_R1)) {
+			name = Util.colorMsg(name);
 		}
 
 		@SuppressWarnings("unchecked")

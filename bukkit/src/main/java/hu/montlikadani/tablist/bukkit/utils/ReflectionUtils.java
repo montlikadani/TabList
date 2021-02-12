@@ -37,26 +37,19 @@ public class ReflectionUtils {
 			JsonObject obj = new JsonObject();
 			StringBuilder builder = new StringBuilder();
 
-			String res = text, font = "", colorName = "";
-			char charBefore = ' ';
-			for (int i = 0; i < res.length(); i++) {
-				if (i >= res.length()) {
+			String font = "", colorName = "";
+			for (int i = 0; i < text.length(); i++) {
+				if (i >= text.length()) {
 					break;
 				}
 
-				// Ignore the last char begins with '&'
-				if (charBefore == '&') {
-					charBefore = ' ';
-					continue;
-				}
-
-				char charAt = res.charAt(i);
+				char charAt = text.charAt(i);
 				if (charAt == '{') {
 					int closeIndex = -1;
-					if (res.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = res.indexOf('}', i + 6)) >= 0) {
-						font = NamespacedKey.minecraft(res.substring(i + 6, closeIndex)).toString();
-					} else if (res.regionMatches(true, i, "{/font", 0, 6)
-							&& (closeIndex = res.indexOf('}', i + 6)) >= 0) {
+					if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', i + 6)) >= 0) {
+						font = NamespacedKey.minecraft(text.substring(i + 6, closeIndex)).toString();
+					} else if (text.regionMatches(true, i, "{/font", 0, 6)
+							&& (closeIndex = text.indexOf('}', i + 6)) >= 0) {
 						font = NamespacedKey.minecraft("default").toString();
 					}
 
@@ -72,7 +65,7 @@ public class ReflectionUtils {
 						i += closeIndex - i;
 					}
 				} else if (charAt == '#') {
-					colorName = res.substring(i, i + 7);
+					colorName = text.substring(i, i + 7);
 
 					if (builder.length() > 0) {
 						obj.addProperty("text", builder.toString());
@@ -83,10 +76,9 @@ public class ReflectionUtils {
 					obj = new JsonObject();
 					obj.addProperty("color", colorName);
 					i += 6; // Increase loop with 6 to ignore hex digit
-				} else if (charAt == '&') {
-					charBefore = charAt;
+				} else if (charAt == '&' || charAt == '\u00a7') {
+					char colorCode = text.charAt(i + 1);
 
-					char colorCode = res.charAt(i + 1);
 					if (Character.isDigit(colorCode)
 							|| ((colorCode >= 'a' && colorCode <= 'f') || (colorCode == 'k' || colorCode == 'l'
 									|| colorCode == 'm' || colorCode == 'n' || colorCode == 'o' || colorCode == 'r'))) {
@@ -121,14 +113,15 @@ public class ReflectionUtils {
 							obj.addProperty("bold", true);
 							break;
 						case 'r':
-							colorName = "white";
-							obj.addProperty("color", colorName);
+							obj.addProperty("color", colorName = "white");
 							break;
 						default:
-							colorName = org.bukkit.ChatColor.getByChar(colorCode).name().toLowerCase();
-							obj.addProperty("color", colorName);
+							obj.addProperty("color",
+									colorName = org.bukkit.ChatColor.getByChar(colorCode).name().toLowerCase());
 							break;
 						}
+
+						i++;
 					}
 				} else {
 					builder.append(charAt);
@@ -354,7 +347,8 @@ public class ReflectionUtils {
 		public static boolean isAccessible(Field field, Object target) {
 			if (getCurrentVersion() >= 9 && target != null) {
 				try {
-					return (boolean) field.getClass().getDeclaredMethod("canAccess", Object.class).invoke(field, target);
+					return (boolean) field.getClass().getDeclaredMethod("canAccess", Object.class).invoke(field,
+							target);
 				} catch (NoSuchMethodException e) {
 				} catch (Exception e) {
 					e.printStackTrace();

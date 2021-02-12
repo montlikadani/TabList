@@ -227,7 +227,8 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	public String getPrefix() {
 		String prefix = customPrefix == null ? group == null ? "" : group.getPrefix() : customPrefix;
 
-		if (ConfigValues.isAssignGlobalGroup() && globalGroup != null) {
+		if ((!prefix.isEmpty() && ConfigValues.isAssignGlobalGroup() && globalGroup != null)
+				|| (prefix.isEmpty() && globalGroup != null)) {
 			prefix = globalGroup.getPrefix() + prefix;
 		}
 
@@ -254,7 +255,8 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	public String getSuffix() {
 		String suffix = customSuffix == null ? group == null ? "" : group.getSuffix() : customSuffix;
 
-		if (ConfigValues.isAssignGlobalGroup() && globalGroup != null) {
+		if ((!suffix.isEmpty() && ConfigValues.isAssignGlobalGroup() && globalGroup != null)
+				|| (suffix.isEmpty() && globalGroup != null)) {
 			suffix += globalGroup.getSuffix();
 		}
 
