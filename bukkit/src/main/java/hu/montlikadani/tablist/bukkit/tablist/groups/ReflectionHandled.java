@@ -112,10 +112,6 @@ public class ReflectionHandled implements ITabScoreboard {
 	}
 
 	private void updateName(String name) throws Throwable {
-		if (packetPlayOutPlayerInfo == null) {
-			return;
-		}
-
 		if (Version.isCurrentLower(Version.v1_16_R1)) {
 			name = Util.colorMsg(name);
 		}

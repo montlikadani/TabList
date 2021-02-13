@@ -5,7 +5,6 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.sendMsg;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -15,7 +14,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.util.StringUtil;
 
 import com.google.common.reflect.TypeToken;
 
@@ -111,23 +109,18 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		List<String> completionList = new ArrayList<>(), cmds = new ArrayList<>();
-		String partOfCommand = "";
+		List<String> cmds = new ArrayList<>();
 
 		switch (args.length) {
 		case 1:
-			getCmds(sender).forEach(cmds::add);
-			partOfCommand = args[0];
+			cmds.addAll(getCmds(sender));
 			break;
 		case 2:
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
-				Arrays.asList("add", "remove", "list", "setskin", "setping", "setdisplayname", "rename")
-						.forEach(cmds::add);
+				cmds.addAll(Arrays.asList("add", "remove", "list", "setskin", "setping", "setdisplayname", "rename"));
 			} else if (args[0].equalsIgnoreCase("toggle")) {
 				cmds.add("all");
 			}
-
-			partOfCommand = args[1];
 			break;
 		case 3:
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")
@@ -136,20 +129,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 			} else if (args[0].equalsIgnoreCase("group") || args[0].equalsIgnoreCase("player")) {
 				Arrays.asList(ContextArguments.values()).forEach(ca -> cmds.add(ca.toString().toLowerCase()));
 			}
-
-			partOfCommand = args[2];
 			break;
 		default:
 			break;
 		}
 
-		if (partOfCommand == null || cmds.isEmpty()) {
-			return null;
-		}
-
-		StringUtil.copyPartialMatches(partOfCommand, cmds, completionList);
-		Collections.sort(completionList);
-		return completionList;
+		return cmds.isEmpty() ? null : cmds; // Suggest player names
 	}
 
 	private Set<String> getCmds(CommandSender sender) {

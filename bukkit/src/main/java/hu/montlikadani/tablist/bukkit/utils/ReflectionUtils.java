@@ -165,11 +165,11 @@ public class ReflectionUtils {
 	}
 
 	public static Class<?> getNMSClass(String name) throws ClassNotFoundException {
-		return Class.forName("net.minecraft.server." + getPackageVersion() + "." + name);
+		return Class.forName("net.minecraft.server." + Version.getArrayVersion()[3] + "." + name);
 	}
 
 	public static Class<?> getCraftClass(String className) throws ClassNotFoundException {
-		return Class.forName("org.bukkit.craftbukkit." + getPackageVersion() + "." + className);
+		return Class.forName("org.bukkit.craftbukkit." + Version.getArrayVersion()[3] + "." + className);
 	}
 
 	public static Field getField(Object clazz, String name) throws Exception {
@@ -260,10 +260,6 @@ public class ReflectionUtils {
 					packet);
 		} catch (Exception e) {
 		}
-	}
-
-	public static String getPackageVersion() {
-		return Bukkit.getServer().getClass().getPackage().getName().split("\\.")[3];
 	}
 
 	public static class Classes {

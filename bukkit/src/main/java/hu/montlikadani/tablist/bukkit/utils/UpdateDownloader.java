@@ -32,9 +32,8 @@ public abstract class UpdateDownloader {
 				String s;
 				String lineWithVersion = "";
 				while ((s = br.readLine()) != null) {
-					String line = s;
-					if (line.toLowerCase().contains("version")) {
-						lineWithVersion = line;
+					if (s.toLowerCase().contains("version")) {
+						lineWithVersion = s;
 						break;
 					}
 				}

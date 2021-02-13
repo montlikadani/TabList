@@ -31,6 +31,8 @@ public class ServerVersion {
 
 		private Integer value;
 		private String shortVersion;
+
+		private static String[] arrayVersion;
 		private static Version current;
 
 		Version() {
@@ -50,7 +52,7 @@ public class ServerVersion {
 			if (current != null)
 				return current;
 
-			String[] v = org.bukkit.Bukkit.getServer().getClass().getPackage().getName().split("\\.");
+			String[] v = getArrayVersion();
 			String vv = v[v.length - 1];
 			for (Version one : values()) {
 				if (one.name().equalsIgnoreCase(vv)) {
@@ -64,6 +66,14 @@ public class ServerVersion {
 			}
 
 			return current;
+		}
+
+		public static String[] getArrayVersion() {
+			if (arrayVersion == null) {
+				arrayVersion = org.bukkit.Bukkit.getServer().getClass().getPackage().getName().split("\\.");
+			}
+
+			return arrayVersion;
 		}
 
 		public boolean isLower(Version version) {
