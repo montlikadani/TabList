@@ -52,8 +52,8 @@ public final class SpongeCommands {
 
 			plugin.getTabPlayers().stream().filter(pl -> plugin.getTabHandler().isPlayerInTab(pl)).forEach(pl -> {
 				UUID uuid = pl.getPlayerUUID();
-				boolean changed = TabHandler.TABENABLED.containsKey(uuid) ? !TabHandler.TABENABLED.get(uuid) : true;
-				if (changed) {
+
+				if (!TabHandler.TABENABLED.getOrDefault(uuid, false)) {
 					TabHandler.TABENABLED.put(uuid, true);
 				} else {
 					TabHandler.TABENABLED.remove(uuid);
@@ -76,8 +76,7 @@ public final class SpongeCommands {
 
 			UUID uuid = player.getUniqueId();
 
-			boolean changed = TabHandler.TABENABLED.containsKey(uuid) ? !TabHandler.TABENABLED.get(uuid) : true;
-			if (changed) {
+			if (!TabHandler.TABENABLED.getOrDefault(uuid, false)) {
 				TabHandler.TABENABLED.put(uuid, true);
 				context.sendMessage(Identity.nil(), Component.text("Tab has been disabled for ", NamedTextColor.RED)
 						.append(Component.text().color(NamedTextColor.YELLOW).content(player.getName())));
@@ -100,8 +99,7 @@ public final class SpongeCommands {
 
 			UUID uuid = player.getUniqueId();
 
-			boolean changed = TabHandler.TABENABLED.containsKey(uuid) ? !TabHandler.TABENABLED.get(uuid) : true;
-			if (changed) {
+			if (!TabHandler.TABENABLED.getOrDefault(uuid, false)) {
 				TabHandler.TABENABLED.put(uuid, true);
 				context.sendMessage(player, Component.text("Tab has been disabled in yourself.", NamedTextColor.RED));
 			} else {
