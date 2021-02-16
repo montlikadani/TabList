@@ -17,42 +17,26 @@ import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import hu.montlikadani.tablist.bukkit.utils.Variables;
 
-public class TabHandler implements ITabHandler {
+public class TabHandler {
 
 	private final TabList plugin;
 
 	private UUID playerUUID;
-	private TabBuilder builder;
 
-	private boolean worldEnabled = false;
-	private boolean tabEmpty = false;
+	private boolean worldEnabled = false, tabEmpty = false, random = false;
 	private String usedPermission = "";
 
 	private final List<String> worldList = new ArrayList<>();
 
-	public TabHandler(TabList plugin, UUID playerUUID) {
-		this(plugin, playerUUID, null);
-	}
+	private List<String> header, footer;
 
-	public TabHandler(TabList plugin, UUID playerUUID, TabBuilder builder) {
+	public TabHandler(TabList plugin, UUID playerUUID) {
 		this.plugin = plugin;
 		this.playerUUID = playerUUID;
-		this.builder = builder == null ? TabBuilder.builder().build() : builder;
 	}
 
-	@Override
-	public Player getPlayer() {
-		return Bukkit.getPlayer(playerUUID);
-	}
-
-	@Override
 	public UUID getPlayerUUID() {
 		return playerUUID;
-	}
-
-	@Override
-	public TabBuilder getBuilder() {
-		return builder;
 	}
 
 	public void updateTab() {
@@ -61,7 +45,7 @@ public class TabHandler implements ITabHandler {
 		tabEmpty = false;
 		usedPermission = "";
 
-		final Player player = getPlayer();
+		final Player player = Bukkit.getServer().getPlayer(playerUUID);
 		if (player == null || !player.isOnline()) {
 			return;
 		}
@@ -84,6 +68,8 @@ public class TabHandler implements ITabHandler {
 				|| TabManager.TABENABLED.getOrDefault(playerUUID, false) || PluginUtils.isInGame(player)) {
 			return;
 		}
+
+		random = c.getBoolean("random");
 
 		String path = "";
 
@@ -152,7 +138,6 @@ public class TabHandler implements ITabHandler {
 			}
 		}
 
-		List<String> header = null, footer = null;
 		if (!path.isEmpty()) {
 			header = c.isList(path + "header") ? c.getStringList(path + "header")
 					: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
@@ -160,18 +145,16 @@ public class TabHandler implements ITabHandler {
 					: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
 		}
 
-		if (header == null && footer == null) {
+		if ((header == null && footer == null) || (header.isEmpty() && footer.isEmpty())) {
 			header = c.isList("header") ? c.getStringList("header")
 					: c.isString("header") ? Arrays.asList(c.getString("header")) : null;
 			footer = c.isList("footer") ? c.getStringList("footer")
 					: c.isString("footer") ? Arrays.asList(c.getString("footer")) : null;
 		}
-
-		this.builder = TabBuilder.builder().header(header).footer(footer).random(c.getBoolean("random")).build();
 	}
 
 	protected void sendTab() {
-		final Player player = getPlayer();
+		final Player player = Bukkit.getServer().getPlayer(playerUUID);
 		if (player == null || !player.isOnline()) {
 			return;
 		}
@@ -220,7 +203,6 @@ public class TabHandler implements ITabHandler {
 			}
 		}
 
-		final List<String> header = builder.getHeader(), footer = builder.getFooter();
 		if (header.isEmpty() && footer.isEmpty()) {
 			return;
 		}
@@ -228,7 +210,7 @@ public class TabHandler implements ITabHandler {
 		String he = "";
 		String fo = "";
 
-		if (builder.isRandom()) {
+		if (random) {
 			he = header.get(ThreadLocalRandom.current().nextInt(header.size()));
 			fo = footer.get(ThreadLocalRandom.current().nextInt(footer.size()));
 		}
@@ -280,10 +262,10 @@ public class TabHandler implements ITabHandler {
 		}
 
 		for (String l : worldList) {
-			if (Bukkit.getWorld(l) == null)
+			if (Bukkit.getServer().getWorld(l) == null)
 				continue;
 
-			for (Player all : Bukkit.getWorld(l).getPlayers()) {
+			for (Player all : Bukkit.getServer().getWorld(l).getPlayers()) {
 				TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));
 			}
 		}

@@ -83,7 +83,7 @@ public class TabManager {
 	public void removeAll() {
 		cancelTask();
 
-		tabPlayers.forEach(th -> TabTitle.sendTabTitle(th.getPlayer(), "", ""));
+		tabPlayers.forEach(th -> TabTitle.sendTabTitle(Bukkit.getServer().getPlayer(th.getPlayerUUID()), "", ""));
 		tabPlayers.clear();
 	}
 
@@ -92,7 +92,7 @@ public class TabManager {
 	}
 
 	public Optional<TabHandler> getPlayerTab(final Player player) {
-		return tabPlayers.stream().filter(tab -> tab.getPlayer() == player).findFirst();
+		return tabPlayers.stream().filter(tab -> player.getUniqueId().equals(tab.getPlayerUUID())).findFirst();
 	}
 
 	public void loadToggledTabs() {
