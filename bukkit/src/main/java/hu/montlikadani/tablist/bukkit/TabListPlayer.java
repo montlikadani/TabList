@@ -203,14 +203,11 @@ public class TabListPlayer implements Comparable<TabListPlayer> {
 	}
 
 	private boolean isPlayerCanSeeGroup() {
-		if ((ConfigValues.isUseDisabledWorldsAsWhiteList()
+		if (((ConfigValues.isUseDisabledWorldsAsWhiteList()
 				&& !ConfigValues.getGroupsDisabledWorlds().contains(player.getWorld().getName()))
 				|| (!ConfigValues.isUseDisabledWorldsAsWhiteList()
-						&& ConfigValues.getGroupsDisabledWorlds().contains(player.getWorld().getName()))) {
-			return false;
-		}
-
-		if (PluginUtils.isInGame(player)) {
+						&& ConfigValues.getGroupsDisabledWorlds().contains(player.getWorld().getName())))
+				|| PluginUtils.isInGame(player)) {
 			return false;
 		}
 

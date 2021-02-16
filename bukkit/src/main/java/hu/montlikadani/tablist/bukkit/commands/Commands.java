@@ -121,6 +121,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			} else if (args[0].equalsIgnoreCase("toggle")) {
 				cmds.add("all");
 			}
+
 			break;
 		case 3:
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")
@@ -129,6 +130,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 			} else if (args[0].equalsIgnoreCase("group") || args[0].equalsIgnoreCase("player")) {
 				Arrays.asList(ContextArguments.values()).forEach(ca -> cmds.add(ca.toString().toLowerCase()));
 			}
+
 			break;
 		default:
 			break;

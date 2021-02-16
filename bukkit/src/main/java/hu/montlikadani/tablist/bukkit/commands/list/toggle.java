@@ -33,8 +33,7 @@ public class toggle implements ICommand {
 			}
 
 			UUID uuid = p.getUniqueId();
-			boolean changed = TabManager.TABENABLED.containsKey(uuid) ? !TabManager.TABENABLED.get(uuid) : true;
-			if (changed) {
+			if (!TabManager.TABENABLED.getOrDefault(uuid, true)) {
 				TabManager.TABENABLED.put(uuid, true);
 				TabTitle.sendTabTitle(p, "", "");
 				sendMsg(p, plugin.getMsg("toggle.disabled"));
@@ -65,8 +64,7 @@ public class toggle implements ICommand {
 					}
 
 					UUID uuid = pl.getUniqueId();
-					boolean changed = TabManager.TABENABLED.containsKey(uuid) ? !TabManager.TABENABLED.get(uuid) : true;
-					if (changed) {
+					if (!TabManager.TABENABLED.getOrDefault(uuid, true)) {
 						TabManager.TABENABLED.put(uuid, true);
 						TabTitle.sendTabTitle(pl, "", "");
 					} else {
@@ -89,8 +87,7 @@ public class toggle implements ICommand {
 			}
 
 			UUID uuid = pl.getUniqueId();
-			boolean changed = TabManager.TABENABLED.containsKey(uuid) ? !TabManager.TABENABLED.get(uuid) : true;
-			if (changed) {
+			if (!TabManager.TABENABLED.getOrDefault(uuid, true)) {
 				TabManager.TABENABLED.put(uuid, true);
 				TabTitle.sendTabTitle(pl, "", "");
 				sendMsg(pl, plugin.getMsg("toggle.disabled"));

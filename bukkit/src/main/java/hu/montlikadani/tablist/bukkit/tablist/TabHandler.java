@@ -85,33 +85,20 @@ public class TabHandler implements ITabHandler {
 			return;
 		}
 
-		List<String> header = null, footer = null;
+		String path = "";
 
 		if (c.contains("per-world")) {
 			if (c.contains("per-world." + world + ".per-player." + pName)) {
-				String path = "per-world." + world + ".per-player." + pName + ".";
-				header = c.isList(path + "header") ? c.getStringList(path + "header")
-						: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
-				footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
-						: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
-
+				path = "per-world." + world + ".per-player." + pName + ".";
 				worldEnabled = true;
 			}
 
-			if (header == null && footer == null) {
+			if (path.isEmpty()) {
 				if (c.isConfigurationSection("per-world")) {
 					t: for (String s : c.getConfigurationSection("per-world").getKeys(false)) {
 						for (String split : s.split(", ")) {
 							if (world.equals(split)) {
-								String path = "per-world." + s + ".";
-
-								header = c.isList(path + "header") ? c.getStringList(path + "header")
-										: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header"))
-												: null;
-								footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
-										: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer"))
-												: null;
-
+								path = "per-world." + s + ".";
 								worldEnabled = worldList.add(split);
 								break t;
 							}
@@ -120,71 +107,57 @@ public class TabHandler implements ITabHandler {
 				}
 
 				if (worldList.isEmpty() && c.contains("per-world." + world)) {
-					String path = "per-world." + world + ".";
-					header = c.isList(path + "header") ? c.getStringList(path + "header")
-							: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
-					footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
-							: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
-
+					path = "per-world." + world + ".";
 					worldEnabled = true;
 				}
 			}
 
-			if ((header == null && footer == null) && c.contains("per-world." + world + ".per-group")
-					&& plugin.hasVault()) {
+			if (path.isEmpty() && plugin.hasVault() && c.contains("per-world." + world + ".per-group")) {
 				String group = plugin.getVaultPerm().getPrimaryGroup(world, player);
 				if (group != null) {
 					group = group.toLowerCase();
 
 					if (c.contains("per-world." + world + ".per-group." + group)) {
-						String path = "per-world." + world + ".per-group." + group + ".";
-						header = c.isList(path + "header") ? c.getStringList(path + "header")
-								: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
-						footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
-								: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
-
+						path = "per-world." + world + ".per-group." + group + ".";
 						worldEnabled = true;
 					}
 				}
 			}
 		}
 
-		if ((header == null && footer == null) && c.isConfigurationSection("permissions")) {
+		if (path.isEmpty() && c.isConfigurationSection("permissions")) {
 			for (String name : c.getConfigurationSection("permissions").getKeys(false)) {
 				Permission permission = new Permission(name.startsWith("tablist.") ? name : "tablist." + name,
 						PermissionDefault.NOT_OP);
 				if (PluginUtils.hasPermission(player, permission.getName())) {
-					String path = "permissions." + name + ".";
-					header = c.isList(path + "header") ? c.getStringList(path + "header")
-							: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
-					footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
-							: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
+					path = "permissions." + name + ".";
 					usedPermission = permission.getName();
 					break;
 				}
 			}
 		}
 
-		if (((header == null && footer == null) && c.contains("per-player")) && c.contains("per-player." + pName)) {
-			String path = "per-player." + pName + ".";
+		if (path.isEmpty() && c.contains("per-player." + pName)) {
+			path = "per-player." + pName + ".";
+		}
+
+		if (path.isEmpty() && plugin.hasVault() && c.contains("per-group")) {
+			String group = plugin.getVaultPerm().getPrimaryGroup(player);
+			if (group != null) {
+				group = group.toLowerCase();
+
+				if (c.contains("per-group." + group)) {
+					path = "per-group." + group + ".";
+				}
+			}
+		}
+
+		List<String> header = null, footer = null;
+		if (!path.isEmpty()) {
 			header = c.isList(path + "header") ? c.getStringList(path + "header")
 					: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
 			footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
 					: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
-		}
-
-		if ((header == null && footer == null) && c.contains("per-group") && plugin.hasVault()) {
-			String group = plugin.getVaultPerm().getPrimaryGroup(player);
-			if (group != null) {
-				group = group.toLowerCase();
-				if (c.contains("per-group." + group)) {
-					String path = "per-group." + group + ".";
-					header = c.isList(path + "header") ? c.getStringList(path + "header")
-							: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
-					footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
-							: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
-				}
-			}
 		}
 
 		if (header == null && footer == null) {
