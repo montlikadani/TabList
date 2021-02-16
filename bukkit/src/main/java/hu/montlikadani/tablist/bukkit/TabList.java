@@ -6,7 +6,6 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -58,7 +57,7 @@ public class TabList extends JavaPlugin {
 	private boolean hasVault = false;
 	private int tabRefreshTime = 0;
 
-	private final Set<AnimCreator> animations = Collections.synchronizedSet(new HashSet<AnimCreator>());
+	private final Set<AnimCreator> animations = new HashSet<>();
 	private final Map<Player, HidePlayers> hidePlayers = new HashMap<>();
 
 	@Override
@@ -149,7 +148,8 @@ public class TabList extends JavaPlugin {
 		HandlerList.unregisterAll(this);
 		getServer().getScheduler().cancelTasks(this);
 
-		// Async tasks can't be cancelled sometimes, with this we forcedly interrupts the active ones
+		// Async tasks can't be cancelled sometimes, with this we forcedly interrupts
+		// the active ones
 		for (org.bukkit.scheduler.BukkitWorker worker : getServer().getScheduler().getActiveWorkers()) {
 			if (worker.getOwner() == this && !worker.getThread().isInterrupted()) {
 				worker.getThread().interrupt();
@@ -266,12 +266,10 @@ public class TabList extends JavaPlugin {
 			return "";
 		}
 
-		while (name.contains("%anim:") && !animations.isEmpty()) { // when using multiple animations
-			synchronized (animations) {
-				for (AnimCreator ac : animations) {
-					name = name.replace("%anim:" + ac.getAnimName() + "%",
-							ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
-				}
+		while (!animations.isEmpty() && name.contains("%anim:")) { // when using multiple animations
+			for (AnimCreator ac : animations) {
+				name = name.replace("%anim:" + ac.getAnimName() + "%",
+						ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
 			}
 		}
 
