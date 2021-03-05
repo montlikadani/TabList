@@ -1,23 +1,12 @@
 package hu.montlikadani.tablist.bukkit.tablist.fakeplayers;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.lang.reflect.Array;
-import java.net.URL;
 import java.util.List;
-import java.util.NavigableMap;
-import java.util.TreeMap;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
-import javax.net.ssl.HttpsURLConnection;
-
-import org.apache.commons.codec.binary.Base64;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
@@ -81,15 +70,12 @@ public class FakePlayers implements IFakePlayers {
 			try {
 				ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(displayName));
 
-				Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
-
 				Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 				Array.set(entityPlayerArray, 0, fakePl);
 
-				Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
+				Object packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
 						.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(
-								ReflectionUtils.getFieldObject(enumPlayerInfoAction,
-										enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME")),
+								enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME").get(enumPlayerInfoAction),
 								entityPlayerArray);
 
 				for (Player aOnline : Bukkit.getOnlinePlayers()) {
@@ -117,13 +103,13 @@ public class FakePlayers implements IFakePlayers {
 	}
 
 	@Override
-	public void createFakePlayer(Player p, String headUUID, int pingLatency) {
+	public void createFakePlayer(Player p, String headId, int pingLatency) {
 		if (profile == null) {
 			profile = new GameProfile(UUID.randomUUID(), name);
 		}
 
 		try {
-			setSkin(headUUID);
+			Util.tryParseId(headId).ifPresent(this::setSkin);
 
 			fakePl = ReflectionUtils.Classes.getPlayerConstructor(p, profile);
 
@@ -136,8 +122,8 @@ public class FakePlayers implements IFakePlayers {
 			Array.set(entityPlayerArray, 0, fakePl);
 
 			Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
-					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(ReflectionUtils
-							.getFieldObject(enumPlayerInfoAction, enumPlayerInfoAction.getDeclaredField("ADD_PLAYER")),
+					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
+					.newInstance(enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction),
 							entityPlayerArray);
 
 			for (Player aOnline : Bukkit.getOnlinePlayers()) {
@@ -166,8 +152,8 @@ public class FakePlayers implements IFakePlayers {
 			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
 			Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
 					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
-					.newInstance(ReflectionUtils.getFieldObject(enumPlayerInfoAction,
-							enumPlayerInfoAction.getDeclaredField("UPDATE_LATENCY")), entityPlayerArray);
+					.newInstance(enumPlayerInfoAction.getDeclaredField("UPDATE_LATENCY").get(enumPlayerInfoAction),
+							entityPlayerArray);
 
 			@SuppressWarnings("unchecked")
 			List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
@@ -190,8 +176,8 @@ public class FakePlayers implements IFakePlayers {
 	}
 
 	@Override
-	public void setSkin(String skinUUID) {
-		if (profile == null || skinUUID == null || skinUUID.trim().isEmpty() || !Util.isRealUUID(skinUUID)) {
+	public void setSkin(UUID headId) {
+		if (profile == null || headId == null) {
 			return;
 		}
 
@@ -200,7 +186,7 @@ public class FakePlayers implements IFakePlayers {
 			return;
 		}
 
-		getSkinValue(skinUUID).thenAcceptAsync(map -> {
+		getSkinValue(headId.toString()).thenAcceptAsync(map -> {
 			java.util.Map.Entry<String, String> e = map.pollFirstEntry();
 			profile.getProperties().get("textures").clear();
 			profile.getProperties().put("textures", new Property("textures", e.getKey(), e.getValue()));
@@ -219,8 +205,8 @@ public class FakePlayers implements IFakePlayers {
 
 			Object packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
 					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
-					.newInstance(ReflectionUtils.getFieldObject(enumPlayerInfoAction,
-							enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER")), entityPlayerArray);
+					.newInstance(enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER").get(enumPlayerInfoAction),
+							entityPlayerArray);
 
 			for (Player aOnline : Bukkit.getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
@@ -228,44 +214,5 @@ public class FakePlayers implements IFakePlayers {
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-	}
-
-	private final JsonParser parser = new JsonParser();
-
-	private CompletableFuture<NavigableMap<String, String>> getSkinValue(String uuid) {
-		return CompletableFuture.supplyAsync(() -> {
-			NavigableMap<String, String> map = new TreeMap<>();
-			String json = getContent("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid);
-			if (json == null) {
-				return map;
-			}
-
-			JsonObject o = parser.parse(json).getAsJsonObject();
-			String value = o.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
-
-			o = parser.parse(new String(Base64.decodeBase64(value))).getAsJsonObject();
-			String texture = o.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString();
-			map.put(value, texture);
-			return map;
-		});
-	}
-
-	private String getContent(String link) {
-		try {
-			HttpsURLConnection conn = (HttpsURLConnection) new URL(link).openConnection();
-			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-			String inputLine;
-			while ((inputLine = br.readLine()) != null) {
-				return inputLine;
-			}
-
-			br.close();
-			conn.disconnect();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return null;
 	}
 }

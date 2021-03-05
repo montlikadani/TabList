@@ -2,7 +2,7 @@ package hu.montlikadani.tablist.bukkit.utils.operators;
 
 import org.apache.commons.lang.StringUtils;
 
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 
 public class OperatorNodes implements ExpressionNode {
 

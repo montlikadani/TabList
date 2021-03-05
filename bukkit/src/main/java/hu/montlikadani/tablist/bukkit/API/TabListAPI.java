@@ -119,8 +119,8 @@ public class TabListAPI {
 			Object nmsPlayer = ReflectionUtils.getHandle(p);
 			Field ping = ReflectionUtils.getField(nmsPlayer, "ping", false);
 			return ping.getInt(nmsPlayer);
-		} catch (Throwable t) {
-			t.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		return 0;
@@ -135,9 +135,8 @@ public class TabListAPI {
 		try {
 			Object mc = ReflectionUtils.invokeMethod(Bukkit.getServer(), "getServer", false);
 			Field rec = ReflectionUtils.getField(mc, "recentTps", false);
-			double[] recentTps = (double[]) rec.get(mc);
-			return recentTps[0];
-		} catch (Throwable t) {
+			return ((double[]) rec.get(mc))[0];
+		} catch (Exception e) {
 		}
 
 		return 0d;

@@ -87,13 +87,11 @@ public class CommentedConfig extends YamlConfiguration {
 			return yaml;
 		}
 
-		String[] yamlContents = yaml.split("[" + System.getProperty("line.separator") + "]");
 		StringBuilder newContents = new StringBuilder(), currentPath = new StringBuilder();
-		boolean commentedPath = false;
-		boolean node = false;
+		boolean commentedPath = false, node = false;
 		int depth = 0;
 
-		for (final String line : yamlContents) {
+		for (final String line : yaml.split("[" + System.getProperty("line.separator") + "]")) {
 			if (line.startsWith("#")) {
 				continue; // Ignore comments
 			}

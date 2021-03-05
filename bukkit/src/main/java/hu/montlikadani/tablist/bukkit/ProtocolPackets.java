@@ -9,13 +9,19 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.bukkit.tablist.playerlist.HidePlayers;
+import hu.montlikadani.tablist.bukkit.user.TabListPlayer;
+import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 
 public class ProtocolPackets extends PacketAdapter {
 
+	private static final TabList PLUGIN = TabListAPI.getPlugin();
+
 	static void onSpectatorChange() {
-		ProtocolLibrary.getProtocolManager().removePacketListeners(TabList.getInstance());
+		ProtocolLibrary.getProtocolManager().removePacketListeners(PLUGIN);
 
 		ProtocolPackets s = new ProtocolPackets();
 
@@ -29,7 +35,7 @@ public class ProtocolPackets extends PacketAdapter {
 	}
 
 	private ProtocolPackets() {
-		super(TabList.getInstance(), PacketType.Play.Server.PLAYER_INFO);
+		super(PLUGIN, PacketType.Play.Server.PLAYER_INFO);
 	}
 
 	@Override
@@ -73,18 +79,20 @@ public class ProtocolPackets extends PacketAdapter {
 	private class EntitySpawn extends PacketAdapter {
 
 		EntitySpawn() {
-			super(TabList.getInstance(), ListenerPriority.HIGH, PacketType.Play.Server.NAMED_ENTITY_SPAWN);
+			super(PLUGIN, ListenerPriority.HIGH, PacketType.Play.Server.NAMED_ENTITY_SPAWN);
 		}
 
 		@Override
 		public void onPacketSending(PacketEvent event) {
-			for (org.bukkit.entity.Player pl : org.bukkit.Bukkit.getOnlinePlayers()) {
-				if (TabList.getInstance().getHidePlayers().containsKey(pl)) {
-					HidePlayers hp = TabList.getInstance().getHidePlayers().get(pl);
-					hp.addPlayerToTab(pl);
-					hp.addPlayerToTab(event.getPlayer());
-					hp.removePlayerFromTab(event.getPlayer(), pl);
-					hp.removePlayerFromTab(pl, event.getPlayer());
+			for (TabListUser user : PLUGIN.getUsers()) {
+				org.bukkit.entity.Player userPlayer = user.getPlayer(), eventPlayer = event.getPlayer();
+				HidePlayers hp = ((TabListPlayer) user).getHidePlayers();
+
+				if (hp != null) {
+					hp.addPlayerToTab(userPlayer);
+					hp.addPlayerToTab(eventPlayer);
+					hp.removePlayerFromTab(eventPlayer, userPlayer);
+					hp.removePlayerFromTab(userPlayer, eventPlayer);
 				}
 			}
 		}

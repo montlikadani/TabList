@@ -1,10 +1,11 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.tablist.playerlist;
 
 import java.lang.reflect.Array;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 
 public final class HidePlayers {
@@ -24,7 +25,7 @@ public final class HidePlayers {
 	}
 
 	public void removePlayerFromTab(Player p, Player to) {
-		Bukkit.getScheduler().runTaskLater(TabList.getInstance(), () -> r(p, to), 4L);
+		Bukkit.getScheduler().runTaskLater(TabListAPI.getPlugin(), () -> r(p, to), 4L);
 	}
 
 	public void addPlayerToTab(Player to) {
@@ -34,12 +35,12 @@ public final class HidePlayers {
 
 		try {
 			Object packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
-					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(ReflectionUtils
-							.getFieldObject(enumPlayerInfoAction, enumPlayerInfoAction.getDeclaredField("ADD_PLAYER")),
+					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
+					.newInstance(enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction),
 							entityPlayerArray);
 
 			ReflectionUtils.sendPacket(to, packetPlayOutPlayerInfo);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -57,11 +58,11 @@ public final class HidePlayers {
 
 			Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
 					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
-					.newInstance(ReflectionUtils.getFieldObject(enumPlayerInfoAction,
-							enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER")), entityPlayerArray);
+					.newInstance(enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER").get(enumPlayerInfoAction),
+							entityPlayerArray);
 
 			ReflectionUtils.sendPacket(to, packetPlayOutPlayerInfo);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

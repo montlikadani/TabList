@@ -10,15 +10,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.Groups;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.TabListPlayer;
-import hu.montlikadani.tablist.bukkit.TeamHandler;
 import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.commands.Commands.ContextArguments;
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.bukkit.tablist.groups.GroupPlayer;
+import hu.montlikadani.tablist.bukkit.tablist.groups.Groups;
+import hu.montlikadani.tablist.bukkit.tablist.groups.TeamHandler;
 
 @CommandProcessor(name = "player", permission = Perm.PLAYER_META)
 public class player implements ICommand {
@@ -28,8 +28,6 @@ public class player implements ICommand {
 		if (!ConfigValues.isPrefixSuffixEnabled()) {
 			plugin.getConfig().set("change-prefix-suffix-in-tablist.enable", true);
 		}
-
-		plugin.getConf().createGroupsFile();
 
 		if (args.length < 3) {
 			return false;
@@ -86,8 +84,7 @@ public class player implements ICommand {
 				return false;
 			}
 
-			priority = Integer.parseInt(args[3]);
-			config.set("groups." + target + ".sort-priority", priority);
+			config.set("groups." + target + ".sort-priority", priority = Integer.parseInt(args[3]));
 			break;
 		case REMOVE:
 			if (contains = config.contains("groups." + target)) {
@@ -113,10 +110,7 @@ public class player implements ICommand {
 			}
 
 			Player playerTarget = Bukkit.getPlayer(target);
-			if (playerTarget != null) {
-				groups.removePlayerGroup(playerTarget);
-			}
-
+			plugin.getUser(playerTarget).ifPresent(groups::removePlayerGroup);
 			groups.removeGroup(target);
 
 			sendMsg(sender, plugin.getMsg("set-group.removed", "%team%", target));
@@ -134,21 +128,20 @@ public class player implements ICommand {
 			team.setPriority(priority);
 
 			Player playerTarget = Bukkit.getPlayer(target);
-			if (playerTarget != null) {
-				TabListPlayer tabPlayer = groups.addPlayer(playerTarget);
-
+			GroupPlayer groupPlayer = groups.addPlayer(playerTarget);
+			if (groupPlayer != null) {
 				if (!prefix.isEmpty()) {
 					prefix = plugin.getPlaceholders().replaceVariables(playerTarget, prefix);
-					tabPlayer.setCustomPrefix(prefix);
+					groupPlayer.setCustomPrefix(prefix);
 				}
 
 				if (!suffix.isEmpty()) {
 					suffix = plugin.getPlaceholders().replaceVariables(playerTarget, suffix);
-					tabPlayer.setCustomSuffix(suffix);
+					groupPlayer.setCustomSuffix(suffix);
 				}
 
-				tabPlayer.setCustomPriority(priority);
-				groups.setPlayerTeam(tabPlayer, priority);
+				groupPlayer.setCustomPriority(priority);
+				groups.setPlayerTeam(groupPlayer, priority);
 			}
 
 			int index = groups.getGroupsList().indexOf(team);

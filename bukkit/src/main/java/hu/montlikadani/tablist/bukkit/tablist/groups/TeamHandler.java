@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.tablist.groups;
 
 public class TeamHandler implements Cloneable {
 

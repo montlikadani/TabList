@@ -4,25 +4,24 @@ import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
 import hu.montlikadani.tablist.bukkit.utils.operators.ExpressionNode;
 import hu.montlikadani.tablist.bukkit.utils.operators.OperatorNodes;
 import hu.montlikadani.tablist.bukkit.utils.operators.OperatorNodes.NodeType;
 import me.clip.placeholderapi.PlaceholderAPI;
 
-@SuppressWarnings("deprecation")
 public class Variables {
 
 	private TabList plugin;
@@ -53,8 +52,8 @@ public class Variables {
 		}
 
 		// Sort
-		//   ping in descending order
-		//   tps in ascending order
+		// ping in descending order
+		// tps in ascending order
 		for (int i = 0; i < nodes.size(); i++) {
 			for (int j = nodes.size() - 1; j > i; j--) {
 				ExpressionNode node = nodes.get(i), node2 = nodes.get(j);
@@ -70,9 +69,13 @@ public class Variables {
 	}
 
 	public String replaceVariables(Player pl, String str) {
+		if (str.isEmpty()) {
+			return str;
+		}
+
 		Runtime r = Runtime.getRuntime();
 
-		if (!ConfigValues.getMemoryBarChar().isEmpty() && str.contains("%memory_bar%")) {
+		if (!ConfigValues.getMemoryBarChar().isEmpty() && str.indexOf("%memory_bar%") >= 0) {
 			StringBuilder builder = new StringBuilder();
 
 			int barSize = ConfigValues.getMemoryBarSize(),
@@ -105,20 +108,17 @@ public class Variables {
 				builder.append(barChar);
 			}
 
-			str = str.replace("%memory_bar%", builder.toString());
+			str = StringUtils.replace(str, "%memory_bar%", builder.toString());
 		}
 
-		if (plugin.getConf().getTablist().isConfigurationSection("custom-variables")) {
-			for (String custom : plugin.getConf().getTablist().getConfigurationSection("custom-variables")
-					.getKeys(true)) {
-				if (str.contains(custom)) {
-					str = str.replace(custom, plugin.getConf().getTablist().getString("custom-variables." + custom));
-				}
+		for (java.util.Map.Entry<String, String> map : TabConfigValues.CUSTOM_VARIABLES.entrySet()) {
+			if (str.indexOf(map.getKey()) >= 0) {
+				str = StringUtils.replace(str, map.getKey(), map.getValue());
 			}
 		}
 
 		int staffs = 0;
-		if (str.contains("%staff-online%")) {
+		if (str.indexOf("%staff-online%") >= 0) {
 			for (Player all : Bukkit.getOnlinePlayers()) {
 				if (!all.hasPermission("tablist.onlinestaff")
 						|| (!ConfigValues.isCountVanishedStaff() && PluginUtils.isVanished(all))) {
@@ -130,89 +130,82 @@ public class Variables {
 		}
 
 		String address = "";
-		if (str.contains("%ip-address%")) {
+		if (pl != null && str.indexOf("%ip-address%") >= 0) {
 			InetSocketAddress a = pl.getAddress();
 			address = (a == null || a.getAddress() == null) ? "" : a.getAddress().toString().replace("/", "");
 		}
 
-		String t = "", dt = "";
-		if (str.contains("%server-time%") || str.contains("%date%")) {
-			DateTimeFormatter form = !ConfigValues.getTimeFormat().isEmpty()
-					? DateTimeFormatter.ofPattern(ConfigValues.getTimeFormat())
-					: null;
-
-			DateTimeFormatter form2 = !ConfigValues.getDateFormat().isEmpty()
-					? DateTimeFormatter.ofPattern(ConfigValues.getDateFormat())
-					: null;
-
-			TimeZone zone = ConfigValues.isUseSystemZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
-					: TimeZone.getTimeZone(ConfigValues.getTimeZone());
-			LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
-
-			Calendar cal = Calendar.getInstance();
-
-			t = form != null ? now.format(form) : cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE);
-			dt = form2 != null ? now.format(form2) : cal.get(Calendar.YEAR) + "/" + cal.get(Calendar.DATE);
-		}
+		String time = str.indexOf("%server-time%") >= 0 ? getTimeAsString(ConfigValues.getTimeFormat()) : "";
+		String date = str.indexOf("%date%") >= 0 ? getTimeAsString(ConfigValues.getDateFormat()) : "";
 
 		Long fram = r.freeMemory() / 1048576L,
 				mram = r.maxMemory() / 1048576L,
 				uram = (r.totalMemory() - r.freeMemory()) / 1048576L;
 
-		str = setPlaceholders(pl, str);
+		if (pl != null) {
+			str = setPlaceholders(pl, str);
+		}
+
 		str = Global.setSymbols(str);
 
-		if (!t.isEmpty())
-			str = str.replace("%server-time%", t);
+		if (!time.isEmpty())
+			str = StringUtils.replace(str, "%server-time%", time);
 
-		if (!dt.isEmpty())
-			str = str.replace("%date%", dt);
+		if (!date.isEmpty())
+			str = StringUtils.replace(str, "%date%", date);
 
 		if (str.contains("%server-ram-free%"))
-			str = str.replace("%server-ram-free%", Long.toString(fram));
+			str = StringUtils.replace(str, "%server-ram-free%", Long.toString(fram));
 
 		if (str.contains("%server-ram-max%"))
-			str = str.replace("%server-ram-max%", Long.toString(mram));
+			str = StringUtils.replace(str, "%server-ram-max%", Long.toString(mram));
 
 		if (str.contains("%server-ram-used%"))
-			str = str.replace("%server-ram-used%", Long.toString(uram));
+			str = StringUtils.replace(str, "%server-ram-used%", Long.toString(uram));
 
 		if (str.contains("%online-players%"))
-			str = str.replace("%online-players%", Integer.toString(PluginUtils.countVanishedPlayers()));
+			str = StringUtils.replace(str, "%online-players%", Integer.toString(PluginUtils.countVanishedPlayers()));
 
 		if (str.contains("%max-players%"))
-			str = str.replace("%max-players%", Integer.toString(Bukkit.getMaxPlayers()));
+			str = StringUtils.replace(str, "%max-players%", Integer.toString(Bukkit.getMaxPlayers()));
 
 		if (str.contains("%servertype%"))
-			str = str.replace("%servertype%", Bukkit.getServer().getName());
+			str = StringUtils.replace(str, "%servertype%", Bukkit.getServer().getName());
 
 		if (str.contains("%vanished-players%"))
-			str = str.replace("%vanished-players%", Integer.toString(PluginUtils.getVanishedPlayers()));
-
-		if (str.contains("%ping%"))
-			str = str.replace("%ping%", formatPing(TabListAPI.getPing(pl)));
+			str = StringUtils.replace(str, "%vanished-players%", Integer.toString(PluginUtils.getVanishedPlayers()));
 
 		if (str.contains("%staff-online%")) {
-			str = str.replace("%staff-online%", Integer.toString(staffs));
+			str = StringUtils.replace(str, "%staff-online%", Integer.toString(staffs));
 		}
 
 		if (!address.isEmpty())
-			str = str.replace("%ip-address%", address);
+			str = StringUtils.replace(str, "%ip-address%", address);
 
 		if (str.contains("%mc-version%"))
-			str = str.replace("%mc-version%", Bukkit.getBukkitVersion());
+			str = StringUtils.replace(str, "%mc-version%", Bukkit.getBukkitVersion());
 
 		if (str.contains("%motd%"))
-			str = str.replace("%motd%", Bukkit.getServer().getMotd());
+			str = StringUtils.replace(str, "%motd%", plugin.getComplement().getMotd());
 
-		if (str.contains("%exp-to-level%"))
-			str = str.replace("%exp-to-level%", Integer.toString(pl.getExpToLevel()));
+		if (pl != null) {
+			if (str.contains("%ping%"))
+				str = StringUtils.replace(str, "%ping%", formatPing(TabListAPI.getPing(pl)));
 
-		if (str.contains("%level%"))
-			str = str.replace("%level%", Integer.toString(pl.getLevel()));
+			if (str.contains("%exp-to-level%"))
+				str = StringUtils.replace(str, "%exp-to-level%", Integer.toString(pl.getExpToLevel()));
 
-		if (str.contains("%xp%"))
-			str = str.replace("%xp%", Float.toString(pl.getExp()));
+			if (str.contains("%level%"))
+				str = StringUtils.replace(str, "%level%", Integer.toString(pl.getLevel()));
+
+			if (str.contains("%xp%"))
+				str = StringUtils.replace(str, "%xp%", Float.toString(pl.getExp()));
+
+			if (str.contains("%light-level%")) {
+				str = StringUtils.replace(str, "%light-level%",
+						Byte.toString(pl.getLocation().getBlock().getLightLevel()));
+			}
+		}
 
 		if (str.contains("%tps%")) {
 			double tps = TabListAPI.getTPS();
@@ -221,21 +214,18 @@ public class Variables {
 				tps = 20D;
 			}
 
-			str = str.replace("%tps%", tpsDot(tps));
-		}
-
-		if (str.contains("%light-level%")) {
-			str = str.replace("%light-level%", Byte.toString(pl.getLocation().getBlock().getLightLevel()));
+			str = StringUtils.replace(str, "%tps%", tpsDot(tps));
 		}
 
 		if (str.contains("\n")) {
-			str = str.replace("\n", "\n");
+			str = StringUtils.replace(str, "\n", "\n");
 		}
 
 		// Don't use here colors because of some issues with hex
 		return str;
 	}
 
+	@SuppressWarnings("deprecation")
 	public String setPlaceholders(Player p, String s) {
 		if (ConfigValues.isPlaceholderAPI() && plugin.isPluginEnabled("PlaceholderAPI")) {
 			try {
@@ -246,32 +236,32 @@ public class Variables {
 		}
 
 		if (s.contains("%player%")) {
-			s = s.replace("%player%", p.getName());
+			s = StringUtils.replace(s, "%player%", p.getName());
 		}
 
 		if (s.contains("%player-displayname%")) {
-			s = s.replace("%player-displayname%", p.getDisplayName());
+			s = StringUtils.replace(s, "%player-displayname%", plugin.getComplement().getDisplayName(p));
 		}
 
 		if (s.contains("%player-uuid%")) {
-			s = s.replace("%player-uuid%", p.getUniqueId().toString());
+			s = StringUtils.replace(s, "%player-uuid%", p.getUniqueId().toString());
 		}
 
 		if (s.contains("%world%")) {
-			s = s.replace("%world%", p.getWorld().getName());
+			s = StringUtils.replace(s, "%world%", p.getWorld().getName());
 		}
 
 		if (s.contains("%player-gamemode%")) {
-			s = s.replace("%player-gamemode%", p.getGameMode().name());
+			s = StringUtils.replace(s, "%player-gamemode%", p.getGameMode().name());
 		}
 
 		if (s.contains("%player-health%")) {
-			s = s.replace("%player-health%", Double.toString(p.getHealth()));
+			s = StringUtils.replace(s, "%player-health%", Double.toString(p.getHealth()));
 		}
 
 		if (s.contains("%player-max-health%")) {
-			s = s.replace("%player-max-health%",
-					Double.toString(Version.isCurrentLower(Version.v1_9_R1) ? p.getMaxHealth()
+			s = StringUtils.replace(s, "%player-max-health%",
+					Double.toString(ServerVersion.isCurrentLower(ServerVersion.v1_9_R1) ? p.getMaxHealth()
 							: p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue()));
 		}
 
@@ -322,5 +312,17 @@ public class Variables {
 		}
 
 		return (type == NodeType.PING ? builder.append((int) value) : builder.append(value)).toString();
+	}
+
+	private String getTimeAsString(String pattern) {
+		if (pattern.isEmpty()) {
+			return pattern;
+		}
+
+		TimeZone zone = ConfigValues.isUseSystemZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
+				: TimeZone.getTimeZone(ConfigValues.getTimeZone());
+		LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
+
+		return now.format(DateTimeFormatter.ofPattern(pattern));
 	}
 }

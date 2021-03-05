@@ -1,5 +1,7 @@
 package hu.montlikadani.tablist.bukkit.listeners;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -11,7 +13,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.user.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
 
 public class Listeners implements Listener {
@@ -24,18 +26,15 @@ public class Listeners implements Listener {
 
 	@EventHandler
 	public void onPlJoin(PlayerJoinEvent event) {
-		Player p = event.getPlayer();
+		final Player player = event.getPlayer();
 
-		plugin.updateAll(p);
-		plugin.getGroups().loadGroupForPlayer(p);
+		CompletableFuture.supplyAsync(() -> {
+			plugin.updateAll(player);
+			return true;
+		});
 
-		if (ConfigValues.isFakePlayers()) {
-			plugin.getConf().createFakePlayersFile();
-			plugin.getFakePlayerHandler().display();
-		}
-
-		if (p.isOp()) {
-			UpdateDownloader.checkFromGithub(p);
+		if (player.isOp()) {
+			UpdateDownloader.checkFromGithub(player);
 		}
 	}
 
@@ -43,21 +42,20 @@ public class Listeners implements Listener {
 	public void onGamemodeChange(PlayerGameModeChangeEvent e) {
 		Player p = e.getPlayer();
 
-		if (plugin.getHidePlayers().containsKey(p)) {
-			if (e.getNewGameMode() == GameMode.SPECTATOR) {
-				plugin.getHidePlayers().get(p).addPlayerToTab(p);
-			} else {
-				plugin.getHidePlayers().get(p).removePlayerFromTab(p, p);
-			}
-		}
+		plugin.getUser(p.getUniqueId()).filter(user -> ((TabListPlayer) user).getHidePlayers() != null)
+				.ifPresent(user -> {
+					if (e.getNewGameMode() == GameMode.SPECTATOR) {
+						((TabListPlayer) user).getHidePlayers().addPlayerToTab(p);
+					} else {
+						((TabListPlayer) user).getHidePlayers().removePlayerFromTab(p, p);
+					}
+				});
 	}
 
 	@EventHandler
 	public void onWorldChange(PlayerChangedWorldEvent eve) {
-		Player pla = eve.getPlayer();
-
-		plugin.getTabManager().removePlayer(pla);
-		plugin.updateAll(pla);
+		plugin.getUser(eve.getPlayer()).ifPresent(plugin.getTabManager()::removePlayer);
+		plugin.updateAll(eve.getPlayer());
 	}
 
 	@EventHandler

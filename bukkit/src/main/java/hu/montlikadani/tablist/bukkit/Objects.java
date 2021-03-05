@@ -10,58 +10,59 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.RenderType;
+import org.bukkit.scoreboard.Scoreboard;
 
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
-import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
+import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
 
+@SuppressWarnings("deprecation")
 public class Objects {
 
-	private final TabList plugin = TabListAPI.getPlugin();
+	private final TabList plugin;
 	private final AtomicInteger objectScore = new AtomicInteger();
 
 	private ObjectTypes currentObjectType = ObjectTypes.PING;
 	private BukkitTask task;
 
+	public Objects(TabList plugin) {
+		this.plugin = plugin;
+	}
+
 	public ObjectTypes getCurrentObjectType() {
 		return currentObjectType;
 	}
 
-	@SuppressWarnings("deprecation")
 	void registerHealthTab(Player pl) {
 		currentObjectType = ObjectTypes.HEALTH;
 
 		if (ConfigValues.getObjectsDisabledWorlds().contains(pl.getWorld().getName())
 				|| ConfigValues.getHealthObjectRestricted().contains(pl.getName())) {
-			unregisterObjective(getObject(pl, currentObjectType));
-			return;
-		}
-
-		if (PluginUtils.isInGame(pl)) {
+			unregisterObjective(getObject(pl.getScoreboard(), currentObjectType));
 			return;
 		}
 
 		// TODO Fix not show correctly the health after reload
 
-		org.bukkit.scoreboard.Scoreboard board = pl.getScoreboard();
-		Objective objective = getObject(pl, currentObjectType).orElse(null);
+		Scoreboard board = pl.getScoreboard();
+		Objective objective = getObject(board, currentObjectType).orElse(null);
 		if (objective == null) {
 			String dName = ChatColor.RED + "\u2665";
-			if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
-				objective = board.registerNewObjective(currentObjectType.getObjectName(), "health", dName,
-						RenderType.HEARTS);
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+				objective = plugin.getComplement().registerNewObjective(board, currentObjectType.getObjectName(),
+						"health", dName, RenderType.HEARTS);
 			} else {
 				objective = board.registerNewObjective(currentObjectType.getObjectName(), "health");
-				objective.setDisplayName(dName);
+				plugin.getComplement().setDisplayName(objective, dName);
 			}
 
 			objective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	void startTask() {
 		cancelTask();
 
@@ -71,12 +72,13 @@ public class Objects {
 
 		final int timer = 20 * ConfigValues.getObjectRefreshInterval();
 
-		currentObjectType = ObjectTypes.valueOf(ConfigValues.getObjectType().toUpperCase());
-		if (currentObjectType == null) {
+		try {
+			currentObjectType = ObjectTypes.valueOf(ConfigValues.getObjectType().toUpperCase());
+		} catch (IllegalArgumentException e) {
 			currentObjectType = ObjectTypes.PING;
 		}
 
-		task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
+		task = Tasks.submitAsync(() -> {
 			if (Bukkit.getOnlinePlayers().isEmpty()) {
 				cancelTask();
 				return;
@@ -88,57 +90,38 @@ public class Objects {
 					continue;
 				}
 
-				Optional<Objective> obj = Optional.empty();
+				Objective object = getObject(player.getScoreboard(), currentObjectType).orElse(null);
+				if (object == null) {
+					object = player.getScoreboard().registerNewObjective(currentObjectType.getObjectName(), "dummy");
+				}
 
 				if (currentObjectType == ObjectTypes.PING) {
-					obj = getObject(player, currentObjectType);
-					if (!obj.isPresent()) {
-						obj = Optional.of(player.getScoreboard().registerNewObjective(currentObjectType.getObjectName(),
-								"dummy"));
-					}
-
-					if (!obj.isPresent()) {
-						continue;
-					}
-
-					obj.get().setDisplayName("ms");
-
+					plugin.getComplement().setDisplayName(object, "ms");
 					objectScore.set(TabListAPI.getPing(player));
 				} else if (currentObjectType == ObjectTypes.CUSTOM) {
-					obj = getObject(player, currentObjectType);
-					if (!obj.isPresent()) {
-						obj = Optional.of(player.getScoreboard().registerNewObjective(currentObjectType.getObjectName(),
-								"dummy"));
-					}
-
-					if (!obj.isPresent()) {
-						continue;
-					}
-
-					final String value = ConfigValues.getCustomObjectSetting();
-					String result = plugin.getPlaceholders().replaceVariables(player, value);
+					String result = plugin.getPlaceholders().replaceVariables(player,
+							ConfigValues.getCustomObjectSetting());
 					result = result.replaceAll("[^\\d]", "");
 
 					try {
 						objectScore.set(Integer.parseInt(result));
 					} catch (NumberFormatException e) {
-						Util.logConsole("Not correct custom objective: " + value);
+						Util.logConsole(
+								"Invalid custom objective with " + ConfigValues.getCustomObjectSetting() + " value.");
 						continue;
 					}
 				}
 
-				obj.ifPresent(object -> {
-					object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+				object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 
-					if (Version.isCurrentEqualOrHigher(Version.v1_13_R2)) {
-						object.setRenderType(RenderType.INTEGER);
-					}
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+					object.setRenderType(RenderType.INTEGER);
+				}
 
-					if (object.getScore(player.getName()).getScore() != objectScore.get()) {
-						Bukkit.getOnlinePlayers().forEach(all -> getObject(all, currentObjectType)
-								.ifPresent(o -> o.getScore(player.getName()).setScore(objectScore.get())));
-					}
-				});
+				if (object.getScore(player.getUniqueId().toString()).getScore() != objectScore.get()) {
+					Bukkit.getOnlinePlayers().forEach(all -> getObject(all.getScoreboard(), currentObjectType)
+							.ifPresent(o -> o.getScore(player.getUniqueId().toString()).setScore(objectScore.get())));
+				}
 			}
 		}, timer, timer);
 	}
@@ -160,12 +143,12 @@ public class Objects {
 	}
 
 	public void unregisterObjectiveForEveryone(final ObjectTypes type) {
-		Bukkit.getOnlinePlayers().forEach(p -> unregisterObjective(getObject(p, type)));
+		Bukkit.getOnlinePlayers().forEach(p -> unregisterObjective(getObject(p.getScoreboard(), type)));
 		cancelTask();
 	}
 
-	public Optional<Objective> getObject(Player p, ObjectTypes type) {
-		return Optional.ofNullable(p.getScoreboard().getObjective(type.getObjectName()));
+	public Optional<Objective> getObject(Scoreboard board, ObjectTypes type) {
+		return Optional.ofNullable(board.getObjective(type.getObjectName()));
 	}
 
 	public enum ObjectTypes {

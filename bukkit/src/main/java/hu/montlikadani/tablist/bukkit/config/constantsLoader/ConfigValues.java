@@ -1,13 +1,13 @@
-package hu.montlikadani.tablist.bukkit.config;
+package hu.montlikadani.tablist.bukkit.config.constantsLoader;
 
 import java.util.Arrays;
 import java.util.List;
 
-import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.CommentedConfig;
 
 public class ConfigValues {
 
-	private static boolean placeholderAPI, perWorldPlayerList, fakePlayers, removeGrayColorFromTabInSpec,
+	private static boolean logConsole = true, placeholderAPI, perWorldPlayerList, fakePlayers, removeGrayColorFromTabInSpec,
 			ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled,
 			afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone, pingFormatEnabled,
 			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish,
@@ -21,8 +21,7 @@ public class ConfigValues {
 
 	private static int tpsSize, groupsRefreshInterval, objectRefreshInterval, memoryBarSize;
 
-	public static void loadValues() {
-		CommentedConfig c = TabList.getInstance().getConfig();
+	public static void loadValues(CommentedConfig c) {
 		c.copyDefaults(true);
 
 		c.addComment("hook.placeholderapi", "Hook to PlaceholderAPI to use custom placeholders.");
@@ -159,7 +158,7 @@ public class ConfigValues {
 
 		c.get("check-update", true);
 		c.get("download-updates", false);
-		c.get("logconsole", true);
+		logConsole = c.get("logconsole", true);
 
 		afkFormatYes = c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r ");
 		afkFormatNo = c.get("placeholder-format.afk-status.format-no", "");
@@ -199,6 +198,10 @@ public class ConfigValues {
 		c.save();
 		c.cleanUp();
 		c.save();
+	}
+
+	public static boolean isLogConsole() {
+		return logConsole;
 	}
 
 	public static String getMemoryBarChar() {

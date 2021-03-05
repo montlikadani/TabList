@@ -1,14 +1,15 @@
-package hu.montlikadani.tablist.bukkit.tablist.groups;
+package hu.montlikadani.tablist.bukkit.tablist.groups.impl;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.TabListPlayer;
+import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
-import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class ReflectionHandled implements ITabScoreboard {
@@ -17,17 +18,20 @@ public class ReflectionHandled implements ITabScoreboard {
 
 	private Object /*packet, */playerConst, entityPlayerArray, packetPlayOutPlayerInfo;
 
-	private TabListPlayer tabPlayer;
+	private List<Object> infoList;
 
-	public ReflectionHandled(TabListPlayer tabPlayer) {
-		this.tabPlayer = tabPlayer;
+	private TabListUser tabListUser;
+
+	public ReflectionHandled(TabListUser tabListUser) {
+		this.tabListUser = tabListUser;
 	}
 
 	@Override
-	public TabListPlayer getTabPlayer() {
-		return tabPlayer;
+	public TabListUser getTabListUser() {
+		return tabListUser;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void registerTeam(String teamName) {
 		if (packetPlayOutPlayerInfo != null) {
@@ -35,7 +39,7 @@ public class ReflectionHandled implements ITabScoreboard {
 		}
 
 		try {
-			playerConst = ReflectionUtils.getHandle(tabPlayer.getPlayer());
+			playerConst = ReflectionUtils.getHandle(tabListUser.getPlayer());
 
 			// TODO Fix client error when using teams
 			/*scoreRef.init();
@@ -45,7 +49,7 @@ public class ReflectionHandled implements ITabScoreboard {
 			scoreRef.getScoreboardTeamName().set(packet, teamName);
 			scoreRef.getScoreboardTeamMode().set(packet, 0);
 			scoreRef.getScoreboardTeamDisplayName().set(packet,
-					Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? ReflectionUtils.getAsIChatBaseComponent(teamName)
+					ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1) ? ReflectionUtils.getAsIChatBaseComponent(teamName)
 							: teamName);
 
 			scoreRef.getScoreboardTeamNames().set(packet, Collections.singletonList(tabPlayer.getPlayer().getName()));*/
@@ -56,16 +60,22 @@ public class ReflectionHandled implements ITabScoreboard {
 			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
 			Class<?> enumPlayerInfoAction = ReflectionUtils.Classes
 					.getEnumPlayerInfoAction(packetPlayOutPlayerInfoClass);
-			packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
-					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
-					.newInstance(ReflectionUtils.getFieldObject(enumPlayerInfoAction,
-							enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME")), entityPlayerArray);
+			Constructor<?> constr = packetPlayOutPlayerInfoClass.getDeclaredConstructor(enumPlayerInfoAction,
+					entityPlayerArray.getClass());
+			constr.setAccessible(true);
+
+			packetPlayOutPlayerInfo = constr.newInstance(
+					enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME").get(enumPlayerInfoAction),
+					entityPlayerArray);
+
+			infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
+					.get(packetPlayOutPlayerInfo);
 
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				//ReflectionUtils.sendPacket(p, packet);
 				ReflectionUtils.sendPacket(p, packetPlayOutPlayerInfo);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -77,16 +87,11 @@ public class ReflectionHandled implements ITabScoreboard {
 		try {
 			/*scoreRef.getScoreboardTeamMode().set(packet, 2);
 			scoreRef.getScoreboardTeamDisplayName().set(packet,
-					Version.isCurrentEqualOrHigher(Version.v1_13_R1) ? ReflectionUtils.getAsIChatBaseComponent(teamName)
+					ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1) ? ReflectionUtils.getAsIChatBaseComponent(teamName)
 							: teamName);*/
 
-			updateName(tabPlayer.getCustomTabName());
-
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				//ReflectionUtils.sendPacket(p, packet);
-				ReflectionUtils.sendPacket(p, packetPlayOutPlayerInfo);
-			}
-		} catch (Throwable e) {
+			updateName(tabListUser.getGroupPlayer().getCustomTabName());
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -100,33 +105,30 @@ public class ReflectionHandled implements ITabScoreboard {
 		try {
 			//scoreRef.getScoreboardTeamMode().set(packet, 1);
 
-			updateName(tabPlayer.getPlayer().getName());
-
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				//ReflectionUtils.sendPacket(p, packet);
-				ReflectionUtils.sendPacket(p, packetPlayOutPlayerInfo);
-			}
-		} catch (Throwable e) {
+			updateName(tabListUser.getPlayer().getName());
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private void updateName(String name) throws Throwable {
-		if (Version.isCurrentLower(Version.v1_16_R1)) {
+	private void updateName(String name) throws Exception {
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {
 			name = Util.colorMsg(name);
 		}
 
-		@SuppressWarnings("unchecked")
-		List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
-				.get(packetPlayOutPlayerInfo);
 		for (Object infoData : infoList) {
 			Object profile = ReflectionUtils.invokeMethod(infoData, "a");
 			Object id = ReflectionUtils.invokeMethod(profile, "getId");
-			if (id.equals(tabPlayer.getPlayer().getUniqueId())) {
+			if (id.equals(tabListUser.getUniqueId())) {
 				ReflectionUtils.modifyFinalField(ReflectionUtils.getField(infoData, "e"), infoData,
 						ReflectionUtils.getAsIChatBaseComponent(name));
 				break;
 			}
+		}
+
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			//ReflectionUtils.sendPacket(p, packet);
+			ReflectionUtils.sendPacket(p, packetPlayOutPlayerInfo);
 		}
 	}
 }

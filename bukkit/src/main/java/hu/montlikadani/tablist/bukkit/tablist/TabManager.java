@@ -2,22 +2,20 @@ package hu.montlikadani.tablist.bukkit.tablist;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.Map.Entry;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabConfigValues;
+import hu.montlikadani.tablist.bukkit.tablist.entry.TabEntries;
+import hu.montlikadani.tablist.bukkit.user.TabListUser;
+import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
 
 public class TabManager {
 
@@ -26,14 +24,11 @@ public class TabManager {
 	private TabList plugin;
 	private BukkitTask task;
 
-	private final Set<TabHandler> tabPlayers = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	private final TabEntries tabEntries;
 
 	public TabManager(TabList plugin) {
 		this.plugin = plugin;
-	}
-
-	public Set<TabHandler> getTabPlayers() {
-		return tabPlayers;
+		tabEntries = new TabEntries(plugin);
 	}
 
 	public BukkitTask getTask() {
@@ -47,61 +42,68 @@ public class TabManager {
 		}
 	}
 
-	public void addPlayer(Player p) {
-		if (p == null || isPlayerInTab(p)) {
+	public TabEntries getTabEntries() {
+		return tabEntries;
+	}
+
+	public void addPlayer(TabListUser user) {
+		tabEntries.beginUpdate(user);
+
+		if (!TabConfigValues.isEnabled()) {
 			return;
 		}
 
-		final TabHandler tabHandler = new TabHandler(plugin, p.getUniqueId());
-		tabHandler.updateTab();
-		tabPlayers.add(tabHandler);
+		user.getTabHandler().updateTab();
 
-		final int refreshTime = plugin.getTabRefreshTime();
+		final int refreshTime = TabConfigValues.getUpdateInterval();
 		if (refreshTime < 1) {
-			tabHandler.sendTab();
+			user.getTabHandler().sendTab();
 			return;
 		}
 
 		if (task == null) {
-			task = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-				if (Bukkit.getOnlinePlayers().isEmpty()) {
+			task = Tasks.submitAsync(() -> {
+				if (plugin.getUsers().isEmpty()) {
 					cancelTask();
 					return;
 				}
 
-				tabPlayers.forEach(TabHandler::sendTab);
+				for (TabListUser u : plugin.getUsers()) {
+					u.getTabHandler().sendTab();
+				}
 			}, refreshTime, refreshTime);
 		}
 	}
 
-	public void removePlayer(Player player) {
-		TabTitle.sendTabTitle(player, "", "");
+	public void removePlayer(TabListUser user) {
+		Player player = user.getPlayer();
+		if (player != null) {
+			TabTitle.sendTabTitle(player, "", "");
+		}
 
-		getPlayerTab(player).ifPresent(tabPlayers::remove);
+		tabEntries.removePlayer(user.getUniqueId());
 	}
 
 	public void removeAll() {
 		cancelTask();
+		tabEntries.cancelTask();
 
-		tabPlayers.forEach(th -> TabTitle.sendTabTitle(Bukkit.getServer().getPlayer(th.getPlayerUUID()), "", ""));
-		tabPlayers.clear();
-	}
+		for (TabListUser user : plugin.getUsers()) {
+			Player player = user.getPlayer();
+			if (player != null) {
+				TabTitle.sendTabTitle(player, "", "");
+			}
+		}
 
-	public boolean isPlayerInTab(Player player) {
-		return getPlayerTab(player).isPresent();
-	}
-
-	public Optional<TabHandler> getPlayerTab(final Player player) {
-		return tabPlayers.stream().filter(tab -> player.getUniqueId().equals(tab.getPlayerUUID())).findFirst();
+		tabEntries.removeAll();
 	}
 
 	public void loadToggledTabs() {
-		if (plugin.getConf().getTablist() == null
-				|| !plugin.getConf().getTablist().getBoolean("remember-toggled-tablist-to-file", true)) {
+		TABENABLED.clear();
+
+		if (!TabConfigValues.isRememberToggledTablistToFile()) {
 			return;
 		}
-
-		TABENABLED.clear();
 
 		File f = new File(plugin.getFolder(), "toggledtablists.yml");
 		if (!f.exists()) {
@@ -128,9 +130,7 @@ public class TabManager {
 	public void saveToggledTabs() {
 		File f = new File(plugin.getFolder(), "toggledtablists.yml");
 
-		if (plugin.getConf().getTablist() == null
-				|| !plugin.getConf().getTablist().getBoolean("remember-toggled-tablist-to-file", true)
-				|| TABENABLED.isEmpty()) {
+		if (!TabConfigValues.isRememberToggledTablistToFile() || TABENABLED.isEmpty()) {
 			if (f.exists()) {
 				f.delete();
 			}
@@ -149,7 +149,7 @@ public class TabManager {
 		FileConfiguration t = YamlConfiguration.loadConfiguration(f);
 		t.set("tablists", null);
 
-		for (Entry<UUID, Boolean> list : TABENABLED.entrySet()) {
+		for (Map.Entry<UUID, Boolean> list : TABENABLED.entrySet()) {
 			if (list.getValue()) {
 				t.set("tablists." + list.getKey(), list.getValue());
 			}

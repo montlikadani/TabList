@@ -12,10 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import hu.montlikadani.tablist.bukkit.PlayerList;
-import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.CommentedConfig;
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.bukkit.tablist.playerlist.PlayerList;
 
 public abstract class AfkPlayers {
 
@@ -23,21 +23,20 @@ public abstract class AfkPlayers {
 
 	protected void goAfk(Player player, boolean value) {
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowPlayerGroup()) {
-			boolean rightLeft = ConfigValues.isAfkStatusShowInRightLeftSide();
-
-			CommentedConfig conf = TabList.getInstance().getConfig();
+			CommentedConfig conf = TabListAPI.getPlugin().getConfig();
 			String path = "placeholder-format.afk-status.format-" + (value ? "yes" : "no");
 			String result = "";
 
 			if (conf.contains(path)) {
 				result = colorMsg(
-						rightLeft ? player.getName() + conf.getString(path) : conf.getString(path) + player.getName());
+						ConfigValues.isAfkStatusShowInRightLeftSide() ? player.getName() + conf.getString(path)
+								: conf.getString(path) + player.getName());
 			}
 
 			sortAfkPlayers(player, value);
 
 			if (!result.isEmpty()) {
-				player.setPlayerListName(result);
+				TabListAPI.getPlugin().getComplement().setPlayerListName(player, result);
 			}
 		}
 
@@ -50,6 +49,7 @@ public abstract class AfkPlayers {
 		}
 	}
 
+	// TODO Improve
 	protected void sortAfkPlayers(Player target, boolean value) {
 		if (!ConfigValues.isAfkSortLast()) {
 			return;

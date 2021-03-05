@@ -1,10 +1,10 @@
-package hu.montlikadani.tablist.bukkit.tablist.groups;
+package hu.montlikadani.tablist.bukkit.tablist.groups.impl;
 
-import hu.montlikadani.tablist.bukkit.TabListPlayer;
+import hu.montlikadani.tablist.bukkit.user.TabListUser;
 
 public interface ITabScoreboard {
 
-	TabListPlayer getTabPlayer();
+	TabListUser getTabListUser();
 
 	void registerTeam(String teamName);
 

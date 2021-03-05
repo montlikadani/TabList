@@ -11,38 +11,39 @@ import com.earth2me.essentials.Essentials;
 import de.myzelyam.api.vanish.VanishAPI;
 import hu.montlikadani.ragemode.gameUtils.GameUtils;
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-public class PluginUtils {
+public final class PluginUtils {
 
-	private static TabList plugin = TabList.getInstance();
+	private static final TabList PLUGIN = TabListAPI.getPlugin();
 
 	public static boolean isAfk(Player p) {
-		if (plugin.isPluginEnabled("Essentials")) {
+		if (PLUGIN.isPluginEnabled("Essentials")) {
 			return JavaPlugin.getPlugin(Essentials.class).getUser(p).isAfk();
 		}
 
-		if (plugin.isPluginEnabled("CMI")) {
+		if (PLUGIN.isPluginEnabled("CMI")) {
 			CMIUser user = CMI.getInstance().getPlayerManager().getUser(p);
-			return user != null && user.isVanished();
+			return user != null && user.isAfk();
 		}
 
 		return false;
 	}
 
 	public static boolean isVanished(Player p) {
-		if (plugin.isPluginEnabled("SuperVanish") || plugin.isPluginEnabled("PremiumVanish")) {
+		if (PLUGIN.isPluginEnabled("SuperVanish") || PLUGIN.isPluginEnabled("PremiumVanish")) {
 			return VanishAPI.isInvisible(p);
 		}
 
-		if (plugin.isPluginEnabled("Essentials")) {
+		if (PLUGIN.isPluginEnabled("Essentials")) {
 			return JavaPlugin.getPlugin(Essentials.class).getUser(p).isVanished();
 		}
 
-		if (plugin.isPluginEnabled("CMI")) {
+		if (PLUGIN.isPluginEnabled("CMI")) {
 			CMIUser user = CMI.getInstance().getPlayerManager().getUser(p);
-			return user != null && user.isAfk();
+			return user != null && user.isVanished();
 		}
 
 		return false;
@@ -55,34 +56,20 @@ public class PluginUtils {
 			return plSize;
 		}
 
-		if (plugin.isPluginEnabled("SuperVanish") || plugin.isPluginEnabled("PremiumVanish")) {
-			return VanishAPI.getInvisiblePlayers().isEmpty() ? plSize : plSize - VanishAPI.getInvisiblePlayers().size();
-		}
-
-		if (plugin.isPluginEnabled("Essentials")) {
-			Essentials ess = JavaPlugin.getPlugin(Essentials.class);
-			return ess.getVanishedPlayers().isEmpty() ? plSize : plSize - ess.getVanishedPlayers().size();
-		}
-
-		if (plugin.isPluginEnabled("CMI") && CMI.getInstance() != null) {
-			CMI cmi = CMI.getInstance();
-			return cmi.getVanishManager().getAllVanished().isEmpty() ? plSize
-					: plSize - cmi.getVanishManager().getAllVanished().size();
-		}
-
-		return plSize;
+		int vanishedPlayers = getVanishedPlayers();
+		return vanishedPlayers == 0 ? plSize : plSize - vanishedPlayers;
 	}
 
 	public static int getVanishedPlayers() {
-		if (plugin.isPluginEnabled("Essentials")) {
+		if (PLUGIN.isPluginEnabled("Essentials")) {
 			return JavaPlugin.getPlugin(Essentials.class).getVanishedPlayers().size();
 		}
 
-		if (plugin.isPluginEnabled("SuperVanish") || plugin.isPluginEnabled("PremiumVanish")) {
+		if (PLUGIN.isPluginEnabled("SuperVanish") || PLUGIN.isPluginEnabled("PremiumVanish")) {
 			return VanishAPI.getInvisiblePlayers().size();
 		}
 
-		if (plugin.isPluginEnabled("CMI") && CMI.getInstance() != null) {
+		if (PLUGIN.isPluginEnabled("CMI") && CMI.getInstance() != null) {
 			return CMI.getInstance().getVanishManager().getAllVanished().size();
 		}
 
@@ -93,7 +80,7 @@ public class PluginUtils {
 		if (perm.isEmpty())
 			return false;
 
-		if (plugin.isPluginEnabled("PermissionsEx")) {
+		if (PLUGIN.isPluginEnabled("PermissionsEx")) {
 			try {
 				return PermissionsEx.getPermissionManager().has(player, perm);
 			} catch (Throwable e) {
@@ -105,7 +92,9 @@ public class PluginUtils {
 	}
 
 	public static boolean isInGame(Player p) {
-		return plugin.isPluginEnabled("RageMode") && hu.montlikadani.ragemode.config.ConfigValues.isTabEnabled()
+		return PLUGIN.isPluginEnabled("RageMode")
+				&& (hu.montlikadani.ragemode.config.ConfigValues.isTabEnabled()
+						|| hu.montlikadani.ragemode.config.ConfigValues.isTabFormatEnabled())
 				&& GameUtils.isPlayerPlaying(p) && GameUtils.getGameByPlayer(p).isGameRunning();
 	}
 }

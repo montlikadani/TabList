@@ -1,21 +1,21 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.tablist.groups;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang.Validate;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.bukkit.user.TabListUser;
+import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
 
 public class Groups {
 
@@ -24,15 +24,14 @@ public class Groups {
 	private BukkitTask animationTask;
 
 	private final List<TeamHandler> groupsList = new ArrayList<>();
-	private final Map<String, TabListPlayer> tLPlayerMap = new HashMap<>();
-	private final ConcurrentLinkedDeque<TabListPlayer> sortedTabListPlayers = new ConcurrentLinkedDeque<>();
+	private final ConcurrentLinkedDeque<GroupPlayer> sortedPlayers = new ConcurrentLinkedDeque<>();
 
 	public Groups(TabList plugin) {
 		this.plugin = plugin;
 	}
 
-	public Map<String, TabListPlayer> getTLPlayerMap() {
-		return tLPlayerMap;
+	public BukkitTask getTask() {
+		return animationTask;
 	}
 
 	/**
@@ -62,14 +61,12 @@ public class Groups {
 		return Optional.empty();
 	}
 
-	protected void load() {
+	public void load() {
 		groupsList.clear();
 
 		if (!ConfigValues.isPrefixSuffixEnabled()) {
 			return;
 		}
-
-		plugin.getConf().createGroupsFile();
 
 		String globPrefix = plugin.getConf().getGroups().getString("globalGroup.prefix", ""),
 				globSuffix = plugin.getConf().getGroups().getString("globalGroup.suffix", "");
@@ -125,45 +122,28 @@ public class Groups {
 				continue;
 			}
 
-			String path = g + ".", prefix = cs.getString(path + "prefix", ""),
-					suffix = cs.getString(path + "suffix", ""),
-					tabName = cs.getString(path + "tabname", ""),
-					perm = cs.getString(path + "permission", "");
-			int priority = cs.getInt(path + "sort-priority", last + 1);
+			String prefix = cs.getString(g + ".prefix", ""), suffix = cs.getString(g + ".suffix", ""),
+					tabName = cs.getString(g + ".tabname", ""), perm = cs.getString(g + ".permission", "");
+			int priority = cs.getInt(g + ".sort-priority", last + 1);
 
-			TeamHandler th = new TeamHandler(g, prefix, suffix, perm, priority);
+			TeamHandler th = new TeamHandler(g, prefix, suffix, perm, last = priority);
 			th.setTabName(tabName);
 			groupsList.add(th);
-
-			last = priority;
 		}
 
 		startTask();
 	}
 
 	/**
-	 * Loads the group(s) for the given player. If the player have before group set,
-	 * that group get removing. After remove the scheduler task will get started to
-	 * update repeatedly.
+	 * Sets the player prefix, suffix and tab name except if the player is hidden.
 	 * 
-	 * @param p {@link Player}
-	 */
-	public void loadGroupForPlayer(Player p) {
-		removePlayerGroup(p);
-		startTask();
-	}
-
-	/**
-	 * Sets the player prefix/suffix
-	 * <p>
-	 * If the player is hidden using {@link TabList#getHidePlayers()}, returned.
-	 * 
-	 * @param tabPlayer {@link TabListPlayer}
+	 * @param groupPlayer {@link GroupPlayer}
 	 * @param priority
 	 */
-	public void setPlayerTeam(TabListPlayer tabPlayer, int priority) {
-		if (tabPlayer != null && !plugin.getHidePlayers().containsKey(tabPlayer.getPlayer())) {
-			tabPlayer.getTabTeam().setTeam(tabPlayer.getFullGroupTeamName());
+	public void setPlayerTeam(GroupPlayer groupPlayer, int priority) {
+		if (groupPlayer != null) {
+			plugin.getUser(groupPlayer.getPlayer()).filter(tlu -> !tlu.isHidden())
+					.ifPresent(tlu -> groupPlayer.getTabTeam().setTeam(groupPlayer.getFullGroupTeamName()));
 		}
 	}
 
@@ -172,58 +152,49 @@ public class Groups {
 	 * <p>
 	 * After adding/or the player existing, their groups will get updated once to
 	 * retrieve the approximately group and sets the prefix/suffix to be shown in
-	 * player list. see {@link #setPlayerTeam(TabListPlayer, int)}
+	 * player list. see {@link #setPlayerTeam(GroupPlayer, int)}
 	 * 
 	 * @param player {@link Player}
-	 * @return {@link TabListPlayer} if ever exists or not
+	 * @return {@link GroupPlayer} if ever exists or not
 	 */
-	public TabListPlayer addPlayer(Player player) {
-		String uuid = player.getUniqueId().toString();
-
-		TabListPlayer tabPlayer = tLPlayerMap.get(uuid);
-		if (tabPlayer == null) {
-			tabPlayer = new TabListPlayer(plugin, player);
-			tLPlayerMap.put(uuid, tabPlayer);
+	public GroupPlayer addPlayer(Player player) {
+		TabListUser user = plugin.getUser(player).orElse(null);
+		if (user == null) {
+			return null;
 		}
 
-		tabPlayer.update();
-		addToTabListPlayerList(tabPlayer);
+		GroupPlayer groupPlayer = user.getGroupPlayer();
+
+		groupPlayer.update();
+		addToTabListPlayerList(groupPlayer);
 
 		int priority = 0;
-		for (TabListPlayer tlp : sortedTabListPlayers) {
-			setPlayerTeam(tlp, priority);
+		for (GroupPlayer gp : sortedPlayers) {
+			setPlayerTeam(gp, priority);
 			priority++;
 		}
 
-		return tabPlayer;
+		return groupPlayer;
 	}
 
 	/**
 	 * Removes all groups from every online players.
 	 */
 	public void removeGroupsFromAll() {
-		Bukkit.getOnlinePlayers().forEach(this::removePlayerGroup);
+		plugin.getUsers().forEach(this::removePlayerGroup);
 	}
 
 	/**
 	 * Removes the given player's group.
 	 * 
-	 * @param p {@link Player}
+	 * @param user {@link TabListUser}
 	 */
-	public void removePlayerGroup(Player p) {
-		if (p == null) {
-			return;
-		}
+	public void removePlayerGroup(TabListUser user) {
+		GroupPlayer groupPlayer = user.getGroupPlayer();
+		groupPlayer.getTabTeam().unregisterTeam(groupPlayer.getFullGroupTeamName());
+		groupPlayer.removeGroup();
 
-		TabListPlayer tlp = tLPlayerMap.remove(p.getUniqueId().toString());
-		if (tlp == null) {
-			return;
-		}
-
-		tlp.getTabTeam().unregisterTeam(tlp.getFullGroupTeamName());
-		tlp.removeGroup();
-
-		sortedTabListPlayers.remove(tlp);
+		sortedPlayers.remove(groupPlayer);
 	}
 
 	/**
@@ -243,9 +214,6 @@ public class Groups {
 		removeGroupsFromAll();
 	}
 
-	/**
-	 * Cancels the current running task of groups
-	 */
 	public void cancelTask() {
 		if (animationTask != null) {
 			animationTask.cancel();
@@ -253,8 +221,8 @@ public class Groups {
 		}
 	}
 
-	private void startTask() {
-		if (!ConfigValues.isPrefixSuffixEnabled() || Bukkit.getOnlinePlayers().isEmpty()) {
+	public void startTask() {
+		if (!ConfigValues.isPrefixSuffixEnabled() || plugin.getUsers().isEmpty()) {
 			return;
 		}
 
@@ -265,8 +233,8 @@ public class Groups {
 		}
 
 		if (animationTask == null) {
-			animationTask = Bukkit.getScheduler().runTaskTimerAsynchronously(plugin, () -> {
-				if (Bukkit.getOnlinePlayers().isEmpty()) {
+			animationTask = Tasks.submitAsync(() -> {
+				if (plugin.getUsers().isEmpty()) {
 					cancelTask();
 					return;
 				}
@@ -277,42 +245,36 @@ public class Groups {
 	}
 
 	private void updatePlayers() {
-		for (Player pl : Bukkit.getOnlinePlayers()) {
-			TabListPlayer tlp = tLPlayerMap.get(pl.getUniqueId().toString());
-			if (tlp == null) {
-				tlp = new TabListPlayer(plugin, pl);
+		for (TabListUser user : plugin.getUsers()) {
+			GroupPlayer gp = user.getGroupPlayer();
 
-				tLPlayerMap.put(pl.getUniqueId().toString(), tlp);
-
-				tlp.update();
-				addToTabListPlayerList(tlp);
-			} else if (tlp.update()) {
-				sortedTabListPlayers.remove(tlp);
-				addToTabListPlayerList(tlp);
+			if (gp.update()) {
+				sortedPlayers.remove(gp);
+				addToTabListPlayerList(gp);
 			}
 		}
 
 		int priority = 0;
-		for (TabListPlayer tabPlayer : sortedTabListPlayers) {
-			setPlayerTeam(tabPlayer, priority);
+		for (GroupPlayer groupPlayer : sortedPlayers) {
+			setPlayerTeam(groupPlayer, priority);
 			priority++;
 		}
 	}
 
-	private void addToTabListPlayerList(TabListPlayer tlp) {
+	private void addToTabListPlayerList(GroupPlayer tlp) {
 		int pos = 0;
 
-		for (TabListPlayer tabPlayer : sortedTabListPlayers) {
-			if (tlp.compareTo(tabPlayer) < 0)
+		for (GroupPlayer groupPlayer : sortedPlayers) {
+			if (tlp.compareTo(groupPlayer) < 0)
 				break;
 
 			pos++;
 		}
 
 		if (pos > 0) {
-			sortedTabListPlayers.offerFirst(tlp);
+			sortedPlayers.offerFirst(tlp);
 		} else {
-			sortedTabListPlayers.offerLast(tlp);
+			sortedPlayers.offerLast(tlp);
 		}
 	}
 }

@@ -19,7 +19,7 @@ import com.google.common.reflect.TypeToken;
 
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.IFakePlayers;
 import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils.JavaAccessibilities;
 
@@ -126,9 +126,13 @@ public class Commands implements CommandExecutor, TabCompleter {
 		case 3:
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")
 					&& !args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("list")) {
-				plugin.getFakePlayerHandler().getFakePlayers().stream().map(IFakePlayers::getName).forEach(cmds::add);
+				for (IFakePlayers fp : plugin.getFakePlayerHandler().getFakePlayers()) {
+					cmds.add(fp.getName());
+				}
 			} else if (args[0].equalsIgnoreCase("group") || args[0].equalsIgnoreCase("player")) {
-				Arrays.asList(ContextArguments.values()).forEach(ca -> cmds.add(ca.toString().toLowerCase()));
+				for (ContextArguments ca : ContextArguments.values()) {
+					cmds.add(ca.toString().toLowerCase());
+				}
 			}
 
 			break;
@@ -146,7 +150,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		for (ICommand cmd : cmds) {
 			if (cmd.getClass().isAnnotationPresent(CommandProcessor.class)) {
 				CommandProcessor proc = cmd.getClass().getAnnotation(CommandProcessor.class);
-				if (!(sender instanceof Player) || sender.hasPermission("tablist." + proc.permission().getPerm())) {
+				if (!(sender instanceof Player) || sender.hasPermission(proc.permission().getPerm())) {
 					c.add(proc.name());
 				}
 			}

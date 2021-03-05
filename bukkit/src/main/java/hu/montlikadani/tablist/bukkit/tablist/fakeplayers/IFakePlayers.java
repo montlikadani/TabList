@@ -1,11 +1,16 @@
 package hu.montlikadani.tablist.bukkit.tablist.fakeplayers;
 
+import java.util.Optional;
+import java.util.UUID;
+
 import org.bukkit.entity.Player;
+
+import hu.montlikadani.tablist.bukkit.tablist.entry.row.IRowPlayer;
 
 /**
  * The interface for creating fake players
  */
-public interface IFakePlayers {
+public interface IFakePlayers extends IRowPlayer {
 
 	/**
 	 * Gets the fake player name.
@@ -39,8 +44,6 @@ public interface IFakePlayers {
 
 	/**
 	 * Sets the display name of the fake player.
-	 * <p>
-	 * Display name maximum characters limit is 16
 	 * 
 	 * @param displayName the new name
 	 */
@@ -51,6 +54,7 @@ public interface IFakePlayers {
 	 * 
 	 * @return the amount of latency
 	 */
+	@Override
 	int getPingLatency();
 
 	/**
@@ -76,10 +80,10 @@ public interface IFakePlayers {
 	 * skin from uuid and ping.
 	 * 
 	 * @param p           {@link Player}
-	 * @param headUUID    an uuid of valid user
+	 * @param headId    an uuid of valid user
 	 * @param pingLatency ping value (> 0)
 	 */
-	void createFakePlayer(Player p, String headUUID, int pingLatency);
+	void createFakePlayer(Player p, String headId, int pingLatency);
 
 	/**
 	 * Attempts to set the fake player ping to a new one. If the fake player is not
@@ -87,18 +91,60 @@ public interface IFakePlayers {
 	 * 
 	 * @param pingAmount ping value (> 0)
 	 */
+	@Override
 	void setPing(int pingAmount);
 
 	/**
 	 * Attempts to set the valid user skin uuid to player list for fake player
 	 * before their name.
 	 * 
-	 * @param skinUUID an valid user skin uuid
+	 * @param skinId an valid user skin uuid
 	 */
-	void setSkin(String skinUUID);
+	@Override
+	void setSkin(UUID skinId);
 
 	/**
 	 * Attempts to remove an added fake player.
 	 */
 	void removeFakePlayer();
+
+	@Override
+	default void create(int rowIndex) {
+		throw new UnsupportedOperationException("Use #createFakePlayer instead");
+	}
+
+	@Override
+	default void remove() {
+		throw new UnsupportedOperationException("Use #removeFakePlayer instead");
+	}
+
+	@Override
+	default Optional<Player> asPlayer() {
+		throw new UnsupportedOperationException("#asPlayer not supported");
+	}
+
+	@Override
+	default void setPlayer(Player player) {
+		throw new UnsupportedOperationException("#setPlayer not supported");
+	}
+
+	@Override
+	default String getText() {
+		throw new UnsupportedOperationException("#getText not supported");
+	}
+
+	@Override
+	default String updateText(Player player, String text) {
+		throw new UnsupportedOperationException("#updateText not supported");
+	}
+
+	@Override
+	default void setText(String text) {
+		throw new UnsupportedOperationException("#setText not supported");
+	}
+
+	@Override
+	default UUID getHeadId() {
+		throw new UnsupportedOperationException("#getHeadId not supported");
+	}
 }

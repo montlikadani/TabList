@@ -15,6 +15,7 @@ import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 import hu.montlikadani.tablist.bukkit.tablist.TabTitle;
+import hu.montlikadani.tablist.bukkit.user.TabListUser;
 
 @CommandProcessor(name = "toggle", permission = Perm.TOGGLE)
 public class toggle implements ICommand {
@@ -27,22 +28,8 @@ public class toggle implements ICommand {
 				return false;
 			}
 
-			Player p = (Player) sender;
-			if (!plugin.getTabManager().isPlayerInTab(p)) {
-				return true;
-			}
-
-			UUID uuid = p.getUniqueId();
-			if (!TabManager.TABENABLED.getOrDefault(uuid, true)) {
-				TabManager.TABENABLED.put(uuid, true);
-				TabTitle.sendTabTitle(p, "", "");
-				sendMsg(p, plugin.getMsg("toggle.disabled"));
-			} else {
-				TabManager.TABENABLED.remove(uuid);
-				plugin.getTabManager().getPlayerTab(p).get().updateTab();
-				sendMsg(p, plugin.getMsg("toggle.enabled"));
-			}
-
+			plugin.getUser((Player) sender).ifPresent(user -> sendMsg(user.getPlayer(),
+					plugin.getMsg("toggle." + (toggleTab(user) ? "enabled" : "disabled"))));
 			return true;
 		}
 
@@ -53,51 +40,42 @@ public class toggle implements ICommand {
 					return false;
 				}
 
-				if (Bukkit.getOnlinePlayers().isEmpty()) {
+				if (plugin.getUsers().isEmpty()) {
 					sendMsg(sender, plugin.getMsg("toggle.no-player"));
 					return false;
 				}
 
-				for (Player pl : Bukkit.getOnlinePlayers()) {
-					if (!plugin.getTabManager().isPlayerInTab(pl)) {
-						continue;
-					}
-
-					UUID uuid = pl.getUniqueId();
-					if (!TabManager.TABENABLED.getOrDefault(uuid, true)) {
-						TabManager.TABENABLED.put(uuid, true);
-						TabTitle.sendTabTitle(pl, "", "");
-					} else {
-						TabManager.TABENABLED.remove(uuid);
-						plugin.getTabManager().getPlayerTab(pl).get().updateTab();
-					}
+				for (TabListUser user : plugin.getUsers()) {
+					toggleTab(user);
 				}
 
 				return true;
 			}
 
-			Player pl = Bukkit.getPlayer(args[1]);
-			if (pl == null) {
+			Player player = Bukkit.getPlayer(args[1]);
+			if (player == null) {
 				sendMsg(sender, plugin.getMsg("toggle.player-not-found", "%player%", args[1]));
 				return false;
 			}
 
-			if (!plugin.getTabManager().isPlayerInTab(pl)) {
-				return true;
-			}
-
-			UUID uuid = pl.getUniqueId();
-			if (!TabManager.TABENABLED.getOrDefault(uuid, true)) {
-				TabManager.TABENABLED.put(uuid, true);
-				TabTitle.sendTabTitle(pl, "", "");
-				sendMsg(pl, plugin.getMsg("toggle.disabled"));
-			} else {
-				TabManager.TABENABLED.remove(uuid);
-				plugin.getTabManager().getPlayerTab(pl).get().updateTab();
-				sendMsg(pl, plugin.getMsg("toggle.enabled"));
-			}
+			plugin.getUser(player).ifPresent(
+					user -> sendMsg(player, plugin.getMsg("toggle." + (toggleTab(user) ? "enabled" : "disabled"))));
 		}
 
+		return true;
+	}
+
+	private boolean toggleTab(TabListUser user) {
+		UUID uuid = user.getUniqueId();
+
+		if (!TabManager.TABENABLED.getOrDefault(uuid, true)) {
+			TabManager.TABENABLED.put(uuid, true);
+			TabTitle.sendTabTitle(user.getPlayer(), "", "");
+			return false;
+		}
+
+		TabManager.TABENABLED.remove(uuid);
+		user.getTabHandler().updateTab();
 		return true;
 	}
 }

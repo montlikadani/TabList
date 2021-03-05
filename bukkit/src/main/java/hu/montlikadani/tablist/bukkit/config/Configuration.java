@@ -9,111 +9,82 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabEntryValues;
 
 public class Configuration {
 
 	private TabList plugin;
 
-	private FileConfiguration messages, groups, fakeplayers, animCreator;
-	private CommentedConfig config, tablist;
-	private File config_file, messages_file, animation_file, tablist_file, groups_file, fakeplayers_file;
+	private FileConfiguration messages, groups, fakePlayers, animCreator;
+	private CommentedConfig config, tablist, tabEntries;
+	private File configFile, messagesFile, animationFile, tablistFile, groupsFile, fakePlayersFile, tabEntriesFile;
 
 	public Configuration(TabList plugin) {
 		this.plugin = plugin;
+
+		File folder = plugin.getFolder();
+
+		configFile = new File(folder, "config.yml");
+		messagesFile = new File(folder, "messages.yml");
+		animationFile = new File(folder, "animcreator.yml");
+		tablistFile = new File(folder, "tablist.yml");
+		groupsFile = new File(folder, "groups.yml");
+		fakePlayersFile = new File(folder, "fakeplayers.yml");
+		tabEntriesFile = new File(folder, "tabentries.yml");
 	}
 
 	public void loadFiles() {
-		File folder = plugin.getFolder();
-
-		if (config_file == null) {
-			config_file = new File(folder, "config.yml");
-		}
-
-		if (messages_file == null) {
-			messages_file = new File(folder, "messages.yml");
-		}
-
-		if (animation_file == null) {
-			animation_file = new File(folder, "animcreator.yml");
-		}
-
-		if (!config_file.exists()) {
-			plugin.saveResource("config.yml", false);
-		}
-
 		// Monument
-		File names = new File(folder, "names.yml");
+		File names = new File(plugin.getFolder(), "names.yml");
 		if (names.exists()) {
 			names.delete();
 		}
 
-		config = new CommentedConfig(config_file);
-		ConfigValues.loadValues();
-
-		if (tablist_file == null) {
-			tablist_file = new File(folder, "tablist.yml");
+		if (!configFile.exists()) {
+			plugin.saveResource("config.yml", false);
 		}
 
-		if (!tablist_file.exists()) {
+		config = new CommentedConfig(configFile);
+		ConfigValues.loadValues(config);
+
+		if (!tablistFile.exists()) {
 			plugin.saveResource("tablist.yml", false);
 		}
 
-		tablist = new CommentedConfig(tablist_file);
+		tablist = new CommentedConfig(tablistFile);
 		tablist.load();
+		TabConfigValues.loadValues(tablist);
+
+		if (!tabEntriesFile.exists()) {
+			plugin.saveResource("tabentries.yml", false);
+		}
+
+		tabEntries = new CommentedConfig(tabEntriesFile);
+		tabEntries.load();
+		TabEntryValues.loadValues(tabEntries);
 
 		try {
-			messages = createFile(messages_file, "messages.yml", false);
-			messages.save(messages_file);
+			messages = createFile(messagesFile, "messages.yml", false);
+			messages.save(messagesFile);
 
-			animCreator = createFile(animation_file, "animcreator.yml", false);
-			animCreator.load(animation_file);
+			animCreator = createFile(animationFile, "animcreator.yml", false);
+			animCreator.load(animationFile);
 
 			if (ConfigValues.isPrefixSuffixEnabled()) {
-				if (groups_file == null) {
-					groups_file = new File(folder, "groups.yml");
-				}
-
-				groups = createFile(groups_file, "groups.yml", false);
-				groups.load(groups_file);
+				groups = createFile(groupsFile, "groups.yml", false);
+				groups.load(groupsFile);
 			}
 
 			if (ConfigValues.isFakePlayers()) {
-				if (fakeplayers_file == null) {
-					fakeplayers_file = new File(folder, "fakeplayers.yml");
-				}
-
-				fakeplayers = createFile(fakeplayers_file, "fakeplayers.yml", true);
+				fakePlayers = createFile(fakePlayersFile, "fakeplayers.yml", true);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			logConsole(java.util.logging.Level.WARNING,
-					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues",
-					false);
+					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues");
 		}
-	}
-
-	public void createGroupsFile() {
-		if (groups_file != null && groups_file.exists()) {
-			return;
-		}
-
-		if (groups_file == null) {
-			groups_file = new File(plugin.getFolder(), "groups.yml");
-		}
-
-		groups = createFile(groups_file, "groups.yml", false);
-	}
-
-	public void createFakePlayersFile() {
-		if (fakeplayers_file != null && fakeplayers_file.exists()) {
-			return;
-		}
-
-		if (fakeplayers_file == null) {
-			fakeplayers_file = new File(plugin.getFolder(), "fakeplayers.yml");
-		}
-
-		fakeplayers = createFile(fakeplayers_file, "fakeplayers.yml", true);
 	}
 
 	FileConfiguration createFile(File file, String name, boolean newFile) {
@@ -127,11 +98,15 @@ public class Configuration {
 			} else {
 				plugin.saveResource(name, false);
 			}
-
-			logConsole(name + " file created!", false);
 		}
 
 		return YamlConfiguration.loadConfiguration(file);
+	}
+
+	public void deleteEmptyFiles() {
+		if (fakePlayersFile.length() == 0L) {
+			fakePlayersFile.delete();
+		}
 	}
 
 	public CommentedConfig getConfig() {
@@ -143,11 +118,19 @@ public class Configuration {
 	}
 
 	public FileConfiguration getGroups() {
+		if (groups == null || !groupsFile.exists()) {
+			groups = createFile(groupsFile, "groups.yml", false);
+		}
+
 		return groups;
 	}
 
 	public FileConfiguration getFakeplayers() {
-		return fakeplayers;
+		if (fakePlayers == null || !fakePlayersFile.exists()) {
+			fakePlayers = createFile(fakePlayersFile, "fakeplayers.yml", true);
+		}
+
+		return fakePlayers;
 	}
 
 	public FileConfiguration getAnimCreator() {
@@ -158,27 +141,35 @@ public class Configuration {
 		return tablist;
 	}
 
+	public CommentedConfig getTabEntries() {
+		return tabEntries;
+	}
+
 	public File getConfigFile() {
-		return config_file;
+		return configFile;
 	}
 
 	public File getMessagesFile() {
-		return messages_file;
+		return messagesFile;
 	}
 
 	public File getAnimationFile() {
-		return animation_file;
+		return animationFile;
 	}
 
 	public File getTablistFile() {
-		return tablist_file;
+		return tablistFile;
 	}
 
 	public File getGroupsFile() {
-		return groups_file;
+		return groupsFile;
 	}
 
 	public File getFakeplayersFile() {
-		return fakeplayers_file;
+		return fakePlayersFile;
+	}
+
+	public File getTabEntriesFile() {
+		return tabEntriesFile;
 	}
 }

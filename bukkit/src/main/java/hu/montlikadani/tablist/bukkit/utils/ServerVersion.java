@@ -1,119 +1,92 @@
 package hu.montlikadani.tablist.bukkit.utils;
 
-public class ServerVersion {
+public enum ServerVersion {
+	v1_8_R1,
+	v1_8_R2,
+	v1_8_R3,
+	v1_9_R1,
+	v1_9_R2,
+	v1_10_R1,
+	v1_11_R1,
+	v1_12_R1,
+	v1_13_R1,
+	v1_13_R2,
+	v1_14_R1,
+	v1_14_R2,
+	v1_15_R1,
+	v1_15_R2,
+	v1_16_R1,
+	v1_16_R2,
+	v1_16_R3,
+	v1_17_R1,
+	v1_17_R2,
+	v1_18_R1,
+	v1_18_R2;
 
-	public Version getVersion() {
-		return Version.getCurrent();
+	private Integer value;
+	private String shortVersion;
+
+	private static String[] arrayVersion;
+	private static ServerVersion current;
+
+	ServerVersion() {
+		value = Integer.valueOf(name().replaceAll("[^\\d.]", ""));
+		shortVersion = name().substring(0, name().length() - 3);
 	}
 
-	public enum Version {
-		v1_8_R1,
-		v1_8_R2,
-		v1_8_R3,
-		v1_9_R1,
-		v1_9_R2,
-		v1_10_R1,
-		v1_11_R1,
-		v1_12_R1,
-		v1_13_R1,
-		v1_13_R2,
-		v1_14_R1,
-		v1_14_R2,
-		v1_15_R1,
-		v1_15_R2,
-		v1_16_R1,
-		v1_16_R2,
-		v1_16_R3,
-		v1_17_R1,
-		v1_17_R2,
-		v1_18_R1,
-		v1_18_R2;
+	public Integer getValue() {
+		return value;
+	}
 
-		private Integer value;
-		private String shortVersion;
+	public String getShortVersion() {
+		return shortVersion;
+	}
 
-		private static String[] arrayVersion;
-		private static Version current;
-
-		Version() {
-			value = Integer.valueOf(name().replaceAll("[^\\d.]", ""));
-			shortVersion = name().substring(0, name().length() - 3);
-		}
-
-		public Integer getValue() {
-			return value;
-		}
-
-		public String getShortVersion() {
-			return shortVersion;
-		}
-
-		public static Version getCurrent() {
-			if (current != null)
-				return current;
-
-			String[] v = getArrayVersion();
-			String vv = v[v.length - 1];
-			for (Version one : values()) {
-				if (one.name().equalsIgnoreCase(vv)) {
-					current = one;
-					break;
-				}
-			}
-
-			if (current == null) { // It is possible when immo not added a new version enum
-				current = Version.v1_16_R3;
-			}
-
+	public static ServerVersion getCurrent() {
+		if (current != null)
 			return current;
-		}
 
-		public static String[] getArrayVersion() {
-			if (arrayVersion == null) {
-				arrayVersion = org.bukkit.Bukkit.getServer().getClass().getPackage().getName().split("\\.");
+		String[] v = getArrayVersion();
+		String vv = v[v.length - 1];
+		for (ServerVersion one : values()) {
+			if (one.name().equalsIgnoreCase(vv)) {
+				current = one;
+				break;
 			}
-
-			return arrayVersion;
 		}
 
-		public boolean isLower(Version version) {
-			return getValue() < version.getValue();
+		if (current == null) { // It is possible when immo not added a new version enum
+			current = ServerVersion.v1_16_R3;
 		}
 
-		public boolean isHigher(Version version) {
-			return getValue() > version.getValue();
+		return current;
+	}
+
+	public static String[] getArrayVersion() {
+		if (arrayVersion == null) {
+			arrayVersion = org.bukkit.Bukkit.getServer().getClass().getPackage().getName().split("\\.");
 		}
 
-		public boolean isEqual(Version version) {
-			return getValue().equals(version.getValue());
-		}
+		return arrayVersion;
+	}
 
-		public boolean isEqualOrLower(Version version) {
-			return getValue() <= version.getValue();
-		}
+	public static boolean isCurrentEqualOrHigher(ServerVersion v) {
+		return getCurrent().getValue() >= v.getValue();
+	}
 
-		public boolean isEqualOrHigher(Version version) {
-			return getValue() >= version.getValue();
-		}
+	public static boolean isCurrentHigher(ServerVersion v) {
+		return getCurrent().getValue() > v.getValue();
+	}
 
-		public static boolean isCurrentEqualOrHigher(Version v) {
-			return getCurrent().getValue() >= v.getValue();
-		}
+	public static boolean isCurrentLower(ServerVersion v) {
+		return getCurrent().getValue() < v.getValue();
+	}
 
-		public static boolean isCurrentHigher(Version v) {
-			return getCurrent().getValue() > v.getValue();
-		}
+	public static boolean isCurrentEqualOrLower(ServerVersion v) {
+		return getCurrent().getValue() <= v.getValue();
+	}
 
-		public static boolean isCurrentLower(Version v) {
-			return getCurrent().getValue() < v.getValue();
-		}
-
-		public static boolean isCurrentEqualOrLower(Version v) {
-			return getCurrent().getValue() <= v.getValue();
-		}
-
-		public static boolean isCurrentEqual(Version v) {
-			return getCurrent().getValue().equals(v.getValue());
-		}
+	public static boolean isCurrentEqual(ServerVersion v) {
+		return getCurrent().getValue().equals(v.getValue());
 	}
 }

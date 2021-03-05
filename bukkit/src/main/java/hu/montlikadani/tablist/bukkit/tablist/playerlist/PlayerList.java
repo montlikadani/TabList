@@ -1,9 +1,10 @@
-package hu.montlikadani.tablist.bukkit;
+package hu.montlikadani.tablist.bukkit.tablist.playerlist;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 
 public class PlayerList {
 
@@ -53,8 +54,8 @@ public class PlayerList {
 
 	@SuppressWarnings("deprecation")
 	public static void hide(Player to, Player pls) {
-		if (Version.isCurrentEqualOrHigher(Version.v1_12_R1)) {
-			to.hidePlayer(TabList.getInstance(), pls);
+		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_R1)) {
+			to.hidePlayer(TabListAPI.getPlugin(), pls);
 		} else {
 			to.hidePlayer(pls);
 		}
@@ -62,8 +63,8 @@ public class PlayerList {
 
 	@SuppressWarnings("deprecation")
 	public static void show(Player to, Player pls) {
-		if (Version.isCurrentEqualOrHigher(Version.v1_12_R1)) {
-			to.showPlayer(TabList.getInstance(), pls);
+		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_R1)) {
+			to.showPlayer(TabListAPI.getPlugin(), pls);
 		} else {
 			to.showPlayer(pls);
 		}

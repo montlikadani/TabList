@@ -14,6 +14,7 @@ import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.permissions.PermissionDefault;
 
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import hu.montlikadani.tablist.bukkit.utils.Variables;
 
@@ -52,25 +53,22 @@ public class TabHandler {
 
 		TabTitle.sendTabTitle(player, "", "");
 
-		if (!plugin.getConf().getTablistFile().exists()) {
-			return;
-		}
-
-		final FileConfiguration c = plugin.getConf().getTablist();
-		if (!c.getBoolean("enabled")) {
+		if (!TabConfigValues.isEnabled()) {
 			return;
 		}
 
 		final String world = player.getWorld().getName();
 		final String pName = player.getName();
 
-		if (c.getStringList("disabled-worlds").contains(world) || c.getStringList("blacklisted-players").contains(pName)
+		if (TabConfigValues.getDisabledWorlds().contains(world)
+				|| TabConfigValues.getBlackListedPlayers().contains(pName)
 				|| TabManager.TABENABLED.getOrDefault(playerUUID, false) || PluginUtils.isInGame(player)) {
 			return;
 		}
 
-		random = c.getBoolean("random");
+		random = TabConfigValues.isRandom();
 
+		final FileConfiguration c = plugin.getConf().getTablist();
 		String path = "";
 
 		if (c.contains("per-world")) {
@@ -159,11 +157,9 @@ public class TabHandler {
 			return;
 		}
 
-		final FileConfiguration c = plugin.getConf().getTablist();
-
-		if ((c.getBoolean("hide-tab-when-player-vanished") && PluginUtils.isVanished(player))
-				|| c.getStringList("disabled-worlds").contains(player.getWorld().getName())
-				|| c.getStringList("blacklisted-players").contains(player.getName()) || PluginUtils.isInGame(player)
+		if ((TabConfigValues.isHideTabWhenPlayerVanished() && PluginUtils.isVanished(player))
+				|| TabConfigValues.getDisabledWorlds().contains(player.getWorld().getName())
+				|| TabConfigValues.getBlackListedPlayers().contains(player.getName()) || PluginUtils.isInGame(player)
 				|| TabManager.TABENABLED.getOrDefault(playerUUID, false)) {
 			if (!tabEmpty) { // Only send it once to allow other plugins to overwrite tablist
 				TabTitle.sendTabTitle(player, "", "");
@@ -172,6 +168,8 @@ public class TabHandler {
 
 			return;
 		}
+
+		final FileConfiguration c = plugin.getConf().getTablist();
 
 		// Track player permissions change and update tab if required
 		// Note: avoid using Player#hasPermission which calls multiple times to prevent

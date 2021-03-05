@@ -14,12 +14,43 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 
-import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
-
-public class ReflectionUtils {
+public final class ReflectionUtils {
 
 	private static final Gson GSON = new GsonBuilder().create();
 	private static final List<JsonObject> JSONLIST = new CopyOnWriteArrayList<>();
+
+	private static Field modifiersField;
+
+	static {
+		try {
+			modifiersField = Field.class.getDeclaredField("modifiers");
+		} catch (NoSuchFieldException e) { // Java 12+
+			try {
+				Method meth;
+				if (JavaAccessibilities.getCurrentVersion() >= 15) {
+					meth = Class.class.getDeclaredMethod("getDeclaredFieldsImpl");
+				} else {
+					meth = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
+				}
+
+				boolean accessibleBeforeSet = JavaAccessibilities.isAccessible(meth, null);
+				meth.setAccessible(true);
+
+				Field[] fields = (Field[]) (JavaAccessibilities.getCurrentVersion() >= 15 ? meth.invoke(Field.class)
+						: meth.invoke(Field.class, false));
+				for (Field f : fields) {
+					if ("modifiers".equals(f.getName())) {
+						modifiersField = f;
+						break;
+					}
+				}
+
+				meth.setAccessible(accessibleBeforeSet);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+	}
 
 	private ReflectionUtils() {
 	}
@@ -31,7 +62,7 @@ public class ReflectionUtils {
 	public synchronized static Object getAsIChatBaseComponent(final String text) throws Exception {
 		Class<?> iChatBaseComponent = getNMSClass("IChatBaseComponent");
 
-		if (Version.isCurrentEqualOrHigher(Version.v1_16_R1)) {
+		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1)) {
 			JSONLIST.clear();
 
 			JsonObject obj = new JsonObject();
@@ -135,7 +166,7 @@ public class ReflectionUtils {
 			return m.invoke(iChatBaseComponent, GSON.toJson(JSONLIST));
 		}
 
-		if (Version.isCurrentLower(Version.v1_8_R2)) {
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
 			Class<?> chatSerializer = getNMSClass("ChatSerializer");
 			return iChatBaseComponent.cast(
 					chatSerializer.getMethod("a", String.class).invoke(chatSerializer, "{\"text\":\"" + text + "\"}"));
@@ -165,11 +196,11 @@ public class ReflectionUtils {
 	}
 
 	public static Class<?> getNMSClass(String name) throws ClassNotFoundException {
-		return Class.forName("net.minecraft.server." + Version.getArrayVersion()[3] + "." + name);
+		return Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + "." + name);
 	}
 
 	public static Class<?> getCraftClass(String className) throws ClassNotFoundException {
-		return Class.forName("org.bukkit.craftbukkit." + Version.getArrayVersion()[3] + "." + className);
+		return Class.forName("org.bukkit.craftbukkit." + ServerVersion.getArrayVersion()[3] + "." + className);
 	}
 
 	public static Field getField(Object clazz, String name) throws Exception {
@@ -195,36 +226,6 @@ public class ReflectionUtils {
 	}
 
 	public static void modifyFinalField(Field field, Object target, Object newValue) throws Exception {
-		Field modifiersField = null;
-		try {
-			modifiersField = Field.class.getDeclaredField("modifiers");
-		} catch (NoSuchFieldException e) { // Java 12+
-			if (JavaAccessibilities.getCurrentVersion() < 12) {
-				return; // To make sure we're on 12 or higher
-			}
-
-			Method meth;
-			if (JavaAccessibilities.getCurrentVersion() >= 15) {
-				meth = Class.class.getDeclaredMethod("getDeclaredFieldsImpl");
-			} else {
-				meth = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
-			}
-
-			boolean accessibleBeforeSet = JavaAccessibilities.isAccessible(meth, null);
-			meth.setAccessible(true);
-
-			Field[] fields = (Field[]) (JavaAccessibilities.getCurrentVersion() >= 15 ? meth.invoke(Field.class)
-					: meth.invoke(Field.class, false));
-			for (Field f : fields) {
-				if ("modifiers".equals(f.getName())) {
-					modifiersField = f;
-					break;
-				}
-			}
-
-			meth.setAccessible(accessibleBeforeSet);
-		}
-
 		if (modifiersField == null) {
 			return;
 		}
@@ -244,10 +245,6 @@ public class ReflectionUtils {
 		}
 	}
 
-	public static Object getFieldObject(Object object, Field field) throws Exception {
-		return field.get(object);
-	}
-
 	public static void setField(Object object, String fieldName, Object fieldValue) throws Exception {
 		getField(object, fieldName).set(object, fieldValue);
 	}
@@ -255,7 +252,7 @@ public class ReflectionUtils {
 	public static void sendPacket(Player player, Object packet) {
 		try {
 			Object playerHandle = getHandle(player);
-			Object playerConnection = getFieldObject(playerHandle, getField(playerHandle, "playerConnection"));
+			Object playerConnection = getField(playerHandle, "playerConnection").get(playerHandle);
 			playerConnection.getClass().getDeclaredMethod("sendPacket", getNMSClass("Packet")).invoke(playerConnection,
 					packet);
 		} catch (Exception e) {
@@ -271,10 +268,10 @@ public class ReflectionUtils {
 			try {
 				Class<?> manager = getNMSClass("PlayerInteractManager");
 				Object managerIns = null, world = null;
-				if (Version.isCurrentEqualOrHigher(Version.v1_14_R1)) {
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
 					world = getHandle(player.getWorld());
 					managerIns = manager.getConstructor(world.getClass()).newInstance(world);
-				} else if (Version.isCurrentEqual(Version.v1_13_R1) || Version.isCurrentEqual(Version.v1_13_R2)) {
+				} else if (ServerVersion.isCurrentEqual(ServerVersion.v1_13_R1) || ServerVersion.isCurrentEqual(ServerVersion.v1_13_R2)) {
 					world = getHandle(player.getWorld());
 				} else {
 					world = server.getDeclaredMethod("getWorldServer", int.class).invoke(serverIns, 0);
@@ -323,9 +320,9 @@ public class ReflectionUtils {
 
 		public static Class<?> getEnumPlayerInfoAction(Class<?> packetPlayOutPlayerInfo) {
 			try {
-				if (Version.isCurrentEqual(Version.v1_8_R1)) {
+				if (ServerVersion.isCurrentEqual(ServerVersion.v1_8_R1)) {
 					return getNMSClass("EnumPlayerInfoAction");
-				} else if (Version.isCurrentEqualOrHigher(Version.v1_11_R1)) {
+				} else if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_11_R1)) {
 					return packetPlayOutPlayerInfo.getDeclaredClasses()[1];
 				}
 

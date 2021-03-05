@@ -1,0 +1,41 @@
+enabled: false
+columns-size: 4
+
+placeholder-setting:
+  world_players:
+    max: 8
+    show-afk-players: true
+  players:
+    max: 8
+    show-afk-players: true
+
+default:
+  text: '                                '
+  ping: 1000
+  # Pick a valid player uuid from https://mcuuid.net/
+  head: 7f2fa3f7-b400-4c08-b816-65d2de5d9010
+
+columns:
+  1: # 1st column
+  - '&c-------'
+  - 'ping:20;head:7f2fa3f7-b400-4c08-b816-65d2de5d9010;&eOnline:&7 %online-players%'
+  - ' '
+  - 'head:7f2fa3f7-b400-4c08-b816-65d2de5d9010;ping:15;&eTPS: %tps%'
+  - ''
+  - 'head:7f2fa3f7-b400-4c08-b816-65d2de5d9010;ping:15;&6Staff online:&7 %staff-online%'
+  - ''
+  - 'head:7f2fa3f7-b400-4c08-b816-65d2de5d9010;ping:15;&bPing: %ping%'
+  - ''
+  - 'head:7f2fa3f7-b400-4c08-b816-65d2de5d9010;ping:15;&aTime:&7 %server-time%'
+  - '&c-------'
+  2:
+  - '&6Your world:'
+  - '%world%'
+  - ''
+  - '&c----'
+  - ''
+  - '&6%worlds_1% players:'
+  - '%world_players_1%'
+  3:
+  - 'head:7f2fa3f7-b400-4c08-b816-65d2de5d9010;&6Players in %worlds_0% world:'
+  - '%world_players_0%'

@@ -1,4 +1,4 @@
-reload-config: "&aThe plugin successfully reloaded!"
+reload-config: "&aReloaded!"
 no-permission: "&cYou don't have permission for that!&7 (%perm%)"
 unknown-sub-command: "&cUnknown sub-command&7 %subcmd%&c."
 no-console: "&cThis command '&7/%command%&c' can only be in-game."

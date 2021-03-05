@@ -1,47 +1,35 @@
 package hu.montlikadani.tablist.bukkit.utils;
 
+import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import hu.montlikadani.tablist.Global;
-import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 
 public class Util {
 
 	public static void logConsole(String msg) {
-		logConsole(msg, true);
-	}
-
-	public static void logConsole(String msg, boolean loaded) {
-		logConsole(Level.INFO, msg, loaded);
+		logConsole(Level.INFO, msg);
 	}
 
 	public static void logConsole(Level level, String msg) {
-		logConsole(level, msg, true);
-	}
-
-	public static void logConsole(Level level, String msg, boolean loaded) {
-		if ((!loaded || TabList.getInstance().getConfig().get("logconsole", true)) && msg != null
-				&& !msg.trim().isEmpty()) {
+		if (ConfigValues.isLogConsole() && msg != null && !msg.trim().isEmpty()) {
 			Bukkit.getLogger().log(level != null ? level : Level.INFO, "[TabList] " + msg);
 		}
 	}
 
 	public static String colorMsg(String msg) {
-		return colorMsg(msg, false);
-	}
-
-	public static String colorMsg(String msg, boolean usingNMSHex) {
 		if (msg == null) {
 			return "";
 		}
 
-		if (!usingNMSHex && Version.isCurrentEqualOrHigher(Version.v1_16_R1) && msg.contains("#")) {
+		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1) && msg.contains("#")) {
 			msg = Global.matchColorRegex(msg);
 		}
 
@@ -63,23 +51,32 @@ public class Util {
 	public static String stripColor(String str) {
 		for (ChatColor color : ChatColor.values()) {
 			if (str.contains(("&" + color.getChar()))) {
-				str = str.replace("&" + color.getChar(), "");
+				str = StringUtils.replace(str, "&" + color.getChar(), "");
 			}
 		}
 
 		return ChatColor.stripColor(str);
 	}
 
-	public static boolean isRealUUID(String uuid) {
+	public static Optional<UUID> tryParseId(String uuid) {
 		if (uuid == null || uuid.trim().isEmpty()) {
-			return true;
+			return Optional.empty();
 		}
 
 		try {
-			UUID.fromString(uuid);
-			return true;
-		} catch (IllegalArgumentException e) {
-			return false;
+			return Optional.of(UUID.fromString(uuid));
+		} catch (NumberFormatException e) {
 		}
+
+		return Optional.empty();
+	}
+
+	public static Optional<Integer> tryParse(String parseable) {
+		try {
+			return Optional.of(Integer.parseInt(parseable));
+		} catch (NumberFormatException e) {
+		}
+
+		return Optional.empty();
 	}
 }

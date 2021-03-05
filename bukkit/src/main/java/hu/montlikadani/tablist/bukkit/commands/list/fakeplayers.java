@@ -18,7 +18,7 @@ import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler.EditingContextError;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.IFakePlayers;
@@ -40,8 +40,6 @@ public class fakeplayers implements ICommand {
 			sendMsg(p, plugin.getMsg("fake-player.disabled"));
 			return true;
 		}
-
-		plugin.getConf().createFakePlayersFile();
 
 		if (args.length < 2) {
 			if (sender instanceof Player) {
@@ -74,12 +72,7 @@ public class fakeplayers implements ICommand {
 		switch (action) {
 		case ADD:
 			String name = args[2];
-			int ping = -1;
-			try {
-				ping = args.length > 4 ? Integer.parseInt(args[4]) : -1;
-			} catch (NumberFormatException e) {
-			}
-
+			int ping = args.length > 4 ? Util.tryParse(args[4]).orElse(-1) : -1;
 			output = handler.createPlayer(p, name, name, args.length > 3 ? args[3] : "", ping);
 			if (output == EditingContextError.ALREADY_EXIST) {
 				sendMsg(p, plugin.getMsg("fake-player.already-added", "%name%", name));
@@ -92,8 +85,7 @@ public class fakeplayers implements ICommand {
 
 			break;
 		case REMOVE:
-			output = handler.removePlayer(args[2]);
-			if (output == EditingContextError.NOT_EXIST) {
+			if ((output = handler.removePlayer(args[2])) == EditingContextError.NOT_EXIST) {
 				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
 				return true;
 			}
@@ -108,9 +100,7 @@ public class fakeplayers implements ICommand {
 				return true;
 			}
 
-			output = handler.renamePlayer(args[2], args[3]);
-
-			if (output == EditingContextError.NOT_EXIST) {
+			if ((output = handler.renamePlayer(args[2], args[3])) == EditingContextError.NOT_EXIST) {
 				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
 				return true;
 			}
@@ -143,9 +133,7 @@ public class fakeplayers implements ICommand {
 					.forEach(line -> sendMsg(p, Util.colorMsg(line)));
 			break;
 		case SETSKIN:
-			output = handler.setSkin(args[2], args[3]);
-
-			if (output == EditingContextError.NOT_EXIST) {
+			if ((output = handler.setSkin(args[2], args[3])) == EditingContextError.NOT_EXIST) {
 				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
 				return true;
 			}
@@ -156,14 +144,8 @@ public class fakeplayers implements ICommand {
 
 			break;
 		case SETPING:
-			int amount = -1;
-			try {
-				amount = Integer.parseInt(args[3]);
-			} catch (NumberFormatException e) {
-			}
-
-			output = handler.setPing(args[2], amount);
-			if (output == EditingContextError.NOT_EXIST) {
+			int amount = Util.tryParse(args[3]).orElse(-1);
+			if ((output = handler.setPing(args[2], amount)) == EditingContextError.NOT_EXIST) {
 				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
 				return true;
 			}

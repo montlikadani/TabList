@@ -4,16 +4,17 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+import org.apache.commons.lang.StringUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -26,73 +27,66 @@ import hu.montlikadani.tablist.AnimCreator;
 import hu.montlikadani.tablist.bukkit.Objects.ObjectTypes;
 import hu.montlikadani.tablist.bukkit.commands.Commands;
 import hu.montlikadani.tablist.bukkit.config.CommentedConfig;
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
 import hu.montlikadani.tablist.bukkit.config.Configuration;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.bukkit.listeners.Listeners;
 import hu.montlikadani.tablist.bukkit.listeners.plugins.CMIAfkStatus;
 import hu.montlikadani.tablist.bukkit.listeners.plugins.EssAfkStatus;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler;
+import hu.montlikadani.tablist.bukkit.tablist.groups.Groups;
+import hu.montlikadani.tablist.bukkit.tablist.playerlist.PlayerList;
+import hu.montlikadani.tablist.bukkit.user.TabListPlayer;
+import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.Variables;
 import hu.montlikadani.tablist.bukkit.utils.plugin.VaultPermission;
-import hu.montlikadani.tablist.bukkit.utils.ServerVersion.Version;
+import hu.montlikadani.tablist.bukkit.utils.stuff.Complement;
+import hu.montlikadani.tablist.bukkit.utils.stuff.Complement1;
+import hu.montlikadani.tablist.bukkit.utils.stuff.Complement2;
 
-public class TabList extends JavaPlugin {
-
-	private static TabList instance;
+public final class TabList extends JavaPlugin {
 
 	private VaultPermission vaultPermission;
 	private Objects objects;
 	private Variables variables;
-	private Groups g;
-	private ServerVersion mcVersion;
+	private Groups groups;
 	private Configuration conf;
 	private TabManager tabManager;
 	private FakePlayerHandler fakePlayerHandler;
+	private Complement complement;
 
-	private boolean isSpigot = false;
-	private boolean hasVault = false;
-	private int tabRefreshTime = 0;
+	private boolean isPaper = false, hasVault = false;
 
 	private final Set<AnimCreator> animations = new HashSet<>();
-	private final Map<Player, HidePlayers> hidePlayers = new HashMap<>();
+	private final Set<TabListUser> users = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	@Override
 	public void onEnable() {
 		long load = System.currentTimeMillis();
 
-		instance = this;
-
 		try {
-			Class.forName("org.spigotmc.SpigotConfig");
-			isSpigot = true;
-		} catch (ClassNotFoundException c) {
-			isSpigot = false;
-		}
-
-		try {
-			mcVersion = new ServerVersion();
-
-			if (mcVersion.getVersion().isLower(Version.v1_8_R1)) {
+			if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R1)) {
 				logConsole(Level.SEVERE,
-						"Your server version does not supported by this plugin! Please use 1.8+ or higher versions!",
-						false);
+						"Your server version does not supported by this plugin! Please use 1.8+ or higher versions!");
 				getServer().getPluginManager().disablePlugin(this);
 				return;
 			}
 
+			verifyServerSoftware();
+
 			conf = new Configuration(this);
-			objects = new Objects();
-			g = new Groups(this);
+			objects = new Objects(this);
+			groups = new Groups(this);
 			variables = new Variables(this);
 			tabManager = new TabManager(this);
 			fakePlayerHandler = new FakePlayerHandler(this);
 
 			conf.loadFiles();
-			loadValues();
+			variables.loadExpressions();
 
 			if (ConfigValues.isPlaceholderAPI() && isPluginEnabled("PlaceholderAPI")) {
 				logConsole("Hooked PlaceholderAPI version: "
@@ -106,7 +100,7 @@ public class TabList extends JavaPlugin {
 			loadListeners();
 			registerCommands();
 			tabManager.loadToggledTabs();
-			g.load();
+			groups.load();
 
 			getServer().getOnlinePlayers().forEach(this::updateAll);
 
@@ -121,16 +115,13 @@ public class TabList extends JavaPlugin {
 		} catch (Throwable t) {
 			t.printStackTrace();
 			logConsole(Level.WARNING,
-					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues",
-					false);
+					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues");
 		}
 	}
 
 	@Override
 	public void onDisable() {
-		if (instance == null) return;
-
-		g.cancelUpdate();
+		groups.cancelUpdate();
 
 		for (ObjectTypes ot : ObjectTypes.values()) {
 			objects.unregisterObjectiveForEveryone(ot);
@@ -139,24 +130,22 @@ public class TabList extends JavaPlugin {
 		tabManager.saveToggledTabs();
 		tabManager.removeAll();
 
-		if (fakePlayerHandler != null) {
-			fakePlayerHandler.removeAllFakePlayer(false);
-		}
+		fakePlayerHandler.removeAllFakePlayer();
 
 		addBackAllHiddenPlayers();
+		conf.deleteEmptyFiles();
 
 		HandlerList.unregisterAll(this);
 		getServer().getScheduler().cancelTasks(this);
+		users.clear();
 
 		// Async tasks can't be cancelled sometimes, with this we forcedly interrupts
 		// the active ones
 		for (org.bukkit.scheduler.BukkitWorker worker : getServer().getScheduler().getActiveWorkers()) {
-			if (worker.getOwner() == this && !worker.getThread().isInterrupted()) {
+			if (equals(worker.getOwner()) && !worker.getThread().isInterrupted()) {
 				worker.getThread().interrupt();
 			}
 		}
-
-		instance = null;
 	}
 
 	@Override
@@ -164,19 +153,43 @@ public class TabList extends JavaPlugin {
 		return conf.getConfig();
 	}
 
+	@Override
+	public void saveConfig() {
+		conf.getConfig().save();
+	}
+
+	private void verifyServerSoftware() {
+		try {
+			Class.forName("com.destroystokyo.paper.PaperConfig");
+			isPaper = true;
+		} catch (ClassNotFoundException e) {
+			isPaper = false;
+		}
+
+		boolean kyoriSupported = false;
+		try {
+			Class.forName("net.kyori.adventure.text.Component");
+			kyoriSupported = true;
+		} catch (ClassNotFoundException e) {
+		}
+
+		complement = (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R3) && kyoriSupported) ? new Complement2()
+				: new Complement1();
+	}
+
 	private void beginDataCollection() {
 		Metrics metrics = new Metrics(this, 1479);
 
 		metrics.addCustomChart(new org.bstats.charts.SimplePie("using_placeholderapi",
-				() -> String.valueOf(ConfigValues.isPlaceholderAPI())));
+				() -> Boolean.toString(ConfigValues.isPlaceholderAPI())));
 
-		if (conf.getTablist().getBoolean("enabled")) {
-			metrics.addCustomChart(
-					new org.bstats.charts.SimplePie("tab_interval", () -> conf.getTablist().getString("interval")));
+		if (TabConfigValues.isEnabled()) {
+			metrics.addCustomChart(new org.bstats.charts.SimplePie("tab_interval",
+					() -> Integer.toString(TabConfigValues.getUpdateInterval())));
 		}
 
 		metrics.addCustomChart(
-				new org.bstats.charts.SimplePie("enable_tablist", () -> conf.getTablist().getString("enabled")));
+				new org.bstats.charts.SimplePie("enable_tablist", () -> Boolean.toString(TabConfigValues.isEnabled())));
 
 		if (ConfigValues.isTablistObjectiveEnabled()) {
 			metrics.addCustomChart(new org.bstats.charts.SimplePie("object_type",
@@ -184,10 +197,10 @@ public class TabList extends JavaPlugin {
 		}
 
 		metrics.addCustomChart(new org.bstats.charts.SimplePie("enable_fake_players",
-				() -> String.valueOf(ConfigValues.isFakePlayers())));
+				() -> Boolean.toString(ConfigValues.isFakePlayers())));
 
 		metrics.addCustomChart(new org.bstats.charts.SimplePie("enable_groups",
-				() -> String.valueOf(ConfigValues.isPrefixSuffixEnabled())));
+				() -> Boolean.toString(ConfigValues.isPrefixSuffixEnabled())));
 	}
 
 	private void registerCommands() {
@@ -218,40 +231,36 @@ public class TabList extends JavaPlugin {
 
 	public void reload() {
 		tabManager.removeAll();
-		g.cancelUpdate();
+		groups.cancelUpdate();
+		fakePlayerHandler.removeAllFakePlayer();
 
 		loadListeners();
 		conf.loadFiles();
 		loadAnimations();
-		loadValues();
-
-		g.load();
+		variables.loadExpressions();
+		fakePlayerHandler.load();
+		groups.load();
 
 		getServer().getOnlinePlayers().forEach(pl -> updateAll(pl, true));
-	}
-
-	private void loadValues() {
-		tabRefreshTime = conf.getTablist().getInt("interval", 4);
-		variables.loadExpressions();
 	}
 
 	private void loadAnimations() {
 		animations.clear();
 
 		FileConfiguration c = conf.getAnimCreator();
-		if (!c.contains("animations")) {
+		if (!c.isConfigurationSection("animations")) {
 			return;
 		}
 
-		for (String ac : c.getConfigurationSection("animations").getKeys(false)) {
-			String path = "animations." + ac + ".";
-			List<String> t = c.getStringList(path + "texts");
-			if (!t.isEmpty()) {
+		for (String name : c.getConfigurationSection("animations").getKeys(false)) {
+			String path = "animations." + name + ".";
+			List<String> list = c.getStringList(path + "texts");
+			if (!list.isEmpty()) {
 				if (c.getInt(path + "interval", 200) < 0) {
-					animations.add(new AnimCreator(ac, new ArrayList<>(t), c.getBoolean(path + "random")));
+					animations.add(new AnimCreator(name, list, c.getBoolean(path + "random")));
 				} else {
-					animations.add(new AnimCreator(ac, new ArrayList<>(t), c.getInt(path + "interval"),
-							c.getBoolean(path + "random")));
+					animations.add(
+							new AnimCreator(name, list, c.getInt(path + "interval"), c.getBoolean(path + "random")));
 				}
 			}
 		}
@@ -268,7 +277,7 @@ public class TabList extends JavaPlugin {
 
 		while (!animations.isEmpty() && name.contains("%anim:")) { // when using multiple animations
 			for (AnimCreator ac : animations) {
-				name = name.replace("%anim:" + ac.getAnimName() + "%",
+				name = StringUtils.replace(name, "%anim:" + ac.getAnimName() + "%",
 						ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
 			}
 		}
@@ -281,15 +290,21 @@ public class TabList extends JavaPlugin {
 	}
 
 	void updateAll(Player p, boolean reload) {
+		TabListUser user = getUser(p.getUniqueId()).orElseGet(() -> {
+			TabListUser tlu = new TabListPlayer(this, p.getUniqueId());
+			users.add(tlu);
+			return tlu;
+		});
+
 		if (!ConfigValues.isTablistObjectiveEnabled()) {
+			objects.cancelTask();
+
 			for (ObjectTypes t : ObjectTypes.values()) {
 				objects.unregisterObjectiveForEveryone(t);
 			}
 		} else {
-			objects.cancelTask();
-
-			objects.unregisterObjective(objects.getObject(p, ObjectTypes.PING));
-			objects.unregisterObjective(objects.getObject(p, ObjectTypes.CUSTOM));
+			objects.unregisterObjective(objects.getObject(p.getScoreboard(), ObjectTypes.PING));
+			objects.unregisterObjective(objects.getObject(p.getScoreboard(), ObjectTypes.CUSTOM));
 
 			switch (ConfigValues.getObjectType().toLowerCase()) {
 			case "ping":
@@ -312,23 +327,16 @@ public class TabList extends JavaPlugin {
 			}
 		}
 
-		if (reload) {
-			fakePlayerHandler.removeAllFakePlayer(false);
-			fakePlayerHandler.load();
+		if (ConfigValues.isFakePlayers()) {
+			fakePlayerHandler.display(p);
 		}
 
-		if (ConfigValues.isHidePlayersFromTab()) {
-			HidePlayers h = hidePlayers.getOrDefault(p, new HidePlayers());
-			if (!hidePlayers.containsKey(p)) {
-				hidePlayers.put(p, h);
-			}
+		groups.startTask();
 
-			h.removePlayerFromTab(p);
+		if (ConfigValues.isHidePlayersFromTab()) {
+			user.setHidden(true);
 		} else {
-			if (hidePlayers.containsKey(p)) {
-				hidePlayers.get(p).addPlayerToTab();
-				hidePlayers.remove(p);
-			}
+			user.setHidden(false);
 
 			if (ConfigValues.isPerWorldPlayerList()) {
 				PlayerList.hideShow(p);
@@ -338,7 +346,7 @@ public class TabList extends JavaPlugin {
 			}
 		}
 
-		tabManager.addPlayer(p);
+		tabManager.addPlayer(user);
 	}
 
 	public void onPlayerQuit(Player p) {
@@ -348,17 +356,15 @@ public class TabList extends JavaPlugin {
 			}
 		}
 
-		if (hidePlayers.containsKey(p)) {
-			hidePlayers.remove(p);
-		}
-
-		tabManager.removePlayer(p);
-		g.removePlayerGroup(p);
+		users.removeIf(user -> {
+			tabManager.removePlayer(user);
+			groups.removePlayerGroup(user);
+			return p.getUniqueId().equals(user.getUniqueId());
+		});
 	}
 
 	void addBackAllHiddenPlayers() {
-		hidePlayers.values().forEach(HidePlayers::addPlayerToTab);
-		hidePlayers.clear();
+		users.forEach(tlu -> tlu.setHidden(false));
 	}
 
 	public String getMsg(String key, Object... placeholders) {
@@ -367,31 +373,16 @@ public class TabList extends JavaPlugin {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getMsg(TypeToken<T> type, String key, Object... placeholders) {
-		if (key == null || key.trim().isEmpty()) {
+		if (key == null || key.isEmpty()) {
 			return (T) "null";
 		}
 
 		if (type.getRawType().isAssignableFrom(String.class)) {
-			if (!conf.getMessagesFile().exists()) {
-				return (T) "FILENF";
-			}
-
-			String msg = "";
-
-			if (!conf.getMessages().contains(key)) {
-				conf.getMessages().set(key, "");
-				try {
-					conf.getMessages().save(conf.getMessagesFile());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
 			if (conf.getMessages().getString(key).isEmpty()) {
-				return (T) msg;
+				return (T) "";
 			}
 
-			msg = colorMsg(conf.getMessages().getString(key));
+			String msg = colorMsg(conf.getMessages().getString(key));
 
 			for (int i = 0; i < placeholders.length; i++) {
 				if (placeholders.length >= i + 2) {
@@ -405,10 +396,6 @@ public class TabList extends JavaPlugin {
 		}
 
 		if (type.getRawType().isAssignableFrom(List.class)) {
-			if (!conf.getMessagesFile().exists()) {
-				return (T) new ArrayList<>();
-			}
-
 			List<String> list = new ArrayList<>();
 
 			for (String one : conf.getMessages().getStringList(key)) {
@@ -416,7 +403,8 @@ public class TabList extends JavaPlugin {
 
 				for (int i = 0; i < placeholders.length; i++) {
 					if (placeholders.length >= i + 2) {
-						one = one.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
+						one = StringUtils.replace(one, String.valueOf(placeholders[i]),
+								String.valueOf(placeholders[i + 1]));
 					}
 
 					i++;
@@ -431,16 +419,34 @@ public class TabList extends JavaPlugin {
 		return (T) "no msg";
 	}
 
-	public Map<Player, HidePlayers> getHidePlayers() {
-		return hidePlayers;
+	public Optional<TabListUser> getUser(Player player) {
+		return player == null ? Optional.empty() : getUser(player.getUniqueId());
 	}
 
-	public boolean isSpigot() {
-		return isSpigot;
+	public Optional<TabListUser> getUser(UUID uuid) {
+		if (uuid == null) {
+			return Optional.empty();
+		}
+
+		for (TabListUser tlp : users) {
+			if (uuid.equals(tlp.getUniqueId())) {
+				return Optional.of(tlp);
+			}
+		}
+
+		return Optional.empty();
+	}
+
+	public Set<TabListUser> getUsers() {
+		return users;
 	}
 
 	public boolean hasVault() {
 		return hasVault;
+	}
+
+	public boolean isPaper() {
+		return isPaper;
 	}
 
 	public Variables getPlaceholders() {
@@ -460,7 +466,7 @@ public class TabList extends JavaPlugin {
 	}
 
 	public Groups getGroups() {
-		return g;
+		return groups;
 	}
 
 	public Objects getObjects() {
@@ -475,21 +481,8 @@ public class TabList extends JavaPlugin {
 		return vaultPermission;
 	}
 
-	ServerVersion getMCVersion() {
-		return mcVersion;
-	}
-
-	public int getTabRefreshTime() {
-		return tabRefreshTime;
-	}
-
-	/**
-	 * Gets this class instance
-	 * 
-	 * @return {@link TabList}
-	 */
-	public static TabList getInstance() {
-		return instance;
+	public Complement getComplement() {
+		return complement;
 	}
 
 	public boolean isPluginEnabled(String name) {
@@ -499,10 +492,7 @@ public class TabList extends JavaPlugin {
 
 	public File getFolder() {
 		File dataFolder = getDataFolder();
-		if (!dataFolder.exists()) {
-			dataFolder.mkdir();
-		}
-
+		dataFolder.mkdirs();
 		return dataFolder;
 	}
 }

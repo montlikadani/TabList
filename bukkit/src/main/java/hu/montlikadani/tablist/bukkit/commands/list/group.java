@@ -8,14 +8,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import hu.montlikadani.tablist.bukkit.Groups;
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.TeamHandler;
 import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.commands.Commands.ContextArguments;
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.bukkit.tablist.groups.Groups;
+import hu.montlikadani.tablist.bukkit.tablist.groups.TeamHandler;
 
 @CommandProcessor(name = "group", permission = Perm.GROUP_META)
 public class group implements ICommand {
@@ -25,8 +25,6 @@ public class group implements ICommand {
 		if (!ConfigValues.isPrefixSuffixEnabled()) {
 			plugin.getConfig().set("change-prefix-suffix-in-tablist.enable", true);
 		}
-
-		plugin.getConf().createGroupsFile();
 
 		if (args.length < 3) {
 			return false;

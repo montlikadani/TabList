@@ -13,13 +13,18 @@ import java.util.concurrent.CompletableFuture;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 
 public abstract class UpdateDownloader {
 
-	private static final File RELEASESFOLDER = new File(TabList.getInstance().getFolder(), "releases");
+	private static final TabList PLUGIN = TabListAPI.getPlugin();
+
+	private static File releasesFolder;
 
 	public static void checkFromGithub(org.bukkit.command.CommandSender sender) {
-		if (!TabList.getInstance().getConfig().get("check-update", false)) {
+		releasesFolder = new File(PLUGIN.getFolder(), "releases");
+
+		if (!PLUGIN.getConfig().get("check-update", false)) {
 			deleteDirectory();
 			return;
 		}
@@ -40,7 +45,7 @@ public abstract class UpdateDownloader {
 
 				String versionString = lineWithVersion.split(": ")[1],
 						nVersion = versionString.replaceAll("[^0-9]", ""),
-						cVersion = TabList.getInstance().getDescription().getVersion().replaceAll("[^0-9]", "");
+						cVersion = PLUGIN.getDescription().getVersion().replaceAll("[^0-9]", "");
 
 				int newVersion = Integer.parseInt(nVersion);
 				int currentVersion = Integer.parseInt(cVersion);
@@ -52,8 +57,8 @@ public abstract class UpdateDownloader {
 
 				String msg = "";
 				if (sender instanceof Player) {
-					msg = Util.colorMsg("&aA new update for TabList is available!&4 Version:&7 " + versionString
-							+ (TabList.getInstance().getConfig().get("download-updates", false) ? ""
+					msg = Util.colorMsg("&aA new update for TabList is available!&4 ServerVersion:&7 " + versionString
+							+ (PLUGIN.getConfig().get("download-updates", false) ? ""
 									: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/"));
 				} else {
 					msg = "New version (" + versionString
@@ -62,19 +67,19 @@ public abstract class UpdateDownloader {
 
 				Util.sendMsg(sender, msg);
 
-				if (!TabList.getInstance().getConfig().get("download-updates", false)) {
+				if (!PLUGIN.getConfig().get("download-updates", false)) {
 					deleteDirectory();
 					return false;
 				}
 
 				final String name = "TabList-v" + versionString;
 
-				if (!RELEASESFOLDER.exists()) {
-					RELEASESFOLDER.mkdir();
+				if (!releasesFolder.exists()) {
+					releasesFolder.mkdir();
 				}
 
 				// Do not attempt to download the file again, when it is already downloaded
-				final File jar = new File(RELEASESFOLDER, name + ".jar");
+				final File jar = new File(releasesFolder, name + ".jar");
 				if (jar.exists()) {
 					return false;
 				}
@@ -106,11 +111,11 @@ public abstract class UpdateDownloader {
 	}
 
 	private static void deleteDirectory() {
-		if (!RELEASESFOLDER.exists()) {
+		if (!releasesFolder.exists()) {
 			return;
 		}
 
-		for (File file : RELEASESFOLDER.listFiles()) {
+		for (File file : releasesFolder.listFiles()) {
 			try {
 				file.delete();
 			} catch (SecurityException e) {
@@ -118,7 +123,7 @@ public abstract class UpdateDownloader {
 		}
 
 		try {
-			RELEASESFOLDER.delete();
+			releasesFolder.delete();
 		} catch (SecurityException e) {
 		}
 	}

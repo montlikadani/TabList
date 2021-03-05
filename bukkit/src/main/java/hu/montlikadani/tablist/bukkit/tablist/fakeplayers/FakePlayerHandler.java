@@ -4,13 +4,14 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.config.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class FakePlayerHandler {
@@ -69,7 +70,7 @@ public class FakePlayerHandler {
 					String path = split[0] + ".";
 					cs.set(path + "displayname", split[0]);
 
-					if (split.length > 0 && Util.isRealUUID(split[1])) {
+					if (split.length > 0 && Util.tryParseId(split[1]).isPresent()) {
 						cs.set(path + "headuuid", split[1]);
 					}
 
@@ -105,8 +106,8 @@ public class FakePlayerHandler {
 		}
 	}
 
-	public void display() {
-		fakePlayers.forEach(fpl -> plugin.getServer().getOnlinePlayers().forEach(fpl::createFakePlayer));
+	public void display(Player player) {
+		fakePlayers.forEach(fpl -> fpl.createFakePlayer(player));
 	}
 
 	public EditingContextError createPlayer(Player p, String name, String displayName) {
@@ -125,10 +126,6 @@ public class FakePlayerHandler {
 
 		if (getFakePlayerByName(name).isPresent()) {
 			return EditingContextError.ALREADY_EXIST;
-		}
-
-		if (!Util.isRealUUID(headUUID)) {
-			return EditingContextError.UUID_MATCH_ERROR;
 		}
 
 		String path = "list." + name + ".";
@@ -157,24 +154,9 @@ public class FakePlayerHandler {
 		return EditingContextError.OK;
 	}
 
-	public EditingContextError removeAllFakePlayer(boolean removeFromConfig) {
+	public void removeAllFakePlayer() {
 		fakePlayers.forEach(IFakePlayers::removeFakePlayer);
 		fakePlayers.clear();
-
-		if (!removeFromConfig) {
-			return EditingContextError.OK;
-		}
-
-		plugin.getConf().getFakeplayers().set("list", null);
-
-		try {
-			plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return EditingContextError.UNKNOWN;
-		}
-
-		return EditingContextError.OK;
 	}
 
 	public EditingContextError removePlayer(String name) {
@@ -230,7 +212,7 @@ public class FakePlayerHandler {
 			return EditingContextError.NOT_EXIST;
 		}
 
-		if (!Util.isRealUUID(uuid)) {
+		if (!Util.tryParseId(uuid).isPresent()) {
 			return EditingContextError.UUID_MATCH_ERROR;
 		}
 
@@ -243,7 +225,7 @@ public class FakePlayerHandler {
 			return EditingContextError.UNKNOWN;
 		}
 
-		fp.get().setSkin(uuid);
+		fp.get().setSkin(UUID.fromString(uuid));
 		return EditingContextError.OK;
 	}
 
