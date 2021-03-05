@@ -16,6 +16,7 @@ public final class TabEntryValues {
 	private static boolean enabled = false;
 
 	private static int columns;
+	private static long refreshRate;
 
 	public static final Map<ColumnValues.ConfigType, List<ColumnValues>> COLUMN_SECTION = new HashMap<>();
 	public static final Map<PlaceholderSetting.SettingType, PlaceholderSetting> VARIABLE_SETTINGS = new HashMap<>();
@@ -28,6 +29,11 @@ public final class TabEntryValues {
 		columns = c.getInt("columns-size", 4);
 		if (columns > 4 || columns < 1) {
 			columns = 4;
+		}
+
+		refreshRate = c.getLong("refresh-rate", 6L);
+		if (refreshRate < 1) {
+			refreshRate = 6L;
 		}
 
 		for (PlaceholderSetting.SettingType type : PlaceholderSetting.SettingType.values()) {
@@ -171,5 +177,9 @@ public final class TabEntryValues {
 
 	public static int getColumns() {
 		return columns;
+	}
+
+	public static long getRefreshRate() {
+		return refreshRate;
 	}
 }

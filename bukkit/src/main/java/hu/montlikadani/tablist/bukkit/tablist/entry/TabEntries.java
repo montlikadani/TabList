@@ -83,7 +83,7 @@ public final class TabEntries {
 				}
 
 				updateEntries();
-			}, 4L, 6L);
+			}, 4L, TabEntryValues.getRefreshRate());
 		} else {
 			loopEntries(entry -> {
 				RowPlayer row = (RowPlayer) entry.row;
@@ -175,7 +175,7 @@ public final class TabEntries {
 							rowIndex = 0;
 						}
 
-						if ((column = value.getColumn()) >= entries.length) {
+						if ((column = value.getColumn()) > entries.length) {
 							continue;
 						}
 

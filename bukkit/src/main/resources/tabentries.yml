@@ -1,6 +1,9 @@
 enabled: false
 columns-size: 4
 
+# Entries refreshing rate in milliseconds (server ticks)
+refresh-rate: 6
+
 placeholder-setting:
   world_players:
     max: 8
