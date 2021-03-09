@@ -10,7 +10,6 @@ import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.Team;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
@@ -19,32 +18,31 @@ import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.tablist.entry.TabEntries;
 import hu.montlikadani.tablist.bukkit.tablist.entry.row.variable.VariableReplacer;
-import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
+import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.Util;
+import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 
 @SuppressWarnings("unchecked")
 public class RowPlayer implements IRowPlayer {
 
 	public final TabEntries root;
+	public final VariableReplacer replacer;
+
+	public int rowIndex = 0, columnIndex = 0;
 
 	private final TabList plugin = TabListAPI.getPlugin();
 
 	private UUID skinId;
 	private String text = " ";
 	private Player player;
-
-	private Object rowPlayer, packet, gameMode;
-	private Field infoList;
-	private Class<?> enumPlayerInfoAction, entityPlayer, packetPlayOutPlayerInfo;
-	private Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstr;
-	private GameProfile gameProfile;
-
-	public final VariableReplacer replacer;
-
 	private int ping;
 
-	public int rowIndex = 0, columnIndex = 0;
+	private Field infoList;
+	private Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstr;
+	private Class<?> packetPlayOutPlayerInfo, enumPlayerInfoAction, entityPlayer;
+	private Object packet, rowPlayer, gameMode;
+	private GameProfile gameProfile;
 
 	public RowPlayer(TabEntries root) {
 		this.root = root;
@@ -57,8 +55,18 @@ public class RowPlayer implements IRowPlayer {
 			infoList = ReflectionUtils.getField(packetPlayOutPlayerInfo, "b");
 			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction(packetPlayOutPlayerInfo);
 
-			Constructor<?>[] array = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData")
-					.getConstructors();
+			Class<?> playerInfoData = null;
+			try {
+				playerInfoData = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData");
+			} catch (ClassNotFoundException e) {
+				playerInfoData = ReflectionUtils.getNMSClass("PlayerInfoData");
+			}
+
+			if (playerInfoData == null) {
+				return;
+			}
+
+			Constructor<?>[] array = playerInfoData.getConstructors();
 			for (Constructor<?> constr : array) {
 				if (constr.getParameterCount() == 4 || constr.getParameterCount() == 5) {
 					playerInfoDataConstr = constr;
@@ -127,7 +135,6 @@ public class RowPlayer implements IRowPlayer {
 		this.ping = ping >= 0 ? ping : 20;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void setPlayer(Player player) {
 		if (player != null) {
@@ -140,16 +147,15 @@ public class RowPlayer implements IRowPlayer {
 			return;
 		}
 
+		// Need 3 tick delay to show player
 		Bukkit.getScheduler().runTaskLater(plugin, () -> {
 			try {
-				// Workaround to set player to row without scoreboard teams
-
-				/*String name = String.format("%03d", rowIndex); // 00 + index - sort by row index
-				gameProfile = new GameProfile(UUID.nameUUIDFromBytes(name.getBytes()), name);*/
+				String name = String.format("%03d", rowIndex); // 00 + index - sort by row index
+				gameProfile = new GameProfile(UUID.nameUUIDFromBytes(name.getBytes()), name);
 
 				Object entityPlayer = ReflectionUtils.getHandle(player);
 
-				/*GameProfile currentProfile = (GameProfile) ReflectionUtils.invokeMethod(entityPlayer, "getProfile",
+				GameProfile currentProfile = (GameProfile) ReflectionUtils.invokeMethod(entityPlayer, "getProfile",
 						true, true);
 
 				gameProfile.getProperties().clear();
@@ -174,43 +180,24 @@ public class RowPlayer implements IRowPlayer {
 						.newInstance(enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction),
 								entityPlayerArray);
 
-				for (Player pl : Bukkit.getOnlinePlayers()) {
-					ReflectionUtils.sendPacket(pl, packet);
+				((List<Object>) infoList.get(packet)).add(rowPlayer = playerInfoDataConstr.newInstance(packet,
+						gameProfile, ping, gameMode, ReflectionUtils.getAsIChatBaseComponent(player.getName())));
+
+				for (TabListUser user : plugin.getUsers()) {
+					ReflectionUtils.sendPacket(user.getPlayer(), packet);
+					ReflectionUtils.sendPacket(user.getPlayer(), rowPlayer);
 				}
 
-				ReflectionUtils.modifyFinalField(profile, entityPlayer, currentProfile);*/
+				ReflectionUtils.modifyFinalField(profile, entityPlayer, currentProfile);
 
-				Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
-				Array.set(entityPlayerArray, 0, entityPlayer);
-
-				packet = packetPlayOutPlayerInfo.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
-						.newInstance(
-								enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction),
-								entityPlayerArray);
-
-				// Temporary solution for setting player to this row position (not work)
-				String teamName = String.format("%03d", rowIndex);
-				Team team = TabEntries.BOARD.getTeam(teamName);
-				if (team == null) {
-					team = TabEntries.BOARD.registerNewTeam(teamName);
-				}
-
-				if (ServerVersion.isCurrentLower(ServerVersion.v1_9_R1)) {
-					if (!team.hasPlayer(player)) {
-						team.addPlayer(player);
-					}
-				} else if (!team.hasEntry(player.getName())) {
-					team.addEntry(player.getName());
-				}
-
-				for (Player pl : Bukkit.getOnlinePlayers()) {
-					ReflectionUtils.sendPacket(pl, packet);
-					pl.setScoreboard(TabEntries.BOARD);
+				for (TabListUser user : plugin.getUsers()) {
+					ReflectionUtils.sendPacket(user.getPlayer(), packet);
+					ReflectionUtils.sendPacket(user.getPlayer(), rowPlayer);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		}, 20L);
+		}, 3L);
 	}
 
 	@Override
@@ -220,7 +207,7 @@ public class RowPlayer implements IRowPlayer {
 
 	@Override
 	public void create(int rowIndex) {
-		if (rowPlayer != null || player != null) {
+		if (rowPlayer != null || player != null || playOutPlayerInfoConstr == null) {
 			return;
 		}
 
@@ -230,8 +217,9 @@ public class RowPlayer implements IRowPlayer {
 		}
 
 		CompletableFuture<Void> comp = new CompletableFuture<>();
-		if (Bukkit.getServer().getOnlineMode() && skinId != null) {
-			comp = getSkinValue(skinId.toString()).thenAcceptAsync(map -> {
+		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_8_R2) && Bukkit.getServer().getOnlineMode()
+				&& skinId != null) {
+			comp = ReflectionUtils.getJsonComponent().getSkinValue(skinId.toString()).thenAcceptAsync(map -> {
 				java.util.Map.Entry<String, String> first = map.pollFirstEntry();
 				gameProfile.getProperties().get("textures").clear();
 				gameProfile.getProperties().put("textures", new Property("textures", first.getKey(), first.getValue()));
@@ -249,18 +237,22 @@ public class RowPlayer implements IRowPlayer {
 				((List<Object>) infoList.get(packet)).add(rowPlayer = playerInfoDataConstr.newInstance(packet,
 						gameProfile, ping, gameMode, ReflectionUtils.getAsIChatBaseComponent(text)));
 
-				for (Player player : Bukkit.getOnlinePlayers()) {
-					ReflectionUtils.sendPacket(player, packet);
-					ReflectionUtils.sendPacket(player, rowPlayer);
+				for (TabListUser user : plugin.getUsers()) {
+					ReflectionUtils.sendPacket(user.getPlayer(), packet);
+					ReflectionUtils.sendPacket(user.getPlayer(), rowPlayer);
 				}
 
-				// Change "EnumPlayerInfoAction" field object to UPDATE_DISPLAY_NAME
-				for (Field f : packet.getClass().getDeclaredFields()) {
-					if (f.getDeclaringClass().equals(enumPlayerInfoAction)) {
-						ReflectionUtils.modifyFinalField(f, packet,
-								enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME").get(packet));
-						break;
-					}
+				// Send a new packet for empty rows
+				packet = playOutPlayerInfoConstr.newInstance(
+						enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME").get(enumPlayerInfoAction),
+						Array.newInstance(entityPlayer, 0));
+
+				((List<Object>) infoList.get(packet)).add(rowPlayer = playerInfoDataConstr.newInstance(packet,
+						gameProfile, ping, gameMode, ReflectionUtils.getAsIChatBaseComponent(text)));
+
+				for (TabListUser user : plugin.getUsers()) {
+					ReflectionUtils.sendPacket(user.getPlayer(), packet);
+					ReflectionUtils.sendPacket(user.getPlayer(), rowPlayer);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -277,7 +269,7 @@ public class RowPlayer implements IRowPlayer {
 
 	@Override
 	public void remove() {
-		if (rowPlayer == null || player != null) {
+		if (rowPlayer == null) {
 			return;
 		}
 
@@ -289,9 +281,25 @@ public class RowPlayer implements IRowPlayer {
 			((List<Object>) infoList.get(packet)).add(rowPlayer = playerInfoDataConstr.newInstance(packet, gameProfile,
 					ping, gameMode, ReflectionUtils.getAsIChatBaseComponent(text)));
 
-			for (Player pl : Bukkit.getOnlinePlayers()) {
-				ReflectionUtils.sendPacket(pl, packet);
-				ReflectionUtils.sendPacket(pl, rowPlayer);
+			for (TabListUser user : plugin.getUsers()) {
+				ReflectionUtils.sendPacket(user.getPlayer(), packet);
+				ReflectionUtils.sendPacket(user.getPlayer(), rowPlayer);
+			}
+
+			// Restore player to default state
+			if (player != null) {
+				packet = playOutPlayerInfoConstr.newInstance(
+						enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction),
+						Array.newInstance(entityPlayer, 0));
+
+				((List<Object>) infoList.get(packet)).add(rowPlayer = playerInfoDataConstr.newInstance(packet,
+						gameProfile, ping, gameMode,
+						ReflectionUtils.getAsIChatBaseComponent(plugin.getComplement().getPlayerListName(player))));
+
+				for (TabListUser user : plugin.getUsers()) {
+					ReflectionUtils.sendPacket(user.getPlayer(), packet);
+					ReflectionUtils.sendPacket(user.getPlayer(), rowPlayer);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -351,11 +359,11 @@ public class RowPlayer implements IRowPlayer {
 
 		this.skinId = skinId;
 
-		if (!Bukkit.getServer().getOnlineMode()) {
+		if (!Bukkit.getServer().getOnlineMode() || ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
 			return;
 		}
 
-		getSkinValue(skinId.toString()).thenAcceptAsync(map -> {
+		ReflectionUtils.getJsonComponent().getSkinValue(skinId.toString()).thenAcceptAsync(map -> {
 			java.util.Map.Entry<String, String> first = map.pollFirstEntry();
 			gameProfile.getProperties().get("textures").clear();
 			gameProfile.getProperties().put("textures", new Property("textures", first.getKey(), first.getValue()));
@@ -368,9 +376,9 @@ public class RowPlayer implements IRowPlayer {
 				((List<Object>) infoList.get(packet)).add(rowPlayer = playerInfoDataConstr.newInstance(packet,
 						gameProfile, ping, gameMode, ReflectionUtils.getAsIChatBaseComponent(text)));
 
-				for (Player player : Bukkit.getOnlinePlayers()) {
-					ReflectionUtils.sendPacket(player, packet);
-					ReflectionUtils.sendPacket(player, rowPlayer);
+				for (TabListUser user : plugin.getUsers()) {
+					ReflectionUtils.sendPacket(user.getPlayer(), packet);
+					ReflectionUtils.sendPacket(user.getPlayer(), rowPlayer);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

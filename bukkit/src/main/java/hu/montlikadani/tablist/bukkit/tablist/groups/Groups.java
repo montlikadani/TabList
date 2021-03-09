@@ -141,9 +141,8 @@ public class Groups {
 	 * @param priority
 	 */
 	public void setPlayerTeam(GroupPlayer groupPlayer, int priority) {
-		if (groupPlayer != null) {
-			plugin.getUser(groupPlayer.getPlayer()).filter(tlu -> !tlu.isHidden())
-					.ifPresent(tlu -> groupPlayer.getTabTeam().setTeam(groupPlayer.getFullGroupTeamName()));
+		if (groupPlayer != null && !groupPlayer.getUser().isHidden()) {
+			groupPlayer.getTabTeam().setTeam(groupPlayer.getFullGroupTeamName());
 		}
 	}
 
@@ -152,7 +151,7 @@ public class Groups {
 	 * <p>
 	 * After adding/or the player existing, their groups will get updated once to
 	 * retrieve the approximately group and sets the prefix/suffix to be shown in
-	 * player list. see {@link #setPlayerTeam(GroupPlayer, int)}
+	 * player list. See {@link #setPlayerTeam(GroupPlayer, int)}
 	 * 
 	 * @param player {@link Player}
 	 * @return {@link GroupPlayer} if ever exists or not

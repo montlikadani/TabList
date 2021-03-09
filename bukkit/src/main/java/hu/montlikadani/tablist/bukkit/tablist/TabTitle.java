@@ -2,9 +2,9 @@ package hu.montlikadani.tablist.bukkit.tablist;
 
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.Util;
+import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public abstract class TabTitle {
 

@@ -331,6 +331,7 @@ public final class TabList extends JavaPlugin {
 			fakePlayerHandler.display(p);
 		}
 
+		tabManager.addPlayer(user);
 		groups.startTask();
 
 		if (ConfigValues.isHidePlayersFromTab()) {
@@ -345,8 +346,6 @@ public final class TabList extends JavaPlugin {
 				PlayerList.showEveryone(p);
 			}
 		}
-
-		tabManager.addPlayer(user);
 	}
 
 	public void onPlayerQuit(Player p) {

@@ -3,8 +3,8 @@ package hu.montlikadani.tablist.bukkit.tablist.groups.impl;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
+import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public class TabScoreboardReflection {
 

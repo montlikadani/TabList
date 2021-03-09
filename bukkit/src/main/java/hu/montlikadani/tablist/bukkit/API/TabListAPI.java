@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist.bukkit.API;
 
-import java.lang.reflect.Field;
 import java.util.UUID;
 
 import org.apache.commons.lang.Validate;
@@ -13,7 +12,7 @@ import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 import hu.montlikadani.tablist.bukkit.tablist.TabTitle;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayers;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.IFakePlayers;
-import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
+import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 /**
  * The API methods for TabList.
@@ -117,8 +116,7 @@ public class TabListAPI {
 
 		try {
 			Object nmsPlayer = ReflectionUtils.getHandle(p);
-			Field ping = ReflectionUtils.getField(nmsPlayer, "ping", false);
-			return ping.getInt(nmsPlayer);
+			return ReflectionUtils.getField(nmsPlayer.getClass(), "ping", false).getInt(nmsPlayer);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -127,15 +125,14 @@ public class TabListAPI {
 	}
 
 	/**
-	 * Gets the current tps of server.
+	 * Gets the current tps (ticks per second) value of the server.
 	 * 
 	 * @return The current TPS
 	 */
 	public static double getTPS() {
 		try {
-			Object mc = ReflectionUtils.invokeMethod(Bukkit.getServer(), "getServer", false);
-			Field rec = ReflectionUtils.getField(mc, "recentTps", false);
-			return ((double[]) rec.get(mc))[0];
+			Object server = ReflectionUtils.invokeMethod(Bukkit.getServer(), "getServer", false);
+			return ((double[]) ReflectionUtils.getField(server.getClass(), "recentTps", false).get(server))[0];
 		} catch (Exception e) {
 		}
 

@@ -42,8 +42,7 @@ public class TabHandler {
 
 	public void updateTab() {
 		worldList.clear();
-		worldEnabled = false;
-		tabEmpty = false;
+		worldEnabled = tabEmpty = false;
 		usedPermission = "";
 
 		final Player player = Bukkit.getServer().getPlayer(playerUUID);

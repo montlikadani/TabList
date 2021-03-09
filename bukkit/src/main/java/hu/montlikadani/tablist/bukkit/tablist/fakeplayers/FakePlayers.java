@@ -10,8 +10,9 @@ import org.bukkit.entity.Player;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
-import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.Util;
+import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public class FakePlayers implements IFakePlayers {
 
@@ -177,7 +178,7 @@ public class FakePlayers implements IFakePlayers {
 
 	@Override
 	public void setSkin(UUID headId) {
-		if (profile == null || headId == null) {
+		if (profile == null || headId == null || ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
 			return;
 		}
 
@@ -186,7 +187,7 @@ public class FakePlayers implements IFakePlayers {
 			return;
 		}
 
-		getSkinValue(headId.toString()).thenAcceptAsync(map -> {
+		ReflectionUtils.getJsonComponent().getSkinValue(headId.toString()).thenAcceptAsync(map -> {
 			java.util.Map.Entry<String, String> e = map.pollFirstEntry();
 			profile.getProperties().get("textures").clear();
 			profile.getProperties().put("textures", new Property("textures", e.getKey(), e.getValue()));

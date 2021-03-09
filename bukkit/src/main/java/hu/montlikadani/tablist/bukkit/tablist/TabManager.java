@@ -86,7 +86,6 @@ public class TabManager {
 
 	public void removeAll() {
 		cancelTask();
-		tabEntries.cancelTask();
 
 		for (TabListUser user : plugin.getUsers()) {
 			Player player = user.getPlayer();

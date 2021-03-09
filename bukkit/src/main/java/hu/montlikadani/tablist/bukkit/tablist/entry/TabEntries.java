@@ -6,9 +6,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.scoreboard.Scoreboard;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabEntryValues;
@@ -20,9 +18,6 @@ import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
 
 public final class TabEntries {
-
-	// Breh this thing is back
-	public static final Scoreboard BOARD = Bukkit.getScoreboardManager().getNewScoreboard();
 
 	private TabList plugin;
 	private Entry[][] entries;

@@ -1,25 +1,18 @@
-package hu.montlikadani.tablist.bukkit.utils;
+package hu.montlikadani.tablist.bukkit.utils.reflection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
-import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 
 public final class ReflectionUtils {
 
-	private static final Gson GSON = new GsonBuilder().create();
-	private static final List<JsonObject> JSONLIST = new CopyOnWriteArrayList<>();
-
 	private static Field modifiersField;
+	private static JsonComponent jsonComponent;
 
 	static {
 		try {
@@ -55,115 +48,23 @@ public final class ReflectionUtils {
 	private ReflectionUtils() {
 	}
 
+	public static JsonComponent getJsonComponent() {
+		if (jsonComponent == null) {
+			jsonComponent = new JsonComponent();
+		}
+
+		return jsonComponent;
+	}
+
 	public static Object getHandle(Object obj) throws Exception {
 		return invokeMethod(obj, "getHandle");
 	}
 
-	public synchronized static Object getAsIChatBaseComponent(final String text) throws Exception {
+	public static Object getAsIChatBaseComponent(final String text) throws Exception {
 		Class<?> iChatBaseComponent = getNMSClass("IChatBaseComponent");
 
 		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1)) {
-			JSONLIST.clear();
-
-			JsonObject obj = new JsonObject();
-			StringBuilder builder = new StringBuilder();
-
-			String font = "", colorName = "";
-			for (int i = 0; i < text.length(); i++) {
-				if (i >= text.length()) {
-					break;
-				}
-
-				char charAt = text.charAt(i);
-				if (charAt == '{') {
-					int closeIndex = -1;
-					if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', i + 6)) >= 0) {
-						font = NamespacedKey.minecraft(text.substring(i + 6, closeIndex)).toString();
-					} else if (text.regionMatches(true, i, "{/font", 0, 6)
-							&& (closeIndex = text.indexOf('}', i + 6)) >= 0) {
-						font = NamespacedKey.minecraft("default").toString();
-					}
-
-					if (closeIndex >= 0) {
-						if (builder.length() > 0) {
-							obj.addProperty("text", builder.toString());
-							JSONLIST.add(obj);
-							builder = new StringBuilder();
-						}
-
-						obj = new JsonObject();
-						obj.addProperty("font", font);
-						i += closeIndex - i;
-					}
-				} else if (charAt == '#') {
-					colorName = text.substring(i, i + 7);
-
-					if (builder.length() > 0) {
-						obj.addProperty("text", builder.toString());
-						JSONLIST.add(obj);
-						builder = new StringBuilder();
-					}
-
-					obj = new JsonObject();
-					obj.addProperty("color", colorName);
-					i += 6; // Increase loop with 6 to ignore hex digit
-				} else if (charAt == '&' || charAt == '\u00a7') {
-					char colorCode = text.charAt(i + 1);
-
-					if (Character.isDigit(colorCode)
-							|| ((colorCode >= 'a' && colorCode <= 'f') || (colorCode == 'k' || colorCode == 'l'
-									|| colorCode == 'm' || colorCode == 'n' || colorCode == 'o' || colorCode == 'r'))) {
-						obj.addProperty("text", builder.toString());
-						JSONLIST.add(obj);
-
-						obj = new JsonObject();
-						builder = new StringBuilder();
-
-						if (!colorName.isEmpty()) {
-							obj.addProperty("color", colorName);
-						}
-
-						if (!font.isEmpty()) {
-							obj.addProperty("font", font);
-						}
-
-						switch (colorCode) {
-						case 'k':
-							obj.addProperty("obfuscated", true);
-							break;
-						case 'o':
-							obj.addProperty("italic", true);
-							break;
-						case 'n':
-							obj.addProperty("underlined", true);
-							break;
-						case 'm':
-							obj.addProperty("strikethrough", true);
-							break;
-						case 'l':
-							obj.addProperty("bold", true);
-							break;
-						case 'r':
-							obj.addProperty("color", colorName = "white");
-							break;
-						default:
-							obj.addProperty("color",
-									colorName = org.bukkit.ChatColor.getByChar(colorCode).name().toLowerCase());
-							break;
-						}
-
-						i++;
-					}
-				} else {
-					builder.append(charAt);
-				}
-			}
-
-			obj.addProperty("text", builder.toString());
-			JSONLIST.add(obj);
-
-			Method m = iChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class);
-			return m.invoke(iChatBaseComponent, GSON.toJson(JSONLIST));
+			return getJsonComponent().parseProperty(text, iChatBaseComponent);
 		}
 
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
@@ -204,11 +105,7 @@ public final class ReflectionUtils {
 	}
 
 	public static Field getField(Object clazz, String name) throws Exception {
-		return getField(clazz, name, true);
-	}
-
-	public static Field getField(Object clazz, String name, boolean declared) throws Exception {
-		return getField(clazz.getClass(), name, declared);
+		return getField(clazz.getClass(), name, true);
 	}
 
 	public static Field getField(Class<?> clazz, String name) throws Exception {
@@ -271,7 +168,8 @@ public final class ReflectionUtils {
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
 					world = getHandle(player.getWorld());
 					managerIns = manager.getConstructor(world.getClass()).newInstance(world);
-				} else if (ServerVersion.isCurrentEqual(ServerVersion.v1_13_R1) || ServerVersion.isCurrentEqual(ServerVersion.v1_13_R2)) {
+				} else if (ServerVersion.isCurrentEqual(ServerVersion.v1_13_R1)
+						|| ServerVersion.isCurrentEqual(ServerVersion.v1_13_R2)) {
 					world = getHandle(player.getWorld());
 				} else {
 					world = server.getDeclaredMethod("getWorldServer", int.class).invoke(serverIns, 0);

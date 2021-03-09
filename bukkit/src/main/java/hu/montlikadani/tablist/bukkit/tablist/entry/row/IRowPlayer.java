@@ -1,21 +1,9 @@
 package hu.montlikadani.tablist.bukkit.tablist.entry.row;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.util.NavigableMap;
 import java.util.Optional;
-import java.util.TreeMap;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
-import javax.net.ssl.HttpsURLConnection;
-
-import org.apache.commons.codec.binary.Base64;
 import org.bukkit.entity.Player;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 /**
  * The interface for creating columns for tablist
@@ -91,45 +79,4 @@ public interface IRowPlayer {
 	 * @param skinId a valid user skin uuid
 	 */
 	void setSkin(UUID skinId);
-
-	final JsonParser PARSER = new JsonParser();
-
-	default CompletableFuture<NavigableMap<String, String>> getSkinValue(String uuid) {
-		return CompletableFuture.supplyAsync(() -> {
-			NavigableMap<String, String> map = new TreeMap<>();
-			String content = getContent("https://sessionserver.mojang.com/session/minecraft/profile/"
-					+ uuid.replace("-", "") + "?unsigned=false");
-			if (content == null) {
-				return map;
-			}
-
-			JsonObject json = PARSER.parse(content).getAsJsonObject();
-			String value = json.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
-
-			json = PARSER.parse(new String(Base64.decodeBase64(value))).getAsJsonObject();
-			String texture = json.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url")
-					.getAsString();
-			map.put(value, texture);
-			return map;
-		});
-	}
-
-	default String getContent(String link) {
-		try {
-			HttpsURLConnection conn = (HttpsURLConnection) new URL(link).openConnection();
-			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-
-			String inputLine;
-			while ((inputLine = br.readLine()) != null) {
-				return inputLine;
-			}
-
-			br.close();
-			conn.disconnect();
-		} catch (java.io.IOException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
 }

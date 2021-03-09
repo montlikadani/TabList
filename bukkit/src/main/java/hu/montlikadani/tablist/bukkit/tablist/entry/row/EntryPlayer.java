@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
-import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
+import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public final class EntryPlayer {
 

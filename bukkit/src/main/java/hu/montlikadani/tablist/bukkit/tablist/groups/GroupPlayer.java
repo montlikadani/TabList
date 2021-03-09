@@ -48,7 +48,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 	public String getFullGroupTeamName() {
 		String name = Integer.toString(100000 + getPriority())
-				+ (group == null ? getPlayer().getName() : group.getTeam());
+				+ (group == null ? getUser().getPlayer().getName() : group.getTeam());
 
 		if (name.length() > 16) {
 			name = name.substring(0, 16);
@@ -62,8 +62,8 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 		globalGroup = null;
 	}
 
-	public Player getPlayer() {
-		return tabListUser.getPlayer();
+	public TabListUser getUser() {
+		return tabListUser;
 	}
 
 	public boolean isAfk() {
@@ -89,7 +89,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 	public boolean update() {
 		boolean update = false;
-		Player player = getPlayer();
+		Player player = getUser().getPlayer();
 
 		if (!isPlayerCanSeeGroup() || ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(player)
 				&& !ConfigValues.isAfkStatusShowPlayerGroup()) {
@@ -148,7 +148,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 		for (TeamHandler team : groupsList) {
 			if (playerVaultGroup != null && ConfigValues.isPreferPrimaryVaultGroup()
 					&& (playerVaultGroup.equalsIgnoreCase(team.getTeam())
-					|| StringUtils.containsIgnoreCase(team.getTeam(), playerVaultGroup))) {
+							|| StringUtils.containsIgnoreCase(team.getTeam(), playerVaultGroup))) {
 				if (!team.isGlobal()) {
 					for (TeamHandler t : groupsList) {
 						if (t.isGlobal() && globalGroup != t) {
@@ -201,7 +201,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	}
 
 	private boolean isPlayerCanSeeGroup() {
-		Player player = getPlayer();
+		Player player = getUser().getPlayer();
 
 		if (((ConfigValues.isUseDisabledWorldsAsWhiteList()
 				&& !ConfigValues.getGroupsDisabledWorlds().contains(player.getWorld().getName()))
@@ -229,7 +229,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 			prefix = globalGroup.getPrefix() + prefix;
 		}
 
-		Player player = getPlayer();
+		Player player = getUser().getPlayer();
 
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowInRightLeftSide()) {
 			prefix = colorMsg(plugin.getConfig()
@@ -259,7 +259,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 			suffix += globalGroup.getSuffix();
 		}
 
-		Player player = getPlayer();
+		Player player = getUser().getPlayer();
 
 		if (ConfigValues.isAfkStatusEnabled() && ConfigValues.isAfkStatusShowInRightLeftSide()) {
 			suffix += colorMsg(plugin.getConfig()
@@ -280,7 +280,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	}
 
 	public String getCustomTabName() {
-		Player player = getPlayer();
+		Player player = getUser().getPlayer();
 		String tabName = player.getName();
 
 		if (ConfigValues.isAssignGlobalGroup() && globalGroup != null && !globalGroup.getTabName().isEmpty()) {

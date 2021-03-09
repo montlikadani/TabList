@@ -8,15 +8,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
-import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.Util;
+import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public class ReflectionHandled implements ITabScoreboard {
 
 	//private final TabScoreboardReflection scoreRef = new TabScoreboardReflection();
 
-	private Object /*packet, */playerConst, entityPlayerArray, packetPlayOutPlayerInfo;
+	private Object playerConst, entityPlayerArray, packetPlayOutPlayerInfo;
 
 	private List<Object> infoList;
 
@@ -24,11 +24,6 @@ public class ReflectionHandled implements ITabScoreboard {
 
 	public ReflectionHandled(TabListUser tabListUser) {
 		this.tabListUser = tabListUser;
-	}
-
-	@Override
-	public TabListUser getTabListUser() {
-		return tabListUser;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -40,6 +35,9 @@ public class ReflectionHandled implements ITabScoreboard {
 
 		try {
 			playerConst = ReflectionUtils.getHandle(tabListUser.getPlayer());
+
+			entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
+			Array.set(entityPlayerArray, 0, playerConst);
 
 			// TODO Fix client error when using teams
 			/*scoreRef.init();
@@ -53,9 +51,6 @@ public class ReflectionHandled implements ITabScoreboard {
 							: teamName);
 
 			scoreRef.getScoreboardTeamNames().set(packet, Collections.singletonList(tabPlayer.getPlayer().getName()));*/
-
-			entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
-			Array.set(entityPlayerArray, 0, playerConst);
 
 			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
 			Class<?> enumPlayerInfoAction = ReflectionUtils.Classes

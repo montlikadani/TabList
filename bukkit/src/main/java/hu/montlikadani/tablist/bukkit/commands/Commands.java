@@ -21,7 +21,7 @@ import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.IFakePlayers;
-import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils.JavaAccessibilities;
+import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils.JavaAccessibilities;
 
 public class Commands implements CommandExecutor, TabCompleter {
 

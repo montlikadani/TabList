@@ -14,7 +14,7 @@ import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.playerlist.HidePlayers;
 import hu.montlikadani.tablist.bukkit.user.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
-import hu.montlikadani.tablist.bukkit.utils.ReflectionUtils;
+import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public class ProtocolPackets extends PacketAdapter {
 
