@@ -4,9 +4,12 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.List;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import com.mojang.authlib.GameProfile;
 
+import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabEntryValues;
+import hu.montlikadani.tablist.bukkit.tablist.entry.row.RowPlayer;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.Util;
@@ -16,10 +19,10 @@ public class ReflectionHandled implements ITabScoreboard {
 
 	//private final TabScoreboardReflection scoreRef = new TabScoreboardReflection();
 
+	private final TabList plugin = TabListAPI.getPlugin();
+
 	private Object playerConst, entityPlayerArray, packetPlayOutPlayerInfo;
-
 	private List<Object> infoList;
-
 	private TabListUser tabListUser;
 
 	public ReflectionHandled(TabListUser tabListUser) {
@@ -29,7 +32,7 @@ public class ReflectionHandled implements ITabScoreboard {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void registerTeam(String teamName) {
-		if (packetPlayOutPlayerInfo != null) {
+		if (TabEntryValues.isEnabled() || packetPlayOutPlayerInfo != null) {
 			return;
 		}
 
@@ -66,9 +69,9 @@ public class ReflectionHandled implements ITabScoreboard {
 			infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
 					.get(packetPlayOutPlayerInfo);
 
-			for (Player p : Bukkit.getOnlinePlayers()) {
-				//ReflectionUtils.sendPacket(p, packet);
-				ReflectionUtils.sendPacket(p, packetPlayOutPlayerInfo);
+			for (TabListUser user : plugin.getUsers()) {
+				//ReflectionUtils.sendPacket(user.getPlayer(), packet);
+				ReflectionUtils.sendPacket(user.getPlayer(), packetPlayOutPlayerInfo);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -93,7 +96,7 @@ public class ReflectionHandled implements ITabScoreboard {
 
 	@Override
 	public void unregisterTeam(String teamName) {
-		if (packetPlayOutPlayerInfo == null) {
+		if (!TabEntryValues.isEnabled() && packetPlayOutPlayerInfo == null) {
 			return;
 		}
 
@@ -111,19 +114,32 @@ public class ReflectionHandled implements ITabScoreboard {
 			name = Util.colorMsg(name);
 		}
 
+		if (TabEntryValues.isEnabled()) {
+			final String text = name;
+
+			// TODO Improve?
+			plugin.getTabManager().getTabEntries()
+					.getEntry(entry -> entry.getRow().asPlayer().isPresent()
+							&& entry.getRow().asPlayer().get().getUniqueId().equals(tabListUser.getUniqueId()))
+					.ifPresent(entry -> ((RowPlayer) entry.getRow()).getInfoName().updateDisplayName(tabListUser, text,
+							null));
+
+			return;
+		}
+
 		for (Object infoData : infoList) {
-			Object profile = ReflectionUtils.invokeMethod(infoData, "a");
-			Object id = ReflectionUtils.invokeMethod(profile, "getId");
-			if (id.equals(tabListUser.getUniqueId())) {
+			GameProfile profile = (GameProfile) ReflectionUtils.invokeMethod(infoData, "a");
+
+			if (profile.getId().equals(tabListUser.getUniqueId())) {
 				ReflectionUtils.modifyFinalField(ReflectionUtils.getField(infoData, "e"), infoData,
 						ReflectionUtils.getAsIChatBaseComponent(name));
 				break;
 			}
 		}
 
-		for (Player p : Bukkit.getOnlinePlayers()) {
-			//ReflectionUtils.sendPacket(p, packet);
-			ReflectionUtils.sendPacket(p, packetPlayOutPlayerInfo);
+		for (TabListUser user : plugin.getUsers()) {
+			//ReflectionUtils.sendPacket(user.getPlayer(), packet);
+			ReflectionUtils.sendPacket(user.getPlayer(), packetPlayOutPlayerInfo);
 		}
 	}
 }

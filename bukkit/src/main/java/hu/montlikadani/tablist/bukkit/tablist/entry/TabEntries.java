@@ -11,8 +11,8 @@ import org.bukkit.scheduler.BukkitTask;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabEntryValues;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabEntryValues.ColumnValues;
-import hu.montlikadani.tablist.bukkit.tablist.entry.row.EntryPlayer;
 import hu.montlikadani.tablist.bukkit.tablist.entry.row.IRowPlayer;
+import hu.montlikadani.tablist.bukkit.tablist.entry.row.InfoName;
 import hu.montlikadani.tablist.bukkit.tablist.entry.row.RowPlayer;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
@@ -66,7 +66,7 @@ public final class TabEntries {
 		}
 
 		appendEntries();
-		EntryPlayer.removePlayer(user.getPlayer());
+		InfoName.removePlayer(user.getPlayer());
 
 		if (task == null) {
 			createRows();
@@ -89,10 +89,18 @@ public final class TabEntries {
 	}
 
 	public void removePlayer(UUID uuid) {
-		EntryPlayer.removePlayer(org.bukkit.Bukkit.getPlayer(uuid));
-
 		getEntry(entry -> entry.row.asPlayer().isPresent() && entry.row.asPlayer().get().getUniqueId().equals(uuid))
-				.ifPresent(entry -> entry.row.setPlayer(null));
+				.ifPresent(entry -> {
+					RowPlayer row = (RowPlayer) entry.row;
+
+					row.remove();
+					row.setPlayer(null);
+
+					// Only do a request if there is at least 2 players
+					if (plugin.getUsers().size() > 1) {
+						row.replacer.requestUpdate();
+					}
+				});
 	}
 
 	public void removeAll() {

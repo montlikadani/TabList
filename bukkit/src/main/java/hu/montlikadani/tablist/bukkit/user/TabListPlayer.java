@@ -66,6 +66,11 @@ public class TabListPlayer implements TabListUser {
 		}
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		return o instanceof TabListPlayer && uuid.equals(((TabListPlayer) o).uuid);
+	}
+
 	public HidePlayers getHidePlayers() {
 		return hidePlayers;
 	}

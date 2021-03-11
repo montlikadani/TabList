@@ -155,7 +155,7 @@ public final class TabList extends JavaPlugin {
 
 	@Override
 	public void saveConfig() {
-		conf.getConfig().save();
+		getConfig().save();
 	}
 
 	private void verifyServerSoftware() {

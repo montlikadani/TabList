@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 /**
- * The interface for creating columns for tablist
+ * The interface for creating rows for tablist
  */
 public interface IRowPlayer {
 

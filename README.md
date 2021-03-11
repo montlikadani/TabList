@@ -4,7 +4,7 @@
 
 ***
 
-A fully configurable plugin that allows all online players that are one the server to get an animated tablist with header/footer, which is configurable in the config.
+A fully configurable plugin that allows all online players that are one the server to get an animated tablist with header/footer, which is configurable per config.
 
 ## Link
 * [Spigot](https://www.spigotmc.org/resources/46229/)
@@ -14,7 +14,7 @@ A fully configurable plugin that allows all online players that are one the serv
 
 # TabList API
 You can manually add the jar file to your build path or you can use jitpack if you use maven or gradle:
-## Maven:
+## Maven
 ```xml
 <repositories>
     <repository>
@@ -32,7 +32,7 @@ You can manually add the jar file to your build path or you can use jitpack if y
     </dependency>
 </dependencies>
 ```
-## Gradle:
+## Gradle
 ```gradle
 repositories {
     maven { 

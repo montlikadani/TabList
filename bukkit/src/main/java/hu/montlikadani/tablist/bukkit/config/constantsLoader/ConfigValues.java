@@ -39,13 +39,12 @@ public class ConfigValues {
 				"but they need to have \"tablist.onlinestaff\" permission set.",
 				"false - does not count vanished staff in the %staff-online% placeholder",
 				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!");
-		c.addComment("hide-player-from-tab-when-afk", "Hide player from player list when he is AFK?",
+		c.addComment("hide-player-from-tab-when-afk", "Hide player from player list when a player is AFK?",
 				"Requires Essentials or CMI plugin!");
 		c.addComment("hide-players-from-tablist", "Hide all players from the player list?",
 				"This removes all players from the player list, but the player that has the",
 				"group set is retained as it is not changed during removal, so your group",
 				"will be restored if this option is disabled.",
-				"The \"per-world-player-list\" will not work if this is enabled.",
 				"Requires ProtocolLib to fix view distance issue! (https://github.com/montlikadani/TabList/issues/147)");
 		c.addComment("placeholder-format", "Placeholders formatting");
 		c.addComment("placeholder-format.afk-status",
@@ -77,7 +76,7 @@ public class ConfigValues {
 				"How many numbers do you want to display after \".\" in %tps% placeholder?",
 				"The number should be higher than 0.", "Example: 3 = 20.14");
 		c.addComment("placeholder-format.tps.value-can-be-higher",
-				"Adds ability to the tps value can be highest than default 20.0", "This client-dependent");
+				"Adds ability to the tps value can be highest than default 20.0");
 		c.addComment("placeholder-format.tps.formats", "Operators usage:",
 				"> - highest value, \"17 > &e\" this will be yellow color",
 				">= - highest & equal value, \"5 >= &6\" gold color",
@@ -87,8 +86,7 @@ public class ConfigValues {
 		c.addComment("placeholder-format.memory-bar.colors.allocation", "When the server memory less than 80");
 		c.addComment("placeholder-format.memory-bar.colors.released",
 				"When the server memory is on critical level (less than 40) and some resource need memory to run.");
-		c.addComment("change-prefix-suffix-in-tablist", "Enable changing of prefix & suffix in player list?",
-				"This option generates the groups.yml file.");
+		c.addComment("change-prefix-suffix-in-tablist", "Enable changing of prefix & suffix in player list?");
 		c.addComment("change-prefix-suffix-in-tablist.refresh-interval", "Refresh interval in server ticks.",
 				"Set to 0 if you don't want to refresh the groups.",
 				"If 0, then you will need to execute the /tl reload command to refresh the groups.");
@@ -124,8 +122,7 @@ public class ConfigValues {
 		c.addComment("tablist-object-type.object-settings.health.restricted-players",
 				"For these players the health will not be displayed");
 		c.addComment("tablist-object-type.object-settings.custom",
-				"Custom placeholder - accepts only number-ending placeholders, like %level%.",
-				"If it is double-number ending, it will remove the dot \".\" from the number.");
+				"Custom placeholder - accepts only number-ending placeholders, like %level%.");
 		c.addComment("check-update", "Check for updates?");
 		c.addComment("download-updates", "Download new releases to \"releases\" folder?",
 				"This only works if the \"check-update\" is true.");

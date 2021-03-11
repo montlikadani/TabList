@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import hu.montlikadani.tablist.bukkit.TabList;
@@ -76,11 +75,7 @@ public class TabManager {
 	}
 
 	public void removePlayer(TabListUser user) {
-		Player player = user.getPlayer();
-		if (player != null) {
-			TabTitle.sendTabTitle(player, "", "");
-		}
-
+		TabTitle.sendTabTitle(user.getPlayer(), "", "");
 		tabEntries.removePlayer(user.getUniqueId());
 	}
 
@@ -88,10 +83,7 @@ public class TabManager {
 		cancelTask();
 
 		for (TabListUser user : plugin.getUsers()) {
-			Player player = user.getPlayer();
-			if (player != null) {
-				TabTitle.sendTabTitle(player, "", "");
-			}
+			TabTitle.sendTabTitle(user.getPlayer(), "", "");
 		}
 
 		tabEntries.removeAll();

@@ -37,6 +37,7 @@ public final class JsonComponent {
 			char charAt = text.charAt(i);
 			if (charAt == '{') {
 				int closeIndex = -1;
+
 				if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', i + 6)) >= 0) {
 					font = NamespacedKey.minecraft(text.substring(i + 6, closeIndex)).toString();
 				} else if (text.regionMatches(true, i, "{/font", 0, 6)
@@ -68,11 +69,11 @@ public final class JsonComponent {
 				obj.addProperty("color", colorName);
 				i += 6; // Increase loop with 6 to ignore hex digit
 			} else if (charAt == '&' || charAt == '\u00a7') {
-				char colorCode = text.charAt(i + 1);
+				char nextChar = text.charAt(i + 1);
 
-				if (Character.isDigit(colorCode)
-						|| ((colorCode >= 'a' && colorCode <= 'f') || (colorCode == 'k' || colorCode == 'l'
-								|| colorCode == 'm' || colorCode == 'n' || colorCode == 'o' || colorCode == 'r'))) {
+				if (Character.isDigit(nextChar)
+						|| ((nextChar >= 'a' && nextChar <= 'f') || (nextChar == 'k' || nextChar == 'l'
+								|| nextChar == 'm' || nextChar == 'n' || nextChar == 'o' || nextChar == 'r'))) {
 					obj.addProperty("text", builder.toString());
 					jsonList.add(obj);
 
@@ -87,7 +88,7 @@ public final class JsonComponent {
 						obj.addProperty("font", font);
 					}
 
-					switch (colorCode) {
+					switch (nextChar) {
 					case 'k':
 						obj.addProperty("obfuscated", true);
 						break;
@@ -108,11 +109,13 @@ public final class JsonComponent {
 						break;
 					default:
 						obj.addProperty("color",
-								colorName = org.bukkit.ChatColor.getByChar(colorCode).name().toLowerCase());
+								colorName = org.bukkit.ChatColor.getByChar(nextChar).name().toLowerCase());
 						break;
 					}
 
 					i++;
+				} else {
+					builder.append(charAt);
 				}
 			} else {
 				builder.append(charAt);

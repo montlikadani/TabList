@@ -3,7 +3,6 @@ package hu.montlikadani.tablist.bukkit.tablist.groups;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang.Validate;
@@ -24,7 +23,7 @@ public class Groups {
 	private BukkitTask animationTask;
 
 	private final List<TeamHandler> groupsList = new ArrayList<>();
-	private final ConcurrentLinkedDeque<GroupPlayer> sortedPlayers = new ConcurrentLinkedDeque<>();
+	private final java.util.Deque<GroupPlayer> sortedPlayers = new java.util.concurrent.ConcurrentLinkedDeque<>();
 
 	public Groups(TabList plugin) {
 		this.plugin = plugin;

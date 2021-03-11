@@ -10,7 +10,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.permissions.PermissionDefault;
 
 import hu.montlikadani.tablist.bukkit.TabList;
@@ -25,7 +24,6 @@ public class TabHandler {
 	private UUID playerUUID;
 
 	private boolean worldEnabled = false, tabEmpty = false, random = false;
-	private String usedPermission = "";
 
 	private final List<String> worldList = new ArrayList<>();
 
@@ -43,7 +41,7 @@ public class TabHandler {
 	public void updateTab() {
 		worldList.clear();
 		worldEnabled = tabEmpty = false;
-		usedPermission = "";
+		header = footer = null;
 
 		final Player player = Bukkit.getServer().getPlayer(playerUUID);
 		if (player == null || !player.isOnline()) {
@@ -114,7 +112,6 @@ public class TabHandler {
 						PermissionDefault.NOT_OP);
 				if (PluginUtils.hasPermission(player, permission.getName())) {
 					path = "permissions." + name + ".";
-					usedPermission = permission.getName();
 					break;
 				}
 			}
@@ -142,7 +139,7 @@ public class TabHandler {
 					: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
 		}
 
-		if ((header == null && footer == null) || (header.isEmpty() && footer.isEmpty())) {
+		if ((header == null || header.isEmpty()) && (footer == null || footer.isEmpty())) {
 			header = c.isList("header") ? c.getStringList("header")
 					: c.isString("header") ? Arrays.asList(c.getString("header")) : null;
 			footer = c.isList("footer") ? c.getStringList("footer")
@@ -151,6 +148,10 @@ public class TabHandler {
 	}
 
 	protected void sendTab() {
+		if (header == null && footer == null) {
+			return;
+		}
+
 		final Player player = Bukkit.getServer().getPlayer(playerUUID);
 		if (player == null || !player.isOnline()) {
 			return;
@@ -168,39 +169,7 @@ public class TabHandler {
 			return;
 		}
 
-		final FileConfiguration c = plugin.getConf().getTablist();
-
-		// Track player permissions change and update tab if required
-		// Note: avoid using Player#hasPermission which calls multiple times to prevent
-		// verbose logging
-		if (c.isConfigurationSection("permissions")) {
-			boolean foundPerm = false;
-			eff: for (PermissionAttachmentInfo info : player.getEffectivePermissions()) {
-				if (!info.getPermission().startsWith("tablist.")) {
-					continue;
-				}
-
-				if (info.getPermission().equalsIgnoreCase(usedPermission)) {
-					foundPerm = true;
-					break;
-				}
-
-				for (String name : c.getConfigurationSection("permissions").getKeys(false)) {
-					String node = name.startsWith("tablist.") ? name : "tablist." + name;
-					if (node.equalsIgnoreCase(info.getPermission()) || node.equalsIgnoreCase(usedPermission)) {
-						foundPerm = true;
-						updateTab();
-						break eff;
-					}
-				}
-			}
-
-			if (!foundPerm && !usedPermission.isEmpty()) {
-				updateTab(); // Back to the original tab
-			}
-		}
-
-		if (header.isEmpty() && footer.isEmpty()) {
+		if (header != null && header.isEmpty() && footer != null && footer.isEmpty()) {
 			return;
 		}
 
@@ -208,13 +177,16 @@ public class TabHandler {
 		String fo = "";
 
 		if (random) {
-			he = header.get(ThreadLocalRandom.current().nextInt(header.size()));
-			fo = footer.get(ThreadLocalRandom.current().nextInt(footer.size()));
+			if (header != null)
+				he = header.get(ThreadLocalRandom.current().nextInt(header.size()));
+
+			if (footer != null)
+				fo = footer.get(ThreadLocalRandom.current().nextInt(footer.size()));
 		}
 
 		int r = 0;
 
-		if (he.isEmpty()) {
+		if (header != null && he.isEmpty()) {
 			for (String line : header) {
 				r++;
 
@@ -226,7 +198,7 @@ public class TabHandler {
 			}
 		}
 
-		if (fo.isEmpty()) {
+		if (footer != null && fo.isEmpty()) {
 			r = 0;
 
 			for (String line : footer) {
@@ -238,6 +210,10 @@ public class TabHandler {
 
 				fo += line;
 			}
+		}
+
+		if (he.isEmpty() && fo.isEmpty()) {
+			return;
 		}
 
 		he = plugin.makeAnim(he);

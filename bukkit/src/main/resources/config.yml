@@ -23,7 +23,7 @@ ignore-vanished-players-in-online-players: false
 # Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!
 count-vanished-staffs: true
 
-# Hide player from player list when he is AFK?
+# Hide player from player list when a player is AFK?
 # Requires Essentials or CMI plugin!
 hide-player-from-tab-when-afk: false
 
@@ -31,7 +31,6 @@ hide-player-from-tab-when-afk: false
 # This removes all players from the player list, but the player that has the
 # group set is retained as it is not changed during removal, so your group
 # will be restored if this option is disabled.
-# The "per-world-player-list" will not work if this is enabled.
 # Requires ProtocolLib to fix view distance issue! (https://github.com/montlikadani/TabList/issues/147)
 hide-players-from-tablist: false
 
@@ -95,7 +94,6 @@ placeholder-format:
     size: 2
 
     # Adds ability to the tps value can be highest than default 20.0
-    # This client-dependent
     value-can-be-higher: false
 
     enable: true
@@ -123,7 +121,6 @@ placeholder-format:
       released: "&6"
 
 # Enable changing of prefix & suffix in player list?
-# This option generates the groups.yml file.
 change-prefix-suffix-in-tablist:
   enable: true
 
@@ -192,7 +189,6 @@ tablist-object-type:
       - players
 
     # Custom placeholder - accepts only number-ending placeholders, like %level%.
-    # If it is double-number ending, it will remove the dot "." from the number.
     custom:
       value: "%level%"
 

@@ -25,12 +25,7 @@ public final class HidePlayers {
 	}
 
 	public void removePlayerFromTab(Player p, Player to) {
-		Bukkit.getScheduler().runTaskLater(TabListAPI.getPlugin(), () -> {
-			// Hacky solution to avoid removing skins
-			r(p, to);
-			addPlayerToTab(to);
-			r(p, to);
-		}, 4L);
+		Bukkit.getScheduler().runTaskLater(TabListAPI.getPlugin(), () -> r(p, to), 4L);
 	}
 
 	public void addPlayerToTab(Player to) {
