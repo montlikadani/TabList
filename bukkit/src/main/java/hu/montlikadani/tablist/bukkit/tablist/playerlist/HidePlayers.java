@@ -10,14 +10,19 @@ import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public final class HidePlayers {
 
+	private Player to;
 	private Class<?> enumPlayerInfoAction;
 	private Object entityPlayerArray;
+
+	public HidePlayers(Player to) {
+		this.to = to;
+	}
 
 	public void addPlayerToTab() {
 		Bukkit.getOnlinePlayers().forEach(this::addPlayerToTab);
 	}
 
-	public void removePlayerFromTab(Player to) {
+	public void removePlayerFromTab() {
 		for (Player pl : Bukkit.getOnlinePlayers()) {
 			removePlayerFromTab(to, pl);
 			removePlayerFromTab(pl, to);

@@ -122,6 +122,7 @@ public final class TabList extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		groups.cancelUpdate();
+		objects.cancelTask();
 
 		for (ObjectTypes ot : ObjectTypes.values()) {
 			objects.unregisterObjectiveForEveryone(ot);
@@ -350,6 +351,8 @@ public final class TabList extends JavaPlugin {
 
 	public void onPlayerQuit(Player p) {
 		if (!ConfigValues.isTablistObjectiveEnabled()) {
+			objects.cancelTask();
+
 			for (ObjectTypes t : ObjectTypes.values()) {
 				objects.unregisterObjectiveForEveryone(t);
 			}

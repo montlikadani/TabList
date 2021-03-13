@@ -56,10 +56,10 @@ public class TabListPlayer implements TabListUser {
 	public void setHidden(boolean hidden) {
 		if (this.hidden = hidden) {
 			if (hidePlayers == null) {
-				hidePlayers = new HidePlayers();
+				hidePlayers = new HidePlayers(getPlayer());
 			}
 
-			hidePlayers.removePlayerFromTab(getPlayer());
+			hidePlayers.removePlayerFromTab();
 		} else if (hidePlayers != null) {
 			hidePlayers.addPlayerToTab();
 			hidePlayers = null;

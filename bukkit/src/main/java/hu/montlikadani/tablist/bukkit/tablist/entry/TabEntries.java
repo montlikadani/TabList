@@ -6,6 +6,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import hu.montlikadani.tablist.bukkit.TabList;
@@ -65,8 +66,10 @@ public final class TabEntries {
 			return;
 		}
 
+		final Player player = user.getPlayer();
+
+		InfoName.removePlayer(player);
 		appendEntries();
-		InfoName.removePlayer(user.getPlayer());
 
 		if (task == null) {
 			createRows();
@@ -82,25 +85,27 @@ public final class TabEntries {
 		} else {
 			loopEntries(entry -> {
 				RowPlayer row = (RowPlayer) entry.row;
-				row.show(user.getPlayer()); // Show the rows to the player
+				row.show(player); // Show the rows to the player
 				row.replacer.requestUpdate(); // Request to update existing entry variables
 			});
 		}
 	}
 
 	public void removePlayer(UUID uuid) {
-		getEntry(entry -> entry.row.asPlayer().isPresent() && entry.row.asPlayer().get().getUniqueId().equals(uuid))
-				.ifPresent(entry -> {
-					RowPlayer row = (RowPlayer) entry.row;
+		getEntry(entry -> {
+			Optional<Player> opt = entry.row.asPlayer();
+			return opt.isPresent() && opt.get().getUniqueId().equals(uuid);
+		}).ifPresent(entry -> {
+			IRowPlayer row = entry.row;
 
-					row.remove();
-					row.setPlayer(null);
+			row.remove();
+			row.setPlayer(null);
 
-					// Only do a request if there is at least 2 players
-					if (plugin.getUsers().size() > 1) {
-						row.replacer.requestUpdate();
-					}
-				});
+			// Only do a request if there is at least 2 players
+			if (plugin.getUsers().size() > 1) {
+				((RowPlayer) row).replacer.requestUpdate();
+			}
+		});
 	}
 
 	public void removeAll() {

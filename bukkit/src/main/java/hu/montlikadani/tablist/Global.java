@@ -26,6 +26,10 @@ public class Global {
 
 	// TODO subject to remove or optimise?
 	public static String setSymbols(String s) {
+		if (s.indexOf('<') < 0) {
+			return s;
+		}
+
 		s = s.replace("<0>", "•");
 		s = s.replace("<1>", "➤");
 		s = s.replace("<2>", "™");

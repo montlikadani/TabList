@@ -133,11 +133,7 @@ public class RowPlayer implements IRowPlayer {
 		}
 
 		text = plugin.makeAnim(text);
-
-		if (replacer.isRequestUpdate()) {
-			text = (this.text = replacer.replaceVariables(text));
-		}
-
+		text = replacer.replaceVariables(text);
 		text = plugin.getPlaceholders().replaceVariables(player, text);
 
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {

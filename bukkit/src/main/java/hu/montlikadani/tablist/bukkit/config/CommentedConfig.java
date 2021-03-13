@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,11 +14,9 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.google.common.io.Files;
-
 public class CommentedConfig extends YamlConfiguration {
 
-	private final Map<String, String> comments = new HashMap<>();
+	private final Map<String, String> comments = new java.util.WeakHashMap<>();
 
 	private YamlConfiguration config;
 	private File file;
@@ -64,7 +61,7 @@ public class CommentedConfig extends YamlConfiguration {
 	public void save(File file) throws IOException {
 		Validate.notNull(file, "File cannot be null");
 
-		Files.createParentDirs(file);
+		com.google.common.io.Files.createParentDirs(file);
 
 		String saveToString = saveToString();
 		if (saveToString.trim().isEmpty()) {
@@ -87,11 +84,12 @@ public class CommentedConfig extends YamlConfiguration {
 			return yaml;
 		}
 
+		String lineSeparator = System.getProperty("line.separator");
 		StringBuilder newContents = new StringBuilder(), currentPath = new StringBuilder();
 		boolean commentedPath = false, node = false;
 		int depth = 0;
 
-		for (final String line : yaml.split("[" + System.getProperty("line.separator") + "]")) {
+		for (final String line : yaml.split("[" + lineSeparator + "]")) {
 			if (line.startsWith("#")) {
 				continue; // Ignore comments
 			}
@@ -181,13 +179,13 @@ public class CommentedConfig extends YamlConfiguration {
 				}
 
 				if (!comment.isEmpty()) {
-					newLine.insert(0, System.getProperty("line.separator")).insert(0, comment);
+					newLine.insert(0, lineSeparator).insert(0, comment);
 					comment = "";
 					commentedPath = true;
 				}
 			}
 
-			newLine.append(System.getProperty("line.separator"));
+			newLine.append(lineSeparator);
 			newContents.append(newLine.toString());
 		}
 
@@ -234,7 +232,7 @@ public class CommentedConfig extends YamlConfiguration {
 		try {
 			writer = new PrintWriter(file);
 			writer.write("");
-		} catch (Exception e) {
+		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} finally {
 			if (writer != null) {
@@ -257,7 +255,7 @@ public class CommentedConfig extends YamlConfiguration {
 			config.load(reader);
 		} catch (FileNotFoundException e) {
 		} catch (InvalidConfigurationException | IOException e) {
-			System.out.println(e.getLocalizedMessage());
+			org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, e.getLocalizedMessage());
 		} finally {
 			if (inputStream != null) {
 				try {

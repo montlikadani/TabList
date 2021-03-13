@@ -144,7 +144,6 @@ public class Objects {
 
 	public void unregisterObjectiveForEveryone(final ObjectTypes type) {
 		Bukkit.getOnlinePlayers().forEach(p -> unregisterObjective(getObject(p.getScoreboard(), type)));
-		cancelTask();
 	}
 
 	public Optional<Objective> getObject(Scoreboard board, ObjectTypes type) {

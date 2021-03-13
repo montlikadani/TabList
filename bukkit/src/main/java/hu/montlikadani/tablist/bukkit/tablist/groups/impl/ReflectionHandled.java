@@ -118,11 +118,11 @@ public class ReflectionHandled implements ITabScoreboard {
 			final String text = name;
 
 			// TODO Improve?
-			plugin.getTabManager().getTabEntries()
-					.getEntry(entry -> entry.getRow().asPlayer().isPresent()
-							&& entry.getRow().asPlayer().get().getUniqueId().equals(tabListUser.getUniqueId()))
-					.ifPresent(entry -> ((RowPlayer) entry.getRow()).getInfoName().updateDisplayName(tabListUser, text,
-							null));
+			plugin.getTabManager().getTabEntries().getEntry(entry -> {
+				java.util.Optional<org.bukkit.entity.Player> opt = entry.getRow().asPlayer();
+				return opt.isPresent() && opt.get().getUniqueId().equals(tabListUser.getUniqueId());
+			}).ifPresent(
+					entry -> ((RowPlayer) entry.getRow()).getInfoName().updateDisplayName(tabListUser, text, null));
 
 			return;
 		}

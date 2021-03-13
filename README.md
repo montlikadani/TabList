@@ -12,39 +12,5 @@ A fully configurable plugin that allows all online players that are one the serv
 * [MCMarket](https://www.mc-market.org/resources/6127/)
 * [Sponge](https://ore.spongepowered.org/montlikadani/%5BAnimated-Tab%5D---TabList)
 
-# TabList API
-You can manually add the jar file to your build path or you can use jitpack if you use maven or gradle:
-## Maven
-```xml
-<repositories>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
-
-<dependencies>
-    <dependency>
-        <groupId>com.github.montlikadani</groupId>
-        <artifactId>TabList</artifactId>
-        <version>LATEST</version> <!-- Change the LATEST to the current version of plugin -->
-        <scope>provided</scope>
-    </dependency>
-</dependencies>
-```
-## Gradle
-```gradle
-repositories {
-    maven { 
-        url 'https://jitpack.io' 
-    }
-}
-dependencies {
-    implementation 'com.github.montlikadani:TabList:LATEST' //Change the LATEST to the current version of plugin
-}
-```
-
-For API methods: [TabListAPI](https://github.com/montlikadani/TabList/blob/master/bukkit/src/main/java/hu/montlikadani/tablist/bukkit/API/TabListAPI.java)
-
 ### Bug report/feature request
 If you find a bug about the plugin, please make an issue here: https://github.com/montlikadani/TabList/issues

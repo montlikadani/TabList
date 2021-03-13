@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -46,16 +45,6 @@ public class Util {
 				sender.sendMessage(s);
 			}
 		}
-	}
-
-	public static String stripColor(String str) {
-		for (ChatColor color : ChatColor.values()) {
-			if (str.contains(("&" + color.getChar()))) {
-				str = StringUtils.replace(str, "&" + color.getChar(), "");
-			}
-		}
-
-		return ChatColor.stripColor(str);
 	}
 
 	public static Optional<UUID> tryParseId(String uuid) {

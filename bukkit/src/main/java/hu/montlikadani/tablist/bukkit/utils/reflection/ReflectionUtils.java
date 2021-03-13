@@ -129,15 +129,15 @@ public final class ReflectionUtils {
 
 		field.setAccessible(true);
 
-		if (JavaAccessibilities.getCurrentVersion() < 13) {
+		boolean accessibleBeforeSet;
+		if (!(accessibleBeforeSet = JavaAccessibilities.isAccessible(modifiersField, null))) {
 			modifiersField.setAccessible(true);
-			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-			field.set(target, newValue);
-		} else {
-			boolean accessibleBeforeSet = JavaAccessibilities.isAccessible(modifiersField, null);
-			modifiersField.setAccessible(true);
-			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-			field.set(target, newValue);
+		}
+
+		modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
+		field.set(target, newValue);
+
+		if (!accessibleBeforeSet) {
 			modifiersField.setAccessible(accessibleBeforeSet);
 		}
 	}

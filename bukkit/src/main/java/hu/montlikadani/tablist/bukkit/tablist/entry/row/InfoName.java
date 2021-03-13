@@ -55,15 +55,13 @@ public final class InfoName {
 
 			for (Constructor<?> constr : playerInfoData.getConstructors()) {
 				if (constr.getParameterCount() == 4 || constr.getParameterCount() == 5) {
-					playerInfoDataConstr = constr;
-					playerInfoDataConstr.setAccessible(true);
+					(playerInfoDataConstr = constr).setAccessible(true);
 					break;
 				}
 			}
 
-			playOutPlayerInfoConstr = packetPlayOutPlayerInfo.getDeclaredConstructor(enumPlayerInfoAction,
-					Array.newInstance(entityPlayerClass, 0).getClass());
-			playOutPlayerInfoConstr.setAccessible(true);
+			(playOutPlayerInfoConstr = packetPlayOutPlayerInfo.getDeclaredConstructor(enumPlayerInfoAction,
+					Array.newInstance(entityPlayerClass, 0).getClass())).setAccessible(true);
 
 			Class<?> enumGameMode = ReflectionUtils.getNMSClass("EnumGamemode");
 			if (enumGameMode == null) {
@@ -159,7 +157,7 @@ public final class InfoName {
 	}
 
 	public void create(String name, UUID skinId, String text) {
-		if (rowPlayer != null || playOutPlayerInfoConstr == null) {
+		if (rowPlayer != null) {
 			return;
 		}
 
@@ -191,7 +189,7 @@ public final class InfoName {
 
 	public void movePlayer(Player player, int rowIndex) {
 		// Need 3 tick delay to show player
-		Bukkit.getScheduler().runTaskLater(plugin, () -> {
+		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
 			try {
 				String name = String.format("%03d", rowIndex); // 00 + index - sort by row index
 				if (name.length() > 16) {
@@ -240,14 +238,19 @@ public final class InfoName {
 			if (player != null) { // Restore player to default state
 				if (restorePlayer) {
 					addPlayer(player, plugin.getComplement().getPlayerListName(player));
-				} else if (entityPlayer != null) {
+				} else {
+					entityPlayer = ReflectionUtils.getHandle(player);
+
+					Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
+					Array.set(entityPlayerArray, 0, entityPlayer);
+
 					packet = playOutPlayerInfoConstr.newInstance(enumPlayerInfoAction
 							.getDeclaredField(currentPlayerInfoAction = "REMOVE_PLAYER").get(enumPlayerInfoAction),
-							entityPlayer);
+							entityPlayerArray);
 
-					((List<Object>) infoList.get(packet)).add(playerInfoDataConstr.newInstance(packet, gameProfile,
-							ping, gameMode,
-							ReflectionUtils.getAsIChatBaseComponent(plugin.getComplement().getPlayerListName(player))));
+					for (TabListUser user : plugin.getUsers()) {
+						ReflectionUtils.sendPacket(user.getPlayer(), packet);
+					}
 				}
 			} else {
 				packet = playOutPlayerInfoConstr.newInstance(enumPlayerInfoAction
@@ -256,12 +259,12 @@ public final class InfoName {
 
 				((List<Object>) infoList.get(packet)).add(playerInfoDataConstr.newInstance(packet, gameProfile, ping,
 						gameMode, ReflectionUtils.getAsIChatBaseComponent(text)));
+
+				sendPacketForEveryone();
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-		sendPacketForEveryone();
 	}
 
 	public void updateDisplayName(TabListUser user, String name, Player forWho) {
@@ -358,7 +361,7 @@ public final class InfoName {
 
 		final TabList plugin = TabListAPI.getPlugin();
 
-		Bukkit.getScheduler().runTaskLater(plugin, () -> {
+		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
 			try {
 				Object entityPlayer = ReflectionUtils.getHandle(player);
 
