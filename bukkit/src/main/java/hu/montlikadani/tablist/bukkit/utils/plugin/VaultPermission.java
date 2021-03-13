@@ -22,6 +22,10 @@ public final class VaultPermission {
 		return perm;
 	}
 
+	public boolean playerInGroup(Player player, String group) {
+		return perm.hasGroupSupport() && perm.playerInGroup(player, group);
+	}
+
 	public String getPrimaryGroup(String world, OfflinePlayer player) {
 		try {
 			return perm.getPrimaryGroup(world, player);

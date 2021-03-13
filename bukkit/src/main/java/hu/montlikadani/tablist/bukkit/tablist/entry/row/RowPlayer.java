@@ -31,8 +31,8 @@ public class RowPlayer implements IRowPlayer {
 	public RowPlayer(TabEntries root) {
 		this.root = root;
 
-		replacer = new VariableReplacer(this);
 		infoName = new InfoName(plugin);
+		replacer = new VariableReplacer(this);
 	}
 
 	public final InfoName getInfoName() {
