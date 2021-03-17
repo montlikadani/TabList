@@ -191,13 +191,12 @@ public final class InfoName {
 		// Need 3 tick delay to show player
 		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
 			try {
-				String name = String.format("%03d", rowIndex); // 00 + index - sort by row index
+				String name = String.format("%03d", rowIndex);
 				if (name.length() > 16) {
 					name = name.substring(0, 16);
 				}
 
 				gameProfile = new GameProfile(UUID.nameUUIDFromBytes(name.getBytes()), name);
-
 				entityPlayer = ReflectionUtils.getHandle(player);
 
 				GameProfile currentProfile = (GameProfile) ReflectionUtils.invokeMethod(entityPlayer, "getProfile",

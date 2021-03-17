@@ -43,7 +43,7 @@ public abstract class UpdateDownloader {
 					}
 				}
 
-				String versionString = lineWithVersion.split(": ")[1],
+				String versionString = lineWithVersion.split(": ", 2)[1],
 						nVersion = versionString.replaceAll("[^0-9]", ""),
 						cVersion = PLUGIN.getDescription().getVersion().replaceAll("[^0-9]", "");
 

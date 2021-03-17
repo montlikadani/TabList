@@ -23,23 +23,22 @@ public final class PlayersOnline extends AbstractVariable {
 
 		PlaceholderSetting ps = TabEntryValues.VARIABLE_SETTINGS.get(PlaceholderSetting.SettingType.ONLINE_PLAYERS);
 		if (ps == null) {
-			return StringUtils.replace(text, "%players_online%", "");
+			return StringUtils.replace(text, replacement, "");
 		}
 
 		java.util.List<String> collectedPlayerNames = new java.util.ArrayList<>();
-		java.util.Set<TabListUser> players = plugin.getUsers();
 
-		for (int i = 0; i < players.size(); i++) {
-			if (i >= ps.getMax()) {
+		for (TabListUser user : plugin.getUsers()) {
+			if (collectedPlayerNames.size() >= ps.getMax()) {
 				break;
 			}
 
-			Player player = com.google.common.collect.Iterables.<TabListUser>get(players, i).getPlayer();
+			Player player = user.getPlayer();
 			if (canAddPlayer(player, ps)) {
 				collectedPlayerNames.add(player.getName());
 			}
 		}
 
-		return setText(text, collectedPlayerNames, "%players_online%", true);
+		return setText(text, collectedPlayerNames, replacement, true);
 	}
 }

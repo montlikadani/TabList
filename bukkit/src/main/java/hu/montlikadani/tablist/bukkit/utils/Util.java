@@ -54,7 +54,7 @@ public class Util {
 
 		try {
 			return Optional.of(UUID.fromString(uuid));
-		} catch (NumberFormatException e) {
+		} catch (IllegalArgumentException e) {
 		}
 
 		return Optional.empty();

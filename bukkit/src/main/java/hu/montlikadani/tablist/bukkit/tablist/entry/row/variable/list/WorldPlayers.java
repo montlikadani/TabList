@@ -28,10 +28,10 @@ public final class WorldPlayers extends AbstractVariable {
 
 		for (int w = 0; w < worlds.size(); w++) {
 			World world = worlds.get(w);
-			String replacement = "%world_players_" + world.getName() + "%";
+			String replacement = this.replacement + world.getName() + "%";
 
 			if (!StringUtils.contains(text, replacement)) {
-				replacement = "%world_players_" + w + "%";
+				replacement = this.replacement + w + "%";
 			}
 
 			if (!StringUtils.contains(text, replacement)) {
@@ -46,12 +46,11 @@ public final class WorldPlayers extends AbstractVariable {
 
 			List<String> collectedPlayerNames = new ArrayList<>();
 
-			for (int i = 0; i < world.getPlayers().size(); i++) {
-				if (i >= ps.getMax()) {
+			for (Player player : world.getPlayers()) {
+				if (collectedPlayerNames.size() >= ps.getMax()) {
 					break;
 				}
 
-				Player player = world.getPlayers().get(i);
 				if (canAddPlayer(player, ps)) {
 					collectedPlayerNames.add(player.getName());
 				}

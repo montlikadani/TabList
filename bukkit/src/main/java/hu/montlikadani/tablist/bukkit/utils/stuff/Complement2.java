@@ -12,7 +12,7 @@ import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
 public class Complement2 implements Complement {
 
 	private Component deserialize(String t) {
-		return PlainComponentSerializer.plain().deserialize(t);
+		return Component.text(t);
 	}
 
 	private String serialize(Component component) {

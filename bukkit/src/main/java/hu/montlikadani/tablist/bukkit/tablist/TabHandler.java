@@ -177,11 +177,13 @@ public class TabHandler {
 		String fo = "";
 
 		if (random) {
+			ThreadLocalRandom random = ThreadLocalRandom.current();
+
 			if (header != null)
-				he = header.get(ThreadLocalRandom.current().nextInt(header.size()));
+				he = header.get(random.nextInt(header.size()));
 
 			if (footer != null)
-				fo = footer.get(ThreadLocalRandom.current().nextInt(footer.size()));
+				fo = footer.get(random.nextInt(footer.size()));
 		}
 
 		int r = 0;
@@ -235,11 +237,11 @@ public class TabHandler {
 		}
 
 		for (String l : worldList) {
-			if (Bukkit.getServer().getWorld(l) == null)
-				continue;
-
-			for (Player all : Bukkit.getServer().getWorld(l).getPlayers()) {
-				TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));
+			org.bukkit.World world = Bukkit.getServer().getWorld(l);
+			if (world != null) {
+				for (Player all : world.getPlayers()) {
+					TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));
+				}
 			}
 		}
 	}

@@ -12,8 +12,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
+import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
-import hu.montlikadani.tablist.bukkit.config.CommentedConfig;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.playerlist.PlayerList;
 
@@ -21,22 +21,23 @@ public abstract class AfkPlayers {
 
 	protected final Map<Player, String> afkPlayers = new HashMap<>();
 
+	private final TabList plugin = TabListAPI.getPlugin();
+
 	protected void goAfk(Player player, boolean value) {
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowPlayerGroup()) {
-			CommentedConfig conf = TabListAPI.getPlugin().getConfig();
 			String path = "placeholder-format.afk-status.format-" + (value ? "yes" : "no");
 			String result = "";
 
-			if (conf.contains(path)) {
-				result = colorMsg(
-						ConfigValues.isAfkStatusShowInRightLeftSide() ? player.getName() + conf.getString(path)
-								: conf.getString(path) + player.getName());
+			if (plugin.getConfig().contains(path)) {
+				result = colorMsg(ConfigValues.isAfkStatusShowInRightLeftSide()
+						? player.getName() + plugin.getConfig().getString(path)
+						: plugin.getConfig().getString(path) + player.getName());
 			}
 
 			sortAfkPlayers(player, value);
 
 			if (!result.isEmpty()) {
-				TabListAPI.getPlugin().getComplement().setPlayerListName(player, result);
+				plugin.getComplement().setPlayerListName(player, result);
 			}
 		}
 

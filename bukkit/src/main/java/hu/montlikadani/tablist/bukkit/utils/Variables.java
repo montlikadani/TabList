@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist.bukkit.utils;
 
-import java.net.InetSocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -16,6 +15,7 @@ import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabConfigValues;
+import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.operators.ExpressionNode;
 import hu.montlikadani.tablist.bukkit.utils.operators.OperatorNodes;
@@ -91,7 +91,6 @@ public class Variables {
 			builder.append(
 					usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
 
-			// IntStream is memory eater
 			for (int i = 0; i < (int) (barSize * usedMem); i++) {
 				builder.append(barChar);
 			}
@@ -119,9 +118,11 @@ public class Variables {
 
 		int staffs = 0;
 		if (str.indexOf("%staff-online%") >= 0) {
-			for (Player all : Bukkit.getOnlinePlayers()) {
-				if (!all.hasPermission("tablist.onlinestaff")
-						|| (!ConfigValues.isCountVanishedStaff() && PluginUtils.isVanished(all))) {
+			for (TabListUser user : plugin.getUsers()) {
+				Player player = user.getPlayer();
+
+				if (!player.hasPermission("tablist.onlinestaff")
+						|| (!ConfigValues.isCountVanishedStaff() && PluginUtils.isVanished(player))) {
 					continue;
 				}
 
@@ -131,8 +132,10 @@ public class Variables {
 
 		String address = "";
 		if (pl != null && str.indexOf("%ip-address%") >= 0) {
-			InetSocketAddress a = pl.getAddress();
-			address = (a == null || a.getAddress() == null) ? "" : a.getAddress().toString().replace("/", "");
+			java.net.InetSocketAddress a = pl.getAddress();
+			if (a != null && a.getAddress() != null) {
+				address = a.getAddress().toString().replace("/", "");
+			}
 		}
 
 		String time = str.indexOf("%server-time%") >= 0 ? getTimeAsString(ConfigValues.getTimeFormat()) : "";

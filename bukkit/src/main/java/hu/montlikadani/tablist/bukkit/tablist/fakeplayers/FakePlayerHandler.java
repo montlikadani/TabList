@@ -161,7 +161,7 @@ public class FakePlayerHandler {
 
 	public EditingContextError removePlayer(String name) {
 		Optional<IFakePlayers> fp = getFakePlayerByName(name);
-		if (name == null || name.trim().isEmpty() || !fp.isPresent()) {
+		if (name == null || !fp.isPresent() || name.trim().isEmpty()) {
 			return EditingContextError.NOT_EXIST;
 		}
 

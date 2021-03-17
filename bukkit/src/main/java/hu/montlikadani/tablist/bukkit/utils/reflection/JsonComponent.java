@@ -125,8 +125,7 @@ public final class JsonComponent {
 		obj.addProperty("text", builder.toString());
 		jsonList.add(obj);
 
-		return iChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class).invoke(iChatBaseComponent,
-				gson.toJson(jsonList));
+		return ReflectionUtils.jsonComponentMethod.invoke(iChatBaseComponent, gson.toJson(jsonList));
 	}
 
 	public CompletableFuture<NavigableMap<String, String>> getSkinValue(String uuid) {

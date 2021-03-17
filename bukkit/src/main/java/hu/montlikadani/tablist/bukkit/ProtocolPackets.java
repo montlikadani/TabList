@@ -45,27 +45,47 @@ public class ProtocolPackets extends PacketAdapter {
 		}*/
 
 		try {
+			// Retrieves the packetPlayOutPlayerInfo object
+			// I guess, this returns the packetPlayOutPlayerInfo constructor or a new instance
+			// or probably an existing one which recently modified using observable?
 			Object packetPlayOutPlayerInfo = event.getPacket().getHandle();
-			Class<?> enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction(packetPlayOutPlayerInfo.getClass());
+
+			// Retrieve playerInfoAction field class from packetPlayOutPlayerInfo
+			Class<?> enumPlayerInfoAction = ReflectionUtils.Classes
+					.getEnumPlayerInfoAction(packetPlayOutPlayerInfo.getClass());
+
+			// Get the gameMode class
 			Class<?> enumGameMode = ReflectionUtils.getNMSClass("EnumGamemode");
 			if (enumGameMode == null) {
 				enumGameMode = ReflectionUtils.getNMSClass("WorldSettings$EnumGamemode");
 			}
 
+			// Retrieve the current set of playerInfoAction field object
 			Object action = ReflectionUtils.getField(packetPlayOutPlayerInfo, "a").get(packetPlayOutPlayerInfo);
 
+			// Check if the action object is in the state of update_game_mode or add_player
 			if (action == ReflectionUtils.getField(enumPlayerInfoAction, "UPDATE_GAME_MODE").get(enumPlayerInfoAction)
 					|| action == ReflectionUtils.getField(enumPlayerInfoAction, "ADD_PLAYER")
 							.get(enumPlayerInfoAction)) {
+				// Retrieve the infoList field object from packetPlayOutPlayerInfo, explicitly
+				// casted to list
 				@SuppressWarnings("unchecked")
 				List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
 						.get(packetPlayOutPlayerInfo);
 				for (Object infoData : infoList) {
+					// Retrieves the game mode field from infoData object
 					Field c = ReflectionUtils.getField(infoData, "c");
+
+					// Retrieves the game profile field object from infoData object
 					Object profile = ReflectionUtils.invokeMethod(infoData, "a");
+					// Invokes the getId method from profile class object
 					Object id = ReflectionUtils.invokeMethod(profile, "getId");
+
+					// Checks if the current infoData game mode is spectator and the player UUID is
+					// not equal according to game profile id
 					if (c.get(infoData).equals(ReflectionUtils.getField(enumGameMode, "SPECTATOR").get(enumGameMode))
 							&& !(id.equals(event.getPlayer().getUniqueId()))) {
+						// Modifies the infoData object "c" game mode field into survival object
 						ReflectionUtils.modifyFinalField(c, infoData,
 								ReflectionUtils.getField(enumGameMode, "SURVIVAL").get(enumGameMode));
 					}

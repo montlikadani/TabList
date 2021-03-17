@@ -49,7 +49,7 @@ public abstract class AbstractVariable {
 				IRowPlayer r = entry.getRow();
 
 				if (isPlayers) {
-					if (!firstEqual && !(firstEqual = entry.getRow().getText().equals(rowPlayer.getText()))) {
+					if (!firstEqual && !(firstEqual = r.getText().equals(rowPlayer.getText()))) {
 						continue; // Dirty solution, to check the last row text is equal to the current row
 					}
 

@@ -14,7 +14,16 @@ public final class ReflectionUtils {
 	private static Field modifiersField;
 	private static JsonComponent jsonComponent;
 
+	public static Class<?> iChatBaseComponent;
+	public static Method jsonComponentMethod;
+
 	static {
+		try {
+			iChatBaseComponent = getNMSClass("IChatBaseComponent");
+			jsonComponentMethod = iChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class);
+		} catch (Exception e) {
+		}
+
 		try {
 			modifiersField = Field.class.getDeclaredField("modifiers");
 		} catch (NoSuchFieldException e) { // Java 12+
@@ -61,8 +70,6 @@ public final class ReflectionUtils {
 	}
 
 	public static Object getAsIChatBaseComponent(final String text) throws Exception {
-		Class<?> iChatBaseComponent = getNMSClass("IChatBaseComponent");
-
 		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1)) {
 			return getJsonComponent().parseProperty(text, iChatBaseComponent);
 		}
@@ -73,8 +80,7 @@ public final class ReflectionUtils {
 					chatSerializer.getMethod("a", String.class).invoke(chatSerializer, "{\"text\":\"" + text + "\"}"));
 		}
 
-		Method m = iChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class);
-		return m.invoke(iChatBaseComponent, "{\"text\":\"" + text + "\"}");
+		return jsonComponentMethod.invoke(iChatBaseComponent, "{\"text\":\"" + text + "\"}");
 	}
 
 	public static Object invokeMethod(Object obj, String name) throws Exception {
@@ -272,7 +278,7 @@ public final class ReflectionUtils {
 
 			String currentVersion = System.getProperty("java.version");
 			if (currentVersion.contains("_")) {
-				currentVersion = currentVersion.split("_")[0];
+				currentVersion = currentVersion.split("_", 2)[0];
 			}
 
 			currentVersion = currentVersion.replaceAll("[^\\d]|_", "");

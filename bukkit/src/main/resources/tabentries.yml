@@ -6,11 +6,14 @@ refresh-rate: 6
 
 placeholder-setting:
   world_players:
-    max: 8
+    max: 6
     show-afk-players: true
   players:
     max: 8
     show-afk-players: true
+  players_in_group:
+    show-afk-players: false
+    max: 4
 
 default:
   text: '                                '

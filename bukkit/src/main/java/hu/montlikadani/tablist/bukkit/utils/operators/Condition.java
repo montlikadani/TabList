@@ -5,9 +5,27 @@ public class Condition {
 	private String operator;
 	private String[] parseable;
 
+	private String color = "";
+	private double secondCondition = 0D;
+
 	public Condition(String operator, String[] parseable) {
 		this.operator = operator;
-		this.parseable = parseable == null ? new String[0] : parseable;
+
+		if (parseable == null) {
+			parseable = new String[0];
+		}
+
+		this.parseable = parseable;
+
+		if (parseable.length > 1) {
+			try {
+				secondCondition = Double.parseDouble(
+						parseable[(parseable[0].contains("%tps%") || parseable[0].contains("%ping%")) ? 1 : 0]);
+			} catch (NumberFormatException e) {
+			}
+
+			color = parseable[1].matches("&|#") ? parseable[1] : parseable[0];
+		}
 	}
 
 	public String[] getParseable() {
@@ -19,17 +37,10 @@ public class Condition {
 	}
 
 	public double getSecondCondition() {
-		try {
-			return parseable.length > 1
-					? Double.parseDouble(
-							parseable[(parseable[0].contains("%tps%") || parseable[0].contains("%ping%")) ? 1 : 0])
-					: 0D;
-		} catch (NumberFormatException e) {
-			return 0;
-		}
+		return secondCondition;
 	}
 
 	public String getColor() {
-		return parseable.length > 1 ? parseable[1].matches("&|#") ? parseable[1] : parseable[0] : "";
+		return color;
 	}
 }

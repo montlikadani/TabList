@@ -161,7 +161,7 @@ public final class TabEntryValues {
 		}
 
 		public enum SettingType {
-			WORLD_PLAYERS("world_players"), ONLINE_PLAYERS("players");
+			WORLD_PLAYERS("world_players"), ONLINE_PLAYERS("players"), PLAYERS_IN_GROUP("players_in_group");
 
 			public final String path;
 

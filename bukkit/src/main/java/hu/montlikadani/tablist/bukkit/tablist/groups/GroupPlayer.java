@@ -2,8 +2,6 @@ package hu.montlikadani.tablist.bukkit.tablist.groups;
 
 import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 
@@ -107,11 +105,10 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 			update = true;
 		}
 
-		List<TeamHandler> groupsList = plugin.getGroups().getGroupsList();
-		for (TeamHandler team : groupsList) {
+		for (TeamHandler team : plugin.getGroups().getGroupsList()) {
 			if (player.getName().equalsIgnoreCase(team.getTeam())) {
 				if (!team.isGlobal()) {
-					for (TeamHandler t : groupsList) {
+					for (TeamHandler t : plugin.getGroups().getGroupsList()) {
 						if (t.isGlobal() && globalGroup != t) {
 							globalGroup = t;
 							break;
@@ -145,12 +142,12 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 			}
 		}
 
-		for (TeamHandler team : groupsList) {
+		for (TeamHandler team : plugin.getGroups().getGroupsList()) {
 			if (playerVaultGroup != null && ConfigValues.isPreferPrimaryVaultGroup()
 					&& (playerVaultGroup.equalsIgnoreCase(team.getTeam())
 							|| StringUtils.containsIgnoreCase(team.getTeam(), playerVaultGroup))) {
 				if (!team.isGlobal()) {
-					for (TeamHandler t : groupsList) {
+					for (TeamHandler t : plugin.getGroups().getGroupsList()) {
 						if (t.isGlobal() && globalGroup != t) {
 							globalGroup = t;
 							break;
@@ -305,7 +302,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 			}
 		}
 
-		int ownPriority = this.getPriority();
+		int ownPriority = getPriority();
 		int tlpPriority = tlp.getPriority();
 
 		if (ownPriority == tlpPriority)

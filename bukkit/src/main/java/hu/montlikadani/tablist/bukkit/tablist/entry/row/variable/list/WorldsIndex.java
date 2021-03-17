@@ -24,7 +24,7 @@ public final class WorldsIndex extends AbstractVariable {
 
 		for (int i = 0; i < worlds.size(); i++) {
 			if (text.indexOf(replacement + i + "%") >= 0) {
-				return StringUtils.replace(text, "%worlds_" + i + "%", worlds.get(i).getName());
+				return StringUtils.replace(text, replacement + i + "%", worlds.get(i).getName());
 			}
 		}
 
