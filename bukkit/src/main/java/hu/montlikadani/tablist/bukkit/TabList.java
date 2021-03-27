@@ -16,7 +16,6 @@ import java.util.logging.Level;
 
 import org.apache.commons.lang.StringUtils;
 import org.bstats.bukkit.Metrics;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -108,7 +107,7 @@ public final class TabList extends JavaPlugin {
 
 			beginDataCollection();
 
-			if (getConfig().get("logconsole", false)) {
+			if (ConfigValues.isLogConsole()) {
 				Util.sendMsg(getServer().getConsoleSender(), colorMsg("&6&l[&5&lTab&c&lList&6&l]&7&l >&a Enabled&6 v"
 						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)"));
 			}
@@ -248,21 +247,18 @@ public final class TabList extends JavaPlugin {
 	private void loadAnimations() {
 		animations.clear();
 
-		FileConfiguration c = conf.getAnimCreator();
-		if (!c.isConfigurationSection("animations")) {
+		org.bukkit.configuration.ConfigurationSection section = conf.getAnimCreator().getConfigurationSection("animations");
+		if (section == null) {
 			return;
 		}
 
-		for (String name : c.getConfigurationSection("animations").getKeys(false)) {
-			String path = "animations." + name + ".";
-			List<String> list = c.getStringList(path + "texts");
+		for (String name : section.getKeys(false)) {
+			String path = name + ".";
+			List<String> list = section.getStringList(path + "texts");
+
 			if (!list.isEmpty()) {
-				if (c.getInt(path + "interval", 200) < 0) {
-					animations.add(new AnimCreator(name, list, c.getBoolean(path + "random")));
-				} else {
-					animations.add(
-							new AnimCreator(name, list, c.getInt(path + "interval"), c.getBoolean(path + "random")));
-				}
+				animations.add(new AnimCreator(name, list, section.getInt(path + "interval", 200),
+						section.getBoolean(path + "random")));
 			}
 		}
 	}
@@ -276,11 +272,14 @@ public final class TabList extends JavaPlugin {
 			return "";
 		}
 
-		while (!animations.isEmpty() && name.contains("%anim:")) { // when using multiple animations
+		int a = 0; // Make sure we're not generates infinite loop
+		while (a < 100 && !animations.isEmpty() && name.contains("%anim:")) { // when using multiple animations
 			for (AnimCreator ac : animations) {
 				name = StringUtils.replace(name, "%anim:" + ac.getAnimName() + "%",
 						ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
 			}
+
+			a++;
 		}
 
 		return name;

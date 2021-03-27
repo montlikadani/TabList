@@ -130,7 +130,7 @@ public final class InfoName {
 		return gameProfile;
 	}
 
-	public void addPlayer(Player player, String text) {
+	public void addPlayer(Player player, String text, Player forWho) {
 		currentPlayerInfoAction = "ADD_PLAYER";
 
 		try {
@@ -150,7 +150,12 @@ public final class InfoName {
 			((List<Object>) infoList.get(packet)).add(rowPlayer = playerInfoDataConstr.newInstance(packet, gameProfile,
 					ping, gameMode, ReflectionUtils.getAsIChatBaseComponent(text)));
 
-			sendPacketForEveryone();
+			if (forWho != null) {
+				ReflectionUtils.sendPacket(forWho, packet);
+				ReflectionUtils.sendPacket(forWho, rowPlayer);
+			} else {
+				sendPacketForEveryone();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -182,12 +187,14 @@ public final class InfoName {
 		}
 
 		comp.thenAccept(v -> {
-			addPlayer(null, text);
+			addPlayer(null, text, null);
 			updateDisplayName(null, text, null);
 		});
 	}
 
 	public void movePlayer(Player player, int rowIndex) {
+		remove(player, false, "");
+
 		// Need 3 tick delay to show player
 		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
 			try {
@@ -208,7 +215,8 @@ public final class InfoName {
 				Field profile = null;
 				for (Field gp : entityPlayer.getClass().getSuperclass().getDeclaredFields()) {
 					if (gp.getType().equals(currentProfile.getClass())) {
-						ReflectionUtils.modifyFinalField(profile = gp, entityPlayer, gameProfile);
+						profile = gp;
+						ReflectionUtils.modifyFinalField(gp, entityPlayer, gameProfile);
 						break;
 					}
 				}
@@ -217,11 +225,32 @@ public final class InfoName {
 					return;
 				}
 
-				addPlayer(player, player.getName());
+				gameProfile = (GameProfile) profile.get(entityPlayer);
+
+				addPlayer(player, player.getName(), null);
 				sendPacketForEveryone();
 
 				ReflectionUtils.modifyFinalField(profile, entityPlayer, currentProfile);
-				sendPacketForEveryone();
+				currentProfile = (GameProfile) ReflectionUtils.invokeMethod(entityPlayer, "getProfile", true, true);
+
+				Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
+				Array.set(entityPlayerArray, 0, entityPlayer);
+
+				Object packet = playOutPlayerInfoConstr.newInstance(
+						enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME").get(enumPlayerInfoAction),
+						entityPlayerArray);
+
+				Object rowPlayer = playerInfoDataConstr.newInstance(packet, currentProfile, ping, gameMode,
+						ReflectionUtils.getAsIChatBaseComponent(player.getName()));
+
+				((List<Object>) infoList.get(packet)).add(rowPlayer);
+
+				for (TabListUser user : plugin.getUsers()) {
+					Player pl = user.getPlayer();
+
+					ReflectionUtils.sendPacket(pl, packet);
+					ReflectionUtils.sendPacket(pl, rowPlayer);
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -229,14 +258,10 @@ public final class InfoName {
 	}
 
 	public void remove(Player player, boolean restorePlayer, String text) {
-		if (rowPlayer == null) {
-			return;
-		}
-
 		try {
 			if (player != null) { // Restore player to default state
 				if (restorePlayer) {
-					addPlayer(player, plugin.getComplement().getPlayerListName(player));
+					addPlayer(player, plugin.getComplement().getPlayerListName(player), null);
 				} else {
 					entityPlayer = ReflectionUtils.getHandle(player);
 
@@ -256,7 +281,7 @@ public final class InfoName {
 						.getDeclaredField(currentPlayerInfoAction = "REMOVE_PLAYER").get(enumPlayerInfoAction),
 						Array.newInstance(entityPlayerClass, 0));
 
-				((List<Object>) infoList.get(packet)).add(playerInfoDataConstr.newInstance(packet, gameProfile, ping,
+				((List<Object>) infoList.get(packet)).add(rowPlayer = playerInfoDataConstr.newInstance(packet, gameProfile, ping,
 						gameMode, ReflectionUtils.getAsIChatBaseComponent(text)));
 
 				sendPacketForEveryone();
@@ -291,8 +316,9 @@ public final class InfoName {
 					ReflectionUtils.modifyFinalField(ReflectionUtils.getField(rowPlayer, "e"), rowPlayer,
 							ReflectionUtils.getAsIChatBaseComponent(name));
 
-					ReflectionUtils.sendPacket(u.getPlayer(), packet);
-					ReflectionUtils.sendPacket(u.getPlayer(), rowPlayer);
+					Player player = u.getPlayer();
+					ReflectionUtils.sendPacket(player, packet);
+					ReflectionUtils.sendPacket(player, rowPlayer);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -348,8 +374,10 @@ public final class InfoName {
 
 	public void sendPacketForEveryone() {
 		for (TabListUser user : plugin.getUsers()) {
-			ReflectionUtils.sendPacket(user.getPlayer(), packet);
-			ReflectionUtils.sendPacket(user.getPlayer(), rowPlayer);
+			Player player = user.getPlayer();
+
+			ReflectionUtils.sendPacket(player, packet);
+			ReflectionUtils.sendPacket(player, rowPlayer);
 		}
 	}
 

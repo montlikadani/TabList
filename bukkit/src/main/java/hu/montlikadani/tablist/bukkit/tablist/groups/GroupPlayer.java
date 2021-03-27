@@ -163,15 +163,12 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 				return update;
 			}
 
-			String name = team.getTeam();
-			String perm = team.getPermission();
-
 			if (team.isGlobal() && globalGroup != team) {
 				globalGroup = team;
 				continue;
 			}
 
-			if (PluginUtils.hasPermission(player, perm)) {
+			if (PluginUtils.hasPermission(player, team.getPermission())) {
 				if (group != team) {
 					update = true;
 					group = team;
@@ -180,9 +177,9 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 				break;
 			}
 
-			if (perm.isEmpty() && plugin.hasVault()) {
+			if (team.getPermission().isEmpty() && plugin.hasVault()) {
 				for (String groups : plugin.getVaultPerm().getPlayerGroups(player)) {
-					if (groups.equalsIgnoreCase(name)) {
+					if (groups.equalsIgnoreCase(team.getTeam())) {
 						if (group != team) {
 							update = true;
 							group = team;

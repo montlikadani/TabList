@@ -2,8 +2,10 @@ package hu.montlikadani.tablist.bukkit.config.constantsLoader;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
@@ -37,14 +39,29 @@ public final class TabEntryValues {
 		}
 
 		for (PlaceholderSetting.SettingType type : PlaceholderSetting.SettingType.values()) {
-			int max = c.getInt("placeholder-setting." + type.path + ".max", 8);
+			String path = "placeholder-setting." + type.name + ".";
+
+			int max = c.getInt(path + "max", 8);
 			if (max >= 20) {
 				max = 19;
 			}
 
-			boolean showAfkPlayers = c.getBoolean("placeholder-setting." + type.path + ".show-afk-players", true);
+			Set<PlaceholderSetting.EntryCondition> conditions = new HashSet<>();
+			for (String condition : c.getStringList(path + "conditions")) {
+				if (condition.replace("!", "").isEmpty()) {
+					continue;
+				}
 
-			VARIABLE_SETTINGS.put(type, new PlaceholderSetting(max, showAfkPlayers));
+				if (condition.startsWith("!")) {
+					conditions.add(new PlaceholderSetting.EntryCondition(
+							PlaceholderSetting.EntryCondition.ConditionType.getByName(condition.substring(1)), false));
+				} else {
+					conditions.add(new PlaceholderSetting.EntryCondition(
+							PlaceholderSetting.EntryCondition.ConditionType.getByName(condition), true));
+				}
+			}
+
+			VARIABLE_SETTINGS.put(type, new PlaceholderSetting(max, conditions));
 		}
 
 		for (ColumnValues.ConfigType type : ColumnValues.ConfigType.values()) {
@@ -145,28 +162,81 @@ public final class TabEntryValues {
 	public static final class PlaceholderSetting {
 
 		private int max;
-		private boolean showAfkPlayers;
 
-		private PlaceholderSetting(int max, boolean showAfkPlayers) {
+		private final Set<EntryCondition> conditions = new HashSet<>();
+
+		private PlaceholderSetting(int max, Set<EntryCondition> conditions) {
 			this.max = max;
-			this.showAfkPlayers = showAfkPlayers;
+			this.conditions.addAll(conditions);
 		}
 
 		public int getMax() {
 			return max;
 		}
 
-		public boolean isShowAfkPlayers() {
-			return showAfkPlayers;
+		public Set<EntryCondition> getConditions() {
+			return conditions;
+		}
+
+		public Boolean parseCondition(EntryCondition.ConditionType type) {
+			for (EntryCondition condition : conditions) {
+				if (condition.type == type) {
+					return condition.value;
+				}
+			}
+
+			return null;
+		}
+
+		// 2nd inner class, why I'm doing this, idk
+		public static final class EntryCondition {
+
+			private ConditionType type;
+			private boolean value;
+
+			public EntryCondition(ConditionType type, boolean value) {
+				this.type = type;
+				this.value = value;
+			}
+
+			public ConditionType getType() {
+				return type;
+			}
+
+			public boolean getValue() {
+				return value;
+			}
+
+			// TODO add more conditions
+			public enum ConditionType {
+				IS_AFK, IS_VANISHED;
+
+				private String name = super.toString().replace("_", "").toLowerCase();
+
+				@Override
+				public String toString() {
+					return name;
+				}
+
+				public static ConditionType getByName(String name) {
+					for (ConditionType type : values()) {
+						if (type.name.equalsIgnoreCase(name)) {
+							return type;
+						}
+					}
+
+					return null;
+				}
+			}
 		}
 
 		public enum SettingType {
 			WORLD_PLAYERS("world_players"), ONLINE_PLAYERS("players"), PLAYERS_IN_GROUP("players_in_group");
 
-			public final String path;
+			public final String name;
 
-			SettingType(String path) {
-				this.path = path;
+			SettingType(String name) {
+				this.name = name;
 			}
 		}
 	}

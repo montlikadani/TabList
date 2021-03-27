@@ -23,7 +23,7 @@ public class CommentedConfig extends YamlConfiguration {
 
 	public CommentedConfig(File file) {
 		this.file = file;
-		this.config = getYml();
+		config = getYml();
 	}
 
 	public YamlConfiguration getConfig() {
@@ -37,8 +37,8 @@ public class CommentedConfig extends YamlConfiguration {
 	public void load() {
 		try {
 			load(file);
-		} catch (IOException | InvalidConfigurationException e) {
-			e.printStackTrace();
+		} catch (InvalidConfigurationException | IOException e) {
+			org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, e.getLocalizedMessage());
 		}
 	}
 
@@ -228,16 +228,10 @@ public class CommentedConfig extends YamlConfiguration {
 
 	public void cleanUp() {
 		// Get rid of removed options by cleaning the file content
-		PrintWriter writer = null;
-		try {
-			writer = new PrintWriter(file);
+		try (PrintWriter writer = new PrintWriter(file)) {
 			writer.write("");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		} finally {
-			if (writer != null) {
-				writer.close();
-			}
 		}
 	}
 

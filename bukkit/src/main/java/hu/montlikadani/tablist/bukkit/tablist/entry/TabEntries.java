@@ -50,7 +50,7 @@ public final class TabEntries {
 		}
 
 		for (int column = 0; column < entries.length; column++) {
-			for (int row = 0; row < entries[column].length; row++) {
+			for (int row = 0; row < 20; row++) {
 				Entry entry = entries[column][row];
 				if (entry != null && condition.test(entry)) {
 					return Optional.of(entry);
@@ -72,6 +72,13 @@ public final class TabEntries {
 		appendEntries();
 
 		if (task == null) {
+			// #removeAll method loop too slow so we gives delay a bit when reloading
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+
 			createRows();
 
 			task = Tasks.submitAsync(() -> {
@@ -124,7 +131,7 @@ public final class TabEntries {
 
 	public void fillWithDefault() {
 		for (int column = 0; column < entries.length; column++) {
-			for (int row = 0; row < entries[column].length; row++) {
+			for (int row = 0; row < 20; row++) {
 				if (entries[column][row] != null) {
 					continue;
 				}
@@ -147,7 +154,7 @@ public final class TabEntries {
 			int rowIndex = 0;
 
 			for (int column = 0; column < entries.length; column++) {
-				for (int row = 0; row < entries[column].length; row++) {
+				for (int row = 0; row < 20; row++) {
 					Entry entry = entries[column][row];
 					if (entry != null) {
 						entry.row.create(rowIndex);
@@ -160,16 +167,15 @@ public final class TabEntries {
 	}
 
 	private void appendEntries() {
-		if (entries != null) {
+		// Only fill array with values if null or the array length is not equal to
+		// columns count
+		if (entries != null || (entries != null && entries.length == TabEntryValues.getColumns())) {
 			return;
 		}
 
-		int columns = TabEntryValues.getColumns();
-		if (entries != null && entries.length == columns) {
-			return;
-		}
+		cancelTask();
 
-		entries = new Entry[columns][20];
+		entries = new Entry[TabEntryValues.getColumns()][20];
 
 		Optional.ofNullable(TabEntryValues.COLUMN_SECTION.get(TabEntryValues.ColumnValues.ConfigType.NORMAL))
 				.ifPresent(list -> {
@@ -198,7 +204,7 @@ public final class TabEntries {
 	private void loopEntries(Consumer<Entry> consumer) {
 		if (entries != null) {
 			for (int column = 0; column < entries.length; column++) {
-				for (int row = 0; row < entries[column].length; row++) {
+				for (int row = 0; row < 20; row++) {
 					Entry entry = entries[column][row];
 					if (entry != null) {
 						consumer.accept(entry);

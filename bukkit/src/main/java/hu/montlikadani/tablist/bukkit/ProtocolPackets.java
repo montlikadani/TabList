@@ -16,6 +16,7 @@ import hu.montlikadani.tablist.bukkit.user.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
+// TODO Get rid from ProtocolLib entirely
 public class ProtocolPackets extends PacketAdapter {
 
 	private static final TabList PLUGIN = TabListAPI.getPlugin();
@@ -84,7 +85,7 @@ public class ProtocolPackets extends PacketAdapter {
 					// Checks if the current infoData game mode is spectator and the player UUID is
 					// not equal according to game profile id
 					if (c.get(infoData).equals(ReflectionUtils.getField(enumGameMode, "SPECTATOR").get(enumGameMode))
-							&& !(id.equals(event.getPlayer().getUniqueId()))) {
+							&& !id.equals(event.getPlayer().getUniqueId())) {
 						// Modifies the infoData object "c" game mode field into survival object
 						ReflectionUtils.modifyFinalField(c, infoData,
 								ReflectionUtils.getField(enumGameMode, "SURVIVAL").get(enumGameMode));

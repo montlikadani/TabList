@@ -20,7 +20,10 @@ public final class ReflectionUtils {
 	static {
 		try {
 			iChatBaseComponent = getNMSClass("IChatBaseComponent");
-			jsonComponentMethod = iChatBaseComponent.getDeclaredClasses()[0].getMethod("a", String.class);
+			Class<?>[] declaredClasses = iChatBaseComponent.getDeclaredClasses();
+			if (declaredClasses.length > 0) {
+				jsonComponentMethod = declaredClasses[0].getMethod("a", String.class);
+			}
 		} catch (Exception e) {
 		}
 
@@ -226,7 +229,9 @@ public final class ReflectionUtils {
 			try {
 				if (ServerVersion.isCurrentEqual(ServerVersion.v1_8_R1)) {
 					return getNMSClass("EnumPlayerInfoAction");
-				} else if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_11_R1)) {
+				}
+
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_11_R1)) {
 					return packetPlayOutPlayerInfo.getDeclaredClasses()[1];
 				}
 

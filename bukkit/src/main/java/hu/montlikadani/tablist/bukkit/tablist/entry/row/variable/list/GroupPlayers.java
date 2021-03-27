@@ -1,7 +1,5 @@
 package hu.montlikadani.tablist.bukkit.tablist.entry.row.variable.list;
 
-import org.apache.commons.lang.StringUtils;
-
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabEntryValues;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabEntryValues.PlaceholderSetting;
 import hu.montlikadani.tablist.bukkit.tablist.entry.row.RowPlayer;
@@ -27,7 +25,7 @@ public final class GroupPlayers extends AbstractVariable {
 
 		PlaceholderSetting ps = TabEntryValues.VARIABLE_SETTINGS.get(PlaceholderSetting.SettingType.PLAYERS_IN_GROUP);
 		if (ps == null) {
-			return StringUtils.replace(text, replacement, "");
+			return null;
 		}
 
 		// Retrieve group name from placeholder
@@ -45,7 +43,7 @@ public final class GroupPlayers extends AbstractVariable {
 
 					org.bukkit.entity.Player player = user.getPlayer();
 
-					if (plugin.getVaultPerm().playerInGroup(player, name) && canAddPlayer(player, ps)) {
+					if (player != null && plugin.getVaultPerm().playerInGroup(player, name) && canAddPlayer(player, ps)) {
 						playerNames.add(player.getName());
 					}
 				}

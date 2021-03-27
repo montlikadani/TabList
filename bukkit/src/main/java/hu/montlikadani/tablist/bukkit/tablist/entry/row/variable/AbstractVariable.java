@@ -29,8 +29,21 @@ public abstract class AbstractVariable {
 	}
 
 	protected boolean canAddPlayer(Player player, PlaceholderSetting ps) {
-		return player != null && ((ps.isShowAfkPlayers() && PluginUtils.isAfk(player)) || !PluginUtils.isAfk(player))
-				&& !PluginUtils.isVanished(player);
+		if (player == null) {
+			return false;
+		}
+
+		Boolean parsed = ps.parseCondition(PlaceholderSetting.EntryCondition.ConditionType.IS_AFK);
+		if (parsed != null) {
+			return (parsed && PluginUtils.isAfk(player)) || (!parsed && !PluginUtils.isAfk(player));
+		}
+
+		parsed = ps.parseCondition(PlaceholderSetting.EntryCondition.ConditionType.IS_VANISHED);
+		if (parsed != null) {
+			return (parsed && PluginUtils.isVanished(player)) || (!parsed && !PluginUtils.isVanished(player));
+		}
+
+		return true;
 	}
 
 	protected String setText(String text, java.util.List<String> collectedNames, String replacement,

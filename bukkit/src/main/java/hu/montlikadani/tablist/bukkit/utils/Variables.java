@@ -130,14 +130,6 @@ public class Variables {
 			}
 		}
 
-		String address = "";
-		if (pl != null && str.indexOf("%ip-address%") >= 0) {
-			java.net.InetSocketAddress a = pl.getAddress();
-			if (a != null && a.getAddress() != null) {
-				address = a.getAddress().toString().replace("/", "");
-			}
-		}
-
 		String time = str.indexOf("%server-time%") >= 0 ? getTimeAsString(ConfigValues.getTimeFormat()) : "";
 		String date = str.indexOf("%date%") >= 0 ? getTimeAsString(ConfigValues.getDateFormat()) : "";
 
@@ -182,33 +174,11 @@ public class Variables {
 			str = StringUtils.replace(str, "%staff-online%", Integer.toString(staffs));
 		}
 
-		if (!address.isEmpty())
-			str = StringUtils.replace(str, "%ip-address%", address);
-
 		if (str.contains("%mc-version%"))
 			str = StringUtils.replace(str, "%mc-version%", Bukkit.getBukkitVersion());
 
 		if (str.contains("%motd%"))
 			str = StringUtils.replace(str, "%motd%", plugin.getComplement().getMotd());
-
-		if (pl != null) {
-			if (str.contains("%ping%"))
-				str = StringUtils.replace(str, "%ping%", formatPing(TabListAPI.getPing(pl)));
-
-			if (str.contains("%exp-to-level%"))
-				str = StringUtils.replace(str, "%exp-to-level%", Integer.toString(pl.getExpToLevel()));
-
-			if (str.contains("%level%"))
-				str = StringUtils.replace(str, "%level%", Integer.toString(pl.getLevel()));
-
-			if (str.contains("%xp%"))
-				str = StringUtils.replace(str, "%xp%", Float.toString(pl.getExp()));
-
-			if (str.contains("%light-level%")) {
-				str = StringUtils.replace(str, "%light-level%",
-						Byte.toString(pl.getLocation().getBlock().getLightLevel()));
-			}
-		}
 
 		if (str.contains("%tps%")) {
 			double tps = TabListAPI.getTPS();
@@ -266,6 +236,29 @@ public class Variables {
 			s = StringUtils.replace(s, "%player-max-health%",
 					Double.toString(ServerVersion.isCurrentLower(ServerVersion.v1_9_R1) ? p.getMaxHealth()
 							: p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue()));
+		}
+
+		if (s.contains("%ping%"))
+			s = StringUtils.replace(s, "%ping%", formatPing(TabListAPI.getPing(p)));
+
+		if (s.contains("%exp-to-level%"))
+			s = StringUtils.replace(s, "%exp-to-level%", Integer.toString(p.getExpToLevel()));
+
+		if (s.contains("%level%"))
+			s = StringUtils.replace(s, "%level%", Integer.toString(p.getLevel()));
+
+		if (s.contains("%xp%"))
+			s = StringUtils.replace(s, "%xp%", Float.toString(p.getExp()));
+
+		if (s.contains("%light-level%")) {
+			s = StringUtils.replace(s, "%light-level%", Byte.toString(p.getLocation().getBlock().getLightLevel()));
+		}
+
+		if (s.indexOf("%ip-address%") >= 0) {
+			java.net.InetSocketAddress address = p.getAddress();
+			if (address != null && address.getAddress() != null) {
+				s = StringUtils.replace(s, "%ip-address%", address.getAddress().toString().replace("/", ""));
+			}
 		}
 
 		return s;

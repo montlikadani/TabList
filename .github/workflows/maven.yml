@@ -1,11 +1,9 @@
-name: Java CI with Maven
+name: Build TabList
 
 on:
   push:
     branches:
     - master
-    - Sponge-7
-    - Sponge-8
 
 jobs:
   build:
@@ -27,21 +25,3 @@ jobs:
       with:
         name: tablist-dev
         path: ${{ github.workspace }}/bukkit/target/TabList*.jar
-    - name: Build Sponge-7 with Maven
-      run: mvn -B package --file ${{ github.workspace }}/Sponge/pom.xml
-      if: github.ref == 'refs/heads/Sponge-7'
-    - name: Upload Sponge-7 Artifact
-      uses: actions/upload-artifact@v2
-      if: github.ref == 'refs/heads/Sponge-7'
-      with:
-        name: tablist-sponge-dev
-        path: ${{ github.workspace }}/Sponge/target/tablist-sponge*.jar
-    - name: Build Sponge with Maven
-      run: mvn -B package --file ${{ github.workspace }}/Sponge/pom.xml
-      if: github.ref == 'refs/heads/Sponge-8'
-    - name: Upload Sponge-8 Artifact
-      uses: actions/upload-artifact@v2
-      if: github.ref == 'refs/heads/Sponge-8'
-      with:
-        name: tablist-sponge-dev
-        path: ${{ github.workspace }}/Sponge/target/tablist-sponge*.jar

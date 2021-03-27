@@ -12,17 +12,9 @@ public class AnimCreator {
 
 	private final List<String> texts = new ArrayList<>();
 
-	public AnimCreator(String animName, List<String> texts, int time) {
-		this(animName, texts, time, false);
-	}
-
-	public AnimCreator(String animName, List<String> texts, boolean random) {
-		this(animName, texts, 0, random);
-	}
-
 	public AnimCreator(String animName, List<String> texts, int time, boolean random) {
 		this.animName = animName;
-		this.time = time;
+		this.time = time < 0 ? 0 : time;
 		this.random = random;
 
 		if (texts != null) {
@@ -35,7 +27,7 @@ public class AnimCreator {
 	}
 
 	public List<String> getTexts() {
-		return texts;
+		return new ArrayList<>(texts);
 	}
 
 	public boolean isRandom() {
@@ -49,7 +41,7 @@ public class AnimCreator {
 	public String getRandomText() {
 		int size = texts.size();
 		return random ? texts.get(ThreadLocalRandom.current().nextInt(size) % (size * time))
-				: texts.get(((int) (System.currentTimeMillis() % (size * time) / time)));
+				: texts.get((int) (System.currentTimeMillis() % (size * time) / time));
 	}
 
 	public String getFirstText() {

@@ -89,11 +89,8 @@ public abstract class UpdateDownloader {
 				final URL download = new URL(
 						"https://github.com/montlikadani/TabList/releases/latest/download/" + name + ".jar");
 
-				InputStream in = download.openStream();
-				try {
+				try (InputStream in = download.openStream()) {
 					Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
-				} finally {
-					in.close();
 				}
 
 				return true;

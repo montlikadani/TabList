@@ -8,7 +8,7 @@ labels: 'Type: Enhancement'
 <!-- These comments will not show. -->
 
 ### Description
-<!-- Write the suggestion(s) for what you want. -->
+<!-- Write the suggestion(s) for what you want to be added. -->
 <!-- Write it purely and intelligently. -->
 
 

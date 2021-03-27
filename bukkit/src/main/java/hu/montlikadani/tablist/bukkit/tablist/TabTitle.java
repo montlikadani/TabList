@@ -49,10 +49,9 @@ public abstract class TabTitle {
 			} catch (Exception f) {
 				java.lang.reflect.Constructor<?> titleConstructor = null;
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_R1)) {
-					titleConstructor = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter")
-							.getConstructor();
+					titleConstructor = playerListHeaderFooter.getConstructor();
 				} else if (ServerVersion.isCurrentLower(ServerVersion.v1_12_R1)) {
-					titleConstructor = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter")
+					titleConstructor = playerListHeaderFooter
 							.getConstructor(ReflectionUtils.getAsIChatBaseComponent(header).getClass());
 				}
 

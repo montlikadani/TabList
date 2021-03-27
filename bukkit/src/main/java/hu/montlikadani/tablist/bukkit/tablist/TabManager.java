@@ -102,12 +102,13 @@ public class TabManager {
 		}
 
 		FileConfiguration t = YamlConfiguration.loadConfiguration(f);
-		if (!t.isConfigurationSection("tablists")) {
+		org.bukkit.configuration.ConfigurationSection section = t.getConfigurationSection("tablists");
+		if (section == null) {
 			return;
 		}
 
-		for (String uuid : t.getConfigurationSection("tablists").getKeys(false)) {
-			TABENABLED.put(UUID.fromString(uuid), t.getConfigurationSection("tablists").getBoolean(uuid));
+		for (String uuid : section.getKeys(false)) {
+			TABENABLED.put(UUID.fromString(uuid), section.getBoolean(uuid));
 		}
 
 		t.set("tablists", null);

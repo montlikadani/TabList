@@ -15,6 +15,7 @@ import org.bukkit.scoreboard.Team;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabEntryValues;
 import hu.montlikadani.tablist.bukkit.tablist.playerlist.PlayerList;
 
 public abstract class AfkPlayers {
@@ -24,6 +25,10 @@ public abstract class AfkPlayers {
 	private final TabList plugin = TabListAPI.getPlugin();
 
 	protected void goAfk(Player player, boolean value) {
+		if (TabEntryValues.isEnabled()) {
+			plugin.getUser(player).ifPresent(user -> plugin.getTabManager().getTabEntries().beginUpdate(user));
+		}
+
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowPlayerGroup()) {
 			String path = "placeholder-format.afk-status.format-" + (value ? "yes" : "no");
 			String result = "";

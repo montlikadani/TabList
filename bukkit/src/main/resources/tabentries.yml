@@ -7,13 +7,17 @@ refresh-rate: 6
 placeholder-setting:
   world_players:
     max: 6
-    show-afk-players: true
+    conditions:
+    - isafk
   players:
     max: 8
-    show-afk-players: true
+    conditions:
+    - isafk
   players_in_group:
-    show-afk-players: false
     max: 4
+    conditions:
+    - "!isafk"
+    - "!isvanished"
 
 default:
   text: '                                '
@@ -45,3 +49,6 @@ columns:
   3:
   - 'ping:15;head:7f2fa3f7-b400-4c08-b816-65d2de5d9010;&6Players in %worlds_0% world:'
   - 'ping:15;%world_players_0%'
+  4:
+  - '&aPlayers with owner group:'
+  - '%players_in_group_owner%'

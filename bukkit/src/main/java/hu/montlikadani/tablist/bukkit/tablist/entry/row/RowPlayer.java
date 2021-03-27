@@ -86,14 +86,9 @@ public class RowPlayer implements IRowPlayer {
 
 	@Override
 	public void setPlayer(Player player) {
-		this.player = player;
-
-		if (player == null) {
-			return;
+		if ((this.player = player) != null) {
+			infoName.movePlayer(player, rowIndex);
 		}
-
-		infoName.remove(player, false, "");
-		infoName.movePlayer(player, rowIndex);
 	}
 
 	@Override
@@ -112,9 +107,11 @@ public class RowPlayer implements IRowPlayer {
 	}
 
 	public void show(Player player) {
-		if (infoName.getPacket() != null && infoName.getRowPlayer() != null) {
+		if (plugin.getUsers().size() == 1 && infoName.getRowPlayer() != null && infoName.getPacket() != null) {
 			ReflectionUtils.sendPacket(player, infoName.getPacket());
 			ReflectionUtils.sendPacket(player, infoName.getRowPlayer());
+		} else {
+			infoName.addPlayer(null, text, player);
 		}
 	}
 
@@ -124,7 +121,8 @@ public class RowPlayer implements IRowPlayer {
 	}
 
 	@Override
-	public String updateText(Player player, String text) {
+	// Thread-blocking method
+	public synchronized String updateText(Player player, String text) {
 		if (infoName.getRowPlayer() == null || player == null || this.player != null || text.trim().isEmpty()) {
 			// Player names should only be changed in groups
 			//

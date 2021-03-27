@@ -79,19 +79,7 @@ public class OperatorNodes implements ExpressionNode {
 			return null;
 		}
 
-		String[] c = String.valueOf(str.trim().replace(operator, ";").toCharArray()).split(";");
-		return isNumber(c[(c[0].contains("%tps%") || c[0].contains("%ping%")) ? 1 : 0]) ? new Condition(operator, c)
-				: null;
-	}
-
-	private boolean isNumber(String num) {
-		try {
-			Double.parseDouble(num);
-			return true;
-		} catch (NumberFormatException e) {
-		}
-
-		return false;
+		return new Condition(operator, String.valueOf(str.trim().replace(operator, ";").toCharArray()).split(";"));
 	}
 
 	@Override

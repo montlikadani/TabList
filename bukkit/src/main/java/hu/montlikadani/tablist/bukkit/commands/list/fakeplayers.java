@@ -42,12 +42,7 @@ public class fakeplayers implements ICommand {
 		}
 
 		if (args.length < 2) {
-			if (sender instanceof Player) {
-				((Player) sender).performCommand("tl help");
-			} else {
-				Bukkit.dispatchCommand(sender, "tl help");
-			}
-
+			Bukkit.dispatchCommand(sender, "tl help");
 			return true;
 		}
 
@@ -57,12 +52,7 @@ public class fakeplayers implements ICommand {
 		}
 
 		if (action != Actions.LIST && args.length < 3) {
-			if (sender instanceof Player) {
-				((Player) sender).performCommand("tl help");
-			} else {
-				Bukkit.dispatchCommand(sender, "tl help");
-			}
-
+			Bukkit.dispatchCommand(sender, "tl help");
 			return true;
 		}
 

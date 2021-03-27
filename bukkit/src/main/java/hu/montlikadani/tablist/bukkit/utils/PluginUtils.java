@@ -13,7 +13,6 @@ import hu.montlikadani.ragemode.gameUtils.GameUtils;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
-import ru.tehkode.permissions.bukkit.PermissionsEx;
 
 public final class PluginUtils {
 
@@ -82,7 +81,7 @@ public final class PluginUtils {
 
 		if (PLUGIN.isPluginEnabled("PermissionsEx")) {
 			try {
-				return PermissionsEx.getPermissionManager().has(player, perm);
+				return ru.tehkode.permissions.bukkit.PermissionsEx.getPermissionManager().has(player, perm);
 			} catch (Throwable e) {
 				// Pex2 supports bukkit provided "hasPermission" check
 			}
