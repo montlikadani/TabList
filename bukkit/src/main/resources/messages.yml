@@ -12,19 +12,19 @@ set-group:
 
 toggle:
   console-usage: "&cUse: &7/%command% toggle <player/all>"
-  enabled: "&aThe tab is successfully turned on!"
-  disabled: "&cThe tab is successfully turned off!"
+  enabled: "&aTab is turned on!"
+  disabled: "&cTab is turned off!"
   no-player: "&cThere is no player available on the server."
   player-not-found: "&cThis player&7 %player%&c not found!"
 
 fake-player:
-  added: "&aThe fake player&7 %name%&a successfully added!"
-  removed: "&cThe fake player&7 %name%&c successfully removed!"
-  already-added: "&cThe fake player&7 %name%&c already added."
-  not-exists: "&cThe fake player with this name not exists."
+  added: "&aFake player&7 %name%&a added!"
+  removed: "&cFake player&7 %name%&c removed!"
+  already-added: "&cFake player&7 %name%&c already added."
+  not-exists: "&cFake player with this name not exists."
   no-fake-player: "&cThere is no fake player either."
-  disabled: "&cThe fake player is disabled. Please enable in config.yml file."
-  ping-can-not-be-less: "&cThe ping amount should be highest than&e %amount%&c or the value is not a number."
+  disabled: "&cFake player option is disabled. Please enable in config.yml file."
+  ping-can-not-be-less: "&cThe ping amount should be highest than&e %amount%&c and the value probably should be a number."
 
   list:
   - "&cFake players&7 (&e%amount%&7):"

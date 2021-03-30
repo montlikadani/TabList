@@ -148,11 +148,10 @@ public class Commands implements CommandExecutor, TabCompleter {
 		Set<String> c = new HashSet<>();
 
 		for (ICommand cmd : cmds) {
-			if (cmd.getClass().isAnnotationPresent(CommandProcessor.class)) {
-				CommandProcessor proc = cmd.getClass().getAnnotation(CommandProcessor.class);
-				if (!(sender instanceof Player) || sender.hasPermission(proc.permission().getPerm())) {
-					c.add(proc.name());
-				}
+			CommandProcessor proc = cmd.getClass().getAnnotation(CommandProcessor.class);
+
+			if (proc != null && (!(sender instanceof Player) || sender.hasPermission(proc.permission().getPerm()))) {
+				c.add(proc.name());
 			}
 		}
 

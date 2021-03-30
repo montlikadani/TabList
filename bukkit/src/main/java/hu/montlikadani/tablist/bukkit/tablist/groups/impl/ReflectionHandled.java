@@ -13,6 +13,7 @@ import hu.montlikadani.tablist.bukkit.tablist.entry.row.RowPlayer;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.Util;
+import hu.montlikadani.tablist.bukkit.utils.reflection.NMSContainer;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public class ReflectionHandled implements ITabScoreboard {
@@ -21,8 +22,10 @@ public class ReflectionHandled implements ITabScoreboard {
 
 	private final TabList plugin = TabListAPI.getPlugin();
 
-	private Object playerConst, entityPlayerArray, packetPlayOutPlayerInfo;
+	private Object packetPlayOutPlayerInfo;
+	private java.lang.reflect.Field infoListField;
 	private List<Object> infoList;
+
 	private TabListUser tabListUser;
 
 	public ReflectionHandled(TabListUser tabListUser) {
@@ -37,9 +40,9 @@ public class ReflectionHandled implements ITabScoreboard {
 		}
 
 		try {
-			playerConst = ReflectionUtils.getHandle(tabListUser.getPlayer());
+			Object playerConst = ReflectionUtils.getHandle(tabListUser.getPlayer());
 
-			entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
+			Object entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
 			Array.set(entityPlayerArray, 0, playerConst);
 
 			// TODO Fix client error when using teams
@@ -55,22 +58,16 @@ public class ReflectionHandled implements ITabScoreboard {
 
 			scoreRef.getScoreboardTeamNames().set(packet, Collections.singletonList(tabPlayer.getPlayer().getName()));*/
 
-			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
-			Class<?> enumPlayerInfoAction = ReflectionUtils.Classes
-					.getEnumPlayerInfoAction(packetPlayOutPlayerInfoClass);
-			Constructor<?> constr = packetPlayOutPlayerInfoClass.getDeclaredConstructor(enumPlayerInfoAction,
-					entityPlayerArray.getClass());
+			Constructor<?> constr = NMSContainer.getPacketPlayOutPlayerInfo()
+					.getDeclaredConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass());
 			constr.setAccessible(true);
 
-			packetPlayOutPlayerInfo = constr.newInstance(
-					enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME").get(enumPlayerInfoAction),
-					entityPlayerArray);
+			packetPlayOutPlayerInfo = constr.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
 
-			infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
-					.get(packetPlayOutPlayerInfo);
+			infoListField = ReflectionUtils.getField(packetPlayOutPlayerInfo, "b");
+			infoList = (List<Object>) infoListField.get(packetPlayOutPlayerInfo);
 
 			for (TabListUser user : plugin.getUsers()) {
-				//ReflectionUtils.sendPacket(user.getPlayer(), packet);
 				ReflectionUtils.sendPacket(user.getPlayer(), packetPlayOutPlayerInfo);
 			}
 		} catch (Exception e) {
@@ -83,11 +80,6 @@ public class ReflectionHandled implements ITabScoreboard {
 		registerTeam(teamName);
 
 		try {
-			/*scoreRef.getScoreboardTeamMode().set(packet, 2);
-			scoreRef.getScoreboardTeamDisplayName().set(packet,
-					ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1) ? ReflectionUtils.getAsIChatBaseComponent(teamName)
-							: teamName);*/
-
 			updateName(tabListUser.getGroupPlayer().getCustomTabName());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -101,8 +93,6 @@ public class ReflectionHandled implements ITabScoreboard {
 		}
 
 		try {
-			//scoreRef.getScoreboardTeamMode().set(packet, 1);
-
 			updateName(tabListUser.getPlayer().getName());
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -127,19 +117,39 @@ public class ReflectionHandled implements ITabScoreboard {
 			return;
 		}
 
+		Object packet = null;
 		for (Object infoData : infoList) {
 			GameProfile profile = (GameProfile) ReflectionUtils.invokeMethod(infoData, "a");
 
 			if (profile.getId().equals(tabListUser.getUniqueId())) {
-				ReflectionUtils.modifyFinalField(ReflectionUtils.getField(infoData, "e"), infoData,
-						ReflectionUtils.getAsIChatBaseComponent(name));
+				Object gameMode = ReflectionUtils.getField(infoData, "c").get(infoData);
+				int ping = (int) ReflectionUtils.getField(infoData, "b").get(infoData);
+
+				Constructor<?> playerInfoDataConstr = NMSContainer.getPlayerInfoDataConstructor();
+
+				if (playerInfoDataConstr.getParameterCount() == 5) {
+					packet = playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
+							ReflectionUtils.getAsIChatBaseComponent(name));
+				} else {
+					packet = playerInfoDataConstr.newInstance(profile, ping, gameMode,
+							ReflectionUtils.getAsIChatBaseComponent(name));
+				}
+
 				break;
 			}
 		}
 
+		if (packet == null) {
+			return;
+		}
+
+		infoListField.set(packetPlayOutPlayerInfo, java.util.Arrays.asList(packet));
+
 		for (TabListUser user : plugin.getUsers()) {
-			//ReflectionUtils.sendPacket(user.getPlayer(), packet);
-			ReflectionUtils.sendPacket(user.getPlayer(), packetPlayOutPlayerInfo);
+			org.bukkit.entity.Player player = user.getPlayer();
+
+			ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
+			ReflectionUtils.sendPacket(player, packet);
 		}
 	}
 }

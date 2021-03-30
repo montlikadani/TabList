@@ -3,6 +3,7 @@ package hu.montlikadani.tablist.bukkit.tablist.entry.row;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -17,6 +18,7 @@ import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
+import hu.montlikadani.tablist.bukkit.utils.reflection.NMSContainer;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 @SuppressWarnings("unchecked")
@@ -26,52 +28,15 @@ public final class InfoName {
 	private int ping;
 
 	private String currentPlayerInfoAction;
-	private Field infoList;
-	private Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstr;
-	private Class<?> packetPlayOutPlayerInfo, enumPlayerInfoAction, entityPlayerClass;
-	private Object packet, rowPlayer, gameMode, entityPlayer;
+	private Object packet, rowPlayer, entityPlayer;
 	private GameProfile gameProfile;
+
+	private final Constructor<?> playOutPlayerInfoConstr = NMSContainer.getPlayOutPlayerInfoConstructor(),
+			playerInfoDataConstr = NMSContainer.getPlayerInfoDataConstructor();
+	private final Field infoList = NMSContainer.getInfoList();
 
 	public InfoName(TabList plugin) {
 		this.plugin = plugin;
-
-		try {
-			packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
-
-			entityPlayerClass = ReflectionUtils.getNMSClass("EntityPlayer");
-			infoList = ReflectionUtils.getField(packetPlayOutPlayerInfo, "b");
-			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction(packetPlayOutPlayerInfo);
-
-			Class<?> playerInfoData = null;
-			try {
-				playerInfoData = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData");
-			} catch (ClassNotFoundException e) {
-				playerInfoData = ReflectionUtils.getNMSClass("PlayerInfoData");
-			}
-
-			if (playerInfoData == null) {
-				return;
-			}
-
-			for (Constructor<?> constr : playerInfoData.getConstructors()) {
-				if (constr.getParameterCount() == 4 || constr.getParameterCount() == 5) {
-					(playerInfoDataConstr = constr).setAccessible(true);
-					break;
-				}
-			}
-
-			(playOutPlayerInfoConstr = packetPlayOutPlayerInfo.getDeclaredConstructor(enumPlayerInfoAction,
-					Array.newInstance(entityPlayerClass, 0).getClass())).setAccessible(true);
-
-			Class<?> enumGameMode = ReflectionUtils.getNMSClass("EnumGamemode");
-			if (enumGameMode == null) {
-				enumGameMode = ReflectionUtils.getNMSClass("WorldSettings$EnumGamemode");
-			}
-
-			gameMode = enumGameMode.getDeclaredField("NOT_SET").get(enumGameMode);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 
 	public int getPing() {
@@ -86,40 +51,12 @@ public final class InfoName {
 		return currentPlayerInfoAction;
 	}
 
-	public Field getInfoList() {
-		return infoList;
-	}
-
-	public Constructor<?> getPlayerInfoDataConstr() {
-		return playerInfoDataConstr;
-	}
-
-	public Constructor<?> getPlayOutPlayerInfoConstr() {
-		return playOutPlayerInfoConstr;
-	}
-
-	public Class<?> getPacketPlayOutPlayerInfo() {
-		return packetPlayOutPlayerInfo;
-	}
-
-	public Class<?> getEnumPlayerInfoAction() {
-		return enumPlayerInfoAction;
-	}
-
-	public Class<?> getEntityPlayerClass() {
-		return entityPlayerClass;
-	}
-
 	public Object getPacket() {
 		return packet;
 	}
 
 	public Object getRowPlayer() {
 		return rowPlayer;
-	}
-
-	public Object getGameMode() {
-		return gameMode;
 	}
 
 	public Object getEntityPlayer() {
@@ -138,17 +75,13 @@ public final class InfoName {
 				Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
 				Array.set(entityPlayerArray, 0, entityPlayer);
 
-				packet = playOutPlayerInfoConstr.newInstance(
-						enumPlayerInfoAction.getDeclaredField(currentPlayerInfoAction).get(enumPlayerInfoAction),
-						entityPlayerArray);
+				packet = playOutPlayerInfoConstr.newInstance(NMSContainer.getAddPlayer(), entityPlayerArray);
 			} else {
-				packet = playOutPlayerInfoConstr.newInstance(
-						enumPlayerInfoAction.getDeclaredField(currentPlayerInfoAction).get(enumPlayerInfoAction),
-						Array.newInstance(entityPlayerClass, 0));
+				packet = playOutPlayerInfoConstr.newInstance(NMSContainer.getAddPlayer(),
+						Array.newInstance(NMSContainer.getEntityPlayerClass(), 0));
 			}
 
-			((List<Object>) infoList.get(packet)).add(rowPlayer = playerInfoDataConstr.newInstance(packet, gameProfile,
-					ping, gameMode, ReflectionUtils.getAsIChatBaseComponent(text)));
+			((List<Object>) infoList.get(packet)).add(rowPlayer = newPlayerInfoData(text));
 
 			if (forWho != null) {
 				ReflectionUtils.sendPacket(forWho, packet);
@@ -195,66 +128,77 @@ public final class InfoName {
 	public void movePlayer(Player player, int rowIndex) {
 		remove(player, false, "");
 
-		// Need 3 tick delay to show player
-		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-			try {
-				String name = String.format("%03d", rowIndex);
-				if (name.length() > 16) {
-					name = name.substring(0, 16);
+		try {
+			String name = String.format("%03d", rowIndex);
+			if (name.length() > 16) {
+				name = name.substring(0, 16);
+			}
+
+			gameProfile = new GameProfile(UUID.nameUUIDFromBytes(name.getBytes()), name);
+			entityPlayer = ReflectionUtils.getHandle(player);
+
+			GameProfile currentProfile = (GameProfile) ReflectionUtils.invokeMethod(entityPlayer, "getProfile", true,
+					true);
+
+			gameProfile.getProperties().clear();
+			gameProfile.getProperties().putAll(currentProfile.getProperties());
+
+			Field profile = null;
+			for (Field gp : entityPlayer.getClass().getSuperclass().getDeclaredFields()) {
+				if (gp.getType().equals(currentProfile.getClass())) {
+					profile = gp;
+					ReflectionUtils.modifyFinalField(gp, entityPlayer, gameProfile);
+					break;
 				}
+			}
 
-				gameProfile = new GameProfile(UUID.nameUUIDFromBytes(name.getBytes()), name);
-				entityPlayer = ReflectionUtils.getHandle(player);
+			if (profile == null) {
+				return;
+			}
 
-				GameProfile currentProfile = (GameProfile) ReflectionUtils.invokeMethod(entityPlayer, "getProfile",
-						true, true);
+			profile.setAccessible(true);
 
-				gameProfile.getProperties().clear();
-				gameProfile.getProperties().putAll(currentProfile.getProperties());
+			gameProfile = (GameProfile) profile.get(entityPlayer);
 
-				Field profile = null;
-				for (Field gp : entityPlayer.getClass().getSuperclass().getDeclaredFields()) {
-					if (gp.getType().equals(currentProfile.getClass())) {
-						profile = gp;
-						ReflectionUtils.modifyFinalField(gp, entityPlayer, gameProfile);
-						break;
-					}
-				}
+			addPlayer(player, player.getName(), null);
 
-				if (profile == null) {
-					return;
-				}
+			ReflectionUtils.modifyFinalField(profile, entityPlayer, currentProfile);
+			currentProfile = (GameProfile) ReflectionUtils.invokeMethod(entityPlayer, "getProfile", true, true);
 
-				gameProfile = (GameProfile) profile.get(entityPlayer);
+			Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
+			Array.set(entityPlayerArray, 0, entityPlayer);
 
-				addPlayer(player, player.getName(), null);
-				sendPacketForEveryone();
+			Object packet = playOutPlayerInfoConstr.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
 
-				ReflectionUtils.modifyFinalField(profile, entityPlayer, currentProfile);
-				currentProfile = (GameProfile) ReflectionUtils.invokeMethod(entityPlayer, "getProfile", true, true);
-
-				Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
-				Array.set(entityPlayerArray, 0, entityPlayer);
-
-				Object packet = playOutPlayerInfoConstr.newInstance(
-						enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME").get(enumPlayerInfoAction),
-						entityPlayerArray);
-
-				Object rowPlayer = playerInfoDataConstr.newInstance(packet, currentProfile, ping, gameMode,
+			Object rowPlayer = null;
+			if (playerInfoDataConstr.getParameterCount() == 5) {
+				rowPlayer = playerInfoDataConstr.newInstance(packet, currentProfile, ping, NMSContainer.getGameMode(),
 						ReflectionUtils.getAsIChatBaseComponent(player.getName()));
+			} else {
+				rowPlayer = playerInfoDataConstr.newInstance(currentProfile, ping, NMSContainer.getGameMode(),
+						ReflectionUtils.getAsIChatBaseComponent(player.getName()));
+			}
 
-				((List<Object>) infoList.get(packet)).add(rowPlayer);
+			if (rowPlayer == null) {
+				return;
+			}
 
+			infoList.set(packet, Arrays.asList(rowPlayer));
+
+			final Object rp = rowPlayer;
+
+			// Need some tick delay to show player
+			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
 				for (TabListUser user : plugin.getUsers()) {
 					Player pl = user.getPlayer();
 
 					ReflectionUtils.sendPacket(pl, packet);
-					ReflectionUtils.sendPacket(pl, rowPlayer);
+					ReflectionUtils.sendPacket(pl, rp);
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}, 3L);
+			}, 5L);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void remove(Player player, boolean restorePlayer, String text) {
@@ -268,21 +212,21 @@ public final class InfoName {
 					Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
 					Array.set(entityPlayerArray, 0, entityPlayer);
 
-					packet = playOutPlayerInfoConstr.newInstance(enumPlayerInfoAction
-							.getDeclaredField(currentPlayerInfoAction = "REMOVE_PLAYER").get(enumPlayerInfoAction),
-							entityPlayerArray);
+					currentPlayerInfoAction = "REMOVE_PLAYER";
+
+					packet = playOutPlayerInfoConstr.newInstance(NMSContainer.getRemovePlayer(), entityPlayerArray);
 
 					for (TabListUser user : plugin.getUsers()) {
 						ReflectionUtils.sendPacket(user.getPlayer(), packet);
 					}
 				}
 			} else {
-				packet = playOutPlayerInfoConstr.newInstance(enumPlayerInfoAction
-						.getDeclaredField(currentPlayerInfoAction = "REMOVE_PLAYER").get(enumPlayerInfoAction),
-						Array.newInstance(entityPlayerClass, 0));
+				currentPlayerInfoAction = "REMOVE_PLAYER";
 
-				((List<Object>) infoList.get(packet)).add(rowPlayer = playerInfoDataConstr.newInstance(packet, gameProfile, ping,
-						gameMode, ReflectionUtils.getAsIChatBaseComponent(text)));
+				packet = playOutPlayerInfoConstr.newInstance(NMSContainer.getRemovePlayer(),
+						Array.newInstance(NMSContainer.getEntityPlayerClass(), 0));
+
+				infoList.set(packet, Arrays.asList(rowPlayer = newPlayerInfoData(text)));
 
 				sendPacketForEveryone();
 			}
@@ -295,28 +239,26 @@ public final class InfoName {
 		if (user != null) {
 			for (TabListUser u : plugin.getUsers()) {
 				try {
+					Player player = u.getPlayer();
+
 					if (u.equals(user) && !"UPDATE_DISPLAY_NAME".equals(currentPlayerInfoAction)) {
 						if (entityPlayer == null) {
-							entityPlayer = ReflectionUtils.getHandle(u.getPlayer());
+							entityPlayer = ReflectionUtils.getHandle(player);
 						}
 
 						Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
 						Array.set(entityPlayerArray, 0, entityPlayer);
 
-						packet = packetPlayOutPlayerInfo
-								.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
-								.newInstance(enumPlayerInfoAction
-										.getDeclaredField(currentPlayerInfoAction = "UPDATE_DISPLAY_NAME")
-										.get(enumPlayerInfoAction), entityPlayerArray);
+						currentPlayerInfoAction = "UPDATE_DISPLAY_NAME";
 
-						((List<Object>) infoList.get(packet)).add(rowPlayer = playerInfoDataConstr.newInstance(packet,
-								gameProfile, ping, gameMode, ReflectionUtils.getAsIChatBaseComponent(name)));
+						packet = NMSContainer.getPacketPlayOutPlayerInfo()
+								.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+								.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
 					}
 
-					ReflectionUtils.modifyFinalField(ReflectionUtils.getField(rowPlayer, "e"), rowPlayer,
-							ReflectionUtils.getAsIChatBaseComponent(name));
+					// ((List<Object>) infoList.get(packet)).add(rowPlayer = newPlayerInfoData(name));
+					infoList.set(packet, Arrays.asList(rowPlayer = newPlayerInfoData(name)));
 
-					Player player = u.getPlayer();
 					ReflectionUtils.sendPacket(player, packet);
 					ReflectionUtils.sendPacket(player, rowPlayer);
 				} catch (Exception e) {
@@ -327,17 +269,16 @@ public final class InfoName {
 			try {
 				// Send a new packet for empty rows
 				if (!"UPDATE_DISPLAY_NAME".equals(currentPlayerInfoAction)) {
-					packet = playOutPlayerInfoConstr.newInstance(
-							enumPlayerInfoAction.getDeclaredField(currentPlayerInfoAction = "UPDATE_DISPLAY_NAME")
-									.get(enumPlayerInfoAction),
-							Array.newInstance(entityPlayerClass, 0));
+					currentPlayerInfoAction = "UPDATE_DISPLAY_NAME";
 
-					((List<Object>) infoList.get(packet)).add(rowPlayer = playerInfoDataConstr.newInstance(packet,
-							gameProfile, ping, gameMode, ReflectionUtils.getAsIChatBaseComponent(name)));
-				}
+					packet = playOutPlayerInfoConstr.newInstance(NMSContainer.getUpdateDisplayName(),
+							Array.newInstance(NMSContainer.getEntityPlayerClass(), 0));
+				}/* else {
+					ReflectionUtils.modifyFinalField(ReflectionUtils.getField(rowPlayer, "e"), rowPlayer,
+					ReflectionUtils.getAsIChatBaseComponent(name));
+				}*/
 
-				ReflectionUtils.modifyFinalField(ReflectionUtils.getField(rowPlayer, "e"), rowPlayer,
-						ReflectionUtils.getAsIChatBaseComponent(name));
+				infoList.set(packet, Arrays.asList(rowPlayer = newPlayerInfoData(name)));
 
 				if (forWho != null) {
 					ReflectionUtils.sendPacket(forWho, packet);
@@ -358,12 +299,12 @@ public final class InfoName {
 			gameProfile.getProperties().put("textures", new Property("textures", first.getKey(), first.getValue()));
 
 			try {
-				packet = playOutPlayerInfoConstr.newInstance(enumPlayerInfoAction
-						.getDeclaredField(currentPlayerInfoAction = "UPDATE_DISPLAY_NAME").get(enumPlayerInfoAction),
-						Array.newInstance(entityPlayerClass, 0));
+				currentPlayerInfoAction = "UPDATE_DISPLAY_NAME";
 
-				((List<Object>) infoList.get(packet)).add(rowPlayer = playerInfoDataConstr.newInstance(packet,
-						gameProfile, ping, gameMode, ReflectionUtils.getAsIChatBaseComponent(text)));
+				packet = playOutPlayerInfoConstr.newInstance(NMSContainer.getUpdateDisplayName(),
+						Array.newInstance(NMSContainer.getEntityPlayerClass(), 0));
+
+				infoList.set(packet, Arrays.asList(rowPlayer = newPlayerInfoData(text)));
 
 				sendPacketForEveryone();
 			} catch (Exception e) {
@@ -381,6 +322,16 @@ public final class InfoName {
 		}
 	}
 
+	private Object newPlayerInfoData(String text) throws Exception {
+		if (playerInfoDataConstr.getParameterCount() == 5) {
+			return playerInfoDataConstr.newInstance(packet, gameProfile, ping, NMSContainer.getGameMode(),
+					ReflectionUtils.getAsIChatBaseComponent(text));
+		}
+
+		return playerInfoDataConstr.newInstance(gameProfile, ping, NMSContainer.getGameMode(),
+				ReflectionUtils.getAsIChatBaseComponent(text));
+	}
+
 	public static void removePlayer(Player player) {
 		if (player == null) {
 			return;
@@ -395,14 +346,9 @@ public final class InfoName {
 				Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
 				Array.set(entityPlayerArray, 0, entityPlayer);
 
-				Class<?> packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
-				Class<?> enumPlayerInfoAction = ReflectionUtils.Classes
-						.getEnumPlayerInfoAction(packetPlayOutPlayerInfo);
-
-				Object packet = packetPlayOutPlayerInfo
-						.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
-						.newInstance(enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER").get(enumPlayerInfoAction),
-								entityPlayerArray);
+				Object packet = NMSContainer.getPacketPlayOutPlayerInfo()
+						.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+						.newInstance(NMSContainer.getRemovePlayer(), entityPlayerArray);
 
 				for (TabListUser user : plugin.getUsers()) {
 					ReflectionUtils.sendPacket(user.getPlayer(), packet);

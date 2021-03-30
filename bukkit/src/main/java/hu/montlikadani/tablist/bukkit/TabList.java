@@ -303,8 +303,9 @@ public final class TabList extends JavaPlugin {
 				objects.unregisterObjectiveForEveryone(t);
 			}
 		} else {
-			objects.unregisterObjective(objects.getObject(p.getScoreboard(), ObjectTypes.PING));
-			objects.unregisterObjective(objects.getObject(p.getScoreboard(), ObjectTypes.CUSTOM));
+			org.bukkit.scoreboard.Scoreboard board = p.getScoreboard();
+			objects.unregisterObjective(objects.getObject(board, ObjectTypes.PING));
+			objects.unregisterObjective(objects.getObject(board, ObjectTypes.CUSTOM));
 
 			switch (ConfigValues.getObjectType().toLowerCase()) {
 			case "ping":

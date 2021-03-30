@@ -6,20 +6,22 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.utils.reflection.NMSContainer;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public final class HidePlayers {
 
 	private Player to;
-	private Class<?> enumPlayerInfoAction;
-	private Object entityPlayerArray;
 
 	public HidePlayers(Player to) {
 		this.to = to;
 	}
 
 	public void addPlayerToTab() {
-		Bukkit.getOnlinePlayers().forEach(this::addPlayerToTab);
+		for (Player pl : Bukkit.getOnlinePlayers()) {
+			addPlayerToTab(to, pl);
+			addPlayerToTab(pl, to);
+		}
 	}
 
 	public void removePlayerFromTab() {
@@ -29,20 +31,16 @@ public final class HidePlayers {
 		}
 	}
 
-	public void removePlayerFromTab(Player p, Player to) {
-		Bukkit.getScheduler().runTaskLater(TabListAPI.getPlugin(), () -> r(p, to), 4L);
-	}
-
-	public void addPlayerToTab(Player to) {
-		if (enumPlayerInfoAction == null || entityPlayerArray == null) {
-			return;
-		}
-
+	public void addPlayerToTab(Player p, Player to) {
 		try {
-			Object packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
-					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
-					.newInstance(enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction),
-							entityPlayerArray);
+			Object playerConst = ReflectionUtils.getHandle(p);
+
+			Object entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
+			Array.set(entityPlayerArray, 0, playerConst);
+
+			Object packetPlayOutPlayerInfo = NMSContainer.getPacketPlayOutPlayerInfo()
+					.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+					.newInstance(NMSContainer.getAddPlayer(), entityPlayerArray);
 
 			ReflectionUtils.sendPacket(to, packetPlayOutPlayerInfo);
 		} catch (Exception e) {
@@ -50,23 +48,19 @@ public final class HidePlayers {
 		}
 	}
 
-	private void r(Player p, Player to) {
+	public void removePlayerFromTab(Player p, Player to) {
 		try {
 			Object playerConst = ReflectionUtils.getHandle(p);
-			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
-			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction(packetPlayOutPlayerInfoClass);
 
-			ReflectionUtils.setField(playerConst, "listName", ReflectionUtils.getAsIChatBaseComponent(p.getName()));
-
-			entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
+			Object entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
 			Array.set(entityPlayerArray, 0, playerConst);
 
-			Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
-					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
-					.newInstance(enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER").get(enumPlayerInfoAction),
-							entityPlayerArray);
+			Object packetPlayOutPlayerInfo = NMSContainer.getPacketPlayOutPlayerInfo()
+					.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+					.newInstance(NMSContainer.getRemovePlayer(), entityPlayerArray);
 
-			ReflectionUtils.sendPacket(to, packetPlayOutPlayerInfo);
+			Bukkit.getScheduler().runTaskLater(TabListAPI.getPlugin(),
+					() -> ReflectionUtils.sendPacket(to, packetPlayOutPlayerInfo), 6L);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

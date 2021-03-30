@@ -47,6 +47,7 @@ public class Complement2 implements Complement {
 
 	@Override
 	public String getPlayerListName(Player player) {
-		return player.playerListName() == null ? "" : serialize(player.playerListName());
+		Component listName = player.playerListName();
+		return listName == null ? "" : serialize(listName);
 	}
 }

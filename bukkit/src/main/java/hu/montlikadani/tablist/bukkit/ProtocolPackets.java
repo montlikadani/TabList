@@ -14,6 +14,7 @@ import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.playerlist.HidePlayers;
 import hu.montlikadani.tablist.bukkit.user.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
+import hu.montlikadani.tablist.bukkit.utils.reflection.NMSContainer;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 // TODO Get rid from ProtocolLib entirely
@@ -55,12 +56,6 @@ public class ProtocolPackets extends PacketAdapter {
 			Class<?> enumPlayerInfoAction = ReflectionUtils.Classes
 					.getEnumPlayerInfoAction(packetPlayOutPlayerInfo.getClass());
 
-			// Get the gameMode class
-			Class<?> enumGameMode = ReflectionUtils.getNMSClass("EnumGamemode");
-			if (enumGameMode == null) {
-				enumGameMode = ReflectionUtils.getNMSClass("WorldSettings$EnumGamemode");
-			}
-
 			// Retrieve the current set of playerInfoAction field object
 			Object action = ReflectionUtils.getField(packetPlayOutPlayerInfo, "a").get(packetPlayOutPlayerInfo);
 
@@ -81,6 +76,9 @@ public class ProtocolPackets extends PacketAdapter {
 					Object profile = ReflectionUtils.invokeMethod(infoData, "a");
 					// Invokes the getId method from profile class object
 					Object id = ReflectionUtils.invokeMethod(profile, "getId");
+
+					// Get the gameMode class
+					Class<?> enumGameMode = NMSContainer.getEnumGameMode();
 
 					// Checks if the current infoData game mode is spectator and the player UUID is
 					// not equal according to game profile id
@@ -110,8 +108,8 @@ public class ProtocolPackets extends PacketAdapter {
 				HidePlayers hp = ((TabListPlayer) user).getHidePlayers();
 
 				if (hp != null) {
-					hp.addPlayerToTab(userPlayer);
-					hp.addPlayerToTab(eventPlayer);
+					hp.addPlayerToTab(userPlayer, eventPlayer);
+					hp.addPlayerToTab(eventPlayer, userPlayer);
 					hp.removePlayerFromTab(eventPlayer, userPlayer);
 					hp.removePlayerFromTab(userPlayer, eventPlayer);
 				}

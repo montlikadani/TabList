@@ -12,6 +12,7 @@ import com.mojang.authlib.properties.Property;
 
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.Util;
+import hu.montlikadani.tablist.bukkit.utils.reflection.NMSContainer;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public class FakePlayers implements IFakePlayers {
@@ -24,7 +25,6 @@ public class FakePlayers implements IFakePlayers {
 
 	private Object fakePl;
 	private GameProfile profile;
-	private Class<?> enumPlayerInfoAction;
 
 	public FakePlayers() {
 		id++;
@@ -74,10 +74,9 @@ public class FakePlayers implements IFakePlayers {
 				Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 				Array.set(entityPlayerArray, 0, fakePl);
 
-				Object packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
-						.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass()).newInstance(
-								enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME").get(enumPlayerInfoAction),
-								entityPlayerArray);
+				Object packetPlayOutPlayerInfo = NMSContainer.getPacketPlayOutPlayerInfo()
+						.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+						.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
 
 				for (Player aOnline : Bukkit.getOnlinePlayers()) {
 					ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
@@ -116,16 +115,12 @@ public class FakePlayers implements IFakePlayers {
 
 			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(displayName));
 
-			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
-			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction(packetPlayOutPlayerInfoClass);
-
 			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakePl);
 
-			Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
-					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
-					.newInstance(enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction),
-							entityPlayerArray);
+			Object packetPlayOutPlayerInfo = NMSContainer.getPacketPlayOutPlayerInfo()
+					.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+					.newInstance(NMSContainer.getAddPlayer(), entityPlayerArray);
 
 			for (Player aOnline : Bukkit.getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
@@ -150,11 +145,9 @@ public class FakePlayers implements IFakePlayers {
 			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakePl);
 
-			Class<?> packetPlayOutPlayerInfoClass = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
-			Object packetPlayOutPlayerInfo = packetPlayOutPlayerInfoClass
-					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
-					.newInstance(enumPlayerInfoAction.getDeclaredField("UPDATE_LATENCY").get(enumPlayerInfoAction),
-							entityPlayerArray);
+			Object packetPlayOutPlayerInfo = NMSContainer.getPacketPlayOutPlayerInfo()
+					.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+					.newInstance(NMSContainer.getUpdateLatency(), entityPlayerArray);
 
 			@SuppressWarnings("unchecked")
 			List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
@@ -204,10 +197,9 @@ public class FakePlayers implements IFakePlayers {
 			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakePl);
 
-			Object packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo")
-					.getConstructor(enumPlayerInfoAction, entityPlayerArray.getClass())
-					.newInstance(enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER").get(enumPlayerInfoAction),
-							entityPlayerArray);
+			Object packetPlayOutPlayerInfo = NMSContainer.getPacketPlayOutPlayerInfo()
+					.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+					.newInstance(NMSContainer.getRemovePlayer(), entityPlayerArray);
 
 			for (Player aOnline : Bukkit.getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);

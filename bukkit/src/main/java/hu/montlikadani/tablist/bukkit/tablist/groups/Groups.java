@@ -95,13 +95,11 @@ public class Groups {
 					}
 				}
 
-				String path = "groups." + s + ".";
-
 				// This again for lazy peoples
 				ChatColor[] colors = ChatColor.values();
 				ChatColor c = colors[ThreadLocalRandom.current().nextInt(colors.length)];
 
-				plugin.getConf().getGroups().set(path + "prefix", "&" + c.getChar() + s + "&r - ");
+				plugin.getConf().getGroups().set("groups." + s + ".prefix", "&" + c.getChar() + s + "&r - ");
 				have = true;
 			}
 
