@@ -48,8 +48,9 @@ public class NMSContainer {
 			(playOutPlayerInfoConstror = packetPlayOutPlayerInfo.getDeclaredConstructor(enumPlayerInfoAction,
 					Array.newInstance(entityPlayerClass, 0).getClass())).setAccessible(true);
 
-			enumGameMode = ReflectionUtils.getNMSClass("EnumGamemode");
-			if (enumGameMode == null) {
+			try {
+				enumGameMode = ReflectionUtils.getNMSClass("EnumGamemode");
+			} catch (ClassNotFoundException e) {
 				enumGameMode = ReflectionUtils.getNMSClass("WorldSettings$EnumGamemode");
 			}
 
