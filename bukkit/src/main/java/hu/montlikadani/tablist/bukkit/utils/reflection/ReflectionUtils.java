@@ -142,7 +142,6 @@ public final class ReflectionUtils {
 
 	/**
 	 * Changes the specified final field to the newValue and makes it accessible.
-	 * <p>
 	 * 
 	 * @deprecated Since the release of Java 16, it has become {@code Deprecated}
 	 *             due to security suggestions and reasons. For this reason, it is
@@ -269,11 +268,11 @@ public final class ReflectionUtils {
 					return getNMSClass("EnumPlayerInfoAction");
 				}
 
-				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_11_R1)) {
-					return packetPlayOutPlayerInfo.getDeclaredClasses()[1];
+				for (Class<?> clazz : packetPlayOutPlayerInfo.getDeclaredClasses()) {
+					if (clazz.getName().contains("EnumPlayerInfoAction")) {
+						return clazz;
+					}
 				}
-
-				return packetPlayOutPlayerInfo.getDeclaredClasses()[2];
 			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
