@@ -339,21 +339,24 @@ public final class TabList extends JavaPlugin {
 		} else {
 			user.addToPlayerList();
 
-			getServer().getScheduler().callSyncMethod(this, () -> {
-				if (ConfigValues.isPerWorldPlayerList()) {
+			if (ConfigValues.isPerWorldPlayerList()) {
+				getServer().getScheduler().callSyncMethod(this, () -> {
 					user.setHidden(true);
 
 					if (user.isHidden()) {
 						((TabListPlayer) user).getPlayerList().showForWorld();
 					}
-				} else if (user.isHidden()) {
+
+					return null;
+				});
+			} else if (user.isHidden()) {
+				getServer().getScheduler().callSyncMethod(this, () -> {
 					TabListPlayer tlp = ((TabListPlayer) user);
 					tlp.getPlayerList().showEveryone();
 					tlp.remove();
-				}
-
-				return null;
-			});
+					return null;
+				});
+			}
 		}
 	}
 
