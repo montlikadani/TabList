@@ -108,7 +108,14 @@ public class TabManager {
 		}
 
 		for (String uuid : section.getKeys(false)) {
-			TABENABLED.put(UUID.fromString(uuid), section.getBoolean(uuid));
+			UUID id;
+			try {
+				id = UUID.fromString(uuid);
+			} catch (IllegalArgumentException e) {
+				continue;
+			}
+
+			TABENABLED.put(id, section.getBoolean(uuid));
 		}
 
 		t.set("tablists", null);

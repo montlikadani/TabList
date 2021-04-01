@@ -35,7 +35,6 @@ import hu.montlikadani.tablist.bukkit.listeners.plugins.EssAfkStatus;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler;
 import hu.montlikadani.tablist.bukkit.tablist.groups.Groups;
-import hu.montlikadani.tablist.bukkit.tablist.playerlist.PlayerList;
 import hu.montlikadani.tablist.bukkit.user.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
@@ -336,16 +335,25 @@ public final class TabList extends JavaPlugin {
 		groups.startTask();
 
 		if (ConfigValues.isHidePlayersFromTab()) {
-			user.setHidden(true);
+			user.removeFromPlayerList();
 		} else {
-			user.setHidden(false);
+			user.addToPlayerList();
 
-			if (ConfigValues.isPerWorldPlayerList()) {
-				PlayerList.hideShow(p);
-				PlayerList.hideShow();
-			} else {
-				PlayerList.showEveryone(p);
-			}
+			getServer().getScheduler().callSyncMethod(this, () -> {
+				if (ConfigValues.isPerWorldPlayerList()) {
+					user.setHidden(true);
+
+					if (user.isHidden()) {
+						((TabListPlayer) user).getPlayerList().showForWorld();
+					}
+				} else if (user.isHidden()) {
+					TabListPlayer tlp = ((TabListPlayer) user);
+					tlp.getPlayerList().showEveryone();
+					tlp.remove();
+				}
+
+				return null;
+			});
 		}
 	}
 

@@ -1,70 +1,90 @@
 package hu.montlikadani.tablist.bukkit.tablist.playerlist;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 
 public class PlayerList {
 
-	public static void hideShow() {
-		Bukkit.getOnlinePlayers().forEach(PlayerList::hideShow);
+	private final TabList plugin;
+	private final TabListUser user;
+
+	public PlayerList(TabList plugin, TabListUser user) {
+		this.plugin = plugin;
+		this.user = user;
 	}
 
-	public static void hideShow(Player p) {
-		hidePlayer(p);
-		showPlayerForWorld(p);
+	public void hideShow() {
+		hide();
+		showForWorld();
 	}
 
-	public static void hidePlayer(Player p) {
-		for (Player pls : Bukkit.getOnlinePlayers()) {
-			hide(p, pls);
-			hide(pls, p);
+	public void hide() {
+		Player player = user.getPlayer();
+
+		for (TabListUser user : plugin.getUsers()) {
+			Player pl = user.getPlayer();
+
+			hide(player, pl);
+			hide(pl, player);
 		}
 	}
 
-	public static void showPlayer(Player p) {
-		for (Player pls : Bukkit.getOnlinePlayers()) {
-			show(p, pls);
-			show(pls, p);
+	public void show() {
+		Player player = user.getPlayer();
+
+		for (TabListUser user : plugin.getUsers()) {
+			Player pl = user.getPlayer();
+
+			show(player, pl);
+			show(pl, player);
 		}
 	}
 
-	public static void showPlayerForWorld(Player p) {
-		for (Player pls : Bukkit.getOnlinePlayers()) {
-			if (p.getWorld().equals(pls.getWorld())) {
-				show(p, pls);
-				show(pls, p);
+	public void showEveryone() {
+		Player player = user.getPlayer();
+
+		for (TabListUser user : plugin.getUsers()) {
+			Player pls = user.getPlayer();
+
+			if (!pls.canSee(player)) {
+				show(pls, player);
+			}
+
+			if (!player.canSee(pls)) {
+				show(player, pls);
 			}
 		}
 	}
 
-	public static void showEveryone(Player p) {
-		for (Player pls : Bukkit.getOnlinePlayers()) {
-			if (!pls.canSee(p)) {
-				show(pls, p);
-			}
+	public void showForWorld() {
+		Player player = user.getPlayer();
 
-			if (!p.canSee(pls)) {
-				show(p, pls);
+		for (TabListUser user : plugin.getUsers()) {
+			Player pls = user.getPlayer();
+
+			if (player.getWorld().getUID().equals(pls.getWorld().getUID())) {
+				show(player, pls);
+				show(pls, player);
 			}
 		}
 	}
 
 	@SuppressWarnings("deprecation")
-	public static void hide(Player to, Player pls) {
+	public final void hide(Player to, Player pls) {
 		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_R1)) {
-			to.hidePlayer(TabListAPI.getPlugin(), pls);
+			to.hidePlayer(plugin, pls);
 		} else {
 			to.hidePlayer(pls);
 		}
 	}
 
 	@SuppressWarnings("deprecation")
-	public static void show(Player to, Player pls) {
+	public final void show(Player to, Player pls) {
 		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_R1)) {
-			to.showPlayer(TabListAPI.getPlugin(), pls);
+			to.showPlayer(plugin, pls);
 		} else {
 			to.showPlayer(pls);
 		}

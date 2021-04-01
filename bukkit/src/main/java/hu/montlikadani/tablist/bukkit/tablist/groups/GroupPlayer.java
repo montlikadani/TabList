@@ -89,8 +89,8 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 		boolean update = false;
 		Player player = tabListUser.getPlayer();
 
-		if (!isPlayerCanSeeGroup() || ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(player)
-				&& !ConfigValues.isAfkStatusShowPlayerGroup()) {
+		if (!isPlayerCanSeeGroup() || (ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(player)
+				&& !ConfigValues.isAfkStatusShowPlayerGroup())) {
 			if (group != null || globalGroup != null) {
 				removeGroup();
 				update = true;

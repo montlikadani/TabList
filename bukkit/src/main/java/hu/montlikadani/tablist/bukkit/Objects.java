@@ -118,9 +118,11 @@ public class Objects {
 					object.setRenderType(RenderType.INTEGER);
 				}
 
-				if (object.getScore(player.getUniqueId().toString()).getScore() != objectScore.get()) {
+				final String uId = player.getUniqueId().toString();
+
+				if (object.getScore(uId).getScore() != objectScore.get()) {
 					Bukkit.getOnlinePlayers().forEach(all -> getObject(all.getScoreboard(), currentObjectType)
-							.ifPresent(o -> o.getScore(player.getUniqueId().toString()).setScore(objectScore.get())));
+							.ifPresent(o -> o.getScore(uId).setScore(objectScore.get())));
 				}
 			}
 		}, timer, timer);

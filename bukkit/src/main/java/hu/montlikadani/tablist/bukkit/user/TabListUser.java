@@ -13,6 +13,12 @@ public interface TabListUser {
 
 	void setHidden(boolean hidden);
 
+	boolean isRemovedFromPlayerList();
+
+	void removeFromPlayerList();
+
+	void addToPlayerList();
+
 	java.util.UUID getUniqueId();
 
 	GroupPlayer getGroupPlayer();

@@ -16,7 +16,6 @@ import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabEntryValues;
-import hu.montlikadani.tablist.bukkit.tablist.playerlist.PlayerList;
 
 public abstract class AfkPlayers {
 
@@ -48,9 +47,9 @@ public abstract class AfkPlayers {
 
 		if (ConfigValues.isHidePlayerFromTabAfk()) {
 			if (value) {
-				PlayerList.hidePlayer(player);
+				plugin.getUser(player).ifPresent(user -> user.setHidden(true));
 			} else {
-				PlayerList.showPlayer(player);
+				plugin.getUser(player).ifPresent(user -> user.setHidden(false));
 			}
 		}
 	}
