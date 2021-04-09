@@ -12,6 +12,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabConfigValues;
+import hu.montlikadani.tablist.bukkit.tablist.entry.TabEntries;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
 
@@ -22,8 +23,11 @@ public class TabManager {
 	private TabList plugin;
 	private BukkitTask task;
 
+	private final TabEntries tabEntries;
+
 	public TabManager(TabList plugin) {
 		this.plugin = plugin;
+		tabEntries = new TabEntries(plugin);
 	}
 
 	public BukkitTask getTask() {
@@ -37,7 +41,13 @@ public class TabManager {
 		}
 	}
 
+	public TabEntries getTabEntries() {
+		return tabEntries;
+	}
+
 	public void addPlayer(TabListUser user) {
+		tabEntries.beginUpdate(user);
+
 		if (!TabConfigValues.isEnabled()) {
 			return;
 		}
@@ -66,6 +76,7 @@ public class TabManager {
 
 	public void removePlayer(TabListUser user) {
 		TabTitle.sendTabTitle(user.getPlayer(), "", "");
+		tabEntries.removePlayer(user.getUniqueId());
 	}
 
 	public void removeAll() {
@@ -74,6 +85,8 @@ public class TabManager {
 		for (TabListUser user : plugin.getUsers()) {
 			TabTitle.sendTabTitle(user.getPlayer(), "", "");
 		}
+
+		tabEntries.removeAll();
 	}
 
 	public void loadToggledTabs() {

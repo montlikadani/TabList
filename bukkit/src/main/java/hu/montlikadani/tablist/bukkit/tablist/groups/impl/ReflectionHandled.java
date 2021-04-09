@@ -8,6 +8,8 @@ import com.mojang.authlib.GameProfile;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabEntryValues;
+import hu.montlikadani.tablist.bukkit.tablist.entry.row.RowPlayer;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.Util;
@@ -33,7 +35,7 @@ public class ReflectionHandled implements ITabScoreboard {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void registerTeam(String teamName) {
-		if (packetPlayOutPlayerInfo != null) {
+		if (TabEntryValues.isEnabled() || packetPlayOutPlayerInfo != null) {
 			return;
 		}
 
@@ -86,7 +88,7 @@ public class ReflectionHandled implements ITabScoreboard {
 
 	@Override
 	public void unregisterTeam(String teamName) {
-		if (packetPlayOutPlayerInfo == null) {
+		if (!TabEntryValues.isEnabled() && packetPlayOutPlayerInfo == null) {
 			return;
 		}
 
@@ -100,6 +102,19 @@ public class ReflectionHandled implements ITabScoreboard {
 	private void updateName(String name) throws Exception {
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {
 			name = Util.colorMsg(name);
+		}
+
+		if (TabEntryValues.isEnabled()) {
+			final String text = name;
+
+			// TODO Improve?
+			plugin.getTabManager().getTabEntries().getEntry(entry -> {
+				java.util.Optional<org.bukkit.entity.Player> opt = entry.getRow().asPlayer();
+				return opt.isPresent() && opt.get().getUniqueId().equals(tabListUser.getUniqueId());
+			}).ifPresent(
+					entry -> ((RowPlayer) entry.getRow()).getInfoName().updateDisplayName(tabListUser, text, null));
+
+			return;
 		}
 
 		Object packet = null;
