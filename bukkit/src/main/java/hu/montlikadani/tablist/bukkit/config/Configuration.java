@@ -11,15 +11,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabConfigValues;
-import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabEntryValues;
 
 public class Configuration {
 
 	private TabList plugin;
 
 	private FileConfiguration messages, groups, fakePlayers, animCreator;
-	private CommentedConfig config, tablist, tabEntries;
-	private File configFile, messagesFile, animationFile, tablistFile, groupsFile, fakePlayersFile, tabEntriesFile;
+	private CommentedConfig config, tablist;
+	private File configFile, messagesFile, animationFile, tablistFile, groupsFile, fakePlayersFile;
 
 	public Configuration(TabList plugin) {
 		this.plugin = plugin;
@@ -32,7 +31,6 @@ public class Configuration {
 		tablistFile = new File(folder, "tablist.yml");
 		groupsFile = new File(folder, "groups.yml");
 		fakePlayersFile = new File(folder, "fakeplayers.yml");
-		tabEntriesFile = new File(folder, "tabentries.yml");
 	}
 
 	public void loadFiles() {
@@ -56,14 +54,6 @@ public class Configuration {
 		tablist = new CommentedConfig(tablistFile);
 		tablist.load();
 		TabConfigValues.loadValues(tablist);
-
-		if (!tabEntriesFile.exists()) {
-			plugin.saveResource("tabentries.yml", false);
-		}
-
-		tabEntries = new CommentedConfig(tabEntriesFile);
-		tabEntries.load();
-		TabEntryValues.loadValues(tabEntries);
 
 		try {
 			messages = createFile(messagesFile, "messages.yml", false);
@@ -141,10 +131,6 @@ public class Configuration {
 		return tablist;
 	}
 
-	public CommentedConfig getTabEntries() {
-		return tabEntries;
-	}
-
 	public File getConfigFile() {
 		return configFile;
 	}
@@ -167,9 +153,5 @@ public class Configuration {
 
 	public File getFakeplayersFile() {
 		return fakePlayersFile;
-	}
-
-	public File getTabEntriesFile() {
-		return tabEntriesFile;
 	}
 }

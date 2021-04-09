@@ -1,16 +1,13 @@
 package hu.montlikadani.tablist.bukkit.tablist.fakeplayers;
 
-import java.util.Optional;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.tablist.entry.row.IRowPlayer;
-
 /**
  * The interface for creating fake players
  */
-public interface IFakePlayers extends IRowPlayer {
+public interface IFakePlayers {
 
 	/**
 	 * Gets the fake player name.
@@ -54,7 +51,6 @@ public interface IFakePlayers extends IRowPlayer {
 	 * 
 	 * @return the amount of latency
 	 */
-	@Override
 	int getPingLatency();
 
 	/**
@@ -91,7 +87,6 @@ public interface IFakePlayers extends IRowPlayer {
 	 * 
 	 * @param pingAmount ping value (> 0)
 	 */
-	@Override
 	void setPing(int pingAmount);
 
 	/**
@@ -100,7 +95,6 @@ public interface IFakePlayers extends IRowPlayer {
 	 * 
 	 * @param skinId an valid user skin uuid
 	 */
-	@Override
 	void setSkin(UUID skinId);
 
 	/**
@@ -108,43 +102,4 @@ public interface IFakePlayers extends IRowPlayer {
 	 */
 	void removeFakePlayer();
 
-	@Override
-	default void create(int rowIndex) {
-		throw new UnsupportedOperationException("Use #createFakePlayer instead");
-	}
-
-	@Override
-	default void remove() {
-		throw new UnsupportedOperationException("Use #removeFakePlayer instead");
-	}
-
-	@Override
-	default Optional<Player> asPlayer() {
-		throw new UnsupportedOperationException("#asPlayer not supported");
-	}
-
-	@Override
-	default void setPlayer(Player player) {
-		throw new UnsupportedOperationException("#setPlayer not supported");
-	}
-
-	@Override
-	default String getText() {
-		throw new UnsupportedOperationException("#getText not supported");
-	}
-
-	@Override
-	default String updateText(Player player, String text) {
-		throw new UnsupportedOperationException("#updateText not supported");
-	}
-
-	@Override
-	default void setText(String text) {
-		throw new UnsupportedOperationException("#setText not supported");
-	}
-
-	@Override
-	default UUID getHeadId() {
-		throw new UnsupportedOperationException("#getHeadId not supported");
-	}
 }
