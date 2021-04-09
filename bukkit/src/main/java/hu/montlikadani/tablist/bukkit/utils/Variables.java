@@ -110,6 +110,7 @@ public class Variables {
 			str = StringUtils.replace(str, "%memory_bar%", builder.toString());
 		}
 
+		// TODO Remove or make more customisable variables
 		for (java.util.Map.Entry<String, String> map : TabConfigValues.CUSTOM_VARIABLES.entrySet()) {
 			if (str.indexOf(map.getKey()) >= 0) {
 				str = StringUtils.replace(str, map.getKey(), map.getValue());

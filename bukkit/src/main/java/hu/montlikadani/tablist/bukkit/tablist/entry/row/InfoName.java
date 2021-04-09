@@ -15,7 +15,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.reflection.NMSContainer;
@@ -126,7 +125,7 @@ public final class InfoName {
 	}
 
 	public void movePlayer(Player player, int rowIndex) {
-		remove(player, false, "");
+		remove(player);
 
 		try {
 			String name = String.format("%03d", rowIndex);
@@ -170,17 +169,13 @@ public final class InfoName {
 
 			Object packet = playOutPlayerInfoConstr.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
 
-			Object rowPlayer = null;
+			Object rowPlayer;
 			if (playerInfoDataConstr.getParameterCount() == 5) {
 				rowPlayer = playerInfoDataConstr.newInstance(packet, currentProfile, ping, NMSContainer.getGameMode(),
 						ReflectionUtils.getAsIChatBaseComponent(player.getName()));
 			} else {
 				rowPlayer = playerInfoDataConstr.newInstance(currentProfile, ping, NMSContainer.getGameMode(),
 						ReflectionUtils.getAsIChatBaseComponent(player.getName()));
-			}
-
-			if (rowPlayer == null) {
-				return;
 			}
 
 			infoList.set(packet, Arrays.asList(rowPlayer));
@@ -201,34 +196,30 @@ public final class InfoName {
 		}
 	}
 
-	public void remove(Player player, boolean restorePlayer, String text) {
+	public void remove(Player player) {
 		try {
-			if (player != null) { // Restore player to default state
-				if (restorePlayer) {
-					addPlayer(player, plugin.getComplement().getPlayerListName(player), null);
-				} else {
-					entityPlayer = ReflectionUtils.getHandle(player);
+			currentPlayerInfoAction = "REMOVE_PLAYER";
 
-					Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
-					Array.set(entityPlayerArray, 0, entityPlayer);
+			packet = playOutPlayerInfoConstr.newInstance(NMSContainer.getRemovePlayer(),
+					Array.newInstance(NMSContainer.getEntityPlayerClass(), 0));
 
-					currentPlayerInfoAction = "REMOVE_PLAYER";
+			infoList.set(packet, Arrays.asList(rowPlayer = newPlayerInfoData("")));
 
-					packet = playOutPlayerInfoConstr.newInstance(NMSContainer.getRemovePlayer(), entityPlayerArray);
+			sendPacketForEveryone();
 
-					for (TabListUser user : plugin.getUsers()) {
-						ReflectionUtils.sendPacket(user.getPlayer(), packet);
-					}
-				}
-			} else {
+			if (player != null) {
+				entityPlayer = ReflectionUtils.getHandle(player);
+
+				Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
+				Array.set(entityPlayerArray, 0, entityPlayer);
+
 				currentPlayerInfoAction = "REMOVE_PLAYER";
 
-				packet = playOutPlayerInfoConstr.newInstance(NMSContainer.getRemovePlayer(),
-						Array.newInstance(NMSContainer.getEntityPlayerClass(), 0));
+				packet = playOutPlayerInfoConstr.newInstance(NMSContainer.getRemovePlayer(), entityPlayerArray);
 
-				infoList.set(packet, Arrays.asList(rowPlayer = newPlayerInfoData(text)));
-
-				sendPacketForEveryone();
+				for (TabListUser user : plugin.getUsers()) {
+					ReflectionUtils.sendPacket(user.getPlayer(), packet);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -332,30 +323,53 @@ public final class InfoName {
 				ReflectionUtils.getAsIChatBaseComponent(text));
 	}
 
-	public static void removePlayer(Player player) {
+	public static void removePlayer(final TabList plugin, Player player) {
 		if (player == null) {
 			return;
 		}
 
-		final TabList plugin = TabListAPI.getPlugin();
+		try {
+			Object entityPlayer = ReflectionUtils.getHandle(player);
 
-		Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
-			try {
-				Object entityPlayer = ReflectionUtils.getHandle(player);
+			Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
+			Array.set(entityPlayerArray, 0, entityPlayer);
 
-				Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
-				Array.set(entityPlayerArray, 0, entityPlayer);
+			Object packet = NMSContainer.getPacketPlayOutPlayerInfo()
+					.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+					.newInstance(NMSContainer.getRemovePlayer(), entityPlayerArray);
 
-				Object packet = NMSContainer.getPacketPlayOutPlayerInfo()
-						.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
-						.newInstance(NMSContainer.getRemovePlayer(), entityPlayerArray);
-
+			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
 				for (TabListUser user : plugin.getUsers()) {
 					ReflectionUtils.sendPacket(user.getPlayer(), packet);
 				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}, 20L); // 1 second to remove? lmao
+			}, 20L); // 1 second to remove? lmao
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void addPlayer(final TabList plugin, Player player) {
+		if (player == null) {
+			return;
+		}
+
+		try {
+			Object entityPlayer = ReflectionUtils.getHandle(player);
+
+			Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
+			Array.set(entityPlayerArray, 0, entityPlayer);
+
+			Object packet = NMSContainer.getPacketPlayOutPlayerInfo()
+					.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+					.newInstance(NMSContainer.getAddPlayer(), entityPlayerArray);
+
+			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, () -> {
+				for (TabListUser user : plugin.getUsers()) {
+					ReflectionUtils.sendPacket(user.getPlayer(), packet);
+				}
+			}, 5L);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 }

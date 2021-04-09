@@ -13,7 +13,7 @@ public class OperatorNodes implements ExpressionNode {
 
 	private String parseExpression;
 
-	private final String[] expressions = { ">", ">=", "<", "<=", "==" }; // not equal not required
+	private final String[] expressions = { ">", ">=", "<", "<=", "==", "!=" };
 
 	public OperatorNodes(String str, int type) {
 		this(type);
@@ -116,6 +116,8 @@ public class OperatorNodes implements ExpressionNode {
 				return leftCond <= secondCondition;
 			case "==":
 				return leftCond == secondCondition;
+			case "!=":
+				return leftCond != secondCondition;
 			default:
 				return false;
 			}
@@ -136,6 +138,8 @@ public class OperatorNodes implements ExpressionNode {
 				return firstCondition <= secondCondition;
 			case "==":
 				return firstCondition == secondCondition;
+			case "!=":
+				return firstCondition != secondCondition;
 			default:
 				return false;
 			}

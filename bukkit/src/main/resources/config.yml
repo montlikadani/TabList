@@ -75,12 +75,7 @@ placeholder-format:
   # Ping color format for %ping% placeholder.
   ping:
     enable: true
-    # Operators usage:
-    # > - highest value, "&c%ping% > 5" this will be red color
-    # >= - highest & equal value, "&6%ping% >= 10" gold color
-    # <= - less than & equal value, "&a%ping% <= 20" green color
-    # < - less value, "&e%ping% < 50" yellow color
-    # == - equal value, "&4%ping% == 20" dark red color if 20 is equal to current ping amount
+    # Operators usage: https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting
     formats:
     - "&a%ping% <= 200"
     - "&6%ping% >= 200"
@@ -97,12 +92,7 @@ placeholder-format:
     value-can-be-higher: false
 
     enable: true
-    # Operators usage:
-    # > - highest value, "17 > &e" this will be yellow color
-    # >= - highest & equal value, "5 >= &6" gold color
-    # <= - less than & equal value, "16 <= &c" red color
-    # < - less value, "8 < &4" dark red color
-    # == - equal value, "20 == &a" green color if 20 is equal to current tps amount
+    # Operators usage: https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting
     formats:
     - '&a%tps% > 18.0'
     - '&6%tps% == 16.0'

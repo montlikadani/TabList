@@ -117,7 +117,7 @@ public class RowPlayer implements IRowPlayer {
 
 	@Override
 	public void remove() {
-		infoName.remove(player, true, text);
+		infoName.remove(player);
 	}
 
 	@Override

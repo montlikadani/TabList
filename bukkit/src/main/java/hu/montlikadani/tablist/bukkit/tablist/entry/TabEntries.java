@@ -68,7 +68,7 @@ public final class TabEntries {
 
 		final Player player = user.getPlayer();
 
-		InfoName.removePlayer(player);
+		InfoName.removePlayer(plugin, player);
 		appendEntries();
 
 		if (task == null) {
@@ -118,6 +118,12 @@ public final class TabEntries {
 	public void removeAll() {
 		cancelTask();
 		loopEntries(entry -> entry.row.remove());
+
+		// Restore all player
+		for (TabListUser user : plugin.getUsers()) {
+			InfoName.addPlayer(plugin, user.getPlayer());
+		}
+
 		entries = null;
 	}
 

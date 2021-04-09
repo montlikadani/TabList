@@ -167,7 +167,7 @@ public final class TabList extends JavaPlugin {
 
 		boolean kyoriSupported = false;
 		try {
-			Class.forName("net.kyori.adventure.text.Component");
+			Class.forName("net.kyori.adventure.text.serializer.plain.PlainComponentSerializer");
 			kyoriSupported = true;
 		} catch (ClassNotFoundException e) {
 		}
@@ -351,7 +351,7 @@ public final class TabList extends JavaPlugin {
 				});
 			} else if (user.isHidden()) {
 				getServer().getScheduler().callSyncMethod(this, () -> {
-					TabListPlayer tlp = ((TabListPlayer) user);
+					TabListPlayer tlp = (TabListPlayer) user;
 					tlp.getPlayerList().showEveryone();
 					tlp.remove();
 					return null;

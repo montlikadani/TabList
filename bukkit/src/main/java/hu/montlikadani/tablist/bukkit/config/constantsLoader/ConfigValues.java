@@ -66,22 +66,14 @@ public class ConfigValues {
 				"Format of %server-time% placeholder.");
 		c.addComment("placeholder-format.time.date-format", "Format of %date% placeholder.");
 		c.addComment("placeholder-format.ping", "Ping color format for %ping% placeholder.");
-		c.addComment("placeholder-format.ping.formats", "Operators usage:",
-				"> - highest value, \"17 > &e\" this will be yellow color",
-				">= - highest & equal value, \"5 >= &6\" gold color",
-				"<= - less than & equal value, \"16 <= &c\" red color", "< - less value, \"8 < &4\" dark red color",
-				"== - equal value, \"20 == &a\" green color if 20 is equal to current ping amount");
+		c.addComment("placeholder-format.ping.formats", "Operators usage: https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
 		c.addComment("placeholder-format.tps", "TPS color format for %tps% placeholder.");
 		c.addComment("placeholder-format.tps.size",
 				"How many numbers do you want to display after \".\" in %tps% placeholder?",
 				"The number should be higher than 0.", "Example: 3 = 20.14");
 		c.addComment("placeholder-format.tps.value-can-be-higher",
 				"Adds ability to the tps value can be highest than default 20.0");
-		c.addComment("placeholder-format.tps.formats", "Operators usage:",
-				"> - highest value, \"17 > &e\" this will be yellow color",
-				">= - highest & equal value, \"5 >= &6\" gold color",
-				"<= - less than & equal value, \"16 <= &c\" red color", "< - less value, \"8 < &4\" dark red color",
-				"== - equal value, \"20 == &a\" green color if 20 is equal to current tps amount");
+		c.addComment("placeholder-format.tps.formats", "Operators usage: https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
 		c.addComment("placeholder-format.memory-bar", "Memory bar settings for %memory_bar% variable");
 		c.addComment("placeholder-format.memory-bar.colors.allocation", "When the server memory less than 80");
 		c.addComment("placeholder-format.memory-bar.colors.released",

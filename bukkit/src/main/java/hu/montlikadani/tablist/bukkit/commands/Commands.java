@@ -32,7 +32,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 	public Commands(TabList plugin) {
 		this.plugin = plugin;
 
-		for (String s : Arrays.asList("reload", "fakeplayers", "player", "group", "toggle", "help")) {
+		for (String s : new String[] { "reload", "fakeplayers", "player", "group", "toggle", "help" }) {
 			try {
 				Class<?> c = null;
 				try {

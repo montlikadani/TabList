@@ -3,6 +3,8 @@ package hu.montlikadani.tablist.bukkit;
 import java.lang.reflect.Field;
 import java.util.List;
 
+import org.bukkit.entity.Player;
+
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
@@ -103,8 +105,10 @@ public class ProtocolPackets extends PacketAdapter {
 
 		@Override
 		public void onPacketSending(PacketEvent event) {
+			Player eventPlayer = event.getPlayer();
+
 			for (TabListUser user : PLUGIN.getUsers()) {
-				org.bukkit.entity.Player userPlayer = user.getPlayer(), eventPlayer = event.getPlayer();
+				Player userPlayer = user.getPlayer();
 				HidePlayers hp = ((TabListPlayer) user).getHidePlayers();
 
 				if (hp != null) {

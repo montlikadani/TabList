@@ -26,13 +26,6 @@ disabled-worlds:
 blacklisted-players:
 #- myname
 
-# Custom variables that will be replaced in tablist.
-# This is useful when creating a lot of lines with the same content.
-# Usage: <NameOfPlaceholder>: "&6Text..."
-custom-variables:
-  <name>: "&5&o%player%"
-  <lines>: "&5&m======================"
-
 # Tab update time interval. (In ticks!)
 # Set to 0 to disable tab refreshing.
 interval: 4
@@ -42,7 +35,7 @@ interval: 4
 random: false
 
 header:
-- "<lines>\n%anim:tablist%"
+- "&5&m======================\n%anim:tablist%"
 - "&7<75> %anim:welcome% %player%&c!&7 <74>\n&6Ping:&r %ping%&7ms"
 - "&8<1>&7 Used ram, free, max:&e %server-ram-max%"
 - "%memory_bar%"
@@ -50,7 +43,7 @@ header:
 
 footer:
 - "<13>&e&l Players:&6 %online-players%&7/&6%max-players%"
-- "&7<28> %anim:website%&7:&2 &nexample.com&7 <28>\n<lines>"
+- "&7<28> %anim:website%&7:&2 &nexample.com&7 <28>\n&5&m======================"
 
 # Defines per world tablist for different worlds
 # You can separate worlds with ", " to show tablist in that worlds
@@ -90,7 +83,7 @@ per-world:
 per-player:
   testplayer:
     header: "%anim:perPlayer%"
-    footer: "<lines>"
+    footer: "&5&m======================"
 
 # Defines per-grouped tablist for players.
 # Requires Vault plugin!

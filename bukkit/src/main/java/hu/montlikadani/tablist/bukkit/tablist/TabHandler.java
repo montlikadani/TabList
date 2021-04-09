@@ -108,9 +108,7 @@ public class TabHandler {
 
 		if (path.isEmpty() && c.isConfigurationSection("permissions")) {
 			for (String name : c.getConfigurationSection("permissions").getKeys(false)) {
-				Permission permission = new Permission(name.startsWith("tablist.") ? name : "tablist." + name,
-						PermissionDefault.NOT_OP);
-				if (PluginUtils.hasPermission(player, permission.getName())) {
+				if (PluginUtils.hasPermission(player, new Permission(name, PermissionDefault.NOT_OP).getName())) {
 					path = "permissions." + name + ".";
 					break;
 				}

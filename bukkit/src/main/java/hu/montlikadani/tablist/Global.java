@@ -17,7 +17,6 @@ public class Global {
 			try {
 				s = StringUtils.replace(s, group, net.md_5.bungee.api.ChatColor.of(group) + "");
 			} catch (Exception e) {
-				System.out.println("[TabList] Invalid hex color " + e.getLocalizedMessage());
 			}
 		}
 
