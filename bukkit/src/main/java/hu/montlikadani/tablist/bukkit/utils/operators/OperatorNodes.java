@@ -98,11 +98,9 @@ public class OperatorNodes implements ExpressionNode {
 			if (Math.floor(leftCond * tpsSize) != Math.floor(secondCondition * tpsSize)) {
 				String lc = Double.toString(leftCond);
 				int size = (tpsSize == 1 ? 3 : lc.indexOf('.')) + (tpsSize < 1 ? 2 : tpsSize);
-				if (size > lc.length()) {
-					size = lc.length();
-				}
+				int length = lc.length();
 
-				leftCond = Double.parseDouble(lc.substring(0, size));
+				leftCond = Double.parseDouble(lc.substring(0, size > length ? length : size));
 			}
 
 			switch (condition.getOperator()) {

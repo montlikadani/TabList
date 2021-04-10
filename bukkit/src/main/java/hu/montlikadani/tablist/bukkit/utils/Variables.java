@@ -271,14 +271,13 @@ public class Variables {
 		}
 
 		String ds = parseExpression(d, NodeType.TPS);
-		if (ds.contains(".")) {
+		int index = ds.indexOf('.');
+		if (index >= 0) {
 			int tpsSize = ConfigValues.getTpsSize();
-			int size = (tpsSize == 1 ? 3 : ds.indexOf('.')) + (tpsSize < 1 ? 2 : tpsSize);
-			if (size > ds.length()) {
-				size = ds.length();
-			}
+			int size = (tpsSize == 1 ? 3 : index) + (tpsSize < 1 ? 2 : tpsSize);
+			int length = ds.length();
 
-			ds = ds.substring(0, size);
+			ds = ds.substring(0, size > length ? length : size);
 		}
 
 		return ds;

@@ -52,7 +52,6 @@ public class Configuration {
 		}
 
 		tablist = new CommentedConfig(tablistFile);
-		tablist.load();
 		TabConfigValues.loadValues(tablist);
 
 		try {
@@ -60,11 +59,9 @@ public class Configuration {
 			messages.save(messagesFile);
 
 			animCreator = createFile(animationFile, "animcreator.yml", false);
-			animCreator.load(animationFile);
 
 			if (ConfigValues.isPrefixSuffixEnabled()) {
 				groups = createFile(groupsFile, "groups.yml", false);
-				groups.load(groupsFile);
 			}
 
 			if (ConfigValues.isFakePlayers()) {
