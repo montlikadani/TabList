@@ -242,7 +242,6 @@ public final class TabEntries {
 		protected static final class EntryBuilder {
 
 			private Entry entry;
-
 			private UUID headId;
 			private String text = " ";
 			private int ping = 0;
