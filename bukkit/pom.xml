@@ -84,7 +84,7 @@
 		</repository>
 		<repository>
 			<id>papi-repo</id>
-			<url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+			<url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
 		</repository>
 		<repository>
 			<id>dmulloy2-repo</id>
@@ -173,14 +173,6 @@
 			</exclusions>
 		</dependency>
 		<!-- BungeeCord -->
-		<!-- TODO use repo in future, currently the repo is trash -->
-		<dependency>
-			<groupId>net.md-5</groupId>
-			<artifactId>bungeecord-proxy</artifactId>
-			<version>1.16-R0.5-SNAPSHOT</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/bungeecord-proxy-1.16-R0.5-SNAPSHOT.jar</systemPath>
-		</dependency>
 		<dependency>
 			<groupId>net.md-5</groupId>
 			<artifactId>bungeecord-api</artifactId>

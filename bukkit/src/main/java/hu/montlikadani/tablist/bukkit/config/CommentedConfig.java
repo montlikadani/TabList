@@ -84,25 +84,26 @@ public class CommentedConfig extends YamlConfiguration {
 			return yaml;
 		}
 
-		String lineSeparator = System.getProperty("line.separator");
 		StringBuilder newContents = new StringBuilder(), currentPath = new StringBuilder();
 		boolean commentedPath = false, node = false;
 		int depth = 0;
 
-		for (final String line : yaml.split("[" + lineSeparator + "]")) {
+		for (final String line : yaml.split("[" + System.lineSeparator() + "]")) {
 			if (line.startsWith("#")) {
 				continue; // Ignore comments
 			}
+
+			int length = line.length();
 
 			boolean keyOk = true;
 			if (line.contains(": ")) {
 				int index = line.indexOf(": ");
 				if (index < 0) {
-					index = line.length() - 1;
+					index = length - 1;
 				}
 
 				int whiteSpace = 0;
-				for (int n = 0; n < line.length(); n++) {
+				for (int n = 0; n < length; n++) {
 					if (line.charAt(n) == ' ') {
 						whiteSpace++;
 					} else {
@@ -117,20 +118,21 @@ public class CommentedConfig extends YamlConfiguration {
 				}
 			}
 
-			if (line.contains(": ") && keyOk || (line.length() > 1 && line.charAt(line.length() - 1) == ':')) {
+			if (line.contains(": ") && keyOk || (length > 1 && line.charAt(length - 1) == ':')) {
 				commentedPath = false;
 				node = true;
 
 				int index = line.indexOf(": ");
 				if (index < 0) {
-					index = line.length() - 1;
+					index = length - 1;
 				}
 
 				if (currentPath.toString().isEmpty()) {
 					currentPath = new StringBuilder(line.substring(0, index));
 				} else {
 					int whiteSpace = 0;
-					for (int n = 0; n < line.length(); n++) {
+
+					for (int n = 0; n < length; n++) {
 						if (line.charAt(n) == ' ') {
 							whiteSpace++;
 						} else {
@@ -143,6 +145,7 @@ public class CommentedConfig extends YamlConfiguration {
 						depth++;
 					} else if (whiteSpace / 2 < depth) {
 						int newDepth = whiteSpace / 2;
+
 						for (int i = 0; i < depth - newDepth; i++) {
 							currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "");
 						}
@@ -173,19 +176,16 @@ public class CommentedConfig extends YamlConfiguration {
 
 			StringBuilder newLine = new StringBuilder(line);
 			if (node) {
-				String comment = "";
-				if (!commentedPath) {
-					comment = comments.getOrDefault(currentPath.toString(), "");
-				}
+				String comment = !commentedPath ? comments.getOrDefault(currentPath.toString(), "") : "";
 
 				if (!comment.isEmpty()) {
-					newLine.insert(0, lineSeparator).insert(0, comment);
+					newLine.insert(0, System.lineSeparator()).insert(0, comment);
 					comment = "";
 					commentedPath = true;
 				}
 			}
 
-			newLine.append(lineSeparator);
+			newLine.append(System.lineSeparator());
 			newContents.append(newLine.toString());
 		}
 
@@ -212,7 +212,7 @@ public class CommentedConfig extends YamlConfiguration {
 			}
 
 			if (comment.length() > 0) {
-				comment.append(System.getProperty("line.separator"));
+				comment.append(System.lineSeparator());
 			}
 
 			if (!newLine) {
@@ -237,6 +237,7 @@ public class CommentedConfig extends YamlConfiguration {
 
 	public YamlConfiguration getYml() {
 		YamlConfiguration config = new YamlConfiguration();
+
 		if (file == null || !file.exists()) {
 			return config;
 		}
@@ -245,8 +246,7 @@ public class CommentedConfig extends YamlConfiguration {
 		InputStreamReader reader = null;
 
 		try {
-			reader = new InputStreamReader(inputStream = new FileInputStream(file), StandardCharsets.UTF_8);
-			config.load(reader);
+			config.load(reader = new InputStreamReader(inputStream = new FileInputStream(file)));
 		} catch (FileNotFoundException e) {
 		} catch (InvalidConfigurationException | IOException e) {
 			org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, e.getLocalizedMessage());

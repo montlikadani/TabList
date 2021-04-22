@@ -29,7 +29,7 @@ public class Groups implements ITask {
 	public void addPlayer(ProxiedPlayer player) {
 		synchronized (playersGroup) {
 			if (!plugin.getConf().getBoolean("tablist-groups.enabled", false) || !getPlayerGroup(player).isPresent()) {
-				playersGroup.add(new PlayerGroup(player.getUniqueId()));
+				playersGroup.add(new PlayerGroup(plugin, player.getUniqueId()));
 			}
 		}
 	}

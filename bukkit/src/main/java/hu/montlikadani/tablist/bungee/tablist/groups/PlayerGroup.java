@@ -15,14 +15,16 @@ import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
 
 public class PlayerGroup {
 
-	private UUID playerUUID;
+	private final TabList plugin;
+	private final UUID playerUUID;
 
 	private int y = 0;
 
 	private final Item items = new Item();
 	private final PlayerListItem listItem = new PlayerListItem();
 
-	public PlayerGroup(UUID playerUUID) {
+	public PlayerGroup(TabList plugin, UUID playerUUID) {
+		this.plugin = plugin;
 		this.playerUUID = playerUUID;
 	}
 
@@ -31,12 +33,12 @@ public class PlayerGroup {
 	}
 
 	public void update() {
-		final ProxiedPlayer player = TabList.getInstance().getProxy().getPlayer(playerUUID);
+		final ProxiedPlayer player = plugin.getProxy().getPlayer(playerUUID);
 		if (player == null) {
 			return;
 		}
 
-		final Configuration c = TabList.getInstance().getConf();
+		final Configuration c = plugin.getConf();
 
 		String name = "";
 		for (String num : c.getSection("groups").getKeys()) {
@@ -83,7 +85,7 @@ public class PlayerGroup {
 			listItem.setAction(Action.UPDATE_DISPLAY_NAME);
 		}
 
-		for (ProxiedPlayer pl : TabList.getInstance().getProxy().getPlayers()) {
+		for (ProxiedPlayer pl : plugin.getProxy().getPlayers()) {
 			pl.unsafe().sendPacket(listItem);
 		}
 	}

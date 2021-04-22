@@ -79,7 +79,7 @@ public class OperatorNodes implements ExpressionNode {
 			return null;
 		}
 
-		return new Condition(operator, String.valueOf(str.trim().replace(operator, ";").toCharArray()).split(";"));
+		return new Condition(operator, String.valueOf(str.trim().replace(operator, ";").toCharArray()).split(";", 2));
 	}
 
 	@Override

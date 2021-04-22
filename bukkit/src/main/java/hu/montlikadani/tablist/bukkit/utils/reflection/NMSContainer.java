@@ -7,10 +7,11 @@ import java.lang.reflect.Field;
 public class NMSContainer {
 
 	private static Field infoList;
-	private static Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstror;
+	private static Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstructor;
 	private static Class<?> packet, packetPlayOutPlayerInfo, enumPlayerInfoAction, entityPlayerClass, enumGameMode,
-			playerInfoData;
-	private static Object gameMode, addPlayer, removePlayer, updateGameMode, updateLatency, updateDisplayName;
+			playerInfoData, minecraftServer;
+	private static Object gameModeNotSet, gameModeSpectator, gameModeSurvival, addPlayer, removePlayer, updateGameMode,
+			updateLatency, updateDisplayName;
 	private static Constructor<?>[] playerInfoDataConstructors;
 
 	static {
@@ -18,7 +19,25 @@ public class NMSContainer {
 			packet = ReflectionUtils.getNMSClass("Packet");
 			packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
 			entityPlayerClass = ReflectionUtils.getNMSClass("EntityPlayer");
-			enumPlayerInfoAction = ReflectionUtils.Classes.getEnumPlayerInfoAction(packetPlayOutPlayerInfo);
+			try {
+				minecraftServer = ReflectionUtils.getNMSClass("MinecraftServer");
+			} catch (ClassNotFoundException c) {
+				try {
+					minecraftServer = ReflectionUtils.getNMSClass("DedicatedServer");
+				} catch (ClassNotFoundException e) {
+				}
+			}
+
+			try {
+				enumPlayerInfoAction = ReflectionUtils.getNMSClass("EnumPlayerInfoAction");
+			} catch (ClassNotFoundException c) {
+				for (Class<?> clazz : packetPlayOutPlayerInfo.getDeclaredClasses()) {
+					if (clazz.getName().contains("EnumPlayerInfoAction")) {
+						enumPlayerInfoAction = clazz;
+						break;
+					}
+				}
+			}
 
 			addPlayer = enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction);
 			removePlayer = enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER").get(enumPlayerInfoAction);
@@ -45,7 +64,7 @@ public class NMSContainer {
 				}
 			}
 
-			(playOutPlayerInfoConstror = packetPlayOutPlayerInfo.getDeclaredConstructor(enumPlayerInfoAction,
+			(playOutPlayerInfoConstructor = packetPlayOutPlayerInfo.getDeclaredConstructor(enumPlayerInfoAction,
 					Array.newInstance(entityPlayerClass, 0).getClass())).setAccessible(true);
 
 			try {
@@ -54,7 +73,9 @@ public class NMSContainer {
 				enumGameMode = ReflectionUtils.getNMSClass("WorldSettings$EnumGamemode");
 			}
 
-			gameMode = enumGameMode.getDeclaredField("NOT_SET").get(enumGameMode);
+			gameModeNotSet = enumGameMode.getDeclaredField("NOT_SET").get(enumGameMode);
+			gameModeSpectator = enumGameMode.getDeclaredField("SPECTATOR").get(enumGameMode);
+			gameModeSurvival = enumGameMode.getDeclaredField("SURVIVAL").get(enumGameMode);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -73,7 +94,7 @@ public class NMSContainer {
 	}
 
 	public static Constructor<?> getPlayOutPlayerInfoConstructor() {
-		return playOutPlayerInfoConstror;
+		return playOutPlayerInfoConstructor;
 	}
 
 	public static Class<?> getPacketPlayOutPlayerInfo() {
@@ -96,8 +117,16 @@ public class NMSContainer {
 		return playerInfoData;
 	}
 
-	public static Object getGameMode() {
-		return gameMode;
+	public static Object getGameModeNotSet() {
+		return gameModeNotSet;
+	}
+
+	public static Object getGameModeSpectator() {
+		return gameModeSpectator;
+	}
+
+	public static Object getGameModeSurvival() {
+		return gameModeSurvival;
 	}
 
 	public static Constructor<?>[] getPlayerInfoDataConstructors() {
@@ -122,5 +151,9 @@ public class NMSContainer {
 
 	public static Object getUpdateDisplayName() {
 		return updateDisplayName;
+	}
+
+	public static Class<?> getMinecraftServer() {
+		return minecraftServer;
 	}
 }

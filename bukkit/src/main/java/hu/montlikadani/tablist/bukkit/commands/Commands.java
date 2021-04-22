@@ -4,7 +4,6 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 import static hu.montlikadani.tablist.bukkit.utils.Util.sendMsg;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -68,36 +67,42 @@ public class Commands implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
+		boolean isPlayer = sender instanceof Player;
+
 		if (args[0].equalsIgnoreCase("help")) {
-			if (sender instanceof Player && !sender.hasPermission(Perm.HELP.getPerm())) {
+			if (isPlayer && !sender.hasPermission(Perm.HELP.getPerm())) {
 				sendMsg(sender, plugin.getMsg("no-permission", "%perm%", Perm.HELP.getPerm()));
 				return true;
 			}
 
-			plugin.getMsg(new TypeToken<List<String>>() {}.getSubtype(List.class), "chat-messages", "%command%", label)
-				.forEach(s -> sendMsg(sender, s));
+			plugin.getMsg(new TypeToken<List<String>>() {
+				}.getSubtype(List.class), "chat-messages", "%command%", label).forEach(s -> sendMsg(sender, s));
 			return true;
 		}
 
 		boolean found = false;
+
 		for (ICommand command : cmds) {
 			CommandProcessor proc = command.getClass().getAnnotation(CommandProcessor.class);
-			if (proc != null && proc.name().equalsIgnoreCase(args[0])) {
-				found = true;
 
-				if (proc.playerOnly() && !(sender instanceof Player)) {
-					sendMsg(sender, plugin.getMsg("no-console", "%command%", label + " " + args[0]));
-					return false;
-				}
-
-				if (sender instanceof Player && !sender.hasPermission(proc.permission().getPerm())) {
-					sendMsg(sender, plugin.getMsg("no-permission", "%perm%", proc.permission().getPerm()));
-					return false;
-				}
-
-				command.run(plugin, sender, cmd, label, args);
-				break;
+			if (proc == null || !proc.name().equalsIgnoreCase(args[0])) {
+				continue;
 			}
+
+			found = true;
+
+			if (proc.playerOnly() && !isPlayer) {
+				sendMsg(sender, plugin.getMsg("no-console", "%command%", label + " " + args[0]));
+				return false;
+			}
+
+			if (isPlayer && !sender.hasPermission(proc.permission().getPerm())) {
+				sendMsg(sender, plugin.getMsg("no-permission", "%perm%", proc.permission().getPerm()));
+				return false;
+			}
+
+			command.run(plugin, sender, cmd, label, args);
+			break;
 		}
 
 		if (!found) {
@@ -106,6 +111,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		return true;
 	}
+
+	private String[] fpCompletions = { "add", "remove", "list", "setskin", "setping", "setdisplayname", "rename" };
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -117,7 +124,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 			break;
 		case 2:
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
-				cmds.addAll(Arrays.asList("add", "remove", "list", "setskin", "setping", "setdisplayname", "rename"));
+				for (String c : fpCompletions) {
+					cmds.add(c);
+				}
 			} else if (args[0].equalsIgnoreCase("toggle")) {
 				cmds.add("all");
 			}
@@ -147,10 +156,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 		// Try to avoid using stream for tab-complete
 		Set<String> c = new HashSet<>();
 
+		boolean isPlayer = sender instanceof Player;
+
 		for (ICommand cmd : cmds) {
 			CommandProcessor proc = cmd.getClass().getAnnotation(CommandProcessor.class);
 
-			if (proc != null && (!(sender instanceof Player) || sender.hasPermission(proc.permission().getPerm()))) {
+			if (proc != null && (!isPlayer || sender.hasPermission(proc.permission().getPerm()))) {
 				c.add(proc.name());
 			}
 		}

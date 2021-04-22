@@ -8,9 +8,9 @@ import java.util.Calendar;
 import java.util.TimeZone;
 
 import hu.montlikadani.tablist.Global;
-import net.md_5.bungee.BungeeCord;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -18,6 +18,8 @@ import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 
 public class Misc {
+
+	private static final TabList PLUGIN = (TabList) ProxyServer.getInstance().getPluginManager().getPlugin("TabList");
 
 	public static String colorMsg(String s) {
 		if (s == null) {
@@ -48,7 +50,7 @@ public class Misc {
 				mram = r.maxMemory() / 1048576L,
 				uram = (r.totalMemory() - r.freeMemory()) / 1048576L;
 
-		Configuration conf = TabList.getInstance().getConf();
+		Configuration conf = PLUGIN.getConf();
 
 		if (conf.contains("custom-variables")) {
 			for (String custom : conf.getSection("custom-variables").getKeys()) {
@@ -97,7 +99,7 @@ public class Misc {
 
 		try {
 			if (str.contains("%max-players%")) {
-				str = str.replace("%max-players%", Integer.toString(BungeeCord.getInstance().getConfigurationAdapter()
+				str = str.replace("%max-players%", Integer.toString(ProxyServer.getInstance().getConfigurationAdapter()
 						.getListeners().iterator().next().getMaxPlayers()));
 			}
 		} catch (Exception e) {
@@ -143,10 +145,10 @@ public class Misc {
 			str = str.replace("%player-uuid%", p.getUniqueId().toString());
 
 		if (str.contains("%game-version%"))
-			str = str.replace("%game-version%", BungeeCord.getInstance().getGameVersion());
+			str = str.replace("%game-version%", ProxyServer.getInstance().getGameVersion());
 
 		if (str.contains("%bungee-online%"))
-			str = str.replace("%bungee-online%", Integer.toString(BungeeCord.getInstance().getOnlineCount()));
+			str = str.replace("%bungee-online%", Integer.toString(ProxyServer.getInstance().getOnlineCount()));
 
 		if (info != null && str.contains("%bungee-motd%"))
 			str = str.replace("%bungee-motd%", info.getMotd());

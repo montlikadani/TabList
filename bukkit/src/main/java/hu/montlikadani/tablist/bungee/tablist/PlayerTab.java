@@ -10,13 +10,15 @@ import net.md_5.bungee.config.Configuration;
 
 public class PlayerTab {
 
-	private ProxiedPlayer player;
+	private final TabList plugin;
+	private final ProxiedPlayer player;
 
 	private int i = 0, i2 = 0;
 
 	private final List<String> header = new ArrayList<>(), footer = new ArrayList<>();
 
-	public PlayerTab(ProxiedPlayer player) {
+	public PlayerTab(TabList plugin, ProxiedPlayer player) {
+		this.plugin = plugin;
 		this.player = player;
 	}
 
@@ -66,7 +68,7 @@ public class PlayerTab {
 	public void loadTabList() {
 		clearAll();
 
-		final Configuration conf = TabList.getInstance().getConf();
+		final Configuration conf = plugin.getConf();
 		final String pName = player.getName();
 		final String server = player.getServer() != null ? player.getServer().getInfo().getName() : "";
 
@@ -132,15 +134,15 @@ public class PlayerTab {
 	}
 
 	public void update() {
-		if (player.getServer() != null && TabList.getInstance().getConf().getStringList("tablist.disabled-servers")
+		if (player.getServer() != null && plugin.getConf().getStringList("tablist.disabled-servers")
 				.contains(player.getServer().getInfo().getName())) {
 			player.resetTabHeader();
 			return;
 		}
 
-		List<String> restrictedPlayers = TabList.getInstance().getConf().getStringList("tablist.blacklisted-players");
+		List<String> restrictedPlayers = plugin.getConf().getStringList("tablist.blacklisted-players");
 		if (restrictedPlayers.isEmpty()) {
-			restrictedPlayers = TabList.getInstance().getConf().getStringList("tablist.restricted-players");
+			restrictedPlayers = plugin.getConf().getStringList("tablist.restricted-players");
 		}
 
 		if (restrictedPlayers.contains(player.getName())) {

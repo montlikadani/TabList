@@ -22,8 +22,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.common.reflect.TypeToken;
 
-import hu.montlikadani.tablist.AnimCreator;
-import hu.montlikadani.tablist.bukkit.Objects.ObjectTypes;
+import hu.montlikadani.tablist.TextAnimation;
 import hu.montlikadani.tablist.bukkit.commands.Commands;
 import hu.montlikadani.tablist.bukkit.config.CommentedConfig;
 import hu.montlikadani.tablist.bukkit.config.Configuration;
@@ -59,7 +58,7 @@ public final class TabList extends JavaPlugin {
 
 	private boolean isPaper = false, hasVault = false;
 
-	private final Set<AnimCreator> animations = new HashSet<>();
+	private final Set<TextAnimation> animations = new HashSet<>();
 	private final Set<TabListUser> users = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	@Override
@@ -121,10 +120,7 @@ public final class TabList extends JavaPlugin {
 	public void onDisable() {
 		groups.cancelUpdate();
 		objects.cancelTask();
-
-		for (ObjectTypes ot : ObjectTypes.values()) {
-			objects.unregisterObjectiveForEveryone(ot);
-		}
+		objects.unregisterObjectivesForEveryone();
 
 		tabManager.saveToggledTabs();
 		tabManager.removeAll();
@@ -192,7 +188,7 @@ public final class TabList extends JavaPlugin {
 
 		if (ConfigValues.isTablistObjectiveEnabled()) {
 			metrics.addCustomChart(new org.bstats.charts.SimplePie("object_type",
-					objects.getCurrentObjectType().toString()::toLowerCase));
+					ConfigValues.getObjectType().toString()::toLowerCase));
 		}
 
 		metrics.addCustomChart(new org.bstats.charts.SimplePie("enable_fake_players",
@@ -252,12 +248,11 @@ public final class TabList extends JavaPlugin {
 		}
 
 		for (String name : section.getKeys(false)) {
-			String path = name + ".";
-			List<String> list = section.getStringList(path + "texts");
+			List<String> list = section.getStringList(name + ".texts");
 
 			if (!list.isEmpty()) {
-				animations.add(new AnimCreator(name, list, section.getInt(path + "interval", 200),
-						section.getBoolean(path + "random")));
+				animations.add(new TextAnimation(name, list, section.getInt(name + ".interval", 200),
+						section.getBoolean(name + ".random")));
 			}
 		}
 	}
@@ -272,10 +267,11 @@ public final class TabList extends JavaPlugin {
 		}
 
 		int a = 0; // Make sure we're not generates infinite loop
+
 		while (a < 100 && !animations.isEmpty() && name.contains("%anim:")) { // when using multiple animations
-			for (AnimCreator ac : animations) {
-				name = StringUtils.replace(name, "%anim:" + ac.getAnimName() + "%",
-						ac.getTime() > 0 ? ac.getRandomText() : ac.getFirstText());
+			for (TextAnimation ac : animations) {
+				name = StringUtils.replace(name, "%anim:" + ac.getName() + "%",
+						ac.getTime() > 0 ? ac.getText() : ac.getTexts()[0]);
 			}
 
 			a++;
@@ -288,37 +284,34 @@ public final class TabList extends JavaPlugin {
 		updateAll(p, false);
 	}
 
-	void updateAll(Player p, boolean reload) {
-		TabListUser user = getUser(p.getUniqueId()).orElseGet(() -> {
-			TabListUser tlu = new TabListPlayer(this, p.getUniqueId());
+	void updateAll(final Player player, boolean reload) {
+		TabListUser user = getUser(player.getUniqueId()).orElseGet(() -> {
+			TabListUser tlu = new TabListPlayer(this, player.getUniqueId());
 			users.add(tlu);
 			return tlu;
 		});
 
 		if (!ConfigValues.isTablistObjectiveEnabled()) {
 			objects.cancelTask();
-
-			for (ObjectTypes t : ObjectTypes.values()) {
-				objects.unregisterObjectiveForEveryone(t);
-			}
+			objects.unregisterObjectivesForEveryone();
 		} else {
-			org.bukkit.scoreboard.Scoreboard board = p.getScoreboard();
-			objects.unregisterObjective(objects.getObject(board, ObjectTypes.PING));
-			objects.unregisterObjective(objects.getObject(board, ObjectTypes.CUSTOM));
+			org.bukkit.scoreboard.Scoreboard board = player.getScoreboard();
+			objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.PING));
+			objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.CUSTOM));
 
-			switch (ConfigValues.getObjectType().toLowerCase()) {
-			case "ping":
-			case "custom":
-				objects.unregisterObjectiveForEveryone(ObjectTypes.HEALTH);
+			switch (ConfigValues.getObjectType()) {
+			case PING:
+			case CUSTOM:
+				objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.HEALTH));
 
 				if (objects.isCancelled()) {
 					objects.startTask();
 				}
 
 				break;
-			case "health":
+			case HEALTH:
 				if (!reload) {
-					objects.registerHealthTab(p);
+					objects.registerHealthTab(player);
 				}
 
 				break;
@@ -328,7 +321,7 @@ public final class TabList extends JavaPlugin {
 		}
 
 		if (ConfigValues.isFakePlayers()) {
-			fakePlayerHandler.display(p);
+			fakePlayerHandler.display(player);
 		}
 
 		tabManager.addPlayer(user);
@@ -363,10 +356,7 @@ public final class TabList extends JavaPlugin {
 	public void onPlayerQuit(Player p) {
 		if (!ConfigValues.isTablistObjectiveEnabled()) {
 			objects.cancelTask();
-
-			for (ObjectTypes t : ObjectTypes.values()) {
-				objects.unregisterObjectiveForEveryone(t);
-			}
+			objects.unregisterObjectivesForEveryone();
 		}
 
 		users.removeIf(user -> {
@@ -384,6 +374,7 @@ public final class TabList extends JavaPlugin {
 		return getMsg(TypeToken.of(String.class), key, placeholders);
 	}
 
+	// TODO optimise or get rid from this entirely
 	@SuppressWarnings("unchecked")
 	public <T> T getMsg(TypeToken<T> type, String key, Object... placeholders) {
 		if (key == null || key.isEmpty()) {
@@ -391,11 +382,13 @@ public final class TabList extends JavaPlugin {
 		}
 
 		if (type.getRawType().isAssignableFrom(String.class)) {
-			if (conf.getMessages().getString(key).isEmpty()) {
+			String text = conf.getMessages().getString(key);
+
+			if (text.isEmpty()) {
 				return (T) "";
 			}
 
-			String msg = colorMsg(conf.getMessages().getString(key));
+			String msg = colorMsg(text);
 
 			for (int i = 0; i < placeholders.length; i++) {
 				if (placeholders.length >= i + 2) {
@@ -466,7 +459,7 @@ public final class TabList extends JavaPlugin {
 		return variables;
 	}
 
-	public Set<AnimCreator> getAnimations() {
+	public Set<TextAnimation> getAnimations() {
 		return animations;
 	}
 
@@ -499,8 +492,7 @@ public final class TabList extends JavaPlugin {
 	}
 
 	public boolean isPluginEnabled(String name) {
-		return getServer().getPluginManager().getPlugin(name) != null
-				&& getServer().getPluginManager().isPluginEnabled(name);
+		return getServer().getPluginManager().isPluginEnabled(name);
 	}
 
 	public File getFolder() {

@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist.bukkit.utils;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -49,7 +48,7 @@ public final class PluginUtils {
 	}
 
 	public static int countVanishedPlayers() {
-		final int plSize = Bukkit.getOnlinePlayers().size();
+		final int plSize = org.bukkit.Bukkit.getOnlinePlayers().size();
 
 		if (!ConfigValues.isIgnoreVanishedPlayers()) {
 			return plSize;

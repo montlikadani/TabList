@@ -43,7 +43,7 @@ public class TabManager implements ITask {
 		}
 
 		synchronized (playerTabs) {
-			PlayerTab tab = getPlayerTab(player).orElse(new PlayerTab(player));
+			PlayerTab tab = getPlayerTab(player).orElse(new PlayerTab(plugin, player));
 			if (!playerTabs.contains(tab)) {
 				playerTabs.add(tab);
 			}

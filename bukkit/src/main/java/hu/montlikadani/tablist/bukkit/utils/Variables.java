@@ -78,8 +78,7 @@ public class Variables {
 		if (!ConfigValues.getMemoryBarChar().isEmpty() && str.indexOf("%memory_bar%") >= 0) {
 			StringBuilder builder = new StringBuilder();
 
-			int barSize = ConfigValues.getMemoryBarSize(),
-					totalMemory = (int) (r.totalMemory() / 1048576),
+			int barSize = ConfigValues.getMemoryBarSize(), totalMemory = (int) (r.totalMemory() / 1048576),
 					usedMemory = totalMemory - (int) (r.freeMemory() / 1048576),
 					maxMemory = (int) (r.maxMemory() / 1048576);
 
@@ -112,10 +111,52 @@ public class Variables {
 
 		// TODO Remove or make more customisable variables
 		for (java.util.Map.Entry<String, String> map : TabConfigValues.CUSTOM_VARIABLES.entrySet()) {
-			if (str.indexOf(map.getKey()) >= 0) {
-				str = StringUtils.replace(str, map.getKey(), map.getValue());
-			}
+			str = StringUtils.replace(str, map.getKey(), map.getValue());
 		}
+
+		if (pl != null) {
+			str = setPlaceholders(pl, str);
+		}
+
+		str = Global.setSymbols(str);
+
+		String time = str.indexOf("%server-time%") >= 0 ? getTimeAsString(ConfigValues.getTimeFormat()) : "";
+		String date = str.indexOf("%date%") >= 0 ? getTimeAsString(ConfigValues.getDateFormat()) : "";
+
+		if (!time.isEmpty())
+			str = StringUtils.replace(str, "%server-time%", time);
+
+		if (!date.isEmpty())
+			str = StringUtils.replace(str, "%date%", date);
+
+		if (str.indexOf("%server-ram-free%") >= 0) {
+			str = StringUtils.replace(str, "%server-ram-free%", Long.toString(r.freeMemory() / 1048576L));
+		}
+
+		if (str.indexOf("%server-ram-max%") >= 0) {
+			str = StringUtils.replace(str, "%server-ram-max%", Long.toString(r.maxMemory() / 1048576L));
+		}
+
+		if (str.indexOf("%server-ram-used%") >= 0) {
+			str = StringUtils.replace(str, "%server-ram-used%",
+					Long.toString((r.totalMemory() - r.freeMemory()) / 1048576L));
+		}
+
+		if (str.indexOf("%online-players%") >= 0) {
+			str = StringUtils.replace(str, "%online-players%", Integer.toString(PluginUtils.countVanishedPlayers()));
+		}
+
+		if (str.indexOf("%max-players%") >= 0) {
+			str = StringUtils.replace(str, "%max-players%", Integer.toString(Bukkit.getServer().getMaxPlayers()));
+		}
+
+		if (str.indexOf("%vanished-players%") >= 0) {
+			str = StringUtils.replace(str, "%vanished-players%", Integer.toString(PluginUtils.getVanishedPlayers()));
+		}
+
+		str = StringUtils.replace(str, "%servertype%", Bukkit.getServer().getName());
+		str = StringUtils.replace(str, "%mc-version%", Bukkit.getServer().getBukkitVersion());
+		str = StringUtils.replace(str, "%motd%", plugin.getComplement().getMotd());
 
 		int staffs = 0;
 		if (str.indexOf("%staff-online%") >= 0) {
@@ -131,57 +172,10 @@ public class Variables {
 			}
 		}
 
-		String time = str.indexOf("%server-time%") >= 0 ? getTimeAsString(ConfigValues.getTimeFormat()) : "";
-		String date = str.indexOf("%date%") >= 0 ? getTimeAsString(ConfigValues.getDateFormat()) : "";
-
-		Long fram = r.freeMemory() / 1048576L,
-				mram = r.maxMemory() / 1048576L,
-				uram = (r.totalMemory() - r.freeMemory()) / 1048576L;
-
-		if (pl != null) {
-			str = setPlaceholders(pl, str);
-		}
-
-		str = Global.setSymbols(str);
-
-		if (!time.isEmpty())
-			str = StringUtils.replace(str, "%server-time%", time);
-
-		if (!date.isEmpty())
-			str = StringUtils.replace(str, "%date%", date);
-
-		if (str.contains("%server-ram-free%"))
-			str = StringUtils.replace(str, "%server-ram-free%", Long.toString(fram));
-
-		if (str.contains("%server-ram-max%"))
-			str = StringUtils.replace(str, "%server-ram-max%", Long.toString(mram));
-
-		if (str.contains("%server-ram-used%"))
-			str = StringUtils.replace(str, "%server-ram-used%", Long.toString(uram));
-
-		if (str.contains("%online-players%"))
-			str = StringUtils.replace(str, "%online-players%", Integer.toString(PluginUtils.countVanishedPlayers()));
-
-		if (str.contains("%max-players%"))
-			str = StringUtils.replace(str, "%max-players%", Integer.toString(Bukkit.getMaxPlayers()));
-
-		if (str.contains("%servertype%"))
-			str = StringUtils.replace(str, "%servertype%", Bukkit.getServer().getName());
-
-		if (str.contains("%vanished-players%"))
-			str = StringUtils.replace(str, "%vanished-players%", Integer.toString(PluginUtils.getVanishedPlayers()));
-
-		if (str.contains("%staff-online%")) {
+		if (staffs != 0)
 			str = StringUtils.replace(str, "%staff-online%", Integer.toString(staffs));
-		}
 
-		if (str.contains("%mc-version%"))
-			str = StringUtils.replace(str, "%mc-version%", Bukkit.getBukkitVersion());
-
-		if (str.contains("%motd%"))
-			str = StringUtils.replace(str, "%motd%", plugin.getComplement().getMotd());
-
-		if (str.contains("%tps%")) {
+		if (str.indexOf("%tps%") >= 0) {
 			double tps = TabListAPI.getTPS();
 
 			if (!ConfigValues.isTpsCanBeHigher() && tps > 20D) {
@@ -189,10 +183,6 @@ public class Variables {
 			}
 
 			str = StringUtils.replace(str, "%tps%", tpsDot(tps));
-		}
-
-		if (str.contains("\n")) {
-			str = StringUtils.replace(str, "\n", "\n");
 		}
 
 		// Don't use here colors because of some issues with hex
@@ -205,53 +195,49 @@ public class Variables {
 			try {
 				s = PlaceholderAPI.setPlaceholders(p, s);
 			} catch (NullPointerException e) {
-				// Some placeholders returns null, so we ignore that
+				// Some placeholders may returns null, so we ignore that
 			}
 		}
 
-		if (s.contains("%player%")) {
-			s = StringUtils.replace(s, "%player%", p.getName());
-		}
+		s = StringUtils.replace(s, "%player%", p.getName());
+		s = StringUtils.replace(s, "%player-displayname%", plugin.getComplement().getDisplayName(p));
+		s = StringUtils.replace(s, "%player-uuid%", p.getUniqueId().toString());
+		s = StringUtils.replace(s, "%world%", p.getWorld().getName());
+		s = StringUtils.replace(s, "%player-gamemode%", p.getGameMode().name());
 
-		if (s.contains("%player-displayname%")) {
-			s = StringUtils.replace(s, "%player-displayname%", plugin.getComplement().getDisplayName(p));
-		}
-
-		if (s.contains("%player-uuid%")) {
-			s = StringUtils.replace(s, "%player-uuid%", p.getUniqueId().toString());
-		}
-
-		if (s.contains("%world%")) {
-			s = StringUtils.replace(s, "%world%", p.getWorld().getName());
-		}
-
-		if (s.contains("%player-gamemode%")) {
-			s = StringUtils.replace(s, "%player-gamemode%", p.getGameMode().name());
-		}
-
-		if (s.contains("%player-health%")) {
+		if (s.indexOf("%player-health%") >= 0) {
 			s = StringUtils.replace(s, "%player-health%", Double.toString(p.getHealth()));
 		}
 
-		if (s.contains("%player-max-health%")) {
-			s = StringUtils.replace(s, "%player-max-health%",
-					Double.toString(ServerVersion.isCurrentLower(ServerVersion.v1_9_R1) ? p.getMaxHealth()
-							: p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue()));
+		if (s.indexOf("%player-max-health%") >= 0) {
+			if (ServerVersion.isCurrentLower(ServerVersion.v1_9_R1)) {
+				s = StringUtils.replace(s, "%player-max-health%", Double.toString(p.getMaxHealth()));
+			} else {
+				org.bukkit.attribute.AttributeInstance attr = p.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+
+				if (attr != null) { // Sometimes
+					s = StringUtils.replace(s, "%player-max-health%", Double.toString(attr.getDefaultValue()));
+				}
+			}
 		}
 
-		if (s.contains("%ping%"))
+		if (s.indexOf("%ping%") >= 0) {
 			s = StringUtils.replace(s, "%ping%", formatPing(TabListAPI.getPing(p)));
+		}
 
-		if (s.contains("%exp-to-level%"))
+		if (s.indexOf("%exp-to-level%") >= 0) {
 			s = StringUtils.replace(s, "%exp-to-level%", Integer.toString(p.getExpToLevel()));
+		}
 
-		if (s.contains("%level%"))
+		if (s.indexOf("%level%") >= 0) {
 			s = StringUtils.replace(s, "%level%", Integer.toString(p.getLevel()));
+		}
 
-		if (s.contains("%xp%"))
+		if (s.indexOf("%xp%") >= 0) {
 			s = StringUtils.replace(s, "%xp%", Float.toString(p.getExp()));
+		}
 
-		if (s.contains("%light-level%")) {
+		if (s.indexOf("%light-level%") >= 0) {
 			s = StringUtils.replace(s, "%light-level%", Byte.toString(p.getLocation().getBlock().getLightLevel()));
 		}
 
@@ -266,7 +252,7 @@ public class Variables {
 	}
 
 	private String tpsDot(double d) {
-		if (!ConfigValues.isTpsFormatEnabled() || ConfigValues.getTpsColorFormats().isEmpty()) {
+		if (!ConfigValues.isTpsFormatEnabled() || nodes.isEmpty()) {
 			return "" + d;
 		}
 
@@ -284,7 +270,7 @@ public class Variables {
 	}
 
 	private String formatPing(int ping) {
-		if (!ConfigValues.isPingFormatEnabled() || ConfigValues.getPingColorFormats().isEmpty()) {
+		if (!ConfigValues.isPingFormatEnabled() || nodes.isEmpty()) {
 			return "" + ping;
 		}
 

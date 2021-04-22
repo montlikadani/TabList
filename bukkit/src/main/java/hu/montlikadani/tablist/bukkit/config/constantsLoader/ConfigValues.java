@@ -3,6 +3,7 @@ package hu.montlikadani.tablist.bukkit.config.constantsLoader;
 import java.util.Arrays;
 import java.util.List;
 
+import hu.montlikadani.tablist.bukkit.Objects.ObjectTypes;
 import hu.montlikadani.tablist.bukkit.config.CommentedConfig;
 
 public class ConfigValues {
@@ -13,8 +14,10 @@ public class ConfigValues {
 			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish,
 			hideGroupWhenAfk, preferPrimaryVaultGroup, tablistObjectiveEnabled, tpsCanBeHigher, assignGlobalGroup;
 
-	private static String afkFormatYes, afkFormatNo, timeZone, timeFormat, dateFormat, objectType, customObjectSetting,
+	private static String afkFormatYes, afkFormatNo, timeZone, timeFormat, dateFormat, customObjectSetting,
 			memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
+
+	private static ObjectTypes objectType = ObjectTypes.PING;
 
 	private static List<String> tpsColorFormats, pingColorFormats, groupsDisabledWorlds, healthObjectRestricted,
 			objectsDisabledWorlds;
@@ -160,8 +163,12 @@ public class ConfigValues {
 		memoryBarFreeColor = c.get("placeholder-format.memory-bar.colors.free", "&a");
 		memoryBarAllocationColor = c.get("placeholder-format.memory-bar.colors.allocation", "&e");
 		memoryBarReleasedColor = c.get("placeholder-format.memory-bar.colors.released", "&6");
-		objectType = c.get("tablist-object-type.type", "ping");
 		customObjectSetting = c.get("tablist-object-type.object-settings.custom.value", "%level%");
+
+		try {
+			objectType = ObjectTypes.valueOf(c.get("tablist-object-type.type", "ping").toUpperCase());
+		} catch (IllegalArgumentException e) {
+		}
 
 		tpsColorFormats = c.get("placeholder-format.tps.formats",
 				Arrays.asList("18.0 > &a", "16.0 == &6", "16.0 < &c"));
@@ -182,7 +189,7 @@ public class ConfigValues {
 		tpsSize = c.get("placeholder-format.tps.size", 2);
 		memoryBarSize = c.get("placeholder-format.memory-bar.size", 80);
 		groupsRefreshInterval = c.get("change-prefix-suffix-in-tablist.refresh-interval", 30);
-		objectRefreshInterval = c.get("tablist-object-type.refresh-interval", 3);
+		objectRefreshInterval = c.get("tablist-object-type.refresh-interval", 3) * 20;
 
 		c.save();
 		c.cleanUp();
@@ -325,7 +332,7 @@ public class ConfigValues {
 		return tablistObjectiveEnabled;
 	}
 
-	public static String getObjectType() {
+	public static ObjectTypes getObjectType() {
 		return objectType;
 	}
 

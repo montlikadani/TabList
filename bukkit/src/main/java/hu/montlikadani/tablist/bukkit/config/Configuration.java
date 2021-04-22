@@ -1,7 +1,5 @@
 package hu.montlikadani.tablist.bukkit.config;
 
-import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -16,8 +14,8 @@ public class Configuration {
 
 	private TabList plugin;
 
-	private FileConfiguration messages, groups, fakePlayers, animCreator;
-	private CommentedConfig config, tablist;
+	private FileConfiguration tablist, messages, groups, fakePlayers, animCreator;
+	private CommentedConfig config;
 	private File configFile, messagesFile, animationFile, tablistFile, groupsFile, fakePlayersFile;
 
 	public Configuration(TabList plugin) {
@@ -41,36 +39,31 @@ public class Configuration {
 		}
 
 		if (!configFile.exists()) {
-			plugin.saveResource("config.yml", false);
+			plugin.saveResource(configFile.getName(), false);
 		}
 
 		config = new CommentedConfig(configFile);
+		tablist = createFile(tablistFile, tablistFile.getName(), false);
+
 		ConfigValues.loadValues(config);
-
-		if (!tablistFile.exists()) {
-			plugin.saveResource("tablist.yml", false);
-		}
-
-		tablist = new CommentedConfig(tablistFile);
 		TabConfigValues.loadValues(tablist);
 
+		messages = createFile(messagesFile, messagesFile.getName(), false);
+
 		try {
-			messages = createFile(messagesFile, "messages.yml", false);
 			messages.save(messagesFile);
-
-			animCreator = createFile(animationFile, "animcreator.yml", false);
-
-			if (ConfigValues.isPrefixSuffixEnabled()) {
-				groups = createFile(groupsFile, "groups.yml", false);
-			}
-
-			if (ConfigValues.isFakePlayers()) {
-				fakePlayers = createFile(fakePlayersFile, "fakeplayers.yml", true);
-			}
-		} catch (Exception e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-			logConsole(java.util.logging.Level.WARNING,
-					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues");
+		}
+
+		animCreator = createFile(animationFile, animationFile.getName(), false);
+
+		if (ConfigValues.isPrefixSuffixEnabled()) {
+			groups = createFile(groupsFile, groupsFile.getName(), false);
+		}
+
+		if (ConfigValues.isFakePlayers()) {
+			fakePlayers = createFile(fakePlayersFile, fakePlayersFile.getName(), true);
 		}
 	}
 
@@ -106,7 +99,7 @@ public class Configuration {
 
 	public FileConfiguration getGroups() {
 		if (groups == null || !groupsFile.exists()) {
-			groups = createFile(groupsFile, "groups.yml", false);
+			groups = createFile(groupsFile, groupsFile.getName(), false);
 		}
 
 		return groups;
@@ -114,7 +107,7 @@ public class Configuration {
 
 	public FileConfiguration getFakeplayers() {
 		if (fakePlayers == null || !fakePlayersFile.exists()) {
-			fakePlayers = createFile(fakePlayersFile, "fakeplayers.yml", true);
+			fakePlayers = createFile(fakePlayersFile, fakePlayersFile.getName(), true);
 		}
 
 		return fakePlayers;
@@ -124,7 +117,7 @@ public class Configuration {
 		return animCreator;
 	}
 
-	public CommentedConfig getTablist() {
+	public FileConfiguration getTablist() {
 		return tablist;
 	}
 

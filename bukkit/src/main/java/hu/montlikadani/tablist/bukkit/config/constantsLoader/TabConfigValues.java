@@ -2,10 +2,12 @@ package hu.montlikadani.tablist.bukkit.config.constantsLoader;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import hu.montlikadani.tablist.bukkit.config.CommentedConfig;
+import org.bukkit.configuration.file.FileConfiguration;
 
 public final class TabConfigValues {
 
@@ -13,24 +15,42 @@ public final class TabConfigValues {
 
 	private static int updateInterval;
 
-	private static List<String> disabledWorlds, blackListedPlayers;
+	private static List<String> disabledWorlds, blackListedPlayers, defaultHeader, defaultFooter;
+
+	private static final Set<String> perWorldKeys = new HashSet<>(), permissionKeys = new HashSet<>();
 
 	public static final Map<String, String> CUSTOM_VARIABLES = new HashMap<>();
 
-	public static void loadValues(CommentedConfig c) {
+	public static void loadValues(FileConfiguration c) {
 		CUSTOM_VARIABLES.clear();
+		perWorldKeys.clear();
+		permissionKeys.clear();
 
-		enabled = c.get("enabled", true);
-		rememberToggledTablistToFile = c.get("remember-toggled-tablist-to-file", true);
-		hideTabWhenPlayerVanished = c.get("hide-tab-when-player-vanished", false);
-		random = c.get("random", false);
-		updateInterval = c.get("interval", 4);
-		disabledWorlds = c.get("disabled-worlds", Arrays.asList());
-		blackListedPlayers = c.get("blacklisted-players", Arrays.asList());
+		enabled = c.getBoolean("enabled", true);
+		rememberToggledTablistToFile = c.getBoolean("remember-toggled-tablist-to-file", true);
+		hideTabWhenPlayerVanished = c.getBoolean("hide-tab-when-player-vanished");
+		random = c.getBoolean("random");
+		updateInterval = c.getInt("interval", 4);
+		disabledWorlds = c.getStringList("disabled-worlds");
+		blackListedPlayers = c.getStringList("blacklisted-players");
 
-		if (c.isConfigurationSection("custom-variables")) {
-			for (String name : c.getConfigurationSection("custom-variables").getKeys(true)) {
-				CUSTOM_VARIABLES.put(name, c.get("custom-variables." + name, ""));
+		defaultHeader = c.isList("header") ? c.getStringList("header")
+				: c.isString("header") ? Arrays.asList(c.getString("header")) : null;
+		defaultFooter = c.isList("footer") ? c.getStringList("footer")
+				: c.isString("footer") ? Arrays.asList(c.getString("footer")) : null;
+
+		org.bukkit.configuration.ConfigurationSection section = c.getConfigurationSection("per-world");
+		if (section != null) {
+			perWorldKeys.addAll(section.getKeys(false));
+		}
+
+		if ((section = c.getConfigurationSection("permissions")) != null) {
+			permissionKeys.addAll(section.getKeys(false));
+		}
+
+		if ((section = c.getConfigurationSection("custom-variables")) != null) {
+			for (String name : section.getKeys(true)) {
+				CUSTOM_VARIABLES.put(name, section.getString(name, ""));
 			}
 		}
 	}
@@ -61,5 +81,21 @@ public final class TabConfigValues {
 
 	public static List<String> getBlackListedPlayers() {
 		return blackListedPlayers;
+	}
+
+	public static List<String> getDefaultHeader() {
+		return defaultHeader;
+	}
+
+	public static List<String> getDefaultFooter() {
+		return defaultFooter;
+	}
+
+	public static Set<String> getPerWorldkeys() {
+		return perWorldKeys;
+	}
+
+	public static Set<String> getPermissionkeys() {
+		return permissionKeys;
 	}
 }

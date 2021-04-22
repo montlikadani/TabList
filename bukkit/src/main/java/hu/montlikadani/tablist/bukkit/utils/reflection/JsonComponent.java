@@ -28,9 +28,10 @@ public final class JsonComponent {
 		JsonObject obj = new JsonObject();
 		StringBuilder builder = new StringBuilder();
 
+		int length = text.length();
 		String font = "", colorName = "";
-		for (int i = 0; i < text.length(); i++) {
-			if (i >= text.length()) {
+		for (int i = 0; i < length; i++) {
+			if (i >= length) {
 				break;
 			}
 

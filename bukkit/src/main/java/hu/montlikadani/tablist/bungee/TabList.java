@@ -24,8 +24,6 @@ import net.md_5.bungee.event.EventHandler;
 
 public class TabList extends Plugin implements Listener {
 
-	private static TabList instance;
-
 	private Configuration config;
 	private TabManager tab;
 	private Groups groups;
@@ -34,8 +32,6 @@ public class TabList extends Plugin implements Listener {
 
 	@Override
 	public void onEnable() {
-		instance = this;
-
 		tab = new TabManager(this);
 		groups = new Groups(this);
 
@@ -47,15 +43,11 @@ public class TabList extends Plugin implements Listener {
 
 	@Override
 	public void onDisable() {
-		if (instance == null)
-			return;
-
 		getProxy().getPluginManager().unregisterCommands(this);
 		getProxy().getPluginManager().unregisterListeners(this);
 
 		tab.cancel();
 		groups.cancel();
-		instance = null;
 	}
 
 	public Configuration getConf() {
@@ -68,10 +60,6 @@ public class TabList extends Plugin implements Listener {
 
 	public Groups getGroups() {
 		return groups;
-	}
-
-	public static TabList getInstance() {
-		return instance;
 	}
 
 	private void reload() {

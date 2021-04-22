@@ -3,7 +3,6 @@ package hu.montlikadani.tablist.bukkit.tablist.groups;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
@@ -76,7 +75,8 @@ public class Groups {
 			groupsList.add(team);
 		}
 
-		if (!plugin.getConf().getGroups().isConfigurationSection("groups")) {
+		ConfigurationSection cs = plugin.getConf().getGroups().getConfigurationSection("groups");
+		if (cs == null) {
 			if (!groupsList.isEmpty()) {
 				startTask();
 			}
@@ -89,7 +89,7 @@ public class Groups {
 			boolean have = false;
 
 			me: for (String s : plugin.getVaultPerm().getGroups()) {
-				for (String g : plugin.getConf().getGroups().getConfigurationSection("groups").getKeys(false)) {
+				for (String g : cs.getKeys(false)) {
 					if (s.equalsIgnoreCase(g)) {
 						continue me;
 					}
@@ -97,9 +97,9 @@ public class Groups {
 
 				// This again for lazy peoples
 				ChatColor[] colors = ChatColor.values();
-				ChatColor c = colors[ThreadLocalRandom.current().nextInt(colors.length)];
+				ChatColor c = colors[java.util.concurrent.ThreadLocalRandom.current().nextInt(colors.length)];
 
-				plugin.getConf().getGroups().set("groups." + s + ".prefix", "&" + c.getChar() + s + "&r - ");
+				cs.set(s + ".prefix", "&" + c.getChar() + s + "&r - ");
 				have = true;
 			}
 
@@ -112,7 +112,6 @@ public class Groups {
 			}
 		}
 
-		ConfigurationSection cs = plugin.getConf().getGroups().getConfigurationSection("groups");
 		int last = 0;
 		for (String g : cs.getKeys(false)) {
 			if (g.equalsIgnoreCase("exampleGroup")) {

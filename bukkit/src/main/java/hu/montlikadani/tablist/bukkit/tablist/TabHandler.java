@@ -23,7 +23,7 @@ public class TabHandler {
 
 	private UUID playerUUID;
 
-	private boolean worldEnabled = false, tabEmpty = false, random = false;
+	private boolean worldEnabled = false, tabEmpty = false;
 
 	private final List<String> worldList = new ArrayList<>();
 
@@ -63,8 +63,6 @@ public class TabHandler {
 			return;
 		}
 
-		random = TabConfigValues.isRandom();
-
 		final FileConfiguration c = plugin.getConf().getTablist();
 		String path = "";
 
@@ -75,14 +73,12 @@ public class TabHandler {
 			}
 
 			if (path.isEmpty()) {
-				if (c.isConfigurationSection("per-world")) {
-					t: for (String s : c.getConfigurationSection("per-world").getKeys(false)) {
-						for (String split : s.split(", ")) {
-							if (world.equals(split)) {
-								path = "per-world." + s + ".";
-								worldEnabled = worldList.add(split);
-								break t;
-							}
+				t: for (String s : TabConfigValues.getPerWorldkeys()) {
+					for (String split : s.split(", ")) {
+						if (world.equals(split)) {
+							path = "per-world." + s + ".";
+							worldEnabled = worldList.add(split);
+							break t;
 						}
 					}
 				}
@@ -93,7 +89,7 @@ public class TabHandler {
 				}
 			}
 
-			if (path.isEmpty() && plugin.hasVault() && c.contains("per-world." + world + ".per-group")) {
+			if (plugin.hasVault() && path.isEmpty() && c.contains("per-world." + world + ".per-group")) {
 				String group = plugin.getVaultPerm().getPrimaryGroup(world, player);
 				if (group != null) {
 					group = group.toLowerCase();
@@ -106,8 +102,8 @@ public class TabHandler {
 			}
 		}
 
-		if (path.isEmpty() && c.isConfigurationSection("permissions")) {
-			for (String name : c.getConfigurationSection("permissions").getKeys(false)) {
+		if (path.isEmpty()) {
+			for (String name : TabConfigValues.getPermissionkeys()) {
 				if (PluginUtils.hasPermission(player, new Permission(name, PermissionDefault.NOT_OP).getName())) {
 					path = "permissions." + name + ".";
 					break;
@@ -119,7 +115,7 @@ public class TabHandler {
 			path = "per-player." + pName + ".";
 		}
 
-		if (path.isEmpty() && plugin.hasVault() && c.contains("per-group")) {
+		if (plugin.hasVault() && path.isEmpty() && c.contains("per-group")) {
 			String group = plugin.getVaultPerm().getPrimaryGroup(player);
 			if (group != null) {
 				group = group.toLowerCase();
@@ -138,10 +134,8 @@ public class TabHandler {
 		}
 
 		if ((header == null || header.isEmpty()) && (footer == null || footer.isEmpty())) {
-			header = c.isList("header") ? c.getStringList("header")
-					: c.isString("header") ? Arrays.asList(c.getString("header")) : null;
-			footer = c.isList("footer") ? c.getStringList("footer")
-					: c.isString("footer") ? Arrays.asList(c.getString("footer")) : null;
+			header = TabConfigValues.getDefaultHeader();
+			footer = TabConfigValues.getDefaultFooter();
 		}
 	}
 
@@ -174,7 +168,7 @@ public class TabHandler {
 		String he = "";
 		String fo = "";
 
-		if (random) {
+		if (TabConfigValues.isRandom()) {
 			ThreadLocalRandom random = ThreadLocalRandom.current();
 
 			if (header != null)

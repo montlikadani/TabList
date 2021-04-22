@@ -55,17 +55,15 @@ public abstract class UpdateDownloader {
 					return false;
 				}
 
-				String msg = "";
 				if (sender instanceof Player) {
-					msg = Util.colorMsg("&aA new update for TabList is available!&4 ServerVersion:&7 " + versionString
-							+ (PLUGIN.getConfig().get("download-updates", false) ? ""
-									: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/"));
+					Util.sendMsg(sender,
+							Util.colorMsg("&aA new update for TabList is available!&4 Version:&7 " + versionString
+									+ (PLUGIN.getConfig().get("download-updates", false) ? ""
+											: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/")));
 				} else {
-					msg = "New version (" + versionString
-							+ ") is available at https://www.spigotmc.org/resources/46229/";
+					Util.sendMsg(sender, "New version (" + versionString
+							+ ") is available at https://www.spigotmc.org/resources/46229/");
 				}
-
-				Util.sendMsg(sender, msg);
 
 				if (!PLUGIN.getConfig().get("download-updates", false)) {
 					deleteDirectory();
@@ -74,9 +72,7 @@ public abstract class UpdateDownloader {
 
 				final String name = "TabList-v" + versionString;
 
-				if (!releasesFolder.exists()) {
-					releasesFolder.mkdir();
-				}
+				releasesFolder.mkdirs();
 
 				// Do not attempt to download the file again, when it is already downloaded
 				final File jar = new File(releasesFolder, name + ".jar");

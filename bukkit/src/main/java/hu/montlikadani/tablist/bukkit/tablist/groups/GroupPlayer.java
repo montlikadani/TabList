@@ -127,6 +127,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 		if (plugin.hasVault()) {
 			boolean found = false;
+
 			if (playerVaultGroup != null) {
 				for (String g : plugin.getVaultPerm().getPlayerGroups(player)) {
 					if (playerVaultGroup.equalsIgnoreCase(g)) {
@@ -218,8 +219,8 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	public String getPrefix() {
 		String prefix = customPrefix == null ? group == null ? "" : group.getPrefix() : customPrefix;
 
-		if ((!prefix.isEmpty() && ConfigValues.isAssignGlobalGroup() && globalGroup != null)
-				|| (prefix.isEmpty() && globalGroup != null)) {
+		if ((ConfigValues.isAssignGlobalGroup() && globalGroup != null && !prefix.isEmpty())
+				|| (globalGroup != null && prefix.isEmpty())) {
 			prefix = globalGroup.getPrefix() + prefix;
 		}
 
@@ -248,8 +249,8 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	public String getSuffix() {
 		String suffix = customSuffix == null ? group == null ? "" : group.getSuffix() : customSuffix;
 
-		if ((!suffix.isEmpty() && ConfigValues.isAssignGlobalGroup() && globalGroup != null)
-				|| (suffix.isEmpty() && globalGroup != null)) {
+		if ((ConfigValues.isAssignGlobalGroup() && globalGroup != null && !suffix.isEmpty())
+				|| (globalGroup != null && suffix.isEmpty())) {
 			suffix += globalGroup.getSuffix();
 		}
 

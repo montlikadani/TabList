@@ -7,7 +7,7 @@ import org.bukkit.scoreboard.RenderType;
 import org.bukkit.scoreboard.Scoreboard;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.plain.PlainComponentSerializer;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public class Complement2 implements Complement {
 
@@ -16,7 +16,7 @@ public class Complement2 implements Complement {
 	}
 
 	private String serialize(Component component) {
-		return PlainComponentSerializer.plain().serialize(component);
+		return LegacyComponentSerializer.legacyAmpersand().serialize(component);
 	}
 
 	@Override

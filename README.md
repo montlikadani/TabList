@@ -6,7 +6,7 @@
 
 A configurable plugin that allows all online players that are one the server to get an animated tablist with header/footer, which is configurable per config.
 
-More detailed documentation can be found on (wiki)[https://github.com/montlikadani/TabList/wiki] page.
+More detailed documentation can be found on [wiki](https://github.com/montlikadani/TabList/wiki) page.
 
 ## Link
 * [Spigot](https://www.spigotmc.org/resources/46229/)

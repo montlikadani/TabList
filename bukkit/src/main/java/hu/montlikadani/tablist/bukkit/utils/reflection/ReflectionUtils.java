@@ -4,7 +4,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
@@ -205,8 +204,7 @@ public final class ReflectionUtils {
 	public static class Classes {
 
 		public static Object getPlayerConstructor(Player player, Object profile) {
-			Class<?> server = getMinecraftServer();
-			Object serverIns = getServer(server);
+			Object serverIns = getServer(NMSContainer.getMinecraftServer());
 
 			try {
 				Class<?> manager = getNMSClass("PlayerInteractManager");
@@ -218,31 +216,18 @@ public final class ReflectionUtils {
 						|| ServerVersion.isCurrentEqual(ServerVersion.v1_13_R2)) {
 					world = getHandle(player.getWorld());
 				} else {
-					world = server.getDeclaredMethod("getWorldServer", int.class).invoke(serverIns, 0);
+					world = NMSContainer.getMinecraftServer().getDeclaredMethod("getWorldServer", int.class)
+							.invoke(serverIns, 0);
 				}
 
 				if (managerIns == null) {
 					managerIns = manager.getConstructors()[0].newInstance(world);
 				}
 
-				return getHandle(player).getClass()
-						.getConstructor(server, world.getClass(), profile.getClass(), manager)
-						.newInstance(serverIns, world, profile, managerIns);
+				return getHandle(player).getClass().getConstructor(NMSContainer.getMinecraftServer(), world.getClass(),
+						profile.getClass(), manager).newInstance(serverIns, world, profile, managerIns);
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
-
-			return null;
-		}
-
-		public static Class<?> getMinecraftServer() {
-			try {
-				return getNMSClass("MinecraftServer");
-			} catch (ClassNotFoundException c) {
-				try {
-					return getNMSClass("DedicatedServer");
-				} catch (ClassNotFoundException e) {
-				}
 			}
 
 			return null;
@@ -251,30 +236,12 @@ public final class ReflectionUtils {
 		public static Object getServer(Class<?> server) {
 			try {
 				return server.getMethod("getServer")
-						.invoke(ReflectionUtils.getCraftClass("CraftServer").cast(Bukkit.getServer()));
+						.invoke(ReflectionUtils.getCraftClass("CraftServer").cast(org.bukkit.Bukkit.getServer()));
 			} catch (ReflectiveOperationException x) {
 				try {
 					return server.getMethod("getServer").invoke(server);
 				} catch (ReflectiveOperationException e) {
 				}
-			}
-
-			return null;
-		}
-
-		public static Class<?> getEnumPlayerInfoAction(Class<?> packetPlayOutPlayerInfo) {
-			try {
-				if (ServerVersion.isCurrentEqual(ServerVersion.v1_8_R1)) {
-					return getNMSClass("EnumPlayerInfoAction");
-				}
-
-				for (Class<?> clazz : packetPlayOutPlayerInfo.getDeclaredClasses()) {
-					if (clazz.getName().contains("EnumPlayerInfoAction")) {
-						return clazz;
-					}
-				}
-			} catch (ReflectiveOperationException e) {
-				e.printStackTrace();
 			}
 
 			return null;

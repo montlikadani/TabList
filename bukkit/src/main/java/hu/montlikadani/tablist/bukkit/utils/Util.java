@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -19,7 +18,7 @@ public class Util {
 
 	public static void logConsole(Level level, String msg) {
 		if (ConfigValues.isLogConsole() && msg != null && !msg.trim().isEmpty()) {
-			Bukkit.getLogger().log(level != null ? level : Level.INFO, "[TabList] " + msg);
+			org.bukkit.Bukkit.getLogger().log(level != null ? level : Level.INFO, "[TabList] " + msg);
 		}
 	}
 

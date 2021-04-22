@@ -2,8 +2,6 @@ package hu.montlikadani.tablist.bukkit.commands.list;
 
 import static hu.montlikadani.tablist.bukkit.utils.Util.sendMsg;
 
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -66,15 +64,12 @@ public class toggle implements ICommand {
 	}
 
 	private boolean toggleTab(TabListUser user) {
-		UUID uuid = user.getUniqueId();
-
-		if (!TabManager.TABENABLED.getOrDefault(uuid, true)) {
-			TabManager.TABENABLED.put(uuid, true);
+		if (TabManager.TABENABLED.remove(user.getUniqueId()) == null) {
+			TabManager.TABENABLED.put(user.getUniqueId(), true);
 			TabTitle.sendTabTitle(user.getPlayer(), "", "");
 			return false;
 		}
 
-		TabManager.TABENABLED.remove(uuid);
 		user.getTabHandler().updateTab();
 		return true;
 	}
