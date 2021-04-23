@@ -16,7 +16,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public class CommentedConfig extends YamlConfiguration {
 
-	private final Map<String, String> comments = new java.util.WeakHashMap<>();
+	// Store comments until the server is not stopped, or the GC need memory
+	// This is needed for #save method
+	private final Map<String, String> comments = new java.util.HashMap<>();
 
 	private YamlConfiguration config;
 	private File file;
@@ -206,6 +208,7 @@ public class CommentedConfig extends YamlConfiguration {
 
 		boolean newLine = false;
 		StringBuilder comment = new StringBuilder();
+
 		for (String line : commentLines) {
 			if (!line.isEmpty()) {
 				line = leadingSpaces + "# " + line;

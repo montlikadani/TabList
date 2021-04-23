@@ -8,7 +8,6 @@ import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.Global;
@@ -213,7 +212,7 @@ public class Variables {
 			if (ServerVersion.isCurrentLower(ServerVersion.v1_9_R1)) {
 				s = StringUtils.replace(s, "%player-max-health%", Double.toString(p.getMaxHealth()));
 			} else {
-				org.bukkit.attribute.AttributeInstance attr = p.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+				org.bukkit.attribute.AttributeInstance attr = p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
 
 				if (attr != null) { // Sometimes
 					s = StringUtils.replace(s, "%player-max-health%", Double.toString(attr.getDefaultValue()));

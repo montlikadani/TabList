@@ -17,12 +17,22 @@ public @interface CommandProcessor {
 	String name() default "";
 
 	/**
+	 * @return the parameters of this command
+	 */
+	String params() default "";
+
+	/**
 	 * @return the permission of this command
 	 */
 	Perm permission();
 
 	/**
-	 * whenever this command should only be performed with player
+	 * @return the description of this command
+	 */
+	String desc() default "";
+
+	/**
+	 * whenever this command should only be performed by player
 	 * 
 	 * @return <code>false</code> by default
 	 */

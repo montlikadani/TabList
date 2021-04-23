@@ -14,8 +14,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import com.google.common.reflect.TypeToken;
-
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
@@ -31,7 +29,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 	public Commands(TabList plugin) {
 		this.plugin = plugin;
 
-		for (String s : new String[] { "reload", "fakeplayers", "player", "group", "toggle", "help" }) {
+		for (String s : new String[] { "reload", "fakeplayers", "player", "group", "toggle" }) {
 			try {
 				Class<?> c = null;
 				try {
@@ -54,7 +52,6 @@ public class Commands implements CommandExecutor, TabCompleter {
 		}
 	}
 
-	@SuppressWarnings("serial")
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
 		if (args.length == 0) {
@@ -69,14 +66,9 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 		boolean isPlayer = sender instanceof Player;
 
-		if (args[0].equalsIgnoreCase("help")) {
-			if (isPlayer && !sender.hasPermission(Perm.HELP.getPerm())) {
-				sendMsg(sender, plugin.getMsg("no-permission", "%perm%", Perm.HELP.getPerm()));
-				return true;
-			}
-
-			plugin.getMsg(new TypeToken<List<String>>() {
-				}.getSubtype(List.class), "chat-messages", "%command%", label).forEach(s -> sendMsg(sender, s));
+		boolean isHelp = false;
+		if ((isHelp = args[0].equalsIgnoreCase("help")) && isPlayer && !sender.hasPermission(Perm.HELP.getPerm())) {
+			sendMsg(sender, plugin.getMsg("no-permission", "%perm%", Perm.HELP.getPerm()));
 			return true;
 		}
 
@@ -85,7 +77,18 @@ public class Commands implements CommandExecutor, TabCompleter {
 		for (ICommand command : cmds) {
 			CommandProcessor proc = command.getClass().getAnnotation(CommandProcessor.class);
 
-			if (proc == null || !proc.name().equalsIgnoreCase(args[0])) {
+			if (proc == null) {
+				continue;
+			}
+
+			if (isHelp) {
+				String params = proc.params().isEmpty() ? "" : " " + proc.params();
+				sendMsg(sender, colorMsg("&7/" + label + " " + proc.name() + params + " -&6 " + proc.desc()));
+				found = true;
+				continue;
+			}
+
+			if (!proc.name().equalsIgnoreCase(args[0])) {
 				continue;
 			}
 

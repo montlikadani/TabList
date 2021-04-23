@@ -20,13 +20,18 @@ import hu.montlikadani.tablist.bukkit.tablist.groups.GroupPlayer;
 import hu.montlikadani.tablist.bukkit.tablist.groups.Groups;
 import hu.montlikadani.tablist.bukkit.tablist.groups.TeamHandler;
 
-@CommandProcessor(name = "player", permission = Perm.PLAYER_META)
-public class player implements ICommand {
+@CommandProcessor(
+	name = "player",
+	params = "<name> prefix/suffix/tabname <displayTag>",
+	desc = "Sets the given player's prefix/suffix or tabname",
+	permission = Perm.PLAYER_META)
+public final class player implements ICommand {
 
 	@Override
 	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
 		if (!ConfigValues.isPrefixSuffixEnabled()) {
 			plugin.getConfig().set("change-prefix-suffix-in-tablist.enable", true);
+			plugin.saveConfig();
 		}
 
 		if (args.length < 3) {

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -24,38 +23,54 @@ import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler.Edit
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.IFakePlayers;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
-@CommandProcessor(name = "fakeplayers", permission = Perm.FAKEPLAYERS, playerOnly = true)
-public class fakeplayers implements ICommand {
+@CommandProcessor(
+	name = "fakeplayers",
+	desc = "General commands for setting fake players",
+	params = "add/remove/list/rename/setdisplayname/setskin",
+	permission = Perm.FAKEPLAYERS,
+	playerOnly = true)
+public final class fakeplayers implements ICommand {
 
 	private enum Actions {
 		ADD, RENAME, SETDISPLAYNAME, SETSKIN, SETPING, REMOVE, LIST;
 	}
 
+	private void sendList(String label, CommandSender sender) {
+		sendMsg(sender, Util.colorMsg("&6/" + label + " fakeplayers"
+				+ "\n          &6add <name> [ping] -&7 Adds a new fake player with their name."
+				+ "\n          &6remove <name> -&7 Removes the given fake player."
+				+ "\n          &6list -&7 Lists all the available fake players."
+				+ "\n          &6rename <oldName> <newName> -&7 Renames the already existing fake player."
+				+ "\n          &6setdisplayname <name> \"displayName...\" -&7 Sets the display name of the given fake player."
+				+ "\n          &6setskin <name> <uuid> -&7 Sets the skin of the given fake player."
+				+ "\n          &6setping <name> <amount> -&7 Sets the ping of the given fake player."));
+	}
+
 	@SuppressWarnings("serial")
 	@Override
 	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
-		Player p = (Player) sender;
-
 		if (!ConfigValues.isFakePlayers()) {
-			sendMsg(p, plugin.getMsg("fake-player.disabled"));
+			sendMsg(sender, plugin.getMsg("fake-player.disabled"));
 			return true;
 		}
 
 		if (args.length < 2) {
-			Bukkit.dispatchCommand(sender, "tl help");
+			sendList(label, sender);
 			return true;
 		}
 
-		Actions action = Actions.valueOf(args[1].toUpperCase());
-		if (action == null) {
-			action = Actions.ADD;
+		Actions action = Actions.ADD;
+		try {
+			action = Actions.valueOf(args[1].toUpperCase());
+		} catch (IllegalArgumentException e) {
 		}
 
 		if (action != Actions.LIST && args.length < 3) {
-			Bukkit.dispatchCommand(sender, "tl help");
+			sendList(label, sender);
 			return true;
 		}
 
+		final Player player = (Player) sender;
 		final FakePlayerHandler handler = plugin.getFakePlayerHandler();
 		EditingContextError output;
 
@@ -63,25 +78,26 @@ public class fakeplayers implements ICommand {
 		case ADD:
 			String name = args[2];
 			int ping = args.length > 4 ? Util.tryParse(args[4]).orElse(-1) : -1;
-			output = handler.createPlayer(p, name, name, args.length > 3 ? args[3] : "", ping);
+			output = handler.createPlayer(player, name, name, args.length > 3 ? args[3] : "", ping);
+
 			if (output == EditingContextError.ALREADY_EXIST) {
-				sendMsg(p, plugin.getMsg("fake-player.already-added", "%name%", name));
+				sendMsg(player, plugin.getMsg("fake-player.already-added", "%name%", name));
 				return true;
 			}
 
 			if (output == EditingContextError.OK) {
-				sendMsg(p, plugin.getMsg("fake-player.added", "%name%", name));
+				sendMsg(player, plugin.getMsg("fake-player.added", "%name%", name));
 			}
 
 			break;
 		case REMOVE:
 			if ((output = handler.removePlayer(args[2])) == EditingContextError.NOT_EXIST) {
-				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
+				sendMsg(player, plugin.getMsg("fake-player.not-exists"));
 				return true;
 			}
 
 			if (output == EditingContextError.OK) {
-				sendMsg(p, plugin.getMsg("fake-player.removed", "%name%", args[2]));
+				sendMsg(player, plugin.getMsg("fake-player.removed", "%name%", args[2]));
 			}
 
 			break;
@@ -91,19 +107,19 @@ public class fakeplayers implements ICommand {
 			}
 
 			if ((output = handler.renamePlayer(args[2], args[3])) == EditingContextError.NOT_EXIST) {
-				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
+				sendMsg(player, plugin.getMsg("fake-player.not-exists"));
 				return true;
 			}
 
 			if (output == EditingContextError.OK) {
-				sendMsg(p, Util.colorMsg("&2Old name: &e" + args[2] + "&2, new name: &e" + args[3]));
+				sendMsg(player, Util.colorMsg("&2Old name: &e" + args[2] + "&2, new name: &e" + args[3]));
 			}
 
 			break;
 		case LIST:
 			Set<IFakePlayers> list = handler.getFakePlayers();
 			if (list.isEmpty()) {
-				sendMsg(p, plugin.getMsg("fake-player.no-fake-player"));
+				sendMsg(player, plugin.getMsg("fake-player.no-fake-player"));
 				return true;
 			}
 
@@ -120,28 +136,29 @@ public class fakeplayers implements ICommand {
 
 			plugin.getMsg(new TypeToken<List<String>>() {}.getSubtype(List.class),
 					"fake-player.list", "%amount%", list.size(), "%fake-players%", msg)
-					.forEach(line -> sendMsg(p, Util.colorMsg(line)));
+					.forEach(line -> sendMsg(player, Util.colorMsg(line)));
 			break;
 		case SETSKIN:
 			if ((output = handler.setSkin(args[2], args[3])) == EditingContextError.NOT_EXIST) {
-				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
+				sendMsg(player, plugin.getMsg("fake-player.not-exists"));
 				return true;
 			}
 
 			if (output == EditingContextError.UUID_MATCH_ERROR) {
-				p.sendMessage("This uuid not matches to a real player uuid.");
+				player.sendMessage("This uuid not matches to a real player uuid.");
 			}
 
 			break;
 		case SETPING:
 			int amount = Util.tryParse(args[3]).orElse(-1);
+
 			if ((output = handler.setPing(args[2], amount)) == EditingContextError.NOT_EXIST) {
-				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
+				sendMsg(player, plugin.getMsg("fake-player.not-exists"));
 				return true;
 			}
 
 			if (output == EditingContextError.PING_AMOUNT) {
-				sendMsg(p, plugin.getMsg("fake-player.ping-can-not-be-less", "%amount%", amount));
+				sendMsg(player, plugin.getMsg("fake-player.ping-can-not-be-less", "%amount%", amount));
 			}
 
 			break;
@@ -154,7 +171,7 @@ public class fakeplayers implements ICommand {
 			output = handler.setDisplayName(args[2], builder.toString().replace("\"", ""));
 
 			if (output == EditingContextError.NOT_EXIST) {
-				sendMsg(p, plugin.getMsg("fake-player.not-exists"));
+				sendMsg(player, plugin.getMsg("fake-player.not-exists"));
 			}
 
 			break;

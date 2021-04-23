@@ -15,8 +15,12 @@ import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 import hu.montlikadani.tablist.bukkit.tablist.TabTitle;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 
-@CommandProcessor(name = "toggle", permission = Perm.TOGGLE)
-public class toggle implements ICommand {
+@CommandProcessor(
+	name = "toggle",
+	params = "[player/all]",
+	desc = "Toggles on/off the tab for player(s)",
+	permission = Perm.TOGGLE)
+public final class toggle implements ICommand {
 
 	@Override
 	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {

@@ -40,15 +40,16 @@ public class Listeners implements Listener {
 
 	@EventHandler
 	public void onGamemodeChange(PlayerGameModeChangeEvent e) {
-		Player p = e.getPlayer();
+		Player player = e.getPlayer();
 
-		plugin.getUser(p).filter(user -> ((TabListPlayer) user).getHidePlayers() != null).ifPresent(user -> {
-			if (e.getNewGameMode() == GameMode.SPECTATOR) {
-				((TabListPlayer) user).getHidePlayers().addPlayerToTab(p, p);
-			} else {
-				((TabListPlayer) user).getHidePlayers().removePlayerFromTab(p, p);
-			}
-		});
+		plugin.getUser(player).map(user -> (TabListPlayer) user).filter(user -> user.getHidePlayers() != null)
+				.ifPresent(user -> {
+					if (e.getNewGameMode() == GameMode.SPECTATOR) {
+						user.getHidePlayers().addPlayerToTab(player, player);
+					} else {
+						user.getHidePlayers().removePlayerFromTab(player, player);
+					}
+				});
 	}
 
 	@EventHandler

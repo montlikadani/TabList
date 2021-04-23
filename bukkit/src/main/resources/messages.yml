@@ -29,15 +29,3 @@ fake-player:
   list:
   - "&cFake players&7 (&e%amount%&7):"
   - "&r%fake-players%"
-
-chat-messages:
-- "&7/%command% reload&6 - Reload the plugin."
-- "&7/%command% toggle [player/all]&6 - Toggle on/off tab."
-- "&7/%command% group/player <name> prefix <prefix>&6 - Sets the given group prefix."
-- "&7/%command% group/player <name> suffix <suffix>&6 - Sets the given group suffix."
-- "&7/%command% group/player <name> remove&6 - Removes the given group entirely."
-- "&7/%command% fakeplayers add/remove <name>&6 - Create/remove fake player."
-- "&7/%command% fakeplayers list&6 - Lists all fake player."
-- "&7/%command% fakeplayers rename <oldName> <newName>&6 - Renames the given fake player name to a new one."
-- "&7/%command% fakeplayers setdisplayname <name> <displayName>&6 - Sets the display name for the given fake player."
-- "&7/%command% fakeplayers setskin <name> <skinUUID>&6 - Set skin for the fake player from the given real uuid."

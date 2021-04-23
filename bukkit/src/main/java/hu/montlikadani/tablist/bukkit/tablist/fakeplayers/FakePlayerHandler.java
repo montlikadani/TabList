@@ -1,7 +1,6 @@
 package hu.montlikadani.tablist.bukkit.tablist.fakeplayers;
 
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -16,9 +15,8 @@ import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public class FakePlayerHandler {
 
-	private TabList plugin;
-
-	private final Set<IFakePlayers> fakePlayers = new HashSet<>();
+	private final TabList plugin;
+	private final Set<IFakePlayers> fakePlayers = new java.util.HashSet<>();
 
 	public FakePlayerHandler(TabList plugin) {
 		this.plugin = plugin;
@@ -29,7 +27,7 @@ public class FakePlayerHandler {
 	}
 
 	public Optional<IFakePlayers> getFakePlayerByName(String name) {
-		if (name != null) {
+		if (name != null && !name.isEmpty()) {
 			for (IFakePlayers fp : fakePlayers) {
 				if (fp.getName().equalsIgnoreCase(name)) {
 					return Optional.of(fp);
@@ -161,13 +159,20 @@ public class FakePlayerHandler {
 
 	public EditingContextError removePlayer(String name) {
 		Optional<IFakePlayers> fp = getFakePlayerByName(name);
-		if (name == null || !fp.isPresent() || name.trim().isEmpty()) {
+
+		if (!fp.isPresent()) {
 			return EditingContextError.NOT_EXIST;
 		}
 
-		for (String sName : plugin.getConf().getFakeplayers().getConfigurationSection("list").getKeys(false)) {
+		ConfigurationSection section = plugin.getConf().getFakeplayers().getConfigurationSection("list");
+		if (section == null) {
+			return EditingContextError.NOT_EXIST;
+		}
+
+		for (String sName : section.getKeys(false)) {
 			if (sName.equalsIgnoreCase(name)) {
-				plugin.getConf().getFakeplayers().set("list." + sName, null);
+				section.set(sName, null);
+
 				try {
 					plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
 				} catch (IOException e) {
@@ -186,14 +191,19 @@ public class FakePlayerHandler {
 
 	public EditingContextError renamePlayer(final String oldName, final String newName) {
 		Optional<IFakePlayers> fp = getFakePlayerByName(oldName);
+
 		if (newName == null || !fp.isPresent()) {
 			return EditingContextError.NOT_EXIST;
 		}
 
 		FileConfiguration c = plugin.getConf().getFakeplayers();
-		if (c.isConfigurationSection("list." + oldName)) {
-			c.set("list." + oldName, newName);
+
+		ConfigurationSection section = c.getConfigurationSection("list");
+		if (section == null) {
+			return EditingContextError.NOT_EXIST;
 		}
+
+		section.set(oldName, newName);
 
 		try {
 			c.save(plugin.getConf().getFakeplayersFile());
@@ -208,11 +218,13 @@ public class FakePlayerHandler {
 
 	public EditingContextError setSkin(String name, String uuid) {
 		Optional<IFakePlayers> fp = getFakePlayerByName(name);
+
 		if (!fp.isPresent()) {
 			return EditingContextError.NOT_EXIST;
 		}
 
-		if (!Util.tryParseId(uuid).isPresent()) {
+		Optional<UUID> id = Util.tryParseId(uuid);
+		if (!id.isPresent()) {
 			return EditingContextError.UUID_MATCH_ERROR;
 		}
 
@@ -225,7 +237,7 @@ public class FakePlayerHandler {
 			return EditingContextError.UNKNOWN;
 		}
 
-		fp.get().setSkin(UUID.fromString(uuid));
+		fp.get().setSkin(id.get());
 		return EditingContextError.OK;
 	}
 

@@ -1,6 +1,8 @@
 package hu.montlikadani.tablist.bukkit.tablist.fakeplayers;
 
 import java.lang.reflect.Array;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
 
@@ -149,20 +151,41 @@ public class FakePlayers implements IFakePlayers {
 					.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
 					.newInstance(NMSContainer.getUpdateLatency(), entityPlayerArray);
 
+			Field infoListField = ReflectionUtils.getField(packetPlayOutPlayerInfo, "b");
+
+			Object packet = null;
+
 			@SuppressWarnings("unchecked")
-			List<Object> infoList = (List<Object>) ReflectionUtils.getField(packetPlayOutPlayerInfo, "b")
-					.get(packetPlayOutPlayerInfo);
+			List<Object> infoList = (List<Object>) infoListField.get(packetPlayOutPlayerInfo);
 			for (Object infoData : infoList) {
-				Object profile = ReflectionUtils.invokeMethod(infoData, "a");
-				Object id = ReflectionUtils.invokeMethod(profile, "getId");
-				if (id.equals(this.profile.getId())) {
-					ReflectionUtils.modifyFinalField(ReflectionUtils.getField(infoData, "b"), infoData, ping);
+				GameProfile profile = (GameProfile) ReflectionUtils.invokeMethod(infoData, "a");
+
+				if (profile.getId().equals(this.profile.getId())) {
+					Object gameMode = ReflectionUtils.getField(infoData, "c").get(infoData);
+
+					Constructor<?> playerInfoDataConstr = NMSContainer.getPlayerInfoDataConstructor();
+
+					if (playerInfoDataConstr.getParameterCount() == 5) {
+						packet = playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
+								ReflectionUtils.getAsIChatBaseComponent(name));
+					} else {
+						packet = playerInfoDataConstr.newInstance(profile, ping, gameMode,
+								ReflectionUtils.getAsIChatBaseComponent(name));
+					}
+
 					break;
 				}
 			}
 
+			if (packet == null) {
+				return;
+			}
+
+			infoListField.set(packetPlayOutPlayerInfo, java.util.Arrays.asList(packet));
+
 			for (Player aOnline : Bukkit.getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
+				ReflectionUtils.sendPacket(aOnline, packet);
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();

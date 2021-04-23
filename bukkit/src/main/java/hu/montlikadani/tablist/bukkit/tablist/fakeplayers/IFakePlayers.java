@@ -65,21 +65,21 @@ public interface IFakePlayers {
 	 * Attempts to create a fake player for the given player and sets the ping
 	 * latency.
 	 * 
-	 * @param p           {@link Player}
+	 * @param player      {@link Player} where to display
 	 * @param pingLatency ping value (> 0)
 	 * @see #createFakePlayer(Player, String, int)
 	 */
-	void createFakePlayer(Player p, int pingLatency);
+	void createFakePlayer(Player player, int pingLatency);
 
 	/**
 	 * Attempts to create a fake player for the given player, setting their head
 	 * skin from uuid and ping.
 	 * 
-	 * @param p           {@link Player}
-	 * @param headId    an uuid of valid user
+	 * @param player      {@link Player} where to display
+	 * @param headId      an uuid of valid user
 	 * @param pingLatency ping value (> 0)
 	 */
-	void createFakePlayer(Player p, String headId, int pingLatency);
+	void createFakePlayer(Player player, String headId, int pingLatency);
 
 	/**
 	 * Attempts to set the fake player ping to a new one. If the fake player is not

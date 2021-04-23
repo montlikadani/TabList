@@ -44,6 +44,7 @@ public class Objects {
 		Objective objective = getObject(board).orElse(null);
 		if (objective == null) {
 			String dName = ChatColor.RED + "\u2665";
+
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
 				objective = plugin.getComplement().registerNewObjective(board, ConfigValues.getObjectType().objectName,
 						"health", dName, RenderType.HEARTS);

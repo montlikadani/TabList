@@ -17,13 +17,18 @@ import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.groups.Groups;
 import hu.montlikadani.tablist.bukkit.tablist.groups.TeamHandler;
 
-@CommandProcessor(name = "group", permission = Perm.GROUP_META)
-public class group implements ICommand {
+@CommandProcessor(
+	name = "group",
+	params = "<name> prefix/suffix/tabname <displayTag>",
+	desc = "Sets the given group's prefix/suffix or tabname",
+	permission = Perm.GROUP_META)
+public final class group implements ICommand {
 
 	@Override
 	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
 		if (!ConfigValues.isPrefixSuffixEnabled()) {
 			plugin.getConfig().set("change-prefix-suffix-in-tablist.enable", true);
+			plugin.saveConfig();
 		}
 
 		if (args.length < 3) {
