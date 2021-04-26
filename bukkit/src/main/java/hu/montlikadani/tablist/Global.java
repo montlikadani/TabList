@@ -11,6 +11,7 @@ public class Global {
 
 	public static String matchColorRegex(String s) {
 		Matcher matcher = PATTERN.matcher(s);
+
 		while (matcher.find()) {
 			String group = matcher.group(0);
 

@@ -202,7 +202,6 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 				for (String groupsVault : plugin.getVaultPerm().getPlayerGroups(player)) {
 					if (groupsVault.equalsIgnoreCase(team.getTeam())) {
 						if (group != team) {
-							groups.setToSort(true);
 							update = true;
 							group = team;
 						}

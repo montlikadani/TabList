@@ -145,10 +145,10 @@ public class Groups {
 	}
 
 	/**
-	 * Sets the player prefix, suffix, tab name, and position
-	 * on tablist, except if the player is hidden.
+	 * Sets the player prefix, suffix, tab name, and position on tablist, except if
+	 * the player is hidden.
 	 * 
-	 * @param groupPlayer {@link GroupPlayer}
+	 * @param groupPlayer  {@link GroupPlayer}
 	 * @param safePriority Safe priority value. Should be between 0 and 999999999.
 	 */
 	public void setPlayerTeam(GroupPlayer groupPlayer, int safePriority) {
@@ -266,21 +266,19 @@ public class Groups {
 	}
 
 	/**
-	 * This method is used to sort and update players'
-	 * scoreboards. Includes sorting of AFK players.
-	 * If there is no need to change the places of
-	 * groups, they will only be updated in the custom
-	 * name, prefix, suffix and others.
+	 * This method is used to sort and update players' scoreboards. Includes sorting
+	 * of AFK players. If there is no need to change the places of groups, they will
+	 * only be updated in the custom name, prefix, suffix and others.
 	 */
 	public void sortScoreboards() {
-		Set<GroupPlayer> playerGroups = sortedPlayers.stream()
-				.sorted(Comparator.comparingInt(GroupPlayer::getPriority))
-				.collect(Collectors.toSet());
+		Set<GroupPlayer> playerGroups = sortedPlayers.stream().sorted(Comparator.comparingInt(GroupPlayer::getPriority))
+				.collect(Collectors.toCollection(java.util.LinkedHashSet::new));
 
 		sortedPlayers.clear();
 		sortedPlayers.addAll(playerGroups);
 
 		int priority = sortedPlayers.size();
+
 		for (GroupPlayer groupPlayer : sortedPlayers) {
 			if (ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(groupPlayer.getUser().getPlayer())) {
 				if (afkPlayersCache.add(groupPlayer)) {

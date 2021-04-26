@@ -5,9 +5,11 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 
 import hu.montlikadani.tablist.bungee.TabList;
+import hu.montlikadani.tablist.bungee.config.ConfigConstants;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.scheduler.ScheduledTask;
 
@@ -17,8 +19,8 @@ public class TabManager implements ITask {
 
 	private ScheduledTask task;
 
-	private final Set<UUID> tabenable = new HashSet<>();
-	private final Set<PlayerTab> playerTabs = Collections.synchronizedSet(new HashSet<PlayerTab>());
+	private final Set<UUID> tabEnableStatus = new HashSet<>();
+	private final Set<PlayerTab> playerTabs = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	public TabManager(TabList plugin) {
 		this.plugin = plugin;
@@ -30,7 +32,7 @@ public class TabManager implements ITask {
 	}
 
 	public Set<UUID> getTabToggle() {
-		return tabenable;
+		return tabEnableStatus;
 	}
 
 	public Set<PlayerTab> getPlayerTabs() {
@@ -38,33 +40,26 @@ public class TabManager implements ITask {
 	}
 
 	public void addPlayer(ProxiedPlayer player) {
-		if (!plugin.getConf().getBoolean("tablist.enable", false)) {
+		if (!ConfigConstants.isTabEnabled()) {
 			return;
 		}
 
-		synchronized (playerTabs) {
-			PlayerTab tab = getPlayerTab(player).orElse(new PlayerTab(plugin, player));
-			if (!playerTabs.contains(tab)) {
-				playerTabs.add(tab);
-			}
-
-			tab.loadTabList();
-		}
+		PlayerTab tab = getPlayerTab(player).orElse(new PlayerTab(plugin, player.getUniqueId()));
+		tab.loadTabList();
+		playerTabs.add(tab);
 	}
 
 	public void removePlayer(ProxiedPlayer player) {
-		synchronized (playerTabs) {
-			getPlayerTab(player).ifPresent(playerTabs::remove);
-		}
+		getPlayerTab(player).ifPresent(playerTabs::remove);
 	}
 
 	public Optional<PlayerTab> getPlayerTab(ProxiedPlayer player) {
-		return playerTabs.stream().filter(g -> g.getPlayer().equals(player)).findFirst();
+		return playerTabs.stream().filter(g -> g.getUniqueId().equals(player.getUniqueId())).findFirst();
 	}
 
 	@Override
 	public void start() {
-		if (!plugin.getConf().getBoolean("tablist.enable", false) || plugin.getProxy().getPlayers().isEmpty()) {
+		if (!ConfigConstants.isTabEnabled() || plugin.getProxy().getPlayers().isEmpty()) {
 			cancel();
 			return;
 		}
@@ -79,17 +74,15 @@ public class TabManager implements ITask {
 				return;
 			}
 
-			synchronized (playerTabs) {
-				playerTabs.stream().filter(t -> {
-					if (!tabenable.contains(t.getPlayer().getUniqueId())) {
-						return true;
-					}
+			for (PlayerTab tab : playerTabs) {
+				if (tabEnableStatus.contains(tab.getUniqueId())) {
+					tab.getPlayer().resetTabHeader();
+					continue;
+				}
 
-					t.getPlayer().resetTabHeader();
-					return false;
-				}).forEach(PlayerTab::update);
+				tab.update();
 			}
-		}, 10L, plugin.getConf().getInt("tablist.refresh-interval"), TimeUnit.MILLISECONDS);
+		}, 10L, ConfigConstants.getTabRefreshInterval(), TimeUnit.MILLISECONDS);
 	}
 
 	@Override
@@ -99,9 +92,7 @@ public class TabManager implements ITask {
 			task = null;
 		}
 
-		synchronized (playerTabs) {
-			plugin.getProxy().getPlayers().forEach(all -> getPlayerTab(all).ifPresent(PlayerTab::clearAll));
-			playerTabs.clear();
-		}
+		plugin.getProxy().getPlayers().forEach(all -> getPlayerTab(all).ifPresent(PlayerTab::clearAll));
+		playerTabs.clear();
 	}
 }

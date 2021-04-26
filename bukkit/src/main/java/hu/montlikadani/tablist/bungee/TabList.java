@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.util.logging.Level;
 
+import hu.montlikadani.tablist.bungee.config.ConfigConstants;
 import hu.montlikadani.tablist.bungee.tablist.TabManager;
 import hu.montlikadani.tablist.bungee.tablist.groups.Groups;
 import net.md_5.bungee.api.CommandSender;
@@ -75,28 +76,27 @@ public class TabList extends Plugin implements Listener {
 	}
 
 	private void loadFile() {
-		try {
-			File folder = getDataFolder();
-			if (!folder.exists()) {
-				folder.mkdir();
-			}
+		File folder = getDataFolder();
+		folder.mkdirs();
 
-			File file = new File(folder, "bungeeconfig.yml");
+		File file = new File(folder, "bungeeconfig.yml");
+
+		try {
 			if (!file.exists()) {
-				InputStream in = getResourceAsStream("bungeeconfig.yml");
-				Files.copy(in, file.toPath());
-				in.close();
+				try (InputStream in = getResourceAsStream("bungeeconfig.yml")) {
+					Files.copy(in, file.toPath());
+				}
 			}
 
 			config = ConfigurationProvider.getProvider(YamlConfiguration.class).load(file);
+			ConfigConstants.load(config);
+
 			if (!config.get("config-version").equals(cver)) {
 				getLogger().log(Level.WARNING, "Found outdated configuration (bungeeconfig.yml)! (Your version: "
 						+ config.getInt("config-version") + " | Newest version: " + cver + ")");
 			}
-		} catch (Exception e) {
+		} catch (java.io.IOException e) {
 			e.printStackTrace();
-			getLogger().log(Level.WARNING,
-					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues");
 		}
 	}
 
@@ -140,51 +140,39 @@ public class TabList extends Plugin implements Listener {
 								return;
 							}
 
-							boolean changed = false;
 							for (ProxiedPlayer pl : getProxy().getPlayers()) {
-								if (!tab.getTabToggle().contains(pl.getUniqueId())) {
+								if (!tab.getTabToggle().remove(pl.getUniqueId())) {
 									tab.getTabToggle().add(pl.getUniqueId());
-									changed = true;
-								} else {
-									tab.getTabToggle().remove(pl.getUniqueId());
-									changed = false;
 								}
-							}
-
-							if (changed) {
-								tab.cancel();
-							} else {
-								tab.start();
 							}
 
 							return;
 						}
 
-						ProxiedPlayer p = getProxy().getPlayer(args[1]);
-						if (p == null) {
+						ProxiedPlayer target = getProxy().getPlayer(args[1]);
+						if (target == null) {
 							Misc.sendMessage(s, config.getString("messages.toggle.no-player"));
 							return;
 						}
 
 						boolean enabled = false;
-						if (!tab.getTabToggle().contains(p.getUniqueId())) {
-							tab.getTabToggle().add(p.getUniqueId());
+
+						if (!tab.getTabToggle().remove(target.getUniqueId())) {
+							tab.getTabToggle().add(target.getUniqueId());
 							enabled = false;
 						} else {
-							tab.getTabToggle().remove(p.getUniqueId());
 							enabled = true;
 						}
 
 						Misc.sendMessage(s, config.getString("messages.toggle." + (enabled ? "enabled" : "disabled")));
 					} else if (s instanceof ProxiedPlayer) {
 						ProxiedPlayer player = (ProxiedPlayer) s;
-
 						boolean enabled = false;
-						if (!tab.getTabToggle().contains(player.getUniqueId())) {
+
+						if (!tab.getTabToggle().remove(player.getUniqueId())) {
 							tab.getTabToggle().add(player.getUniqueId());
 							enabled = false;
 						} else {
-							tab.getTabToggle().remove(player.getUniqueId());
 							enabled = true;
 						}
 

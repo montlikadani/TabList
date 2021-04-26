@@ -82,8 +82,11 @@ public class Commands implements CommandExecutor, TabCompleter {
 			}
 
 			if (isHelp) {
-				String params = proc.params().isEmpty() ? "" : " " + proc.params();
-				sendMsg(sender, colorMsg("&7/" + label + " " + proc.name() + params + " -&6 " + proc.desc()));
+				if (!isPlayer || sender.hasPermission(proc.permission().getPerm())) {
+					String params = proc.params().isEmpty() ? "" : " " + proc.params();
+					sendMsg(sender, colorMsg("&7/" + label + " " + proc.name() + params + " -&6 " + proc.desc()));
+				}
+
 				found = true;
 				continue;
 			}

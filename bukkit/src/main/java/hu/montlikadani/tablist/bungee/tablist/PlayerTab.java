@@ -1,157 +1,183 @@
 package hu.montlikadani.tablist.bungee.tablist;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import hu.montlikadani.tablist.bungee.Misc;
 import hu.montlikadani.tablist.bungee.TabList;
+import hu.montlikadani.tablist.bungee.config.ConfigConstants;
+import hu.montlikadani.tablist.bungee.config.ConfigConstants.TabSetting;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
 
 public class PlayerTab {
 
 	private final TabList plugin;
-	private final ProxiedPlayer player;
+	private final UUID playerUUID;
 
 	private int i = 0, i2 = 0;
 
-	private final List<String> header = new ArrayList<>(), footer = new ArrayList<>();
+	private String[] header, footer;
 
-	public PlayerTab(TabList plugin, ProxiedPlayer player) {
+	public PlayerTab(TabList plugin, UUID playerUUID) {
 		this.plugin = plugin;
-		this.player = player;
+		this.playerUUID = playerUUID;
+	}
+
+	public UUID getUniqueId() {
+		return playerUUID;
 	}
 
 	public ProxiedPlayer getPlayer() {
-		return player;
+		return plugin.getProxy().getPlayer(playerUUID);
 	}
 
-	public List<String> getHeader() {
+	public String[] getHeader() {
 		return header;
 	}
 
-	public List<String> getFooter() {
+	public String[] getFooter() {
 		return footer;
 	}
 
 	public String getNextHeader() {
-		int hSize = header.size() - 1;
-
-		if (i < hSize) {
+		if (i < header.length - 1) {
 			i++;
 		} else {
 			i = 0;
 		}
 
-		return (i < 0 || i >= header.size()) ? "" : header.get(i);
+		return (i < 0 || i >= header.length) ? "" : header[i];
 	}
 
 	public String getNextFooter() {
-		int fSize = footer.size() - 1;
-
-		if (i2 < fSize) {
+		if (i2 < footer.length - 1) {
 			i2++;
 		} else {
 			i2 = 0;
 		}
 
-		return (i2 < 0 || i2 >= footer.size()) ? "" : footer.get(i2);
+		return (i2 < 0 || i2 >= footer.length) ? "" : footer[i2];
 	}
 
 	public void clearAll() {
-		header.clear();
-		footer.clear();
+		header = footer = null;
+		getPlayer().resetTabHeader();
+	}
 
-		player.resetTabHeader();
+	private String[] fill(String[] array, List<String> list) {
+		if (list.isEmpty()) {
+			return null;
+		}
+
+		int size = list.size();
+
+		if (array == null) {
+			array = new String[size];
+		}
+
+		for (int a = 0; a < size; a++) {
+			array[a] = list.get(a);
+		}
+
+		return array;
 	}
 
 	public void loadTabList() {
 		clearAll();
 
-		final Configuration conf = plugin.getConf();
+		final ProxiedPlayer player = getPlayer();
 		final String pName = player.getName();
 		final String server = player.getServer() != null ? player.getServer().getInfo().getName() : "";
 
-		String path = "tablist.";
+		if (!ConfigConstants.TAB_SETTINGS.isEmpty()) {
+			for (String serverName : ConfigConstants.getPerServerColl()) {
+				TabSetting setting = ConfigConstants.TAB_SETTINGS.get(serverName);
 
-		per: for (String servers : conf.getSection(path + "per-server").getKeys()) {
-			for (String split : servers.split(", ")) {
-				if (server.equalsIgnoreCase(split)) {
-					header.addAll(
-							conf.getStringList(path + "per-server." + servers + ".per-player." + pName + ".header"));
+				if (setting == null) {
+					continue;
+				}
 
-					if (header.isEmpty())
-						header.addAll(conf.getStringList(path + "per-server." + servers + ".header"));
+				per: for (String split : setting.getNames()) {
+					if (server.equalsIgnoreCase(split)) {
+						header = fill(header, ConfigConstants.getPerServerSection()
+								.getStringList(serverName + ".per-player." + pName + ".header"));
 
-					footer.addAll(
-							conf.getStringList(path + "per-server." + servers + ".per-player." + pName + ".footer"));
+						if (header == null)
+							header = fill(header, setting.getHeader());
 
-					if (footer.isEmpty())
-						footer.addAll(conf.getStringList(path + "per-server." + servers + ".footer"));
+						footer = fill(footer, ConfigConstants.getPerServerSection()
+								.getStringList(serverName + ".per-player." + pName + ".footer"));
 
-					break per;
+						if (footer == null)
+							footer = fill(footer, setting.getFooter());
+
+						break per;
+					}
+				}
+			}
+
+			pl: for (String one : ConfigConstants.getPerPlayerColl()) {
+				TabSetting setting = ConfigConstants.TAB_SETTINGS.get(one);
+
+				if (setting == null) {
+					continue;
+				}
+
+				for (String split : setting.getNames()) {
+					if (pName.equalsIgnoreCase(split)) {
+						header = fill(header, setting.getHeader());
+						footer = fill(footer, setting.getFooter());
+						break pl;
+					}
 				}
 			}
 		}
 
-		pl: for (String players : conf.getSection(path + "per-player").getKeys()) {
-			for (String split : players.split(", ")) {
-				if (pName.equalsIgnoreCase(split)) {
-					header.addAll(conf.getStringList(path + "per-player." + players + ".header"));
-					footer.addAll(conf.getStringList(path + "per-player." + players + ".footer"));
-					break pl;
-				}
-			}
-		}
-
-		if (!header.isEmpty() && !footer.isEmpty()) {
+		if (header != null && footer != null) {
 			return;
 		}
 
-		if (header.isEmpty())
-			header.addAll(conf.getStringList(path + "per-server." + server + ".per-player." + pName + ".header"));
+		final Configuration conf = plugin.getConf();
 
-		if (header.isEmpty())
-			header.addAll(conf.getStringList(path + "per-server." + server + ".header"));
+		if (header == null)
+			header = fill(header,
+					conf.getStringList("tablist.per-server." + server + ".per-player." + pName + ".header"));
 
-		if (header.isEmpty())
-			header.addAll(conf.getStringList(path + "per-player." + pName + ".header"));
+		if (header == null)
+			header = fill(header, conf.getStringList("tablist.per-server." + server + ".header"));
 
-		if (header.isEmpty())
-			header.addAll(conf.getStringList(path + "header"));
+		if (header == null)
+			header = fill(header, conf.getStringList("tablist.per-player." + pName + ".header"));
 
-		if (footer.isEmpty())
-			footer.addAll(conf.getStringList(path + "per-server." + server + ".per-player." + pName + ".footer"));
+		if (header == null)
+			header = fill(header, ConfigConstants.getDefaultHeader());
 
-		if (footer.isEmpty())
-			footer.addAll(conf.getStringList(path + "per-server." + server + ".footer"));
+		if (footer == null)
+			footer = fill(footer,
+					conf.getStringList("tablist.per-server." + server + ".per-player." + pName + ".footer"));
 
-		if (footer.isEmpty())
-			footer.addAll(conf.getStringList(path + "per-player." + pName + ".footer"));
+		if (footer == null)
+			footer = fill(footer, conf.getStringList("tablist.per-server." + server + ".footer"));
 
-		if (footer.isEmpty())
-			footer.addAll(conf.getStringList(path + "footer"));
+		if (footer == null)
+			footer = fill(footer, conf.getStringList("tablist.per-player." + pName + ".footer"));
+
+		if (footer == null)
+			footer = fill(footer, ConfigConstants.getDefaultFooter());
 	}
 
 	public void update() {
-		if (player.getServer() != null && plugin.getConf().getStringList("tablist.disabled-servers")
-				.contains(player.getServer().getInfo().getName())) {
+		final ProxiedPlayer player = getPlayer();
+
+		if ((player.getServer() != null
+				&& ConfigConstants.getDisabledServers().contains(player.getServer().getInfo().getName()))
+				|| ConfigConstants.getRestrictedPlayers().contains(player.getName())) {
 			player.resetTabHeader();
 			return;
 		}
 
-		List<String> restrictedPlayers = plugin.getConf().getStringList("tablist.blacklisted-players");
-		if (restrictedPlayers.isEmpty()) {
-			restrictedPlayers = plugin.getConf().getStringList("tablist.restricted-players");
-		}
-
-		if (restrictedPlayers.contains(player.getName())) {
-			player.resetTabHeader();
-			return;
-		}
-
-		String[] t = { getNextHeader(), getNextFooter() };
-		player.setTabHeader(Misc.getComponentBuilder(Misc.replaceVariables(t[0], player)),
-				Misc.getComponentBuilder(Misc.replaceVariables(t[1], player)));
+		player.setTabHeader(Misc.getComponentBuilder(Misc.replaceVariables(getNextHeader(), player)),
+				Misc.getComponentBuilder(Misc.replaceVariables(getNextFooter(), player)));
 	}
 }

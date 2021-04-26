@@ -1,14 +1,14 @@
 package hu.montlikadani.tablist.bungee.tablist.groups;
 
-import java.util.List;
 import java.util.UUID;
 
 import hu.montlikadani.tablist.bungee.Misc;
 import hu.montlikadani.tablist.bungee.TabList;
+import hu.montlikadani.tablist.bungee.config.ConfigConstants;
+import hu.montlikadani.tablist.bungee.config.ConfigConstants.GroupSettings;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.chat.ComponentSerializer;
-import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Action;
 import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
@@ -38,46 +38,42 @@ public class PlayerGroup {
 			return;
 		}
 
-		final Configuration c = plugin.getConf();
+		for (String one : ConfigConstants.getGroupsKeys()) {
+			GroupSettings settings = ConfigConstants.GROUP_SETTINGS.get(one);
 
-		String name = "";
-		for (String num : c.getSection("groups").getKeys()) {
-			String perm = c.getString("groups." + num + ".permission", "");
-			if (!perm.trim().isEmpty() && !player.hasPermission(perm)) {
+			if (settings == null) {
 				continue;
 			}
 
-			List<String> list = c.getStringList("groups." + num + ".name");
-			if (!list.isEmpty()) {
-				int gSize = list.size() - 1;
-				if (y < gSize) {
+			String perm = settings.getPermission();
+
+			if (!perm.isEmpty() && !player.hasPermission(perm)) {
+				continue;
+			}
+
+			String[] texts = settings.getTextArray();
+
+			if (texts.length > 0) {
+				if (y < texts.length - 1) {
 					y++;
 				} else {
 					y = 0;
 				}
 
-				name = list.get(y);
-			} else {
-				name = c.getString("groups." + num + ".name", "");
+				sendPacket(player, texts[y]);
 			}
 
 			break;
 		}
-
-		if (name.trim().isEmpty()) {
-			return;
-		}
-
-		sendPacket(player, name);
 	}
 
-	void sendPacket(ProxiedPlayer p, String name) {
+	void sendPacket(ProxiedPlayer p, String text) {
 		if (!p.getUniqueId().equals(items.getUuid())) {
 			items.setUuid(p.getUniqueId());
 		}
 
 		items.setDisplayName(
-				ComponentSerializer.toString(TextComponent.fromLegacyText(Misc.replaceVariables(name, p))));
+				ComponentSerializer.toString(TextComponent.fromLegacyText(Misc.replaceVariables(text, p))));
 
 		listItem.setItems(new Item[] { items });
 

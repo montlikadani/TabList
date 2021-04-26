@@ -27,7 +27,6 @@ public class ReflectionHandled implements ITabScoreboard {
 	private java.lang.reflect.Field infoListField;
 	private List<Object> infoList;
 
-
 	public ReflectionHandled(TabListUser tabListUser) {
 		this.tabListUser = tabListUser;
 	}
@@ -62,7 +61,8 @@ public class ReflectionHandled implements ITabScoreboard {
 
 			Class<?> playOutPlayerInfo = NMSContainer.getPacketPlayOutPlayerInfo();
 			Class<?> playerInfoAction = NMSContainer.getEnumPlayerInfoAction();
-			Constructor<?> constr = playOutPlayerInfo.getDeclaredConstructor(playerInfoAction, entityPlayerArray.getClass());
+			Constructor<?> constr = playOutPlayerInfo.getDeclaredConstructor(playerInfoAction,
+					entityPlayerArray.getClass());
 
 			constr.setAccessible(true);
 
@@ -124,7 +124,8 @@ public class ReflectionHandled implements ITabScoreboard {
 				int ping = (int) ReflectionUtils.getField(infoData, "b").get(infoData);
 
 				infoPacket = playerInfoDataConstr.getParameterCount() == 5
-						? playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode, nameComponent)
+						? playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
+								nameComponent)
 						: playerInfoDataConstr.newInstance(profile, ping, gameMode, nameComponent);
 
 				break;

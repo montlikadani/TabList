@@ -4,10 +4,10 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.TimeZone;
 
 import hu.montlikadani.tablist.Global;
+import hu.montlikadani.tablist.bungee.config.ConfigConstants;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.CommandSender;
 import net.md_5.bungee.api.ProxyServer;
@@ -15,27 +15,24 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
-import net.md_5.bungee.config.Configuration;
 
 public class Misc {
-
-	private static final TabList PLUGIN = (TabList) ProxyServer.getInstance().getPluginManager().getPlugin("TabList");
 
 	public static String colorMsg(String s) {
 		if (s == null) {
 			return "";
 		}
 
-		if (s.contains("#")) {
+		if (s.indexOf("#") >= 0) {
 			s = Global.matchColorRegex(s);
 		}
 
 		return ChatColor.translateAlternateColorCodes('&', s);
 	}
 
-	public static void sendMessage(CommandSender s, String path) {
-		if (s != null && path != null && !path.trim().isEmpty()) {
-			s.sendMessage(getComponentBuilder(colorMsg(path)));
+	public static void sendMessage(CommandSender s, String text) {
+		if (s != null && text != null && !text.trim().isEmpty()) {
+			s.sendMessage(getComponentBuilder(colorMsg(text)));
 		}
 	}
 
@@ -45,70 +42,41 @@ public class Misc {
 
 	@SuppressWarnings("deprecation")
 	public static String replaceVariables(String str, ProxiedPlayer p) {
-		Runtime r = Runtime.getRuntime();
-		Long fram = r.freeMemory() / 1048576L,
-				mram = r.maxMemory() / 1048576L,
-				uram = (r.totalMemory() - r.freeMemory()) / 1048576L;
-
-		Configuration conf = PLUGIN.getConf();
-
-		if (conf.contains("custom-variables")) {
-			for (String custom : conf.getSection("custom-variables").getKeys()) {
-				if (str.contains(custom)) {
-					str = str.replace(custom, conf.getString("custom-variables." + custom));
-				}
-			}
+		// TODO Remove or make more customisable variables
+		for (java.util.Map.Entry<String, String> map : ConfigConstants.CUSTOM_VARIABLES.entrySet()) {
+			str = str.replace(map.getKey(), map.getValue());
 		}
 
-		String t = "", dt = "";
-		if (str.contains("%time%") || str.contains("%date%")) {
-			String path = "placeholder-format.time.";
-			DateTimeFormatter form = !conf.getString(path + "time-format", "").isEmpty()
-					? DateTimeFormatter.ofPattern(conf.getString(path + "time-format"))
-					: null;
+		String time = str.indexOf("%time%") >= 0 ? getTimeAsString(ConfigConstants.getTimeFormat()) : "";
+		String date = str.indexOf("%date%") >= 0 ? getTimeAsString(ConfigConstants.getDateFormat()) : "";
 
-			DateTimeFormatter form2 = !conf.getString(path + "date-format", "").isEmpty()
-					? DateTimeFormatter.ofPattern(conf.getString(path + "date-format"))
-					: null;
+		if (!time.isEmpty())
+			str = str.replace("%time%", time);
 
-			TimeZone zone = conf.getBoolean(path + "use-system-zone", false)
-					? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
-					: TimeZone.getTimeZone(conf.getString(path + "time-zone", "GMT0"));
-			LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
-
-			Calendar cal = Calendar.getInstance();
-
-			t = form != null ? now.format(form) : cal.get(Calendar.HOUR_OF_DAY) + ":" + cal.get(Calendar.MINUTE);
-			dt = form2 != null ? now.format(form2) : cal.get(Calendar.YEAR) + "/" + cal.get(Calendar.DATE);
-		}
+		if (!date.isEmpty())
+			str = str.replace("%date%", date);
 
 		ServerInfo info = p.getServer() != null ? p.getServer().getInfo() : null;
-		String online = info != null ? Integer.toString(info.getPlayers().size()) : "0";
 
-		if (!t.isEmpty())
-			str = str.replace("%time%", t);
-
-		if (!dt.isEmpty())
-			str = str.replace("%date%", dt);
-
-		if (info != null && str.contains("%server%"))
+		if (info != null) {
 			str = str.replace("%server%", info.getName());
-
-		if (str.contains("%server-online%"))
-			str = str.replace("%server-online%", online);
-
-		try {
-			if (str.contains("%max-players%")) {
-				str = str.replace("%max-players%", Integer.toString(ProxyServer.getInstance().getConfigurationAdapter()
-						.getListeners().iterator().next().getMaxPlayers()));
-			}
-		} catch (Exception e) {
-			// Ignore unknown errors
+			str = str.replace("%server-online%", Integer.toString(info.getPlayers().size()));
+			str = str.replace("%bungee-motd%", info.getMotd());
 		}
 
-		if (str.contains("%ip%")) {
+		if (str.indexOf("%max-players%") >= 0) {
+			try {
+				str = str.replace("%max-players%", Integer.toString(ProxyServer.getInstance().getConfigurationAdapter()
+						.getListeners().iterator().next().getMaxPlayers()));
+			} catch (Exception e) {
+				// Ignore unknown errors
+			}
+		}
+
+		if (str.indexOf("%ip%") >= 0) {
 			InetSocketAddress address = null;
 			SocketAddress sAddress = null;
+
 			try {
 				address = p.getAddress();
 			} catch (Exception e) {
@@ -119,47 +87,51 @@ public class Misc {
 					: sAddress != null ? sAddress.toString() : "");
 		}
 
-		if (str.contains("%player-language%"))
+		if (str.indexOf("%player-language%") >= 0)
 			str = str.replace("%player-language%",
 					p.getLocale() == null ? "unknown" : p.getLocale().getDisplayLanguage());
 
-		if (str.contains("%player-name%"))
-			str = str.replace("%player-name%", p.getName());
+		str = str.replace("%player-name%", p.getName());
+		str = str.replace("%display-name%", p.getDisplayName());
 
-		if (str.contains("%display-name%"))
-			str = str.replace("%display-name%", p.getDisplayName());
-
-		if (str.contains("%ping%"))
+		if (str.indexOf("%ping%") >= 0)
 			str = str.replace("%ping%", Integer.toString(p.getPing()));
 
-		if (str.contains("%ram-used%"))
-			str = str.replace("%ram-used%", Long.toString(uram));
+		Runtime r = Runtime.getRuntime();
 
-		if (str.contains("%ram-max%"))
-			str = str.replace("%ram-max%", Long.toString(mram));
+		if (str.indexOf("%ram-used%") >= 0)
+			str = str.replace("%ram-used%", Long.toString((r.totalMemory() - r.freeMemory()) / 1048576L));
 
-		if (str.contains("%ram-free%"))
-			str = str.replace("%ram-free%", Long.toString(fram));
+		if (str.indexOf("%ram-max%") >= 0)
+			str = str.replace("%ram-max%", Long.toString(r.maxMemory() / 1048576L));
 
-		if (str.contains("%player-uuid%"))
+		if (str.indexOf("%ram-free%") >= 0)
+			str = str.replace("%ram-free%", Long.toString(r.freeMemory() / 1048576L));
+
+		if (str.indexOf("%player-uuid%") >= 0)
 			str = str.replace("%player-uuid%", p.getUniqueId().toString());
 
-		if (str.contains("%game-version%"))
-			str = str.replace("%game-version%", ProxyServer.getInstance().getGameVersion());
-
-		if (str.contains("%bungee-online%"))
+		if (str.indexOf("%bungee-online%") >= 0)
 			str = str.replace("%bungee-online%", Integer.toString(ProxyServer.getInstance().getOnlineCount()));
 
-		if (info != null && str.contains("%bungee-motd%"))
-			str = str.replace("%bungee-motd%", info.getMotd());
-
-		if (str.contains("%player-country%"))
+		if (str.indexOf("%player-country%") >= 0)
 			str = str.replace("%player-country%",
 					p.getLocale() == null ? "unknown" : p.getLocale().getDisplayCountry());
 
-		str = str.replace("\\n", "\n");
 		str = Global.setSymbols(str);
 
 		return colorMsg(str);
+	}
+
+	private static String getTimeAsString(String pattern) {
+		if (pattern.isEmpty()) {
+			return pattern;
+		}
+
+		TimeZone zone = ConfigConstants.isUseSystemZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
+				: TimeZone.getTimeZone(ConfigConstants.getTimeZone());
+		LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
+
+		return now.format(DateTimeFormatter.ofPattern(pattern));
 	}
 }
