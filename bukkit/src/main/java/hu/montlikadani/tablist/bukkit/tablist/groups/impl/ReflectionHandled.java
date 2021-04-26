@@ -36,7 +36,6 @@ public class ReflectionHandled implements ITabScoreboard {
 	@Override
 	public void registerTeam(GroupPlayer groupPlayer) {
 		try {
-
 			if (packetPlayOutPlayerInfo != null && !plugin.getGroups().isToSort()) {
 				return;
 			}
@@ -75,7 +74,6 @@ public class ReflectionHandled implements ITabScoreboard {
 			for (TabListUser user : plugin.getUsers()) {
 				ReflectionUtils.sendPacket(user.getPlayer(), newTeamPacket);
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -90,11 +88,9 @@ public class ReflectionHandled implements ITabScoreboard {
 	@Override
 	public void unregisterTeam(GroupPlayer groupPlayer) {
 		try {
-
-			String teamName = groupPlayer.getFullGroupTeamName();
-
 			Object oldTeamPacket = scoreRef.getScoreboardTeamConstructor().newInstance();
-			scoreRef.getScoreboardTeamName().set(oldTeamPacket, teamName);
+
+			scoreRef.getScoreboardTeamName().set(oldTeamPacket, groupPlayer.getFullGroupTeamName());
 			scoreRef.getScoreboardTeamMode().set(oldTeamPacket, 1);
 
 			for (TabListUser user : plugin.getUsers()) {
@@ -109,7 +105,6 @@ public class ReflectionHandled implements ITabScoreboard {
 
 	private void updateName(String name) {
 		try {
-
 			if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {
 				name = Util.colorMsg(name);
 			}

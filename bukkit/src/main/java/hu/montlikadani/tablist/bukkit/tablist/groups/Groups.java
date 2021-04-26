@@ -178,7 +178,7 @@ public class Groups {
 		GroupPlayer groupPlayer = user.getGroupPlayer();
 
 		groupPlayer.update();
-		plugin.getGroups().setToSort(true);
+		setToSort(true);
 		sortedPlayers.add(groupPlayer);
 		sortScoreboards();
 
@@ -273,9 +273,9 @@ public class Groups {
 	 * name, prefix, suffix and others.
 	 */
 	public void sortScoreboards() {
-		List<GroupPlayer> playerGroups = sortedPlayers.stream()
+		Set<GroupPlayer> playerGroups = sortedPlayers.stream()
 				.sorted(Comparator.comparingInt(GroupPlayer::getPriority))
-				.collect(Collectors.toList());
+				.collect(Collectors.toSet());
 
 		sortedPlayers.clear();
 		sortedPlayers.addAll(playerGroups);
@@ -284,22 +284,21 @@ public class Groups {
 		for (GroupPlayer groupPlayer : sortedPlayers) {
 			if (ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(groupPlayer.getUser().getPlayer())) {
 				if (afkPlayersCache.add(groupPlayer)) {
-					this.setToSort(true);
+					setToSort(true);
 				}
 
 				continue;
 			}
 
-			if (afkPlayersCache.contains(groupPlayer)) {
-				afkPlayersCache.remove(groupPlayer);
-				this.setToSort(true);
+			if (afkPlayersCache.remove(groupPlayer)) {
+				setToSort(true);
 			}
 
 			setPlayerTeam(groupPlayer, priority--);
 		}
 
 		if (ConfigValues.isHideGroupWhenAfk()) {
-			this.setToSort(false);
+			setToSort(false);
 			return;
 		}
 
@@ -307,7 +306,7 @@ public class Groups {
 			setPlayerTeam(afk, sortedPlayers.size() + 1);
 		}
 
-		this.setToSort(false);
+		setToSort(false);
 	}
 
 }
