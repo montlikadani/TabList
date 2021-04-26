@@ -11,7 +11,6 @@ import hu.montlikadani.tablist.bukkit.tablist.groups.impl.ITabScoreboard;
 import hu.montlikadani.tablist.bukkit.tablist.groups.impl.ReflectionHandled;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
-import org.jetbrains.annotations.NotNull;
 
 public final class GroupPlayer implements Comparable<GroupPlayer> {
 
@@ -302,7 +301,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	}
 
 	@Override
-	public int compareTo(@NotNull GroupPlayer tlp) {
+	public int compareTo(GroupPlayer tlp) {
 		if (ConfigValues.isAfkSortLast()) {
 			int comp = Boolean.compare(isAfk(), tlp.isAfk());
 			if (comp != 0) {
