@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist.bukkit.utils.reflection;
 
-import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -168,7 +167,7 @@ public final class ReflectionUtils {
 			int mods = field.getModifiers();
 
 			if (Modifier.isFinal(mods)) {
-				((VarHandle) modifiersField).set(field, mods & ~Modifier.FINAL);
+				((java.lang.invoke.VarHandle) modifiersField).set(field, mods & ~Modifier.FINAL);
 				field.set(target, newValue);
 			}
 		} else {
