@@ -283,12 +283,10 @@ public class Groups {
 		int priority = sortedPlayers.size();
 		for (GroupPlayer groupPlayer : sortedPlayers) {
 			if (ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(groupPlayer.getUser().getPlayer())) {
-				if (afkPlayersCache.contains(groupPlayer)) {
-					continue;
+				if (afkPlayersCache.add(groupPlayer)) {
+					this.setToSort(true);
 				}
 
-				this.setToSort(true);
-				afkPlayersCache.add(groupPlayer);
 				continue;
 			}
 
