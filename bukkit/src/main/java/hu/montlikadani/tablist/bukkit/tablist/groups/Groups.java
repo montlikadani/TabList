@@ -1,6 +1,12 @@
 package hu.montlikadani.tablist.bukkit.tablist.groups;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Deque;
+import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.stream.Collectors;
 
