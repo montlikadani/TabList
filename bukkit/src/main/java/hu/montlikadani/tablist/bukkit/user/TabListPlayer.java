@@ -28,7 +28,7 @@ public class TabListPlayer implements TabListUser {
 		this.uuid = uuid;
 
 		tabHandler = new TabHandler(plugin, uuid);
-		groupPlayer = new GroupPlayer(plugin, this);
+		groupPlayer = new GroupPlayer(plugin, this, plugin.getGroups());
 	}
 
 	@Override

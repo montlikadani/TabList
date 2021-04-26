@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.bukkit.utils.reflection;
 
+import java.lang.invoke.VarHandle;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -167,7 +168,7 @@ public final class ReflectionUtils {
 			int mods = field.getModifiers();
 
 			if (Modifier.isFinal(mods)) {
-				((java.lang.invoke.VarHandle) modifiersField).set(field, mods & ~Modifier.FINAL);
+				((VarHandle) modifiersField).set(field, mods & ~Modifier.FINAL);
 				field.set(target, newValue);
 			}
 		} else {
@@ -208,7 +209,7 @@ public final class ReflectionUtils {
 
 			try {
 				Class<?> manager = getNMSClass("PlayerInteractManager");
-				Object managerIns = null, world = null;
+				Object managerIns = null, world;
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
 					world = getHandle(player.getWorld());
 					managerIns = manager.getConstructor(world.getClass()).newInstance(world);

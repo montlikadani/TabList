@@ -11,12 +11,14 @@ import hu.montlikadani.tablist.bukkit.tablist.groups.impl.ITabScoreboard;
 import hu.montlikadani.tablist.bukkit.tablist.groups.impl.ReflectionHandled;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
+import org.jetbrains.annotations.NotNull;
 
 public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 	private final TabListUser tabListUser;
 	private final ITabScoreboard tabTeam;
 	private final TabList plugin;
+	private final Groups groups;
 
 	private TeamHandler group, globalGroup;
 
@@ -24,12 +26,14 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 	private boolean afk;
 	private int customPriority = Integer.MIN_VALUE;
+	private int safePriority = 0;
 
-	public GroupPlayer(TabList plugin, TabListUser tabListUser) {
+	public GroupPlayer(TabList plugin, TabListUser tabListUser, Groups groups) {
 		this.plugin = plugin;
 		this.tabListUser = tabListUser;
 
 		tabTeam = new ReflectionHandled(tabListUser);
+		this.groups = groups;
 	}
 
 	public ITabScoreboard getTabTeam() {
@@ -38,6 +42,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 	public void setGroup(TeamHandler group) {
 		this.group = group;
+		this.groups.setToSort(true);
 	}
 
 	public TeamHandler getGroup() {
@@ -45,14 +50,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	}
 
 	public String getFullGroupTeamName() {
-		String name = Integer.toString(100000 + getPriority())
-				+ (group == null ? tabListUser.getPlayer().getName() : group.getTeam());
-
-		if (name.length() > 16) {
-			name = name.substring(0, 16);
-		}
-
-		return name;
+		return "tablist" + safePriority;
 	}
 
 	public void removeGroup() {
@@ -78,6 +76,10 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 	public void setCustomPriority(int customPriority) {
 		this.customPriority = customPriority;
+	}
+
+	public void setSafePriority(int safePriority) {
+		this.safePriority = safePriority;
 	}
 
 	public int getPriority() {
@@ -111,6 +113,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 					for (TeamHandler t : plugin.getGroups().getGroupsList()) {
 						if (t.isGlobal() && globalGroup != t) {
 							globalGroup = t;
+							this.groups.setToSort(true);
 							break;
 						}
 					}
@@ -119,6 +122,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 				if (group != team) {
 					update = true;
 					group = team;
+					this.groups.setToSort(true);
 				}
 
 				return update;
@@ -140,6 +144,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 			// Avoiding verbose spam
 			if (!found) {
 				playerVaultGroup = plugin.getVaultPerm().getPrimaryGroup(player);
+				this.groups.setToSort(true);
 			}
 		}
 
@@ -150,6 +155,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 				if (!team.isGlobal()) {
 					for (TeamHandler t : plugin.getGroups().getGroupsList()) {
 						if (t.isGlobal() && globalGroup != t) {
+							this.groups.setToSort(true);
 							globalGroup = t;
 							break;
 						}
@@ -157,6 +163,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 				}
 
 				if (group != team) {
+					this.groups.setToSort(true);
 					update = true;
 					group = team;
 				}
@@ -166,11 +173,13 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 			if (team.isGlobal() && globalGroup != team) {
 				globalGroup = team;
+				this.groups.setToSort(true);
 				continue;
 			}
 
 			if (PluginUtils.hasPermission(player, team.getPermission())) {
 				if (group != team) {
+					this.groups.setToSort(true);
 					update = true;
 					group = team;
 				}
@@ -182,6 +191,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 				for (String groups : plugin.getVaultPerm().getPlayerGroups(player)) {
 					if (groups.equalsIgnoreCase(team.getTeam())) {
 						if (group != team) {
+							this.groups.setToSort(true);
 							update = true;
 							group = team;
 						}
@@ -208,7 +218,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 		if ((ConfigValues.isHideGroupInVanish() && PluginUtils.isVanished(player))
 				|| (ConfigValues.isHideGroupWhenAfk() && PluginUtils.isAfk(player))) {
-			tabTeam.unregisterTeam(getFullGroupTeamName());
+			tabTeam.unregisterTeam(this);
 			removeGroup();
 			return false;
 		}
@@ -292,7 +302,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	}
 
 	@Override
-	public int compareTo(GroupPlayer tlp) {
+	public int compareTo(@NotNull GroupPlayer tlp) {
 		if (ConfigValues.isAfkSortLast()) {
 			int comp = Boolean.compare(isAfk(), tlp.isAfk());
 			if (comp != 0) {
@@ -303,8 +313,9 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 		int ownPriority = getPriority();
 		int tlpPriority = tlp.getPriority();
 
-		if (ownPriority == tlpPriority)
+		if (ownPriority == tlpPriority) {
 			return getCustomTabName().compareTo(tlp.getCustomTabName());
+		}
 
 		return ownPriority - tlpPriority;
 	}
