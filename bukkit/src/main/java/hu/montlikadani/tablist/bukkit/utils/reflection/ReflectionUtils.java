@@ -208,7 +208,7 @@ public final class ReflectionUtils {
 
 			try {
 				Class<?> manager = getNMSClass("PlayerInteractManager");
-				Object managerIns = null, world = null;
+				Object managerIns = null, world;
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
 					world = getHandle(player.getWorld());
 					managerIns = manager.getConstructor(world.getClass()).newInstance(world);

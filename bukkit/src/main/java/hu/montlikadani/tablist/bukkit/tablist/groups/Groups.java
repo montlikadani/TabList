@@ -1,9 +1,16 @@
 package hu.montlikadani.tablist.bukkit.tablist.groups;
 
+import java.util.Comparator;
 import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.stream.Collectors;
 
+import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,19 +24,18 @@ import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
 
 public class Groups {
 
-	private TabList plugin;
+	private final TabList plugin;
 
 	private BukkitTask animationTask;
 
 	private final List<TeamHandler> groupsList = new ArrayList<>();
-	private final java.util.Deque<GroupPlayer> sortedPlayers = new java.util.concurrent.ConcurrentLinkedDeque<>();
+	private final Deque<GroupPlayer> sortedPlayers = new ConcurrentLinkedDeque<>();
+	private final Set<GroupPlayer> afkPlayersCache = new HashSet<>();
+
+	private boolean toSort = true;
 
 	public Groups(TabList plugin) {
 		this.plugin = plugin;
-	}
-
-	public BukkitTask getTask() {
-		return animationTask;
 	}
 
 	/**
@@ -57,6 +63,14 @@ public class Groups {
 		}
 
 		return Optional.empty();
+	}
+
+	public boolean isToSort() {
+		return toSort;
+	}
+
+	public void setToSort(boolean toSort) {
+		this.toSort = toSort;
 	}
 
 	public void load() {
@@ -131,14 +145,17 @@ public class Groups {
 	}
 
 	/**
-	 * Sets the player prefix, suffix and tab name except if the player is hidden.
+	 * Sets the player prefix, suffix, tab name, and position
+	 * on tablist, except if the player is hidden.
 	 * 
 	 * @param groupPlayer {@link GroupPlayer}
-	 * @param priority
+	 * @param safePriority Safe priority value. Should be between 0 and 999999999.
 	 */
-	public void setPlayerTeam(GroupPlayer groupPlayer, int priority) {
-		if (groupPlayer != null && !groupPlayer.getUser().isHidden()) {
-			groupPlayer.getTabTeam().setTeam(groupPlayer.getFullGroupTeamName());
+	public void setPlayerTeam(GroupPlayer groupPlayer, int safePriority) {
+		groupPlayer.setSafePriority(safePriority);
+
+		if (!groupPlayer.getUser().isHidden()) {
+			groupPlayer.getTabTeam().setTeam(groupPlayer);
 		}
 	}
 
@@ -161,13 +178,9 @@ public class Groups {
 		GroupPlayer groupPlayer = user.getGroupPlayer();
 
 		groupPlayer.update();
-		addToTabListPlayerList(groupPlayer);
-
-		int priority = 0;
-		for (GroupPlayer gp : sortedPlayers) {
-			setPlayerTeam(gp, priority);
-			priority++;
-		}
+		setToSort(true);
+		sortedPlayers.add(groupPlayer);
+		sortScoreboards();
 
 		return groupPlayer;
 	}
@@ -186,7 +199,7 @@ public class Groups {
 	 */
 	public void removePlayerGroup(TabListUser user) {
 		GroupPlayer groupPlayer = user.getGroupPlayer();
-		groupPlayer.getTabTeam().unregisterTeam(groupPlayer.getFullGroupTeamName());
+		groupPlayer.getTabTeam().unregisterTeam(groupPlayer);
 		groupPlayer.removeGroup();
 
 		sortedPlayers.remove(groupPlayer);
@@ -195,7 +208,7 @@ public class Groups {
 	/**
 	 * Removes the given group by name.
 	 * 
-	 * @param teamName
+	 * @param teamName Name of team.
 	 */
 	public void removeGroup(String teamName) {
 		getTeam(teamName).ifPresent(groupsList::remove);
@@ -245,31 +258,55 @@ public class Groups {
 
 			if (gp.update()) {
 				sortedPlayers.remove(gp);
-				addToTabListPlayerList(gp);
+				sortedPlayers.add(gp);
 			}
 		}
 
-		int priority = 0;
-		for (GroupPlayer groupPlayer : sortedPlayers) {
-			setPlayerTeam(groupPlayer, priority);
-			priority++;
-		}
+		sortScoreboards();
 	}
 
-	private void addToTabListPlayerList(GroupPlayer tlp) {
-		int pos = 0;
+	/**
+	 * This method is used to sort and update players'
+	 * scoreboards. Includes sorting of AFK players.
+	 * If there is no need to change the places of
+	 * groups, they will only be updated in the custom
+	 * name, prefix, suffix and others.
+	 */
+	public void sortScoreboards() {
+		Set<GroupPlayer> playerGroups = sortedPlayers.stream()
+				.sorted(Comparator.comparingInt(GroupPlayer::getPriority))
+				.collect(Collectors.toSet());
 
+		sortedPlayers.clear();
+		sortedPlayers.addAll(playerGroups);
+
+		int priority = sortedPlayers.size();
 		for (GroupPlayer groupPlayer : sortedPlayers) {
-			if (tlp.compareTo(groupPlayer) < 0)
-				break;
+			if (ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(groupPlayer.getUser().getPlayer())) {
+				if (afkPlayersCache.add(groupPlayer)) {
+					setToSort(true);
+				}
 
-			pos++;
+				continue;
+			}
+
+			if (afkPlayersCache.remove(groupPlayer)) {
+				setToSort(true);
+			}
+
+			setPlayerTeam(groupPlayer, priority--);
 		}
 
-		if (pos > 0) {
-			sortedPlayers.offerFirst(tlp);
-		} else {
-			sortedPlayers.offerLast(tlp);
+		if (ConfigValues.isHideGroupWhenAfk()) {
+			setToSort(false);
+			return;
 		}
+
+		for (GroupPlayer afk : afkPlayersCache) {
+			setPlayerTeam(afk, sortedPlayers.size() + 1);
+		}
+
+		setToSort(false);
 	}
+
 }
