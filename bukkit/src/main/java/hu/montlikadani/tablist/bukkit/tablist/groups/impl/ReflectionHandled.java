@@ -41,6 +41,8 @@ public class ReflectionHandled implements ITabScoreboard {
 				return;
 			}
 
+			scoreRef.init();
+
 			unregisterTeam(groupPlayer);
 
 			Player player = tabListUser.getPlayer();
@@ -90,7 +92,6 @@ public class ReflectionHandled implements ITabScoreboard {
 		try {
 
 			String teamName = groupPlayer.getFullGroupTeamName();
-			scoreRef.init();
 
 			Object oldTeamPacket = scoreRef.getScoreboardTeamConstructor().newInstance();
 			scoreRef.getScoreboardTeamName().set(oldTeamPacket, teamName);
