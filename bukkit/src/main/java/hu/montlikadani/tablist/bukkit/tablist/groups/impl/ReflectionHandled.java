@@ -65,10 +65,10 @@ public class ReflectionHandled implements ITabScoreboard {
 
 			constr.setAccessible(true);
 
-			this.packetPlayOutPlayerInfo = constr.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
+			packetPlayOutPlayerInfo = constr.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
 
-			infoListField = ReflectionUtils.getField(this.packetPlayOutPlayerInfo, "b");
-			infoList = (List<Object>) infoListField.get(this.packetPlayOutPlayerInfo);
+			infoListField = ReflectionUtils.getField(packetPlayOutPlayerInfo, "b");
+			infoList = (List<Object>) infoListField.get(packetPlayOutPlayerInfo);
 
 			for (TabListUser user : plugin.getUsers()) {
 				ReflectionUtils.sendPacket(user.getPlayer(), newTeamPacket);
@@ -103,7 +103,7 @@ public class ReflectionHandled implements ITabScoreboard {
 			exception.printStackTrace();
 		}
 
-		this.packetPlayOutPlayerInfo = null;
+		packetPlayOutPlayerInfo = null;
 	}
 
 	private void updateName(String name) {
