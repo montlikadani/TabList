@@ -146,14 +146,6 @@ public class Groups {
 	 * @param safePriority Safe priority value. Should be between 0 and 999999999.
 	 */
 	public void setPlayerTeam(GroupPlayer groupPlayer, int safePriority) {
-		if (safePriority < 0) {
-			safePriority = 0;
-		}
-
-		if (safePriority > 999999999) {
-			safePriority = 999999999;
-		}
-
 		groupPlayer.setSafePriority(safePriority);
 
 		if (!groupPlayer.getUser().isHidden()) {
