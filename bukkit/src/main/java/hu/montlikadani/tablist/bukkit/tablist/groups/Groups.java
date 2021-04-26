@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
@@ -275,7 +276,7 @@ public class Groups {
 	public void sortScoreboards() {
 		Set<GroupPlayer> playerGroups = sortedPlayers.stream()
 				.sorted(Comparator.comparingInt(GroupPlayer::getPriority))
-				.collect(Collectors.toSet());
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 
 		sortedPlayers.clear();
 		sortedPlayers.addAll(playerGroups);
