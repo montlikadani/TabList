@@ -17,7 +17,6 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	private final TabListUser tabListUser;
 	private final ITabScoreboard tabTeam;
 	private final TabList plugin;
-	private final Groups groups;
 
 	private TeamHandler group, globalGroup;
 
@@ -27,12 +26,11 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	private int customPriority = Integer.MIN_VALUE;
 	private int safePriority = 0;
 
-	public GroupPlayer(TabList plugin, TabListUser tabListUser, Groups groups) {
+	public GroupPlayer(TabList plugin, TabListUser tabListUser) {
 		this.plugin = plugin;
 		this.tabListUser = tabListUser;
 
 		tabTeam = new ReflectionHandled(tabListUser);
-		this.groups = groups;
 	}
 
 	public ITabScoreboard getTabTeam() {
@@ -41,7 +39,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 	public void setGroup(TeamHandler group) {
 		this.group = group;
-		this.groups.setToSort(true);
+		this.plugin.getGroups().setToSort(true);
 	}
 
 	public TeamHandler getGroup() {
@@ -112,7 +110,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 					for (TeamHandler t : plugin.getGroups().getGroupsList()) {
 						if (t.isGlobal() && globalGroup != t) {
 							globalGroup = t;
-							this.groups.setToSort(true);
+							this.plugin.getGroups().setToSort(true);
 							break;
 						}
 					}
@@ -121,7 +119,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 				if (group != team) {
 					update = true;
 					group = team;
-					this.groups.setToSort(true);
+					this.plugin.getGroups().setToSort(true);
 				}
 
 				return update;
@@ -143,7 +141,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 			// Avoiding verbose spam
 			if (!found) {
 				playerVaultGroup = plugin.getVaultPerm().getPrimaryGroup(player);
-				this.groups.setToSort(true);
+				this.plugin.getGroups().setToSort(true);
 			}
 		}
 
@@ -154,7 +152,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 				if (!team.isGlobal()) {
 					for (TeamHandler t : plugin.getGroups().getGroupsList()) {
 						if (t.isGlobal() && globalGroup != t) {
-							this.groups.setToSort(true);
+							this.plugin.getGroups().setToSort(true);
 							globalGroup = t;
 							break;
 						}
@@ -162,7 +160,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 				}
 
 				if (group != team) {
-					this.groups.setToSort(true);
+					this.plugin.getGroups().setToSort(true);
 					update = true;
 					group = team;
 				}
@@ -172,13 +170,13 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 			if (team.isGlobal() && globalGroup != team) {
 				globalGroup = team;
-				this.groups.setToSort(true);
+				this.plugin.getGroups().setToSort(true);
 				continue;
 			}
 
 			if (PluginUtils.hasPermission(player, team.getPermission())) {
 				if (group != team) {
-					this.groups.setToSort(true);
+					this.plugin.getGroups().setToSort(true);
 					update = true;
 					group = team;
 				}
@@ -190,7 +188,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 				for (String groups : plugin.getVaultPerm().getPlayerGroups(player)) {
 					if (groups.equalsIgnoreCase(team.getTeam())) {
 						if (group != team) {
-							this.groups.setToSort(true);
+							this.plugin.getGroups().setToSort(true);
 							update = true;
 							group = team;
 						}
