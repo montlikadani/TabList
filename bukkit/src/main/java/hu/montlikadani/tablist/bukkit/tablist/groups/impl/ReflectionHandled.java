@@ -83,6 +83,10 @@ public class ReflectionHandled implements ITabScoreboard {
 
 	@Override
 	public void unregisterTeam(GroupPlayer groupPlayer) {
+		if (scoreRef.getScoreboardTeamConstructor() == null) {
+			return;
+		}
+
 		try {
 			Object oldTeamPacket = scoreRef.getScoreboardTeamConstructor().newInstance();
 
