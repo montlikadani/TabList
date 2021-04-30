@@ -1,25 +1,26 @@
 package hu.montlikadani.tablist.bukkit.utils;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Containers.CMIUser;
-import com.earth2me.essentials.Essentials;
 
 import de.myzelyam.api.vanish.VanishAPI;
 import hu.montlikadani.ragemode.gameUtils.GameUtils;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.API.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
+import net.ess3.api.IEssentials;
 
 public final class PluginUtils {
 
 	private static final TabList PLUGIN = TabListAPI.getPlugin();
 
 	public static boolean isAfk(Player p) {
-		if (PLUGIN.isPluginEnabled("Essentials")) {
-			return JavaPlugin.getPlugin(Essentials.class).getUser(p).isAfk();
+		Plugin ess = PLUGIN.getServer().getPluginManager().getPlugin("Essentials");
+		if (ess != null && ess.isEnabled()) {
+			return ((IEssentials) ess).getUser(p).isAfk();
 		}
 
 		if (PLUGIN.isPluginEnabled("CMI")) {
@@ -35,8 +36,9 @@ public final class PluginUtils {
 			return VanishAPI.isInvisible(p);
 		}
 
-		if (PLUGIN.isPluginEnabled("Essentials")) {
-			return JavaPlugin.getPlugin(Essentials.class).getUser(p).isVanished();
+		Plugin ess = PLUGIN.getServer().getPluginManager().getPlugin("Essentials");
+		if (ess != null && ess.isEnabled()) {
+			return ((IEssentials) ess).getUser(p).isVanished();
 		}
 
 		if (PLUGIN.isPluginEnabled("CMI")) {
@@ -59,8 +61,9 @@ public final class PluginUtils {
 	}
 
 	public static int getVanishedPlayers() {
-		if (PLUGIN.isPluginEnabled("Essentials")) {
-			return JavaPlugin.getPlugin(Essentials.class).getVanishedPlayers().size();
+		Plugin ess = PLUGIN.getServer().getPluginManager().getPlugin("Essentials");
+		if (ess != null && ess.isEnabled()) {
+			return ((IEssentials) ess).getVanishedPlayersNew().size();
 		}
 
 		if (PLUGIN.isPluginEnabled("SuperVanish") || PLUGIN.isPluginEnabled("PremiumVanish")) {
@@ -90,9 +93,13 @@ public final class PluginUtils {
 	}
 
 	public static boolean isInGame(Player p) {
-		return PLUGIN.isPluginEnabled("RageMode")
-				&& (hu.montlikadani.ragemode.config.ConfigValues.isTabEnabled()
-						|| hu.montlikadani.ragemode.config.ConfigValues.isTabFormatEnabled())
-				&& GameUtils.isPlayerPlaying(p) && GameUtils.getGameByPlayer(p).isGameRunning();
+		if (PLUGIN.isPluginEnabled("RageMode") && (hu.montlikadani.ragemode.config.ConfigValues.isTabEnabled()
+				|| hu.montlikadani.ragemode.config.ConfigValues.isTabFormatEnabled())) {
+			hu.montlikadani.ragemode.gameLogic.Game game = GameUtils.getGameByPlayer(p);
+
+			return game != null && game.isGameRunning();
+		}
+
+		return false;
 	}
 }

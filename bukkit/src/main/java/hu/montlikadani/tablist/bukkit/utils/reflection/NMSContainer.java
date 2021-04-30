@@ -7,11 +7,15 @@ import java.lang.reflect.Field;
 public class NMSContainer {
 
 	private static Field infoList;
+
 	private static Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstructor;
+
 	private static Class<?> packet, packetPlayOutPlayerInfo, enumPlayerInfoAction, entityPlayerClass, enumGameMode,
 			playerInfoData, minecraftServer;
+
 	private static Object gameModeNotSet, gameModeSpectator, gameModeSurvival, addPlayer, removePlayer, updateGameMode,
 			updateLatency, updateDisplayName;
+
 	private static Constructor<?>[] playerInfoDataConstructors;
 
 	static {
@@ -64,8 +68,10 @@ public class NMSContainer {
 				}
 			}
 
+			Class<?> entityPlayerArrayClass = Array.newInstance(entityPlayerClass, 0).getClass();
+
 			(playOutPlayerInfoConstructor = packetPlayOutPlayerInfo.getDeclaredConstructor(enumPlayerInfoAction,
-					Array.newInstance(entityPlayerClass, 0).getClass())).setAccessible(true);
+					entityPlayerArrayClass)).setAccessible(true);
 
 			try {
 				enumGameMode = ReflectionUtils.getNMSClass("EnumGamemode");

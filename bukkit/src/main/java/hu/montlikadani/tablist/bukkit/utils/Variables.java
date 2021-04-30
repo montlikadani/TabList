@@ -242,6 +242,7 @@ public class Variables {
 
 		if (s.indexOf("%ip-address%") >= 0) {
 			java.net.InetSocketAddress address = p.getAddress();
+
 			if (address != null && address.getAddress() != null) {
 				s = StringUtils.replace(s, "%ip-address%", address.getAddress().toString().replace("/", ""));
 			}

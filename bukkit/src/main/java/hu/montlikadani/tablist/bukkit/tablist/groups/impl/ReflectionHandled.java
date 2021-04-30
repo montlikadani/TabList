@@ -21,15 +21,10 @@ public class ReflectionHandled implements ITabScoreboard {
 
 	private final TabScoreboardReflection scoreRef = new TabScoreboardReflection();
 	private final TabList plugin = TabListAPI.getPlugin();
-	private final TabListUser tabListUser;
 
 	private Object packetPlayOutPlayerInfo;
 	private java.lang.reflect.Field infoListField;
 	private List<Object> infoList;
-
-	public ReflectionHandled(TabListUser tabListUser) {
-		this.tabListUser = tabListUser;
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -43,7 +38,7 @@ public class ReflectionHandled implements ITabScoreboard {
 
 			unregisterTeam(groupPlayer);
 
-			Player player = tabListUser.getPlayer();
+			Player player = groupPlayer.getUser().getPlayer();
 			Object handle = ReflectionUtils.getHandle(player);
 			Object[] entityPlayerArray = (Object[]) Array.newInstance(handle.getClass(), 1);
 			String teamName = groupPlayer.getFullGroupTeamName();
@@ -52,6 +47,7 @@ public class ReflectionHandled implements ITabScoreboard {
 			Object displayName = ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1)
 					? ReflectionUtils.getAsIChatBaseComponent(teamName)
 					: teamName;
+
 			scoreRef.getScoreboardTeamName().set(newTeamPacket, teamName);
 			scoreRef.getScoreboardTeamMode().set(newTeamPacket, 0);
 			scoreRef.getScoreboardTeamDisplayName().set(newTeamPacket, displayName);
@@ -82,7 +78,7 @@ public class ReflectionHandled implements ITabScoreboard {
 	@Override
 	public void setTeam(GroupPlayer groupPlayer) {
 		registerTeam(groupPlayer);
-		updateName(groupPlayer.getCustomTabName());
+		updateName(groupPlayer);
 	}
 
 	@Override
@@ -103,7 +99,9 @@ public class ReflectionHandled implements ITabScoreboard {
 		packetPlayOutPlayerInfo = null;
 	}
 
-	private void updateName(String name) {
+	private void updateName(GroupPlayer groupPlayer) {
+		String name = groupPlayer.getCustomTabName();
+
 		try {
 			if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {
 				name = Util.colorMsg(name);
@@ -115,7 +113,7 @@ public class ReflectionHandled implements ITabScoreboard {
 			for (Object infoData : infoList) {
 				GameProfile profile = (GameProfile) ReflectionUtils.invokeMethod(infoData, "a");
 
-				if (!profile.getId().equals(tabListUser.getUniqueId())) {
+				if (!profile.getId().equals(groupPlayer.getUser().getUniqueId())) {
 					continue;
 				}
 
@@ -139,6 +137,7 @@ public class ReflectionHandled implements ITabScoreboard {
 
 			for (TabListUser user : plugin.getUsers()) {
 				Player player = user.getPlayer();
+
 				ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
 				ReflectionUtils.sendPacket(player, infoPacket);
 			}

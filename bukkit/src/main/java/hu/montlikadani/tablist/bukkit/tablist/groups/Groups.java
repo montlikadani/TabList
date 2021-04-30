@@ -82,6 +82,7 @@ public class Groups {
 
 		String globPrefix = plugin.getConf().getGroups().getString("globalGroup.prefix", ""),
 				globSuffix = plugin.getConf().getGroups().getString("globalGroup.suffix", "");
+
 		if (!globPrefix.isEmpty() || !globSuffix.isEmpty()) {
 			TeamHandler team = new TeamHandler("global", globPrefix, globSuffix);
 			team.setGlobal(true);
@@ -271,6 +272,7 @@ public class Groups {
 	 * only be updated in the custom name, prefix, suffix and others.
 	 */
 	public void sortScoreboards() {
+		// TODO Improve or get rid from streams
 		Set<GroupPlayer> playerGroups = sortedPlayers.stream().sorted(Comparator.comparingInt(GroupPlayer::getPriority))
 				.collect(Collectors.toCollection(java.util.LinkedHashSet::new));
 

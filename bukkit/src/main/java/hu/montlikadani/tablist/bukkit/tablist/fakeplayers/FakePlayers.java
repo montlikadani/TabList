@@ -12,6 +12,8 @@ import org.bukkit.entity.Player;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.properties.Property;
 
+import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.reflection.NMSContainer;
@@ -19,18 +21,15 @@ import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public class FakePlayers implements IFakePlayers {
 
-	private String name, displayName = "";
+	public String displayName = "";
 
-	private static int id = 0;
+	private final TabList tablist = org.bukkit.plugin.java.JavaPlugin.getPlugin(TabList.class);
 
+	private String name = "";
 	private int ping = -1;
 
 	private Object fakePl;
 	private GameProfile profile;
-
-	public FakePlayers() {
-		id++;
-	}
 
 	@Override
 	public String getName() {
@@ -40,15 +39,6 @@ public class FakePlayers implements IFakePlayers {
 	@Override
 	public void setName(String name) {
 		this.name = name == null ? "" : name;
-
-		if (displayName == null || this.name.equals(displayName)) {
-			setDisplayName(this.name);
-		}
-	}
-
-	@Override
-	public int getId() {
-		return id;
 	}
 
 	@Override
@@ -58,34 +48,26 @@ public class FakePlayers implements IFakePlayers {
 
 	@Override
 	public void setDisplayName(String displayName) {
-		if (displayName == null) {
-			this.displayName = name;
-		} else {
-			// TODO we need here DI with netty#Channel from playerConnection in order to
-			// replace all player placeholders, can do it with async scheduler but we don't
-			// want another running thread
-
-			displayName = Util.colorMsg(displayName);
-			this.displayName = displayName;
+		if (fakePl == null) {
+			return;
 		}
 
-		if (fakePl != null) {
-			try {
-				ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(displayName));
+		displayName = Util.colorMsg(displayName);
 
-				Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
-				Array.set(entityPlayerArray, 0, fakePl);
+		try {
+			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(displayName));
 
-				Object packetPlayOutPlayerInfo = NMSContainer.getPacketPlayOutPlayerInfo()
-						.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
-						.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
+			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
+			Array.set(entityPlayerArray, 0, fakePl);
 
-				for (Player aOnline : Bukkit.getOnlinePlayers()) {
-					ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
-				}
-			} catch (Throwable e) {
-				e.printStackTrace();
+			Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
+					.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
+
+			for (TabListUser user : tablist.getUsers()) {
+				ReflectionUtils.sendPacket(user.getPlayer(), packetPlayOutPlayerInfo);
 			}
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -95,17 +77,15 @@ public class FakePlayers implements IFakePlayers {
 	}
 
 	@Override
-	public void createFakePlayer(Player p) {
-		createFakePlayer(p, "", -1);
-	}
+	public void createFakePlayer(Player player, String headId, int pingLatency) {
+		if (fakePl != null) {
+			return;
+		}
 
-	@Override
-	public void createFakePlayer(Player p, int pingLatency) {
-		createFakePlayer(p, "", pingLatency);
-	}
+		if (displayName == null) {
+			displayName = "";
+		}
 
-	@Override
-	public void createFakePlayer(Player p, String headId, int pingLatency) {
 		if (profile == null) {
 			profile = new GameProfile(UUID.randomUUID(), name);
 		}
@@ -113,15 +93,14 @@ public class FakePlayers implements IFakePlayers {
 		try {
 			Util.tryParseId(headId).ifPresent(this::setSkin);
 
-			fakePl = ReflectionUtils.Classes.getPlayerConstructor(p, profile);
+			fakePl = ReflectionUtils.Classes.getPlayerConstructor(player, profile);
 
 			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(displayName));
 
 			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakePl);
 
-			Object packetPlayOutPlayerInfo = NMSContainer.getPacketPlayOutPlayerInfo()
-					.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+			Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
 					.newInstance(NMSContainer.getAddPlayer(), entityPlayerArray);
 
 			for (Player aOnline : Bukkit.getOnlinePlayers()) {
@@ -136,19 +115,18 @@ public class FakePlayers implements IFakePlayers {
 	}
 
 	@Override
-	public void setPing(int pingAmount) {
-		if (profile == null || pingAmount < 0) {
+	public void setPing(int ping) {
+		if (fakePl == null || ping < -1) {
 			return;
 		}
 
-		ping = pingAmount;
+		this.ping = ping;
 
 		try {
 			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakePl);
 
-			Object packetPlayOutPlayerInfo = NMSContainer.getPacketPlayOutPlayerInfo()
-					.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+			Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
 					.newInstance(NMSContainer.getUpdateLatency(), entityPlayerArray);
 
 			Field infoListField = ReflectionUtils.getField(packetPlayOutPlayerInfo, "b");
@@ -220,8 +198,7 @@ public class FakePlayers implements IFakePlayers {
 			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakePl);
 
-			Object packetPlayOutPlayerInfo = NMSContainer.getPacketPlayOutPlayerInfo()
-					.getConstructor(NMSContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+			Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
 					.newInstance(NMSContainer.getRemovePlayer(), entityPlayerArray);
 
 			for (Player aOnline : Bukkit.getOnlinePlayers()) {

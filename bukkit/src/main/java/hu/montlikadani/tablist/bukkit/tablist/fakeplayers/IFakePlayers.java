@@ -26,13 +26,6 @@ public interface IFakePlayers {
 	void setName(String name);
 
 	/**
-	 * Returns the identifier of this fake player.
-	 * 
-	 * @return the id of fake player
-	 */
-	int getId();
-
-	/**
 	 * Gets the display name of the fake player.
 	 * 
 	 * @return display name of fake player
@@ -52,24 +45,6 @@ public interface IFakePlayers {
 	 * @return the amount of latency
 	 */
 	int getPingLatency();
-
-	/**
-	 * Attempts to create a fake player for the given player.
-	 * 
-	 * @param p {@link Player}
-	 * @see #createFakePlayer(Player, int)
-	 */
-	void createFakePlayer(Player p);
-
-	/**
-	 * Attempts to create a fake player for the given player and sets the ping
-	 * latency.
-	 * 
-	 * @param player      {@link Player} where to display
-	 * @param pingLatency ping value (> 0)
-	 * @see #createFakePlayer(Player, String, int)
-	 */
-	void createFakePlayer(Player player, int pingLatency);
 
 	/**
 	 * Attempts to create a fake player for the given player, setting their head

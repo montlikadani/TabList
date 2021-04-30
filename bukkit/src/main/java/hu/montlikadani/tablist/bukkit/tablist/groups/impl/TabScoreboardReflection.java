@@ -11,11 +11,10 @@ public class TabScoreboardReflection {
 	private Constructor<?> scoreboardTeamConstructor;
 
 	private Field scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamPrefix, scoreboardTeamSuffix,
-			scoreboardTeamColor, scoreboardTeamNames, scoreboardTeamMode, scoreboardPlayers;
+			/*scoreboardTeamColor, */scoreboardTeamNames, scoreboardTeamMode, scoreboardPlayers;
 
-	private Object teamColor;
+	//private Object teamColor;
 
-	@SuppressWarnings("unchecked")
 	public void init() throws Exception {
 		Class<?> packetPlayOutScoreboardTeam = ReflectionUtils.getNMSClass("PacketPlayOutScoreboardTeam");
 
@@ -25,10 +24,10 @@ public class TabScoreboardReflection {
 		scoreboardTeamPrefix = ReflectionUtils.getField(packetPlayOutScoreboardTeam, "c");
 		scoreboardTeamSuffix = ReflectionUtils.getField(packetPlayOutScoreboardTeam, "d");
 
-		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1)) {
+		/*if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1)) {
 			scoreboardTeamColor = ReflectionUtils.getField(packetPlayOutScoreboardTeam, "g");
 			teamColor = Enum.valueOf(ReflectionUtils.getNMSClass("EnumChatFormat").asSubclass(Enum.class), "WHITE");
-		}
+		}*/
 
 		scoreboardTeamNames = ReflectionUtils.getField(packetPlayOutScoreboardTeam,
 				ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "h" : "g");
@@ -58,9 +57,9 @@ public class TabScoreboardReflection {
 		return scoreboardTeamSuffix;
 	}
 
-	public Field getScoreboardTeamColor() {
+	/*public Field getScoreboardTeamColor() {
 		return scoreboardTeamColor;
-	}
+	}*/
 
 	public Field getScoreboardTeamNames() {
 		return scoreboardTeamNames;
@@ -74,7 +73,7 @@ public class TabScoreboardReflection {
 		return scoreboardPlayers;
 	}
 
-	public Object getTeamColor() {
+	/*public Object getTeamColor() {
 		return teamColor;
-	}
+	}*/
 }

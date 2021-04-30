@@ -109,8 +109,12 @@ public final class JsonComponent {
 						obj.addProperty("color", colorName = "white");
 						break;
 					default:
-						obj.addProperty("color",
-								colorName = org.bukkit.ChatColor.getByChar(nextChar).name().toLowerCase());
+						org.bukkit.ChatColor colorChar = org.bukkit.ChatColor.getByChar(nextChar);
+
+						if (colorChar != null) {
+							obj.addProperty("color", colorName = colorChar.name().toLowerCase());
+						}
+
 						break;
 					}
 

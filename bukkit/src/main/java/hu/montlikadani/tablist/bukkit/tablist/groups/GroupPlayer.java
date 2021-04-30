@@ -30,7 +30,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 		this.plugin = plugin;
 		this.tabListUser = tabListUser;
 
-		tabTeam = new ReflectionHandled(tabListUser);
+		tabTeam = new ReflectionHandled();
 	}
 
 	public ITabScoreboard getTabTeam() {
@@ -198,7 +198,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 				break;
 			}
 
-			if (team.getPermission().isEmpty() && plugin.hasVault()) {
+			if (plugin.hasVault() && team.getPermission().isEmpty()) {
 				for (String groupsVault : plugin.getVaultPerm().getPlayerGroups(player)) {
 					if (groupsVault.equalsIgnoreCase(team.getTeam())) {
 						if (group != team) {
@@ -295,7 +295,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	}
 
 	public String getCustomTabName() {
-		Player player = getUser().getPlayer();
+		Player player = tabListUser.getPlayer();
 		String tabName = player.getName();
 
 		if (ConfigValues.isAssignGlobalGroup() && globalGroup != null && !globalGroup.getTabName().isEmpty()) {

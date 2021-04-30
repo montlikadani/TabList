@@ -28,10 +28,8 @@ public abstract class AfkPlayers {
 			}
 		}
 
-		if (!ConfigValues.isHidePlayerFromTabAfk()) {
-			return;
+		if (ConfigValues.isHidePlayerFromTabAfk()) {
+			plugin.getUser(player).ifPresent(user -> user.setHidden(value));
 		}
-
-		plugin.getUser(player).ifPresent(user -> user.setHidden(value));
 	}
 }

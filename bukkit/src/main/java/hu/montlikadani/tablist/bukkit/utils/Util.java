@@ -47,7 +47,7 @@ public class Util {
 	}
 
 	public static Optional<UUID> tryParseId(String uuid) {
-		if (uuid == null || uuid.isEmpty()) {
+		if (uuid == null || uuid.length() < 36) {
 			return Optional.empty();
 		}
 

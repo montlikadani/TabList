@@ -38,16 +38,6 @@ public class FakePlayerHandler {
 		return Optional.empty();
 	}
 
-	public Optional<IFakePlayers> getFakePlayerById(int id) {
-		for (IFakePlayers fp : fakePlayers) {
-			if (fp.getId() == id) {
-				return Optional.of(fp);
-			}
-		}
-
-		return Optional.empty();
-	}
-
 	public void load() {
 		fakePlayers.clear();
 
@@ -61,6 +51,7 @@ public class FakePlayerHandler {
 		}
 
 		// Old
+		// Planned removal version: v5.5.4
 		if (plugin.getConf().getFakeplayers().isList("fakeplayers")) {
 			for (String one : plugin.getConf().getFakeplayers().getStringList("fakeplayers")) {
 				if (one.contains(";")) {
@@ -83,13 +74,12 @@ public class FakePlayerHandler {
 		}
 
 		for (String name : cs.getKeys(false)) {
-			String displayName = cs.getString(name + ".displayname", "");
 			final String headUUID = cs.getString(name + ".headuuid", "");
 			final int ping = cs.getInt(name + ".ping", -1);
 
-			final IFakePlayers fp = new FakePlayers();
+			final FakePlayers fp = new FakePlayers();
+			fp.displayName = cs.getString(name + ".displayname", "");
 			fp.setName(name);
-			fp.setDisplayName(displayName);
 
 			plugin.getServer().getOnlinePlayers().forEach(all -> fp.createFakePlayer(all, headUUID, ping));
 			fakePlayers.add(fp);
@@ -105,18 +95,16 @@ public class FakePlayerHandler {
 	}
 
 	public void display(Player player) {
-		fakePlayers.forEach(fpl -> fpl.createFakePlayer(player));
+		for (IFakePlayers fp : fakePlayers) {
+			fp.createFakePlayer(player, "", -1);
+		}
 	}
 
-	public EditingContextError createPlayer(Player p, String name, String displayName) {
-		return createPlayer(p, name, displayName, "", -1);
+	public EditingContextError createPlayer(Player player, String name, String displayName) {
+		return createPlayer(player, name, displayName, "", -1);
 	}
 
-	public EditingContextError createPlayer(Player p, String name, String displayName, int ping) {
-		return createPlayer(p, name, displayName, "", ping);
-	}
-
-	public EditingContextError createPlayer(final Player p, final String name, String displayName,
+	public EditingContextError createPlayer(final Player player, final String name, String displayName,
 			final String headUUID, final int ping) {
 		if (name == null || name.trim().isEmpty()) {
 			return EditingContextError.UNKNOWN;
@@ -147,7 +135,7 @@ public class FakePlayerHandler {
 		IFakePlayers fp = new FakePlayers();
 		fp.setName(name);
 		fp.setDisplayName(displayName);
-		fp.createFakePlayer(p, headUUID, ping);
+		fp.createFakePlayer(player, headUUID, ping);
 		fakePlayers.add(fp);
 		return EditingContextError.OK;
 	}
