@@ -50,29 +50,6 @@ public class FakePlayerHandler {
 			cs = plugin.getConf().getFakeplayers().createSection("list");
 		}
 
-		// Old
-		// Planned removal version: v5.5.4
-		if (plugin.getConf().getFakeplayers().isList("fakeplayers")) {
-			for (String one : plugin.getConf().getFakeplayers().getStringList("fakeplayers")) {
-				if (one.contains(";")) {
-					String[] split = one.split(";");
-					String path = split[0] + ".";
-					cs.set(path + "displayname", split[0]);
-
-					if (split.length > 0 && Util.tryParseId(split[1]).isPresent()) {
-						cs.set(path + "headuuid", split[1]);
-					}
-
-					if (split.length > 1) {
-						try {
-							cs.set(path + "ping", Integer.parseInt(split[2]));
-						} catch (NumberFormatException e) {
-						}
-					}
-				}
-			}
-		}
-
 		for (String name : cs.getKeys(false)) {
 			final String headUUID = cs.getString(name + ".headuuid", "");
 			final int ping = cs.getInt(name + ".ping", -1);
