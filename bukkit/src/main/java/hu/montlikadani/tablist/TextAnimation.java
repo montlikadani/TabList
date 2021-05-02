@@ -1,7 +1,5 @@
 package hu.montlikadani.tablist;
 
-import java.util.List;
-
 public final class TextAnimation {
 
 	private String name;
@@ -10,11 +8,9 @@ public final class TextAnimation {
 
 	private String[] texts;
 
-	private int index = -1;
-
-	public TextAnimation(String name, List<String> texts, int time, boolean random) {
+	public TextAnimation(String name, java.util.List<String> texts, int time, boolean random) {
 		this.name = name;
-		this.time = time < 0 ? 0 : time;
+		this.time = (time < 0 || time > Integer.MAX_VALUE) ? 150 : time;
 		this.random = random;
 		this.texts = new String[texts.size()];
 
@@ -40,15 +36,9 @@ public final class TextAnimation {
 	}
 
 	public String getText() {
-		if (index + 1 >= texts.length) {
-			index = -1;
-		}
-
-		++index;
-
 		return random
 				? texts[java.util.concurrent.ThreadLocalRandom.current().nextInt(texts.length) % (texts.length * time)]
-				: texts[(int) ((index * time % System.currentTimeMillis()) / time)];
+				: texts[(int) ((System.currentTimeMillis() % (texts.length * time)) / time)];
 	}
 
 	public String getLastText() {

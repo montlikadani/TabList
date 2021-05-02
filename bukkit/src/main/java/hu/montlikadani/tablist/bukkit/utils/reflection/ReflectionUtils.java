@@ -2,7 +2,6 @@ package hu.montlikadani.tablist.bukkit.utils.reflection;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 
 import org.bukkit.entity.Player;
 
@@ -10,7 +9,7 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 
 public final class ReflectionUtils {
 
-	private static Object modifiersField;
+	//private static Object modifiersField;
 	private static JsonComponent jsonComponent;
 
 	public static Method jsonComponentMethod;
@@ -24,16 +23,16 @@ public final class ReflectionUtils {
 		} catch (Exception e) {
 		}
 
-		try {
+		/*try {
 			modifiersField = Field.class.getDeclaredField("modifiers");
 		} catch (NoSuchFieldException e) { // Java 12+
 			try {
 				if (JavaAccessibilities.getCurrentVersion() >= 16) {
-					/*Module base = Field.class.getModule(), unnamed = ReflectionUtils.class.getModule();
+					Module base = Field.class.getModule(), unnamed = ReflectionUtils.class.getModule();
 					base.addOpens("java.lang.reflect", unnamed);
 
 					MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(Field.class, MethodHandles.lookup());
-					modifiersField = lookup.findVarHandle(Field.class, "modifiers", int.class);*/
+					modifiersField = lookup.findVarHandle(Field.class, "modifiers", int.class);
 				} else {
 					Method meth;
 
@@ -60,7 +59,7 @@ public final class ReflectionUtils {
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
-		}
+		}*/
 	}
 
 	private ReflectionUtils() {
@@ -145,8 +144,8 @@ public final class ReflectionUtils {
 	 *             not possible in this release to modify final field properties
 	 *             with a hard-coded solution that would allow for continued
 	 *             operation. As mentioned, from Java 12, the final modifier made it
-	 *             almost inoperable to modify these fields. This method can be
-	 *             called, but it does not work on versions 16 and higher.
+	 *             almost inoperable to modify these fields. <strike>This method can be
+	 *             called</strike>, but it does not work on versions 16 and higher.
 	 * 
 	 * @param field    the field for which to set the new value
 	 * @param target   the target class object where to set
@@ -155,7 +154,7 @@ public final class ReflectionUtils {
 	 */
 	@Deprecated
 	public static void modifyFinalField(Field field, Object target, Object newValue) throws Exception {
-		if (modifiersField == null) {
+		/*if (modifiersField == null) {
 			return;
 		}
 
@@ -182,7 +181,7 @@ public final class ReflectionUtils {
 			if (!accessibleBeforeSet) {
 				modifier.setAccessible(accessibleBeforeSet);
 			}
-		}
+		}*/
 	}
 
 	public static void setField(Object object, String fieldName, Object fieldValue) throws Exception {
