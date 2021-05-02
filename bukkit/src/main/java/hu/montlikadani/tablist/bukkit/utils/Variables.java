@@ -162,6 +162,10 @@ public class Variables {
 			for (TabListUser user : plugin.getUsers()) {
 				Player player = user.getPlayer();
 
+				if (player == null) {
+					continue;
+				}
+
 				if (!player.hasPermission("tablist.onlinestaff")
 						|| (!ConfigValues.isCountVanishedStaff() && PluginUtils.isVanished(player))) {
 					continue;

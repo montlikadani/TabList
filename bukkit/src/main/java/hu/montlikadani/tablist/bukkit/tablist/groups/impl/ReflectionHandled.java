@@ -94,7 +94,11 @@ public class ReflectionHandled implements ITabScoreboard {
 			scoreRef.getScoreboardTeamMode().set(oldTeamPacket, 1);
 
 			for (TabListUser user : plugin.getUsers()) {
-				ReflectionUtils.sendPacket(user.getPlayer(), oldTeamPacket);
+				Player player = user.getPlayer();
+
+				if (player != null) {
+					ReflectionUtils.sendPacket(player, oldTeamPacket);
+				}
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
@@ -142,8 +146,10 @@ public class ReflectionHandled implements ITabScoreboard {
 			for (TabListUser user : plugin.getUsers()) {
 				Player player = user.getPlayer();
 
-				ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
-				ReflectionUtils.sendPacket(player, infoPacket);
+				if (player != null) {
+					ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
+					ReflectionUtils.sendPacket(player, infoPacket);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

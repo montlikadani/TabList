@@ -73,6 +73,10 @@ public final class Objects {
 			for (TabListUser user : plugin.getUsers()) {
 				Player player = user.getPlayer();
 
+				if (player == null) {
+					continue;
+				}
+
 				if (ConfigValues.getObjectsDisabledWorlds().contains(player.getWorld().getName())
 						|| PluginUtils.isInGame(player)) {
 					continue;
@@ -107,7 +111,6 @@ public final class Objects {
 					}
 				}
 
-				//final String uId = player.getUniqueId().toString();
 				String pName = player.getName();
 				if (pName.length() > 40) {
 					pName = pName.substring(0, 40);
@@ -143,7 +146,11 @@ public final class Objects {
 		if (!plugin.getUsers().isEmpty()) {
 			for (ObjectTypes t : ObjectTypes.values()) {
 				for (TabListUser user : plugin.getUsers()) {
-					unregisterObjective(getObject(user.getPlayer().getScoreboard(), t));
+					Player player = user.getPlayer();
+
+					if (player != null) {
+						unregisterObjective(getObject(player.getScoreboard(), t));
+					}
 				}
 			}
 		}

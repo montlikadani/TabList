@@ -89,6 +89,10 @@ public class ProtocolPackets extends PacketAdapter {
 				if (hp != null) {
 					Player userPlayer = user.getPlayer();
 
+					if (userPlayer == null) {
+						continue;
+					}
+
 					hp.addPlayerToTab(userPlayer, eventPlayer);
 					hp.addPlayerToTab(eventPlayer, userPlayer);
 					hp.removePlayerFromTab(eventPlayer, userPlayer);
