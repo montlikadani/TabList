@@ -11,6 +11,7 @@ import hu.montlikadani.ragemode.gameUtils.GameUtils;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
+import me.xtomyserrax.StaffFacilities.SFAPI;
 import net.ess3.api.IEssentials;
 
 public final class PluginUtils {
@@ -31,19 +32,23 @@ public final class PluginUtils {
 		return false;
 	}
 
-	public static boolean isVanished(Player p) {
+	public static boolean isVanished(Player player) {
 		if (PLUGIN.isPluginEnabled("SuperVanish") || PLUGIN.isPluginEnabled("PremiumVanish")) {
-			return VanishAPI.isInvisible(p);
+			return VanishAPI.isInvisible(player);
 		}
 
 		Plugin ess = PLUGIN.getServer().getPluginManager().getPlugin("Essentials");
 		if (ess != null && ess.isEnabled()) {
-			return ((IEssentials) ess).getUser(p).isVanished();
+			return ((IEssentials) ess).getUser(player).isVanished();
 		}
 
 		if (PLUGIN.isPluginEnabled("CMI")) {
-			CMIUser user = CMI.getInstance().getPlayerManager().getUser(p);
+			CMIUser user = CMI.getInstance().getPlayerManager().getUser(player);
 			return user != null && user.isVanished();
+		}
+
+		if (PLUGIN.isPluginEnabled("StaffFacilities")) {
+			return SFAPI.isPlayerVanished(player);
 		}
 
 		return false;
@@ -72,6 +77,10 @@ public final class PluginUtils {
 
 		if (PLUGIN.isPluginEnabled("CMI") && CMI.getInstance() != null) {
 			return CMI.getInstance().getVanishManager().getAllVanished().size();
+		}
+
+		if (PLUGIN.isPluginEnabled("StaffFacilities")) {
+			return SFAPI.vanishedPlayersList().size();
 		}
 
 		return 0;

@@ -335,6 +335,11 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>com.github.xtomyserrax</groupId>
+			<artifactId>StaffFacilities</artifactId>
+			<version>5.0.6.0</version>
+		</dependency>
 		<!-- Old PEX -->
 		<dependency>
 			<groupId>ru.tehkode</groupId>
