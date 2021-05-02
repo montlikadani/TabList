@@ -5,7 +5,7 @@ import java.lang.reflect.Array;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 import hu.montlikadani.tablist.bukkit.utils.reflection.NMSContainer;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 

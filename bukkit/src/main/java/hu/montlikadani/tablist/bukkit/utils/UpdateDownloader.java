@@ -13,7 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 
 public abstract class UpdateDownloader {
 

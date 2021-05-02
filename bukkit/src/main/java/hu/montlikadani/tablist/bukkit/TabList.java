@@ -163,7 +163,7 @@ public final class TabList extends JavaPlugin {
 
 		boolean kyoriSupported = false;
 		try {
-			Class.forName("net.kyori.adventure.text.serializer.plain.PlainComponentSerializer");
+			Class.forName("net.kyori.adventure.text.Component");
 			kyoriSupported = true;
 		} catch (ClassNotFoundException e) {
 		}

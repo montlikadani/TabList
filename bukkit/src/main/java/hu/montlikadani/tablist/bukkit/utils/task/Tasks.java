@@ -3,7 +3,7 @@ package hu.montlikadani.tablist.bukkit.utils.task;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitTask;
 
-import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 
 public final class Tasks {
 

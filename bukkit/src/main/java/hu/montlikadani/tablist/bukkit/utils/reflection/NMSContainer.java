@@ -1,5 +1,7 @@
 package hu.montlikadani.tablist.bukkit.utils.reflection;
 
+import static hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils.getNMSClass;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -10,8 +12,8 @@ public class NMSContainer {
 
 	private static Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstructor;
 
-	private static Class<?> packet, packetPlayOutPlayerInfo, enumPlayerInfoAction, entityPlayerClass, enumGameMode,
-			playerInfoData, minecraftServer;
+	private static Class<?> iChatBaseComponent, packet, packetPlayOutPlayerInfo, enumPlayerInfoAction,
+			entityPlayerClass, enumGameMode, playerInfoData, minecraftServer;
 
 	private static Object gameModeNotSet, gameModeSpectator, gameModeSurvival, addPlayer, removePlayer, updateGameMode,
 			updateLatency, updateDisplayName;
@@ -20,20 +22,21 @@ public class NMSContainer {
 
 	static {
 		try {
-			packet = ReflectionUtils.getNMSClass("Packet");
-			packetPlayOutPlayerInfo = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo");
-			entityPlayerClass = ReflectionUtils.getNMSClass("EntityPlayer");
+			iChatBaseComponent = getNMSClass("IChatBaseComponent");
+			packet = getNMSClass("Packet");
+			packetPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo");
+			entityPlayerClass = getNMSClass("EntityPlayer");
 			try {
-				minecraftServer = ReflectionUtils.getNMSClass("MinecraftServer");
+				minecraftServer = getNMSClass("MinecraftServer");
 			} catch (ClassNotFoundException c) {
 				try {
-					minecraftServer = ReflectionUtils.getNMSClass("DedicatedServer");
+					minecraftServer = getNMSClass("DedicatedServer");
 				} catch (ClassNotFoundException e) {
 				}
 			}
 
 			try {
-				enumPlayerInfoAction = ReflectionUtils.getNMSClass("EnumPlayerInfoAction");
+				enumPlayerInfoAction = getNMSClass("EnumPlayerInfoAction");
 			} catch (ClassNotFoundException c) {
 				for (Class<?> clazz : packetPlayOutPlayerInfo.getDeclaredClasses()) {
 					if (clazz.getName().contains("EnumPlayerInfoAction")) {
@@ -52,9 +55,9 @@ public class NMSContainer {
 			infoList = ReflectionUtils.getField(packetPlayOutPlayerInfo, "b");
 
 			try {
-				playerInfoData = ReflectionUtils.getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData");
+				playerInfoData = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData");
 			} catch (ClassNotFoundException e) {
-				playerInfoData = ReflectionUtils.getNMSClass("PlayerInfoData");
+				playerInfoData = getNMSClass("PlayerInfoData");
 			}
 
 			if (playerInfoData != null) {
@@ -74,9 +77,9 @@ public class NMSContainer {
 					entityPlayerArrayClass)).setAccessible(true);
 
 			try {
-				enumGameMode = ReflectionUtils.getNMSClass("EnumGamemode");
+				enumGameMode = getNMSClass("EnumGamemode");
 			} catch (ClassNotFoundException e) {
-				enumGameMode = ReflectionUtils.getNMSClass("WorldSettings$EnumGamemode");
+				enumGameMode = getNMSClass("WorldSettings$EnumGamemode");
 			}
 
 			gameModeNotSet = enumGameMode.getDeclaredField("NOT_SET").get(enumGameMode);
@@ -161,5 +164,9 @@ public class NMSContainer {
 
 	public static Class<?> getMinecraftServer() {
 		return minecraftServer;
+	}
+
+	public static Class<?> getIChatBaseComponent() {
+		return iChatBaseComponent;
 	}
 }

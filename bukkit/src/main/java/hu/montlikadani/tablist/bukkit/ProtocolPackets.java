@@ -12,7 +12,7 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 
-import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.playerlist.HidePlayers;
 import hu.montlikadani.tablist.bukkit.user.TabListPlayer;
@@ -84,10 +84,11 @@ public class ProtocolPackets extends PacketAdapter {
 			Player eventPlayer = event.getPlayer();
 
 			for (TabListUser user : PLUGIN.getUsers()) {
-				Player userPlayer = user.getPlayer();
 				HidePlayers hp = ((TabListPlayer) user).getHidePlayers();
 
 				if (hp != null) {
+					Player userPlayer = user.getPlayer();
+
 					hp.addPlayerToTab(userPlayer, eventPlayer);
 					hp.addPlayerToTab(eventPlayer, userPlayer);
 					hp.removePlayerFromTab(eventPlayer, userPlayer);

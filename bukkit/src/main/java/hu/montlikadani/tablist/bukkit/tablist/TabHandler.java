@@ -230,6 +230,7 @@ public class TabHandler {
 
 		for (String l : worldList) {
 			org.bukkit.World world = Bukkit.getServer().getWorld(l);
+
 			if (world != null) {
 				for (Player all : world.getPlayers()) {
 					TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));

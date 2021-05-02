@@ -11,7 +11,7 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.RenderType;
 import org.bukkit.scoreboard.Scoreboard;
 
-import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.Util;
@@ -20,7 +20,7 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
 
 @SuppressWarnings("deprecation")
-public class Objects {
+public final class Objects {
 
 	private final TabList plugin;
 	private final AtomicInteger objectScore = new AtomicInteger();
@@ -82,6 +82,12 @@ public class Objects {
 				if (object == null) {
 					object = player.getScoreboard().registerNewObjective(ConfigValues.getObjectType().objectName,
 							"dummy");
+
+					object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+
+					if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+						object.setRenderType(RenderType.INTEGER);
+					}
 				}
 
 				if (ConfigValues.getObjectType() == ObjectTypes.PING) {
@@ -97,21 +103,21 @@ public class Objects {
 					} catch (NumberFormatException e) {
 						Util.logConsole(
 								"Invalid custom objective with " + ConfigValues.getCustomObjectSetting() + " value.");
-						continue;
+						return;
 					}
 				}
 
-				object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-
-				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-					object.setRenderType(RenderType.INTEGER);
+				//final String uId = player.getUniqueId().toString();
+				String pName = player.getName();
+				if (pName.length() > 40) {
+					pName = pName.substring(0, 40);
 				}
 
-				final String uId = player.getUniqueId().toString();
+				final String n = pName;
 
-				if (object.getScore(uId).getScore() != objectScore.get()) {
+				if (object.getScore(n).getScore() != objectScore.get()) {
 					plugin.getUsers().forEach(all -> getObject(all.getPlayer().getScoreboard())
-							.ifPresent(o -> o.getScore(uId).setScore(objectScore.get())));
+							.ifPresent(o -> o.getScore(n).setScore(objectScore.get())));
 				}
 			}
 		}, ConfigValues.getObjectRefreshInterval(), ConfigValues.getObjectRefreshInterval());

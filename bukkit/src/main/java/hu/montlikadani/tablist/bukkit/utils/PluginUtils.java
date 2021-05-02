@@ -9,7 +9,7 @@ import com.Zrips.CMI.Containers.CMIUser;
 import de.myzelyam.api.vanish.VanishAPI;
 import hu.montlikadani.ragemode.gameUtils.GameUtils;
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import net.ess3.api.IEssentials;
 

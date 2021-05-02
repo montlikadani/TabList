@@ -70,6 +70,7 @@ public class OperatorNodes implements ExpressionNode {
 		for (int i = 0; i < expressions.length; i++) {
 			String expression = expressions[i];
 			String s = str.replaceAll("[^" + expression + "]", "");
+
 			if (s.contentEquals(expression)) {
 				operator = s;
 			}

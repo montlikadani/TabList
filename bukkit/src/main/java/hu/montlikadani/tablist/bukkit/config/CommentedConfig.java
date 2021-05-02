@@ -129,7 +129,7 @@ public class CommentedConfig extends YamlConfiguration {
 					index = length - 1;
 				}
 
-				if (currentPath.toString().isEmpty()) {
+				if (currentPath.length() == 0) {
 					currentPath = new StringBuilder(line.substring(0, index));
 				} else {
 					int whiteSpace = 0;
@@ -301,13 +301,7 @@ public class CommentedConfig extends YamlConfiguration {
 
 	public List<String> get(String path, List<String> def) {
 		path = process(path, def);
-
-		List<String> value = config.getStringList(path);
-		for (int p = 0; p < value.size(); p++) {
-			value.set(p, value.get(p));
-		}
-
-		return value;
+		return config.getStringList(path);
 	}
 
 	public String get(String path, String def) {

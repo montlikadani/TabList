@@ -4,17 +4,29 @@ import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.Util;
+import hu.montlikadani.tablist.bukkit.utils.reflection.NMSContainer;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public abstract class TabTitle {
 
 	private static Class<?> playerListHeaderFooter;
+	private static java.lang.reflect.Constructor<?> playerListHeaderFooterConstructor;
 
 	static {
 		try {
 			playerListHeaderFooter = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
+		}
+
+		try {
+			playerListHeaderFooterConstructor = playerListHeaderFooter.getConstructor();
+		} catch (NoSuchMethodException e) {
+			try {
+				playerListHeaderFooterConstructor = playerListHeaderFooter
+						.getConstructor(NMSContainer.getIChatBaseComponent());
+			} catch (NoSuchMethodException ex) {
+			}
 		}
 	}
 
@@ -33,7 +45,7 @@ public abstract class TabTitle {
 
 		try {
 			try {
-				Object packet = playerListHeaderFooter.getConstructor().newInstance(),
+				Object packet = playerListHeaderFooterConstructor.newInstance(),
 						tabHeader = ReflectionUtils.getAsIChatBaseComponent(header),
 						tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);
 
@@ -47,17 +59,23 @@ public abstract class TabTitle {
 
 				ReflectionUtils.sendPacket(player, packet);
 			} catch (Exception f) {
-				java.lang.reflect.Constructor<?> titleConstructor = null;
-				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_R1)) {
-					titleConstructor = playerListHeaderFooter.getConstructor();
-				} else if (ServerVersion.isCurrentLower(ServerVersion.v1_12_R1)) {
-					titleConstructor = playerListHeaderFooter
-							.getConstructor(ReflectionUtils.getAsIChatBaseComponent(header).getClass());
+				Object packet = null;
+
+				try {
+					if (ServerVersion.isCurrentLower(ServerVersion.v1_12_R1)) {
+						packet = playerListHeaderFooterConstructor
+								.newInstance(ReflectionUtils.getAsIChatBaseComponent(header));
+					}
+				} catch (IllegalArgumentException e) {
+					try {
+						packet = playerListHeaderFooterConstructor.newInstance();
+					} catch (IllegalArgumentException ex) {
+					}
 				}
 
-				if (titleConstructor != null) {
-					ReflectionUtils.setField(titleConstructor, "b", ReflectionUtils.getAsIChatBaseComponent(footer));
-					ReflectionUtils.sendPacket(player, titleConstructor);
+				if (packet != null) {
+					ReflectionUtils.setField(packet, "b", ReflectionUtils.getAsIChatBaseComponent(footer));
+					ReflectionUtils.sendPacket(player, packet);
 				}
 			}
 		} catch (Exception t) {

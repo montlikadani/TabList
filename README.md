@@ -13,7 +13,6 @@ A configurable plugin that allows all online players that are one the server to 
 ## Link
 * [Spigot](https://www.spigotmc.org/resources/46229/)
 * [Bukkit](https://dev.bukkit.org/projects/animated-tab-tablist)
-* [MCMarket](https://www.mc-market.org/resources/6127/)
 * [Sponge](https://ore.spongepowered.org/montlikadani/%5BAnimated-Tab%5D---TabList)
 
 ### Bug report/feature request

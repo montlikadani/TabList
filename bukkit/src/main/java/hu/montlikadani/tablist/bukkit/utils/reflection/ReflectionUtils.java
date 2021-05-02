@@ -13,13 +13,11 @@ public final class ReflectionUtils {
 	private static Object modifiersField;
 	private static JsonComponent jsonComponent;
 
-	public static Class<?> iChatBaseComponent;
 	public static Method jsonComponentMethod;
 
 	static {
 		try {
-			iChatBaseComponent = getNMSClass("IChatBaseComponent");
-			Class<?>[] declaredClasses = iChatBaseComponent.getDeclaredClasses();
+			Class<?>[] declaredClasses = NMSContainer.getIChatBaseComponent().getDeclaredClasses();
 			if (declaredClasses.length > 0) {
 				jsonComponentMethod = declaredClasses[0].getMethod("a", String.class);
 			}
@@ -82,16 +80,16 @@ public final class ReflectionUtils {
 
 	public static Object getAsIChatBaseComponent(final String text) throws Exception {
 		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1)) {
-			return getJsonComponent().parseProperty(text, iChatBaseComponent);
+			return getJsonComponent().parseProperty(text, NMSContainer.getIChatBaseComponent());
 		}
 
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
 			Class<?> chatSerializer = getNMSClass("ChatSerializer");
-			return iChatBaseComponent.cast(
+			return NMSContainer.getIChatBaseComponent().cast(
 					chatSerializer.getMethod("a", String.class).invoke(chatSerializer, "{\"text\":\"" + text + "\"}"));
 		}
 
-		return jsonComponentMethod.invoke(iChatBaseComponent, "{\"text\":\"" + text + "\"}");
+		return jsonComponentMethod.invoke(NMSContainer.getIChatBaseComponent(), "{\"text\":\"" + text + "\"}");
 	}
 
 	public static Object invokeMethod(Object obj, String name) throws Exception {

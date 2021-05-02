@@ -1,12 +1,11 @@
 package hu.montlikadani.tablist.bukkit.listeners.plugins;
 
-import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
-
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.API.TabListAPI;
+import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.bukkit.utils.Util;
 
 public abstract class AfkPlayers {
 
@@ -14,17 +13,12 @@ public abstract class AfkPlayers {
 
 	protected void goAfk(Player player, boolean value) {
 		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowPlayerGroup()) {
-			String path = "placeholder-format.afk-status.format-" + (value ? "yes" : "no");
-			String result = "";
+			String prop = value ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo();
 
-			if (plugin.getConfig().contains(path)) {
-				result = colorMsg(ConfigValues.isAfkStatusShowInRightLeftSide()
-						? player.getName() + plugin.getConfig().getString(path)
-						: plugin.getConfig().getString(path) + player.getName());
-			}
-
-			if (!result.isEmpty()) {
-				plugin.getComplement().setPlayerListName(player, result);
+			if (!prop.isEmpty()) {
+				plugin.getComplement().setPlayerListName(player,
+						Util.colorMsg(ConfigValues.isAfkStatusShowInRightLeftSide() ? player.getName() + prop
+								: prop + player.getName()));
 			}
 		}
 

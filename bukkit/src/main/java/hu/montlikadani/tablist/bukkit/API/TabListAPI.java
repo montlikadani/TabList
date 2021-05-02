@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.bukkit.API;
+package hu.montlikadani.tablist.bukkit.api;
 
 import java.util.UUID;
 
@@ -28,19 +28,6 @@ public class TabListAPI {
 	 */
 	public static TabList getPlugin() {
 		return JavaPlugin.getPlugin(TabList.class);
-	}
-
-	/**
-	 * Checks whatever the tablist toggled for the specified player uuid. This is
-	 * much slower to respond because it converts the string to uuid.
-	 * 
-	 * @param uuid Player UUID
-	 * @return true if toggled
-	 */
-	public static boolean isTabListToggled(String uuid) {
-		Validate.notEmpty(uuid, "Player UUID can't be empty/null");
-
-		return isTabListToggled(UUID.fromString(uuid));
 	}
 
 	/**
@@ -75,8 +62,6 @@ public class TabListAPI {
 	 * @param string Footer
 	 */
 	public static void sendTabList(Player p, String header, String footer) {
-		Validate.notNull(p, "Player can't be null");
-
 		TabTitle.sendTabTitle(p, header, footer);
 	}
 
@@ -109,13 +94,11 @@ public class TabListAPI {
 	 * Gets the current ping of player
 	 * 
 	 * @param player Player
-	 * @return Ping integer
+	 * @return the current amount of ping of the given player
 	 */
-	public static int getPing(Player p) {
-		Validate.notNull(p, "Player can't be null");
-
+	public static int getPing(Player player) {
 		try {
-			Object nmsPlayer = ReflectionUtils.getHandle(p);
+			Object nmsPlayer = ReflectionUtils.getHandle(player);
 			return ReflectionUtils.getField(nmsPlayer.getClass(), "ping", false).getInt(nmsPlayer);
 		} catch (Exception e) {
 			e.printStackTrace();
