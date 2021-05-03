@@ -338,7 +338,7 @@
 		<dependency>
 			<groupId>com.github.xtomyserrax</groupId>
 			<artifactId>StaffFacilities</artifactId>
-			<version>5.0.6.0</version>
+			<version>5.0.8</version>
 		</dependency>
 		<!-- Old PEX -->
 		<dependency>
