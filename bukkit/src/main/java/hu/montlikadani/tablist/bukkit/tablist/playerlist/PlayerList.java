@@ -31,6 +31,10 @@ public class PlayerList {
 		for (TabListUser user : plugin.getUsers()) {
 			Player pl = user.getPlayer();
 
+			if (pl == null) {
+				continue;
+			}
+
 			hide(player, pl);
 			hide(pl, player);
 		}
@@ -46,6 +50,10 @@ public class PlayerList {
 		for (TabListUser user : plugin.getUsers()) {
 			Player pl = user.getPlayer();
 
+			if (pl == null) {
+				continue;
+			}
+
 			show(player, pl);
 			show(pl, player);
 		}
@@ -60,6 +68,10 @@ public class PlayerList {
 
 		for (TabListUser user : plugin.getUsers()) {
 			Player pls = user.getPlayer();
+
+			if (pls == null) {
+				continue;
+			}
 
 			if (!pls.canSee(player)) {
 				show(pls, player);
@@ -81,7 +93,7 @@ public class PlayerList {
 		for (TabListUser user : plugin.getUsers()) {
 			Player pls = user.getPlayer();
 
-			if (player.getWorld().getUID().equals(pls.getWorld().getUID())) {
+			if (pls != null && player.getWorld().getUID().equals(pls.getWorld().getUID())) {
 				show(player, pls);
 				show(pls, player);
 			}

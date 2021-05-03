@@ -189,6 +189,10 @@ public final class ReflectionUtils {
 	}
 
 	public static void sendPacket(Player player, Object packet) {
+		if (player == null) {
+			return;
+		}
+
 		try {
 			Object playerHandle = getHandle(player);
 			Object playerConnection = getField(playerHandle, "playerConnection").get(playerHandle);

@@ -119,8 +119,13 @@ public final class Objects {
 				final String n = pName;
 
 				if (object.getScore(n).getScore() != objectScore.get()) {
-					plugin.getUsers().forEach(all -> getObject(all.getPlayer().getScoreboard())
-							.ifPresent(o -> o.getScore(n).setScore(objectScore.get())));
+					for (TabListUser us : plugin.getUsers()) {
+						Player pl = us.getPlayer();
+
+						if (pl != null) {
+							getObject(pl.getScoreboard()).ifPresent(o -> o.getScore(n).setScore(objectScore.get()));
+						}
+					}
 				}
 			}
 		}, ConfigValues.getObjectRefreshInterval(), ConfigValues.getObjectRefreshInterval());

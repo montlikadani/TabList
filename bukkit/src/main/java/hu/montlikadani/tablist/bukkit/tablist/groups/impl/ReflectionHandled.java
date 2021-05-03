@@ -39,6 +39,10 @@ public class ReflectionHandled implements ITabScoreboard {
 			unregisterTeam(groupPlayer);
 
 			Player player = groupPlayer.getUser().getPlayer();
+			if (player == null) {
+				return;
+			}
+
 			Object handle = ReflectionUtils.getHandle(player);
 			Object[] entityPlayerArray = (Object[]) Array.newInstance(handle.getClass(), 1);
 			String teamName = groupPlayer.getFullGroupTeamName();
@@ -94,11 +98,7 @@ public class ReflectionHandled implements ITabScoreboard {
 			scoreRef.getScoreboardTeamMode().set(oldTeamPacket, 1);
 
 			for (TabListUser user : plugin.getUsers()) {
-				Player player = user.getPlayer();
-
-				if (player != null) {
-					ReflectionUtils.sendPacket(player, oldTeamPacket);
-				}
+				ReflectionUtils.sendPacket(user.getPlayer(), oldTeamPacket);
 			}
 		} catch (Exception exception) {
 			exception.printStackTrace();
