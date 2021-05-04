@@ -156,17 +156,18 @@ public class CommentedConfig extends YamlConfiguration {
 						if (lastIndex < 0) {
 							currentPath = new StringBuilder();
 						} else {
-							currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append('.');
+							currentPath.replace(lastIndex, currentPath.length(), "").append('.');
 						}
 
 						currentPath.append(line.substring(whiteSpace, index));
 						depth = newDepth;
 					} else {
 						int lastIndex = currentPath.lastIndexOf(".");
+
 						if (lastIndex < 0) {
 							currentPath = new StringBuilder();
 						} else {
-							currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "").append('.');
+							currentPath.replace(lastIndex, currentPath.length(), "").append('.');
 						}
 
 						currentPath.append(line.substring(whiteSpace, index));

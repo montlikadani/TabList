@@ -53,6 +53,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	public void removeGroup() {
 		group = null;
 		globalGroup = null;
+		plugin.getGroups().setToSort(false);
 	}
 
 	public TabListUser getUser() {

@@ -22,7 +22,7 @@ import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
 
-public class Groups {
+public final class Groups {
 
 	private final TabList plugin;
 
@@ -165,7 +165,7 @@ public class Groups {
 	 * <p>
 	 * After adding/or the player existing, their groups will get updated once to
 	 * retrieve the approximately group and sets the prefix/suffix to be shown in
-	 * player list. See {@link #setPlayerTeam(GroupPlayer, int)}
+	 * player list.
 	 * 
 	 * @param player {@link Player}
 	 * @return {@link GroupPlayer} if ever exists or not

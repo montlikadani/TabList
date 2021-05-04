@@ -108,6 +108,10 @@ public class ReflectionHandled implements ITabScoreboard {
 	}
 
 	private void updateName(GroupPlayer groupPlayer) {
+		if (infoListField == null || packetPlayOutPlayerInfo == null) {
+			return;
+		}
+
 		String name = groupPlayer.getCustomTabName();
 
 		try {
