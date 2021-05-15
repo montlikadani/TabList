@@ -144,9 +144,8 @@ change-prefix-suffix-in-tablist:
   assign-global-group-to-normal: false
 
   # Prefer player's primary Vault group when assigning tablist group from groups.yml?
-  # true - player will be assigned their primary vault group where possible, after that
-  # groups from groups.yml will be applied in descending order.
-  # false - groups from groups.yml will be applied in descending order.
+  # true - player will be assigned their primary vault group where possible
+  # false - applies the group that has the higher priority in the permission plugin
   prefer-primary-vault-group: true
 
 # Tablist objective types

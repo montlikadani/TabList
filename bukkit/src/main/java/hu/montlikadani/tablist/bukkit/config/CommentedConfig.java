@@ -10,7 +10,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -54,15 +53,11 @@ public class CommentedConfig extends YamlConfiguration {
 
 	@Override
 	public void save(String file) throws IOException {
-		Validate.notEmpty(file, "File cannot be null/empty");
-
 		save(new File(file));
 	}
 
 	@Override
 	public void save(File file) throws IOException {
-		Validate.notNull(file, "File cannot be null");
-
 		com.google.common.io.Files.createParentDirs(file);
 
 		String saveToString = saveToString();
@@ -90,16 +85,21 @@ public class CommentedConfig extends YamlConfiguration {
 		boolean commentedPath = false, node = false;
 		int depth = 0;
 
-		for (final String line : yaml.split("[" + System.lineSeparator() + "]")) {
+		String[] split = yaml.split("[" + System.lineSeparator() + "]");
+
+		for (int s = 0; s < split.length; s++) {
+			final String line = split[s];
+
 			if (line.startsWith("#")) {
 				continue; // Ignore comments
 			}
 
 			int length = line.length();
-
 			boolean keyOk = true;
+
 			if (line.contains(": ")) {
 				int index = line.indexOf(": ");
+
 				if (index < 0) {
 					index = length - 1;
 				}
@@ -114,13 +114,14 @@ public class CommentedConfig extends YamlConfiguration {
 				}
 
 				String key = line.substring(whiteSpace, index);
+
 				if (key.contains(" ") || key.contains("&") || key.contains(".") || key.contains("'")
 						|| key.contains("\"")) {
 					keyOk = false;
 				}
 			}
 
-			if (line.contains(": ") && keyOk || (length > 1 && line.charAt(length - 1) == ':')) {
+			if ((line.contains(": ") && keyOk) || (length > 1 && line.charAt(length - 1) == ':')) {
 				commentedPath = false;
 				node = true;
 
@@ -178,12 +179,12 @@ public class CommentedConfig extends YamlConfiguration {
 			}
 
 			StringBuilder newLine = new StringBuilder(line);
+
 			if (node) {
 				String comment = !commentedPath ? comments.getOrDefault(currentPath.toString(), "") : "";
 
 				if (!comment.isEmpty()) {
 					newLine.insert(0, System.lineSeparator()).insert(0, comment);
-					comment = "";
 					commentedPath = true;
 				}
 			}
@@ -246,30 +247,11 @@ public class CommentedConfig extends YamlConfiguration {
 			return config;
 		}
 
-		FileInputStream inputStream = null;
-		InputStreamReader reader = null;
-
-		try {
-			config.load(reader = new InputStreamReader(inputStream = new FileInputStream(file)));
+		try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file))) {
+			config.load(reader);
 		} catch (FileNotFoundException e) {
 		} catch (InvalidConfigurationException | IOException e) {
 			org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, e.getLocalizedMessage());
-		} finally {
-			if (inputStream != null) {
-				try {
-					inputStream.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
 		}
 
 		return config;

@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist.bukkit.config.constantsLoader;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,13 +8,17 @@ import java.util.Set;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+import hu.montlikadani.tablist.bukkit.utils.Util;
+
 public final class TabConfigValues {
 
 	private static boolean enabled, rememberToggledTablistToFile, hideTabWhenPlayerVanished, random;
 
 	private static int updateInterval;
 
-	private static List<String> disabledWorlds, blackListedPlayers, defaultHeader, defaultFooter;
+	private static List<String> disabledWorlds, blackListedPlayers;
+
+	private static String[] defaultHeader, defaultFooter;
 
 	private static final Set<String> perWorldKeys = new HashSet<>(), permissionKeys = new HashSet<>();
 
@@ -34,10 +37,10 @@ public final class TabConfigValues {
 		disabledWorlds = c.getStringList("disabled-worlds");
 		blackListedPlayers = c.getStringList("blacklisted-players");
 
-		defaultHeader = c.isList("header") ? c.getStringList("header")
-				: c.isString("header") ? Arrays.asList(c.getString("header")) : null;
-		defaultFooter = c.isList("footer") ? c.getStringList("footer")
-				: c.isString("footer") ? Arrays.asList(c.getString("footer")) : null;
+		defaultHeader = c.isList("header") ? c.getStringList("header").toArray(new String[0])
+				: c.isString("header") ? Util.toArray(c.getString("header")) : null;
+		defaultFooter = c.isList("footer") ? c.getStringList("footer").toArray(new String[0])
+				: c.isString("footer") ? Util.toArray(c.getString("footer")) : null;
 
 		org.bukkit.configuration.ConfigurationSection section = c.getConfigurationSection("per-world");
 		if (section != null) {
@@ -83,11 +86,11 @@ public final class TabConfigValues {
 		return blackListedPlayers;
 	}
 
-	public static List<String> getDefaultHeader() {
+	public static String[] getDefaultHeader() {
 		return defaultHeader;
 	}
 
-	public static List<String> getDefaultFooter() {
+	public static String[] getDefaultFooter() {
 		return defaultFooter;
 	}
 

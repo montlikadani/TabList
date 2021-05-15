@@ -67,4 +67,8 @@ public class Util {
 
 		return Optional.empty();
 	}
+
+	public static String[] toArray(String str) {
+		return new String[] { str };
+	}
 }

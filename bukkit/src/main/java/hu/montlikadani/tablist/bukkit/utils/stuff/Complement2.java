@@ -12,7 +12,7 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 public class Complement2 implements Complement {
 
 	private Component deserialize(String t) {
-		return Component.text(t);
+		return LegacyComponentSerializer.legacyAmpersand().deserialize(t);
 	}
 
 	private String serialize(Component component) {

@@ -98,7 +98,7 @@ public final class PluginUtils {
 			}
 		}
 
-		return player.isPermissionSet(perm) && player.hasPermission(perm);
+		return player.hasPermission(perm);
 	}
 
 	public static boolean isInGame(Player p) {

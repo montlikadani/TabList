@@ -100,9 +100,8 @@ public class ConfigValues {
 				"false - \"normalGroupPrefix\"");
 		c.addComment("change-prefix-suffix-in-tablist.prefer-primary-vault-group",
 				"Prefer player's primary Vault group when assigning tablist group from groups.yml?",
-				"true - player will be assigned their primary vault group where possible, after that",
-				"groups from groups.yml will be applied in descending order.",
-				"false - groups from groups.yml will be applied in descending order.");
+				"true - player will be assigned their primary vault group where possible",
+				"false - applies the group that has the higher priority in the permission plugin");
 		c.addComment("tablist-object-type", "Tablist objective types",
 				"Shows your current health (with life indicator), your current ping or any NUMBER placeholder",
 				"after the player's name (before the ping indicator).");

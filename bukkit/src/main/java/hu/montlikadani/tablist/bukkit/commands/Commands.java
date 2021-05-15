@@ -118,8 +118,6 @@ public class Commands implements CommandExecutor, TabCompleter {
 		return true;
 	}
 
-	private String[] fpCompletions = { "add", "remove", "list", "setskin", "setping", "setdisplayname", "rename" };
-
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		List<String> cmds = new ArrayList<>();
@@ -130,7 +128,8 @@ public class Commands implements CommandExecutor, TabCompleter {
 			break;
 		case 2:
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
-				for (String c : fpCompletions) {
+				for (String c : new String[] { "add", "remove", "list", "setskin", "setping", "setdisplayname",
+						"rename" }) {
 					cmds.add(c);
 				}
 			} else if (args[0].equalsIgnoreCase("toggle")) {

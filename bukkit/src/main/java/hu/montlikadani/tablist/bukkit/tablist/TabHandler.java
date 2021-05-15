@@ -1,7 +1,6 @@
 package hu.montlikadani.tablist.bukkit.tablist;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
@@ -15,6 +14,7 @@ import org.bukkit.permissions.PermissionDefault;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
+import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.Variables;
 
 public class TabHandler {
@@ -27,7 +27,7 @@ public class TabHandler {
 
 	private final List<String> worldList = new ArrayList<>();
 
-	private List<String> header, footer;
+	private String[] header, footer;
 
 	public TabHandler(TabList plugin, UUID playerUUID) {
 		this.plugin = plugin;
@@ -117,6 +117,7 @@ public class TabHandler {
 
 		if (plugin.hasVault() && path.isEmpty() && c.contains("per-group")) {
 			String group = plugin.getVaultPerm().getPrimaryGroup(player);
+
 			if (group != null) {
 				group = group.toLowerCase();
 
@@ -127,13 +128,13 @@ public class TabHandler {
 		}
 
 		if (!path.isEmpty()) {
-			header = c.isList(path + "header") ? c.getStringList(path + "header")
-					: c.isString(path + "header") ? Arrays.asList(c.getString(path + "header")) : null;
-			footer = c.isList(path + "footer") ? c.getStringList(path + "footer")
-					: c.isString(path + "footer") ? Arrays.asList(c.getString(path + "footer")) : null;
+			header = c.isList(path + "header") ? c.getStringList(path + "header").toArray(new String[0])
+					: c.isString(path + "header") ? Util.toArray(c.getString(path + "header")) : null;
+			footer = c.isList(path + "footer") ? c.getStringList(path + "footer").toArray(new String[0])
+					: c.isString(path + "footer") ? Util.toArray(c.getString(path + "footer")) : null;
 		}
 
-		if ((header == null || header.isEmpty()) && (footer == null || footer.isEmpty())) {
+		if ((header == null || header.length == 0) && (footer == null || footer.length == 0)) {
 			header = TabConfigValues.getDefaultHeader();
 			footer = TabConfigValues.getDefaultFooter();
 		}
@@ -161,7 +162,7 @@ public class TabHandler {
 			return;
 		}
 
-		if (header != null && header.isEmpty() && footer != null && footer.isEmpty()) {
+		if (header != null && header.length == 0 && footer != null && footer.length == 0) {
 			return;
 		}
 
@@ -172,10 +173,10 @@ public class TabHandler {
 			ThreadLocalRandom random = ThreadLocalRandom.current();
 
 			if (header != null)
-				he = header.get(random.nextInt(header.size()));
+				he = header[random.nextInt(header.length)];
 
 			if (footer != null)
-				fo = footer.get(random.nextInt(footer.size()));
+				fo = footer[random.nextInt(footer.length)];
 		}
 
 		int r = 0;

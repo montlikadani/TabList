@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.Global;
@@ -146,15 +145,15 @@ public class Variables {
 		}
 
 		if (str.indexOf("%max-players%") >= 0) {
-			str = StringUtils.replace(str, "%max-players%", Integer.toString(Bukkit.getServer().getMaxPlayers()));
+			str = StringUtils.replace(str, "%max-players%", Integer.toString(plugin.getServer().getMaxPlayers()));
 		}
 
 		if (str.indexOf("%vanished-players%") >= 0) {
 			str = StringUtils.replace(str, "%vanished-players%", Integer.toString(PluginUtils.getVanishedPlayers()));
 		}
 
-		str = StringUtils.replace(str, "%servertype%", Bukkit.getServer().getName());
-		str = StringUtils.replace(str, "%mc-version%", Bukkit.getServer().getBukkitVersion());
+		str = StringUtils.replace(str, "%servertype%", plugin.getServer().getName());
+		str = StringUtils.replace(str, "%mc-version%", plugin.getServer().getBukkitVersion());
 		str = StringUtils.replace(str, "%motd%", plugin.getComplement().getMotd());
 
 		int staffs = 0;
