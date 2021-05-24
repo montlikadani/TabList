@@ -9,7 +9,6 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 
 public final class ReflectionUtils {
 
-	//private static Object modifiersField;
 	private static JsonComponent jsonComponent;
 
 	public static Method jsonComponentMethod;
@@ -17,49 +16,13 @@ public final class ReflectionUtils {
 	static {
 		try {
 			Class<?>[] declaredClasses = NMSContainer.getIChatBaseComponent().getDeclaredClasses();
+
 			if (declaredClasses.length > 0) {
 				jsonComponentMethod = declaredClasses[0].getMethod("a", String.class);
 			}
 		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
-		/*try {
-			modifiersField = Field.class.getDeclaredField("modifiers");
-		} catch (NoSuchFieldException e) { // Java 12+
-			try {
-				if (JavaAccessibilities.getCurrentVersion() >= 16) {
-					Module base = Field.class.getModule(), unnamed = ReflectionUtils.class.getModule();
-					base.addOpens("java.lang.reflect", unnamed);
-
-					MethodHandles.Lookup lookup = MethodHandles.privateLookupIn(Field.class, MethodHandles.lookup());
-					modifiersField = lookup.findVarHandle(Field.class, "modifiers", int.class);
-				} else {
-					Method meth;
-
-					if (JavaAccessibilities.getCurrentVersion() >= 15) {
-						meth = Class.class.getDeclaredMethod("getDeclaredFieldsImpl");
-					} else {
-						meth = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
-					}
-
-					boolean accessibleBeforeSet = JavaAccessibilities.isAccessible(meth, null);
-					meth.setAccessible(true);
-
-					Field[] fields = (Field[]) (JavaAccessibilities.getCurrentVersion() >= 15 ? meth.invoke(Field.class)
-							: meth.invoke(Field.class, false));
-					for (Field f : fields) {
-						if ("modifiers".equals(f.getName())) {
-							modifiersField = f;
-							break;
-						}
-					}
-
-					meth.setAccessible(accessibleBeforeSet);
-				}
-			} catch (Exception ex) {
-				ex.printStackTrace();
-			}
-		}*/
 	}
 
 	private ReflectionUtils() {
@@ -134,54 +97,6 @@ public final class ReflectionUtils {
 		}
 
 		return field;
-	}
-
-	/**
-	 * Changes the specified final field to the newValue and makes it accessible.
-	 * 
-	 * @deprecated Since the release of Java 16, it has become {@code Deprecated}
-	 *             due to security suggestions and reasons. For this reason, it is
-	 *             not possible in this release to modify final field properties
-	 *             with a hard-coded solution that would allow for continued
-	 *             operation. As mentioned, from Java 12, the final modifier made it
-	 *             almost inoperable to modify these fields. <strike>This method can be
-	 *             called</strike>, but it does not work on versions 16 and higher.
-	 * 
-	 * @param field    the field for which to set the new value
-	 * @param target   the target class object where to set
-	 * @param newValue the new value for field
-	 * @throws Exception
-	 */
-	@Deprecated
-	public static void modifyFinalField(Field field, Object target, Object newValue) throws Exception {
-		/*if (modifiersField == null) {
-			return;
-		}
-
-		field.setAccessible(true);
-
-		if (JavaAccessibilities.getCurrentVersion() >= 16) {
-			int mods = field.getModifiers();
-
-			if (Modifier.isFinal(mods)) {
-				((java.lang.invoke.VarHandle) modifiersField).set(field, mods & ~Modifier.FINAL);
-				field.set(target, newValue);
-			}
-		} else {
-			Field modifier = (Field) modifiersField;
-
-			boolean accessibleBeforeSet;
-			if (!(accessibleBeforeSet = JavaAccessibilities.isAccessible(modifier, null))) {
-				modifier.setAccessible(true);
-			}
-
-			modifier.setInt(field, field.getModifiers() & ~Modifier.FINAL);
-			field.set(target, newValue);
-
-			if (!accessibleBeforeSet) {
-				modifier.setAccessible(accessibleBeforeSet);
-			}
-		}*/
 	}
 
 	public static void setField(Object object, String fieldName, Object fieldValue) throws Exception {
