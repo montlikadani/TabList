@@ -78,15 +78,14 @@ public class TabListAPI {
 	/**
 	 * Creates a new fake player that only appear in tablist.
 	 * 
-	 * @param who  the player who's own that player
 	 * @param name the fake player name
 	 * @return {@link IFakePlayers}
-	 * @see IFakePlayers#createFakePlayer(Player, String, int)
+	 * @see IFakePlayers#createFakePlayer(String, int)
 	 */
-	public static IFakePlayers createFakePlayer(Player who, String name) {
+	public static IFakePlayers createFakePlayer(String name) {
 		IFakePlayers fp = new FakePlayers();
 		fp.setName(name);
-		fp.createFakePlayer(who, "", -1);
+		fp.createFakePlayer("", -1);
 		return fp;
 	}
 

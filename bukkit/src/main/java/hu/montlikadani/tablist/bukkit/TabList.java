@@ -4,7 +4,6 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -296,6 +295,7 @@ public final class TabList extends JavaPlugin {
 			objects.unregisterObjectivesForEveryone();
 		} else {
 			org.bukkit.scoreboard.Scoreboard board = player.getScoreboard();
+
 			objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.PING));
 			objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.CUSTOM));
 
@@ -321,7 +321,7 @@ public final class TabList extends JavaPlugin {
 		}
 
 		if (ConfigValues.isFakePlayers()) {
-			fakePlayerHandler.display(player);
+			fakePlayerHandler.display();
 		}
 
 		tabManager.addPlayer(user);
@@ -402,10 +402,11 @@ public final class TabList extends JavaPlugin {
 		}
 
 		if (type.getRawType().isAssignableFrom(List.class)) {
-			List<String> list = new ArrayList<>();
+			List<String> list = conf.getMessages().getStringList(key);
+			int size = list.size();
 
-			for (String one : conf.getMessages().getStringList(key)) {
-				one = colorMsg(one);
+			for (int a = 0; a < size; a++) {
+				String one = colorMsg(list.get(a));
 
 				for (int i = 0; i < placeholders.length; i++) {
 					if (placeholders.length >= i + 2) {
@@ -416,7 +417,7 @@ public final class TabList extends JavaPlugin {
 					i++;
 				}
 
-				list.add(one);
+				list.set(a, one);
 			}
 
 			return (T) list;

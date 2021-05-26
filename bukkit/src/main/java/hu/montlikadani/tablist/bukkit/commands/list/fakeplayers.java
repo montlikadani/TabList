@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import com.google.common.reflect.TypeToken;
 
@@ -19,16 +18,16 @@ import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler;
-import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler.EditingContextError;
+import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler.EditingResult;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.IFakePlayers;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
 @CommandProcessor(
-	name = "fakeplayers",
-	desc = "General commands for setting fake players",
-	params = "add/remove/list/rename/setdisplayname/setskin",
-	permission = Perm.FAKEPLAYERS,
-	playerOnly = true)
+		name = "fakeplayers",
+		desc = "General commands for setting fake players",
+		params = "add/remove/list/rename/setdisplayname/setskin",
+		permission = Perm.FAKEPLAYERS,
+		playerOnly = true)
 public final class fakeplayers implements ICommand {
 
 	private enum Actions {
@@ -70,34 +69,33 @@ public final class fakeplayers implements ICommand {
 			return true;
 		}
 
-		final Player player = (Player) sender;
 		final FakePlayerHandler handler = plugin.getFakePlayerHandler();
-		EditingContextError output;
+		EditingResult output;
 
 		switch (action) {
 		case ADD:
 			String name = args[2];
 			int ping = args.length > 4 ? Util.tryParse(args[4]).orElse(-1) : -1;
-			output = handler.createPlayer(player, name, name, args.length > 3 ? args[3] : "", ping);
 
-			if (output == EditingContextError.ALREADY_EXIST) {
-				sendMsg(player, plugin.getMsg("fake-player.already-added", "%name%", name));
+			if ((output = handler.createPlayer(name, name, args.length > 3 ? args[3] : "",
+					ping)) == EditingResult.ALREADY_EXIST) {
+				sendMsg(sender, plugin.getMsg("fake-player.already-added", "%name%", name));
 				return true;
 			}
 
-			if (output == EditingContextError.OK) {
-				sendMsg(player, plugin.getMsg("fake-player.added", "%name%", name));
+			if (output == EditingResult.OK) {
+				sendMsg(sender, plugin.getMsg("fake-player.added", "%name%", name));
 			}
 
 			break;
 		case REMOVE:
-			if ((output = handler.removePlayer(args[2])) == EditingContextError.NOT_EXIST) {
-				sendMsg(player, plugin.getMsg("fake-player.not-exists"));
+			if ((output = handler.removePlayer(args[2])) == EditingResult.NOT_EXIST) {
+				sendMsg(sender, plugin.getMsg("fake-player.not-exists"));
 				return true;
 			}
 
-			if (output == EditingContextError.OK) {
-				sendMsg(player, plugin.getMsg("fake-player.removed", "%name%", args[2]));
+			if (output == EditingResult.OK) {
+				sendMsg(sender, plugin.getMsg("fake-player.removed", "%name%", args[2]));
 			}
 
 			break;
@@ -106,20 +104,21 @@ public final class fakeplayers implements ICommand {
 				return true;
 			}
 
-			if ((output = handler.renamePlayer(args[2], args[3])) == EditingContextError.NOT_EXIST) {
-				sendMsg(player, plugin.getMsg("fake-player.not-exists"));
+			if ((output = handler.renamePlayer(args[2], args[3])) == EditingResult.NOT_EXIST) {
+				sendMsg(sender, plugin.getMsg("fake-player.not-exists"));
 				return true;
 			}
 
-			if (output == EditingContextError.OK) {
-				sendMsg(player, Util.colorMsg("&2Old name: &e" + args[2] + "&2, new name: &e" + args[3]));
+			if (output == EditingResult.OK) {
+				sendMsg(sender, Util.colorMsg("&2Old name: &e" + args[2] + "&2, new name: &e" + args[3]));
 			}
 
 			break;
 		case LIST:
 			Set<IFakePlayers> list = handler.getFakePlayers();
+
 			if (list.isEmpty()) {
-				sendMsg(player, plugin.getMsg("fake-player.no-fake-player"));
+				sendMsg(sender, plugin.getMsg("fake-player.no-fake-player"));
 				return true;
 			}
 
@@ -134,44 +133,44 @@ public final class fakeplayers implements ICommand {
 				msg += one.getName();
 			}
 
-			plugin.getMsg(new TypeToken<List<String>>() {}.getSubtype(List.class),
-					"fake-player.list", "%amount%", list.size(), "%fake-players%", msg)
-					.forEach(line -> sendMsg(player, Util.colorMsg(line)));
+			plugin.getMsg(new TypeToken<List<String>>() {}.getSubtype(List.class), "fake-player.list", "%amount%", list.size(), "%fake-players%", msg)
+					.forEach(line -> sendMsg(sender, Util.colorMsg(line)));
 			break;
 		case SETSKIN:
-			if ((output = handler.setSkin(args[2], args[3])) == EditingContextError.NOT_EXIST) {
-				sendMsg(player, plugin.getMsg("fake-player.not-exists"));
+			if ((output = handler.setSkin(args[2], args[3])) == EditingResult.NOT_EXIST) {
+				sendMsg(sender, plugin.getMsg("fake-player.not-exists"));
 				return true;
 			}
 
-			if (output == EditingContextError.UUID_MATCH_ERROR) {
-				player.sendMessage("This uuid not matches to a real player uuid.");
+			if (output == EditingResult.UUID_MATCH_ERROR) {
+				sender.sendMessage("This uuid not matches to a real player uuid.");
 			}
 
 			break;
 		case SETPING:
 			int amount = Util.tryParse(args[3]).orElse(-1);
 
-			if ((output = handler.setPing(args[2], amount)) == EditingContextError.NOT_EXIST) {
-				sendMsg(player, plugin.getMsg("fake-player.not-exists"));
+			if ((output = handler.setPing(args[2], amount)) == EditingResult.NOT_EXIST) {
+				sendMsg(sender, plugin.getMsg("fake-player.not-exists"));
 				return true;
 			}
 
-			if (output == EditingContextError.PING_AMOUNT) {
-				sendMsg(player, plugin.getMsg("fake-player.ping-can-not-be-less", "%amount%", amount));
+			if (output == EditingResult.PING_AMOUNT) {
+				sendMsg(sender, plugin.getMsg("fake-player.ping-can-not-be-less", "%amount%", amount));
 			}
 
 			break;
 		case SETDISPLAYNAME:
 			StringBuilder builder = new StringBuilder();
+
 			for (int i = 3; i < args.length; i++) {
 				builder.append(args[i] + (i + 1 < args.length ? " " : ""));
 			}
 
 			output = handler.setDisplayName(args[2], builder.toString().replace("\"", ""));
 
-			if (output == EditingContextError.NOT_EXIST) {
-				sendMsg(player, plugin.getMsg("fake-player.not-exists"));
+			if (output == EditingResult.NOT_EXIST) {
+				sendMsg(sender, plugin.getMsg("fake-player.not-exists"));
 			}
 
 			break;

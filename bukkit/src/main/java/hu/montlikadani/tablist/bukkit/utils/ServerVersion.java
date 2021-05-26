@@ -23,23 +23,17 @@ public enum ServerVersion {
 	v1_18_R1,
 	v1_18_R2;
 
-	private Integer value;
-	private String shortVersion;
+	private int value;
 
 	private static String[] arrayVersion;
 	private static ServerVersion current;
 
 	ServerVersion() {
 		value = Integer.valueOf(name().replaceAll("[^\\d.]", ""));
-		shortVersion = name().substring(0, name().length() - 3);
 	}
 
-	public Integer getValue() {
+	public int getValue() {
 		return value;
-	}
-
-	public String getShortVersion() {
-		return shortVersion;
 	}
 
 	public static ServerVersion getCurrent() {
@@ -87,6 +81,6 @@ public enum ServerVersion {
 	}
 
 	public static boolean isCurrentEqual(ServerVersion v) {
-		return getCurrent().getValue().equals(v.getValue());
+		return getCurrent().getValue() == v.getValue();
 	}
 }

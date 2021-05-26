@@ -55,7 +55,7 @@ public final class PluginUtils {
 	}
 
 	public static int countVanishedPlayers() {
-		final int plSize = org.bukkit.Bukkit.getOnlinePlayers().size();
+		final int plSize = PLUGIN.getServer().getOnlinePlayers().size();
 
 		if (!ConfigValues.isIgnoreVanishedPlayers()) {
 			return plSize;

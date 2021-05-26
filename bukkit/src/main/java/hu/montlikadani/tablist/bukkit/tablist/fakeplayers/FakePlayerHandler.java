@@ -7,13 +7,12 @@ import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
-public class FakePlayerHandler {
+public final class FakePlayerHandler {
 
 	private final TabList plugin;
 	private final Set<IFakePlayers> fakePlayers = new java.util.HashSet<>();
@@ -58,7 +57,7 @@ public class FakePlayerHandler {
 			fp.displayName = cs.getString(name + ".displayname", "");
 			fp.setName(name);
 
-			plugin.getServer().getOnlinePlayers().forEach(all -> fp.createFakePlayer(all, headUUID, ping));
+			fp.createFakePlayer(headUUID, ping);
 			fakePlayers.add(fp);
 		}
 
@@ -71,24 +70,24 @@ public class FakePlayerHandler {
 		}
 	}
 
-	public void display(Player player) {
+	public void display() {
 		for (IFakePlayers fp : fakePlayers) {
-			fp.createFakePlayer(player, "", -1);
+			fp.createFakePlayer(fp.getHeadId(), fp.getPingLatency());
 		}
 	}
 
-	public EditingContextError createPlayer(Player player, String name, String displayName) {
-		return createPlayer(player, name, displayName, "", -1);
+	public EditingResult createPlayer(String name, String displayName) {
+		return createPlayer(name, displayName, "", -1);
 	}
 
-	public EditingContextError createPlayer(final Player player, final String name, String displayName,
+	public EditingResult createPlayer(final String name, String displayName,
 			final String headUUID, final int ping) {
 		if (name == null || name.trim().isEmpty()) {
-			return EditingContextError.UNKNOWN;
+			return EditingResult.UNKNOWN;
 		}
 
 		if (getFakePlayerByName(name).isPresent()) {
-			return EditingContextError.ALREADY_EXIST;
+			return EditingResult.ALREADY_EXIST;
 		}
 
 		String path = "list." + name + ".";
@@ -96,7 +95,7 @@ public class FakePlayerHandler {
 
 		c.set(path + "headuuid", headUUID);
 
-		if (ping > -1) {
+		if (ping >= -1) {
 			c.set(path + "ping", ping);
 		}
 
@@ -106,15 +105,15 @@ public class FakePlayerHandler {
 			c.save(plugin.getConf().getFakeplayersFile());
 		} catch (IOException e) {
 			e.printStackTrace();
-			return EditingContextError.UNKNOWN;
+			return EditingResult.UNKNOWN;
 		}
 
 		IFakePlayers fp = new FakePlayers();
 		fp.setName(name);
 		fp.setDisplayName(displayName);
-		fp.createFakePlayer(player, headUUID, ping);
+		fp.createFakePlayer(headUUID, ping);
 		fakePlayers.add(fp);
-		return EditingContextError.OK;
+		return EditingResult.OK;
 	}
 
 	public void removeAllFakePlayer() {
@@ -122,16 +121,16 @@ public class FakePlayerHandler {
 		fakePlayers.clear();
 	}
 
-	public EditingContextError removePlayer(String name) {
+	public EditingResult removePlayer(String name) {
 		Optional<IFakePlayers> fp = getFakePlayerByName(name);
 
 		if (!fp.isPresent()) {
-			return EditingContextError.NOT_EXIST;
+			return EditingResult.NOT_EXIST;
 		}
 
 		ConfigurationSection section = plugin.getConf().getFakeplayers().getConfigurationSection("list");
 		if (section == null) {
-			return EditingContextError.NOT_EXIST;
+			return EditingResult.NOT_EXIST;
 		}
 
 		for (String sName : section.getKeys(false)) {
@@ -142,7 +141,7 @@ public class FakePlayerHandler {
 					plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
 				} catch (IOException e) {
 					e.printStackTrace();
-					return EditingContextError.UNKNOWN;
+					return EditingResult.UNKNOWN;
 				}
 
 				break;
@@ -151,21 +150,21 @@ public class FakePlayerHandler {
 
 		fp.get().removeFakePlayer();
 		fakePlayers.remove(fp.get());
-		return EditingContextError.OK;
+		return EditingResult.OK;
 	}
 
-	public EditingContextError renamePlayer(final String oldName, final String newName) {
+	public EditingResult renamePlayer(final String oldName, final String newName) {
 		Optional<IFakePlayers> fp = getFakePlayerByName(oldName);
 
 		if (newName == null || !fp.isPresent()) {
-			return EditingContextError.NOT_EXIST;
+			return EditingResult.NOT_EXIST;
 		}
 
 		FileConfiguration c = plugin.getConf().getFakeplayers();
 
 		ConfigurationSection section = c.getConfigurationSection("list");
 		if (section == null) {
-			return EditingContextError.NOT_EXIST;
+			return EditingResult.NOT_EXIST;
 		}
 
 		section.set(oldName, newName);
@@ -174,23 +173,23 @@ public class FakePlayerHandler {
 			c.save(plugin.getConf().getFakeplayersFile());
 		} catch (IOException e) {
 			e.printStackTrace();
-			return EditingContextError.UNKNOWN;
+			return EditingResult.UNKNOWN;
 		}
 
 		fp.get().setName(newName);
-		return EditingContextError.OK;
+		return EditingResult.OK;
 	}
 
-	public EditingContextError setSkin(String name, String uuid) {
+	public EditingResult setSkin(String name, String uuid) {
 		Optional<IFakePlayers> fp = getFakePlayerByName(name);
 
 		if (!fp.isPresent()) {
-			return EditingContextError.NOT_EXIST;
+			return EditingResult.NOT_EXIST;
 		}
 
 		Optional<UUID> id = Util.tryParseId(uuid);
 		if (!id.isPresent()) {
-			return EditingContextError.UUID_MATCH_ERROR;
+			return EditingResult.UUID_MATCH_ERROR;
 		}
 
 		plugin.getConf().getFakeplayers().set("list." + name + ".headuuid", uuid);
@@ -199,21 +198,22 @@ public class FakePlayerHandler {
 			plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
 		} catch (IOException e) {
 			e.printStackTrace();
-			return EditingContextError.UNKNOWN;
+			return EditingResult.UNKNOWN;
 		}
 
 		fp.get().setSkin(id.get());
-		return EditingContextError.OK;
+		return EditingResult.OK;
 	}
 
-	public EditingContextError setPing(String name, int amount) {
+	public EditingResult setPing(String name, int amount) {
 		Optional<IFakePlayers> fp = getFakePlayerByName(name);
+
 		if (!fp.isPresent()) {
-			return EditingContextError.NOT_EXIST;
+			return EditingResult.NOT_EXIST;
 		}
 
-		if (amount < 0) {
-			return EditingContextError.PING_AMOUNT;
+		if (amount < -1) {
+			return EditingResult.PING_AMOUNT;
 		}
 
 		plugin.getConf().getFakeplayers().set("list." + name + ".ping", amount);
@@ -222,17 +222,18 @@ public class FakePlayerHandler {
 			plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
 		} catch (IOException e) {
 			e.printStackTrace();
-			return EditingContextError.UNKNOWN;
+			return EditingResult.UNKNOWN;
 		}
 
 		fp.get().setPing(amount);
-		return EditingContextError.OK;
+		return EditingResult.OK;
 	}
 
-	public EditingContextError setDisplayName(String name, String displayName) {
+	public EditingResult setDisplayName(String name, String displayName) {
 		Optional<IFakePlayers> fp = getFakePlayerByName(name);
+
 		if (!fp.isPresent()) {
-			return EditingContextError.NOT_EXIST;
+			return EditingResult.NOT_EXIST;
 		}
 
 		plugin.getConf().getFakeplayers().set("list." + name + ".displayname", displayName);
@@ -241,14 +242,14 @@ public class FakePlayerHandler {
 			plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
 		} catch (IOException e) {
 			e.printStackTrace();
-			return EditingContextError.UNKNOWN;
+			return EditingResult.UNKNOWN;
 		}
 
 		fp.get().setDisplayName(displayName);
-		return EditingContextError.OK;
+		return EditingResult.OK;
 	}
 
-	public enum EditingContextError {
+	public enum EditingResult {
 		NOT_EXIST, ALREADY_EXIST, EMPTY_DATA, UUID_MATCH_ERROR, PING_AMOUNT, UNKNOWN, OK;
 	}
 }

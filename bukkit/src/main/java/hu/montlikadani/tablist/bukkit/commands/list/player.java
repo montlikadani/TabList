@@ -17,7 +17,6 @@ import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.commands.Commands.ContextArguments;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.groups.GroupPlayer;
-import hu.montlikadani.tablist.bukkit.tablist.groups.Groups;
 import hu.montlikadani.tablist.bukkit.tablist.groups.TeamHandler;
 
 @CommandProcessor(
@@ -71,6 +70,7 @@ public final class player implements ICommand {
 		case SUFFIX:
 		case TABNAME:
 			StringBuilder builder = new StringBuilder();
+
 			for (int i = 3; i < args.length; i++) {
 				builder.append(args[i] + (i + 1 < args.length ? " " : ""));
 			}
@@ -107,16 +107,14 @@ public final class player implements ICommand {
 			e.printStackTrace();
 		}
 
-		Groups groups = plugin.getGroups();
 		if (argument == ContextArguments.REMOVE) {
 			if (!contains) {
 				sendMsg(sender, plugin.getMsg("set-group.not-found", "%team%", target));
 				return false;
 			}
 
-			Player playerTarget = Bukkit.getPlayer(target);
-			plugin.getUser(playerTarget).ifPresent(groups::removePlayerGroup);
-			groups.removeGroup(target);
+			plugin.getUser(Bukkit.getPlayer(target)).ifPresent(plugin.getGroups()::removePlayerGroup);
+			plugin.getGroups().removeGroup(target);
 
 			sendMsg(sender, plugin.getMsg("set-group.removed", "%team%", target));
 		} else {
@@ -124,7 +122,7 @@ public final class player implements ICommand {
 					suffix = config.getString("groups." + target + ".suffix", ""),
 					tabName = config.getString("groups." + target + ".tabname", "");
 
-			TeamHandler team = groups.getTeam(target).orElse(new TeamHandler());
+			TeamHandler team = plugin.getGroups().getTeam(target).orElse(new TeamHandler());
 
 			team.setTeam(target);
 			team.setPrefix(prefix);
@@ -133,7 +131,8 @@ public final class player implements ICommand {
 			team.setPriority(priority);
 
 			Player playerTarget = Bukkit.getPlayer(target);
-			GroupPlayer groupPlayer = groups.addPlayer(playerTarget);
+			GroupPlayer groupPlayer = plugin.getGroups().addPlayer(playerTarget);
+
 			if (groupPlayer != null) {
 				if (!prefix.isEmpty()) {
 					prefix = plugin.getPlaceholders().replaceVariables(playerTarget, prefix);
@@ -146,14 +145,14 @@ public final class player implements ICommand {
 				}
 
 				groupPlayer.setCustomPriority(priority);
-				groups.setPlayerTeam(groupPlayer, priority);
+				plugin.getGroups().setPlayerTeam(groupPlayer, priority);
 			}
 
-			int index = groups.getGroupsList().indexOf(team);
+			int index = plugin.getGroups().getGroupsList().indexOf(team);
 			if (index > -1) {
-				groups.getGroupsList().set(index, team);
+				plugin.getGroups().getGroupsList().set(index, team);
 			} else {
-				groups.getGroupsList().add(team);
+				plugin.getGroups().getGroupsList().add(team);
 			}
 
 			sendMsg(sender, plugin.getMsg("set-group.meta-set", "%team%", target, "%meta%", prefix + tabName + suffix));

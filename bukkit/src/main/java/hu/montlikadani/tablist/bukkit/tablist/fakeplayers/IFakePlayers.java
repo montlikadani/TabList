@@ -1,9 +1,5 @@
 package hu.montlikadani.tablist.bukkit.tablist.fakeplayers;
 
-import java.util.UUID;
-
-import org.bukkit.entity.Player;
-
 /**
  * The interface for creating fake players
  */
@@ -40,6 +36,11 @@ public interface IFakePlayers {
 	void setDisplayName(String displayName);
 
 	/**
+	 * @return the head uuid of this fake player
+	 */
+	String getHeadId();
+
+	/**
 	 * Gets the fake player ping current set of latency.
 	 * 
 	 * @return the amount of latency
@@ -47,14 +48,13 @@ public interface IFakePlayers {
 	int getPingLatency();
 
 	/**
-	 * Attempts to create a fake player for the given player, setting their head
-	 * skin from uuid and ping.
+	 * Attempts to create a fake player with custom head id and a specific amount of
+	 * ping.
 	 * 
-	 * @param player      {@link Player} where to display
-	 * @param headId      an uuid of valid user
+	 * @param headId      a valid user uuid
 	 * @param pingLatency ping value (> 0)
 	 */
-	void createFakePlayer(Player player, String headId, int pingLatency);
+	void createFakePlayer(String headId, int pingLatency);
 
 	/**
 	 * Attempts to set the fake player ping to a new one. If the fake player is not
@@ -68,9 +68,9 @@ public interface IFakePlayers {
 	 * Attempts to set the valid user skin uuid to player list for fake player
 	 * before their name.
 	 * 
-	 * @param skinId an valid user skin uuid
+	 * @param skinId a valid user skin uuid
 	 */
-	void setSkin(UUID skinId);
+	void setSkin(java.util.UUID skinId);
 
 	/**
 	 * Attempts to remove an added fake player.

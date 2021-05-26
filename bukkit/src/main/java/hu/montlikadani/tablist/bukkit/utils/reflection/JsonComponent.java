@@ -30,6 +30,7 @@ public final class JsonComponent {
 
 		int length = text.length();
 		String font = "", colorName = "";
+
 		for (int i = 0; i < length; i++) {
 			if (i >= length) {
 				break;
@@ -138,6 +139,7 @@ public final class JsonComponent {
 			NavigableMap<String, String> map = new java.util.TreeMap<>();
 			String content = getContent(
 					"https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.replace("-", ""));
+
 			if (content == null) {
 				return map;
 			}

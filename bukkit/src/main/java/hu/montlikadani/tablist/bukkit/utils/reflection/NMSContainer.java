@@ -1,12 +1,10 @@
 package hu.montlikadani.tablist.bukkit.utils.reflection;
 
-import static hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils.getNMSClass;
-
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-public class NMSContainer {
+public final class NMSContainer {
 
 	private static Field infoList;
 
@@ -26,6 +24,7 @@ public class NMSContainer {
 			packet = getNMSClass("Packet");
 			packetPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo");
 			entityPlayerClass = getNMSClass("EntityPlayer");
+
 			try {
 				minecraftServer = getNMSClass("MinecraftServer");
 			} catch (ClassNotFoundException c) {
@@ -88,6 +87,15 @@ public class NMSContainer {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	private NMSContainer() {
+	}
+
+	// ReflectionUtils static clause does not even initialised, so we call NMS here
+	private static Class<?> getNMSClass(String name) throws ClassNotFoundException {
+		return Class.forName("net.minecraft.server."
+				+ hu.montlikadani.tablist.bukkit.utils.ServerVersion.getArrayVersion()[3] + "." + name);
 	}
 
 	public static Class<?> getPacket() {

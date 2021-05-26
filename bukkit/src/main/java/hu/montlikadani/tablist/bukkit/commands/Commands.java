@@ -32,6 +32,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 		for (String s : new String[] { "reload", "fakeplayers", "player", "group", "toggle" }) {
 			try {
 				Class<?> c = null;
+
 				try {
 					c = TabList.class.getClassLoader().loadClass("hu.montlikadani.tablist.bukkit.commands.list." + s);
 				} catch (ClassNotFoundException e) {
@@ -99,12 +100,12 @@ public class Commands implements CommandExecutor, TabCompleter {
 
 			if (proc.playerOnly() && !isPlayer) {
 				sendMsg(sender, plugin.getMsg("no-console", "%command%", label + " " + args[0]));
-				return false;
+				return true;
 			}
 
 			if (isPlayer && !sender.hasPermission(proc.permission().getPerm())) {
 				sendMsg(sender, plugin.getMsg("no-permission", "%perm%", proc.permission().getPerm()));
-				return false;
+				return true;
 			}
 
 			command.run(plugin, sender, cmd, label, args);

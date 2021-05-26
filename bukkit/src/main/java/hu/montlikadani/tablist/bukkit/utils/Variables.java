@@ -49,15 +49,20 @@ public class Variables {
 			}
 		}
 
+		int size = nodes.size();
+
 		// Sort
 		// ping in descending order
 		// tps in ascending order
-		for (int i = 0; i < nodes.size(); i++) {
-			for (int j = nodes.size() - 1; j > i; j--) {
+		for (int i = 0; i < size; i++) {
+			for (int j = size - 1; j > i; j--) {
 				ExpressionNode node = nodes.get(i), node2 = nodes.get(j);
-				if ((node.getType() == NodeType.PING && node2.getType() == NodeType.PING
+
+				boolean firstPing = node.getType() == NodeType.PING;
+
+				if ((firstPing && node2.getType() == NodeType.PING
 						&& node.getCondition().getSecondCondition() < node2.getCondition().getSecondCondition())
-						|| (node.getType() == NodeType.TPS && node2.getType() == NodeType.TPS && node.getCondition()
+						|| (firstPing && node2.getType() == NodeType.TPS && node.getCondition()
 								.getSecondCondition() > node2.getCondition().getSecondCondition())) {
 					nodes.set(i, node2);
 					nodes.set(j, node);
@@ -261,6 +266,7 @@ public class Variables {
 
 		String ds = parseExpression(d, NodeType.TPS);
 		int index = ds.indexOf('.');
+
 		if (index >= 0) {
 			int tpsSize = ConfigValues.getTpsSize();
 			int size = (tpsSize == 1 ? 3 : index) + (tpsSize < 1 ? 2 : tpsSize);

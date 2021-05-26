@@ -5,7 +5,7 @@ import org.bukkit.event.Listener;
 
 import net.ess3.api.events.AfkStatusChangeEvent;
 
-public class EssAfkStatus extends AfkPlayers implements Listener {
+public final class EssAfkStatus extends AfkPlayers implements Listener {
 
 	@EventHandler
 	public void onAfkChange(AfkStatusChangeEvent event) {

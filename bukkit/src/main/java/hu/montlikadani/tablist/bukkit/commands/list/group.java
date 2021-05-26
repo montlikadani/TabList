@@ -14,7 +14,6 @@ import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.commands.Commands.ContextArguments;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
-import hu.montlikadani.tablist.bukkit.tablist.groups.Groups;
 import hu.montlikadani.tablist.bukkit.tablist.groups.TeamHandler;
 
 @CommandProcessor(
@@ -68,6 +67,7 @@ public final class group implements ICommand {
 		case SUFFIX:
 		case TABNAME:
 			StringBuilder builder = new StringBuilder();
+
 			for (int i = 3; i < args.length; i++) {
 				builder.append(args[i] + (i + 1 < args.length ? " " : ""));
 			}
@@ -105,21 +105,20 @@ public final class group implements ICommand {
 			e.printStackTrace();
 		}
 
-		Groups groups = plugin.getGroups();
 		if (argument == ContextArguments.REMOVE) {
 			if (!contains) {
 				sendMsg(sender, plugin.getMsg("set-group.not-found", "%team%", target));
 				return false;
 			}
 
-			groups.removeGroup(target);
+			plugin.getGroups().removeGroup(target);
 			sendMsg(sender, plugin.getMsg("set-group.removed", "%team%", target));
 		} else {
 			String prefix = config.getString("groups." + target + ".prefix", ""),
 					suffix = config.getString("groups." + target + ".suffix", ""),
 					tabName = config.getString("groups." + target + ".tabname", "");
 
-			TeamHandler team = groups.getTeam(target).orElse(new TeamHandler());
+			TeamHandler team = plugin.getGroups().getTeam(target).orElse(new TeamHandler());
 
 			team.setTeam(target);
 			team.setPrefix(prefix);
@@ -127,11 +126,11 @@ public final class group implements ICommand {
 			team.setSuffix(suffix);
 			team.setPriority(priority);
 
-			int index = groups.getGroupsList().indexOf(team);
+			int index = plugin.getGroups().getGroupsList().indexOf(team);
 			if (index > -1) {
-				groups.getGroupsList().set(index, team);
+				plugin.getGroups().getGroupsList().set(index, team);
 			} else {
-				groups.getGroupsList().add(team);
+				plugin.getGroups().getGroupsList().add(team);
 			}
 
 			sendMsg(sender, plugin.getMsg("set-group.meta-set", "%team%", target, "%meta%", prefix + tabName + suffix));

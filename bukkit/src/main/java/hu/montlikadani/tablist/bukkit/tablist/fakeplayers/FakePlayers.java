@@ -25,7 +25,7 @@ public class FakePlayers implements IFakePlayers {
 
 	private final TabList tablist = org.bukkit.plugin.java.JavaPlugin.getPlugin(TabList.class);
 
-	private String name = "";
+	private String name = "", headId = "";
 	private int ping = -1;
 
 	private Object fakePl;
@@ -34,6 +34,11 @@ public class FakePlayers implements IFakePlayers {
 	@Override
 	public String getName() {
 		return name;
+	}
+
+	@Override
+	public String getHeadId() {
+		return headId;
 	}
 
 	@Override
@@ -53,6 +58,7 @@ public class FakePlayers implements IFakePlayers {
 		}
 
 		displayName = Util.colorMsg(displayName);
+		this.displayName = displayName;
 
 		try {
 			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(displayName));
@@ -77,10 +83,8 @@ public class FakePlayers implements IFakePlayers {
 	}
 
 	@Override
-	public void createFakePlayer(Player player, String headId, int pingLatency) {
-		if (fakePl != null) {
-			return;
-		}
+	public void createFakePlayer(String headId, int pingLatency) {
+		removeFakePlayer();
 
 		if (displayName == null) {
 			displayName = "";
@@ -93,7 +97,7 @@ public class FakePlayers implements IFakePlayers {
 		try {
 			Util.tryParseId(headId).ifPresent(this::setSkin);
 
-			fakePl = ReflectionUtils.Classes.getPlayerConstructor(player, profile);
+			fakePl = ReflectionUtils.Classes.getNewEntityPlayer(profile);
 
 			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(displayName));
 
@@ -181,8 +185,11 @@ public class FakePlayers implements IFakePlayers {
 			return;
 		}
 
-		ReflectionUtils.getJsonComponent().getSkinValue(headId.toString()).thenAcceptAsync(map -> {
+		this.headId = headId.toString();
+
+		ReflectionUtils.getJsonComponent().getSkinValue(this.headId).thenAcceptAsync(map -> {
 			java.util.Map.Entry<String, String> e = map.pollFirstEntry();
+
 			profile.getProperties().get("textures").clear();
 			profile.getProperties().put("textures", new Property("textures", e.getKey(), e.getValue()));
 		});

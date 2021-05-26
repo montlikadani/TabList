@@ -111,38 +111,37 @@ public final class ReflectionUtils {
 		try {
 			Object playerHandle = getHandle(player);
 			Object playerConnection = getField(playerHandle, "playerConnection").get(playerHandle);
-			playerConnection.getClass().getDeclaredMethod("sendPacket", NMSContainer.getPacket()).invoke(playerConnection,
-					packet);
+
+			playerConnection.getClass().getDeclaredMethod("sendPacket", NMSContainer.getPacket())
+					.invoke(playerConnection, packet);
 		} catch (Exception e) {
 		}
 	}
 
 	public static class Classes {
 
-		public static Object getPlayerConstructor(Player player, Object profile) {
+		public static Object getNewEntityPlayer(Object profile) {
 			Object serverIns = getServer(NMSContainer.getMinecraftServer());
 
 			try {
-				Class<?> manager = getNMSClass("PlayerInteractManager");
-				Object managerIns = null, world;
+				Class<?> interactManager = getNMSClass("PlayerInteractManager");
+				Object managerIns = null;
+
+				// Only get the first world
+				Object worldServer = getHandle(org.bukkit.Bukkit.getServer().getWorlds().get(0));
 
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
-					world = getHandle(player.getWorld());
-					managerIns = manager.getConstructor(world.getClass()).newInstance(world);
-				} else if (ServerVersion.isCurrentEqual(ServerVersion.v1_13_R1)
-						|| ServerVersion.isCurrentEqual(ServerVersion.v1_13_R2)) {
-					world = getHandle(player.getWorld());
-				} else {
-					world = NMSContainer.getMinecraftServer().getDeclaredMethod("getWorldServer", int.class)
-							.invoke(serverIns, 0);
+					managerIns = interactManager.getConstructor(worldServer.getClass()).newInstance(worldServer);
 				}
 
 				if (managerIns == null) {
-					managerIns = manager.getConstructors()[0].newInstance(world);
+					managerIns = interactManager.getConstructors()[0].newInstance(worldServer);
 				}
 
-				return getHandle(player).getClass().getConstructor(NMSContainer.getMinecraftServer(), world.getClass(),
-						profile.getClass(), manager).newInstance(serverIns, world, profile, managerIns);
+				return NMSContainer
+						.getEntityPlayerClass().getConstructor(NMSContainer.getMinecraftServer(),
+								worldServer.getClass(), profile.getClass(), interactManager)
+						.newInstance(serverIns, worldServer, profile, managerIns);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.api.TabListAPI;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 
 public abstract class UpdateDownloader {
 
@@ -24,7 +25,7 @@ public abstract class UpdateDownloader {
 	public static void checkFromGithub(org.bukkit.command.CommandSender sender) {
 		releasesFolder = new File(PLUGIN.getFolder(), "releases");
 
-		if (!PLUGIN.getConfig().get("check-update", false)) {
+		if (!ConfigValues.isCheckUpdate()) {
 			deleteDirectory();
 			return;
 		}
@@ -58,14 +59,14 @@ public abstract class UpdateDownloader {
 				if (sender instanceof Player) {
 					Util.sendMsg(sender,
 							Util.colorMsg("&aA new update for TabList is available!&4 Version:&7 " + versionString
-									+ (PLUGIN.getConfig().get("download-updates", false) ? ""
+									+ (ConfigValues.isDownloadUpdates() ? ""
 											: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/")));
 				} else {
 					Util.sendMsg(sender, "New version (" + versionString
 							+ ") is available at https://www.spigotmc.org/resources/46229/");
 				}
 
-				if (!PLUGIN.getConfig().get("download-updates", false)) {
+				if (!ConfigValues.isDownloadUpdates()) {
 					deleteDirectory();
 					return false;
 				}

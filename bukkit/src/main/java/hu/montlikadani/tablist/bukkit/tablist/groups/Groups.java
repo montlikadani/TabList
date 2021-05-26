@@ -302,8 +302,10 @@ public final class Groups {
 			return;
 		}
 
+		int size = sortedPlayers.size();
+
 		for (GroupPlayer afk : afkPlayersCache) {
-			setPlayerTeam(afk, sortedPlayers.size() + 1);
+			setPlayerTeam(afk, size + 1);
 		}
 
 		setToSort(false);

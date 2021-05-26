@@ -16,7 +16,7 @@ import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.user.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
 
-public class Listeners implements Listener {
+public final class Listeners implements Listener {
 
 	private TabList plugin;
 
