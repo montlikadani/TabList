@@ -266,9 +266,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 		prefix = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(prefix));
 
 		// Replace other plugin's bul...s with only #
-		if (prefix.contains("&#")) {
-			prefix = StringUtils.replace(prefix, "&#", "#");
-		}
+		prefix = StringUtils.replace(prefix, "&#", "#");
 
 		return prefix;
 	}
@@ -293,10 +291,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 		}
 
 		suffix = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(suffix));
-
-		if (suffix.contains("&#")) {
-			suffix = StringUtils.replace(suffix, "&#", "#");
-		}
+		suffix = StringUtils.replace(suffix, "&#", "#");
 
 		return suffix;
 	}
@@ -311,9 +306,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 			tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(group.getTabName()));
 		}
 
-		if (tabName.contains("&#")) {
-			tabName = StringUtils.replace(tabName, "&#", "#");
-		}
+		tabName = StringUtils.replace(tabName, "&#", "#");
 
 		return getPrefix() + tabName + getSuffix();
 	}
@@ -322,6 +315,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	public int compareTo(GroupPlayer tlp) {
 		if (ConfigValues.isAfkSortLast()) {
 			int comp = Boolean.compare(isAfk(), tlp.isAfk());
+
 			if (comp != 0) {
 				return comp;
 			}

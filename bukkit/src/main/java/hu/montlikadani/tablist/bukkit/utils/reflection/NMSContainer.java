@@ -92,7 +92,7 @@ public final class NMSContainer {
 	private NMSContainer() {
 	}
 
-	// ReflectionUtils static clause does not even initialised, so we call NMS here
+	// In ReflectionUtils static clause calls this class again which causes NPE
 	private static Class<?> getNMSClass(String name) throws ClassNotFoundException {
 		return Class.forName("net.minecraft.server."
 				+ hu.montlikadani.tablist.bukkit.utils.ServerVersion.getArrayVersion()[3] + "." + name);

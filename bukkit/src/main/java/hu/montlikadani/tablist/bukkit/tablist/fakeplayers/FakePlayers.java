@@ -61,16 +61,24 @@ public class FakePlayers implements IFakePlayers {
 		this.displayName = displayName;
 
 		try {
-			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(displayName));
-
-			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
-			Array.set(entityPlayerArray, 0, fakePl);
-
-			Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
-					.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
-
 			for (TabListUser user : tablist.getUsers()) {
-				ReflectionUtils.sendPacket(user.getPlayer(), packetPlayOutPlayerInfo);
+				Player player = user.getPlayer();
+
+				if (player == null) {
+					continue;
+				}
+
+				String dName = tablist.getPlaceholders().replaceVariables(player, displayName);
+
+				ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(dName));
+
+				Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
+				Array.set(entityPlayerArray, 0, fakePl);
+
+				Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
+						.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
+
+				ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
 			}
 		} catch (Throwable e) {
 			e.printStackTrace();
@@ -109,6 +117,10 @@ public class FakePlayers implements IFakePlayers {
 
 			for (Player aOnline : Bukkit.getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
+			}
+
+			if (!displayName.isEmpty()) {
+				setDisplayName(displayName);
 			}
 
 			// Setting ping should be in this place, after the player added

@@ -68,7 +68,7 @@ public class ReflectionHandled implements ITabScoreboard {
 
 			packetPlayOutPlayerInfo = constr.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
 
-			infoListField = ReflectionUtils.getField(packetPlayOutPlayerInfo, "b");
+			infoListField = ReflectionUtils.getField(playOutPlayerInfo, "b");
 			infoList = (List<Object>) infoListField.get(packetPlayOutPlayerInfo);
 
 			for (TabListUser user : plugin.getUsers()) {
