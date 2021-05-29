@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
-public class TabScoreboardReflection {
+public final class TabScoreboardReflection {
 
 	private Constructor<?> scoreboardTeamConstructor;
 

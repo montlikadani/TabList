@@ -116,14 +116,15 @@ public final class Objects {
 					pName = pName.substring(0, 40);
 				}
 
-				final String n = pName;
+				final String entry = pName;
 
-				if (object.getScore(n).getScore() != objectScore.get()) {
+				if (object.getScore(entry).getScore() != objectScore.get()) {
 					for (TabListUser us : plugin.getUsers()) {
 						Player pl = us.getPlayer();
 
 						if (pl != null) {
-							getObject(pl.getScoreboard()).ifPresent(o -> o.getScore(n).setScore(objectScore.get()));
+							getObject(pl.getScoreboard())
+									.ifPresent(objective -> objective.getScore(entry).setScore(objectScore.get()));
 						}
 					}
 				}

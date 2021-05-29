@@ -51,8 +51,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	}
 
 	public void removeGroup() {
-		group = null;
-		globalGroup = null;
+		group = globalGroup = null;
 	}
 
 	public TabListUser getUser() {

@@ -1,16 +1,33 @@
 package hu.montlikadani.tablist.bukkit.utils.task;
 
-import org.bukkit.Bukkit;
+import java.util.concurrent.ExecutionException;
+import java.util.function.Supplier;
+
 import org.bukkit.scheduler.BukkitTask;
 
-import hu.montlikadani.tablist.bukkit.api.TabListAPI;
+import hu.montlikadani.tablist.bukkit.TabList;
 
 public final class Tasks {
 
 	private Tasks() {
 	}
 
+	private static final org.bukkit.plugin.Plugin TL = org.bukkit.plugin.java.JavaPlugin
+			.getProvidingPlugin(TabList.class);
+
 	public static BukkitTask submitAsync(Runnable task, long delay, long period) {
-		return Bukkit.getScheduler().runTaskTimerAsynchronously(TabListAPI.getPlugin(), task, delay, period);
+		return TL.getServer().getScheduler().runTaskTimerAsynchronously(TL, task, delay, period);
+	}
+
+	public static <V> V submitSync(Supplier<V> sup) {
+		if (!TL.getServer().isPrimaryThread()) { // Check if current thread is async
+			try {
+				return TL.getServer().getScheduler().callSyncMethod(TL, () -> sup.get()).get();
+			} catch (InterruptedException | ExecutionException e) {
+				e.printStackTrace();
+			}
+		}
+
+		return sup.get();
 	}
 }

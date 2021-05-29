@@ -130,8 +130,9 @@ public class ReflectionHandled implements ITabScoreboard {
 				}
 
 				Constructor<?> playerInfoDataConstr = NMSContainer.getPlayerInfoDataConstructor();
-				Object gameMode = ReflectionUtils.getField(infoData, "c").get(infoData);
-				int ping = (int) ReflectionUtils.getField(infoData, "b").get(infoData);
+				Class<?> infoDataClass = infoData.getClass();
+				Object gameMode = ReflectionUtils.getField(infoDataClass, "c").get(infoData);
+				int ping = (int) ReflectionUtils.getField(infoDataClass, "b").get(infoData);
 
 				infoPacket = playerInfoDataConstr.getParameterCount() == 5
 						? playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
@@ -141,8 +142,8 @@ public class ReflectionHandled implements ITabScoreboard {
 				break;
 			}
 
-			if (infoPacket == null) {
-				return;
+			if (infoPacket == null || packetPlayOutPlayerInfo == null) {
+				return; // Somehow the 2nd condition is null sometimes
 			}
 
 			infoListField.set(packetPlayOutPlayerInfo, Collections.singletonList(infoPacket));

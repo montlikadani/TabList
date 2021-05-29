@@ -80,8 +80,7 @@ public final class FakePlayerHandler {
 		return createPlayer(name, displayName, "", -1);
 	}
 
-	public EditingResult createPlayer(final String name, String displayName,
-			final String headUUID, final int ping) {
+	public EditingResult createPlayer(final String name, String displayName, final String headUUID, int ping) {
 		if (name == null || name.trim().isEmpty()) {
 			return EditingResult.UNKNOWN;
 		}
@@ -95,10 +94,11 @@ public final class FakePlayerHandler {
 
 		c.set(path + "headuuid", headUUID);
 
-		if (ping >= -1) {
-			c.set(path + "ping", ping);
+		if (ping < -1) {
+			ping = -1;
 		}
 
+		c.set(path + "ping", ping);
 		c.set(path + "displayname", displayName);
 
 		try {

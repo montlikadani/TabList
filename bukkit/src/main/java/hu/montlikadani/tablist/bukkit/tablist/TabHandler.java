@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -43,7 +42,7 @@ public class TabHandler {
 		worldEnabled = tabEmpty = false;
 		header = footer = null;
 
-		final Player player = Bukkit.getServer().getPlayer(playerUUID);
+		final Player player = plugin.getServer().getPlayer(playerUUID);
 		if (player == null || !player.isOnline()) {
 			return;
 		}
@@ -145,7 +144,7 @@ public class TabHandler {
 			return;
 		}
 
-		final Player player = Bukkit.getServer().getPlayer(playerUUID);
+		final Player player = plugin.getServer().getPlayer(playerUUID);
 		if (player == null || !player.isOnline()) {
 			return;
 		}
@@ -230,7 +229,7 @@ public class TabHandler {
 		}
 
 		for (String l : worldList) {
-			org.bukkit.World world = Bukkit.getServer().getWorld(l);
+			org.bukkit.World world = plugin.getServer().getWorld(l);
 
 			if (world != null) {
 				for (Player all : world.getPlayers()) {

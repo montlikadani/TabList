@@ -18,7 +18,7 @@ import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.IFakePlayers;
-import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils.JavaAccessibilities;
+import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public class Commands implements CommandExecutor, TabCompleter {
 
@@ -42,7 +42,7 @@ public class Commands implements CommandExecutor, TabCompleter {
 					continue;
 				}
 
-				if (JavaAccessibilities.getCurrentVersion() >= 9) {
+				if (ReflectionUtils.getJavaVersion() >= 9) {
 					cmds.add((ICommand) c.getDeclaredConstructor().newInstance());
 				} else {
 					cmds.add((ICommand) c.newInstance());

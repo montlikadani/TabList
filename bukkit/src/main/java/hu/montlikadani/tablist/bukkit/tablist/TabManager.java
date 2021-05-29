@@ -96,6 +96,7 @@ public class TabManager {
 
 		for (String uuid : section.getKeys(false)) {
 			UUID id;
+
 			try {
 				id = UUID.fromString(uuid);
 			} catch (IllegalArgumentException e) {
@@ -106,6 +107,7 @@ public class TabManager {
 		}
 
 		t.set("tablists", null);
+
 		try {
 			t.save(f);
 		} catch (IOException e) {

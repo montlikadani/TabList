@@ -20,4 +20,7 @@ public final class Symbols {
 
 		SYMBOLS = builder.build();
 	}
+
+	private Symbols() {
+	}
 }

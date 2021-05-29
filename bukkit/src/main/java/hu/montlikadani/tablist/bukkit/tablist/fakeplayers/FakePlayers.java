@@ -6,7 +6,6 @@ import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.mojang.authlib.GameProfile;
@@ -28,7 +27,7 @@ public class FakePlayers implements IFakePlayers {
 	private String name = "", headId = "";
 	private int ping = -1;
 
-	private Object fakePl;
+	private Object fakeEntityPlayer;
 	private GameProfile profile;
 
 	@Override
@@ -53,12 +52,11 @@ public class FakePlayers implements IFakePlayers {
 
 	@Override
 	public void setDisplayName(String displayName) {
-		if (fakePl == null) {
+		if (fakeEntityPlayer == null) {
 			return;
 		}
 
 		displayName = Util.colorMsg(displayName);
-		this.displayName = displayName;
 
 		try {
 			for (TabListUser user : tablist.getUsers()) {
@@ -70,17 +68,17 @@ public class FakePlayers implements IFakePlayers {
 
 				String dName = tablist.getPlaceholders().replaceVariables(player, displayName);
 
-				ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(dName));
+				ReflectionUtils.setField(fakeEntityPlayer, "listName", ReflectionUtils.getAsIChatBaseComponent(dName));
 
-				Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
-				Array.set(entityPlayerArray, 0, fakePl);
+				Object entityPlayerArray = Array.newInstance(fakeEntityPlayer.getClass(), 1);
+				Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
 				Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
 						.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
 
 				ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -105,17 +103,15 @@ public class FakePlayers implements IFakePlayers {
 		try {
 			Util.tryParseId(headId).ifPresent(this::setSkin);
 
-			fakePl = ReflectionUtils.Classes.getNewEntityPlayer(profile);
+			fakeEntityPlayer = ReflectionUtils.Classes.getNewEntityPlayer(profile);
 
-			ReflectionUtils.setField(fakePl, "listName", ReflectionUtils.getAsIChatBaseComponent(displayName));
-
-			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
-			Array.set(entityPlayerArray, 0, fakePl);
+			Object entityPlayerArray = Array.newInstance(fakeEntityPlayer.getClass(), 1);
+			Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
 			Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
 					.newInstance(NMSContainer.getAddPlayer(), entityPlayerArray);
 
-			for (Player aOnline : Bukkit.getOnlinePlayers()) {
+			for (Player aOnline : tablist.getServer().getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
 			}
 
@@ -125,27 +121,31 @@ public class FakePlayers implements IFakePlayers {
 
 			// Setting ping should be in this place, after the player added
 			setPing(pingLatency);
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
 	public void setPing(int ping) {
-		if (fakePl == null || ping < -1) {
+		if (fakeEntityPlayer == null) {
 			return;
+		}
+
+		if (ping < -1) {
+			ping = -1;
 		}
 
 		this.ping = ping;
 
 		try {
-			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
-			Array.set(entityPlayerArray, 0, fakePl);
+			Object entityPlayerArray = Array.newInstance(fakeEntityPlayer.getClass(), 1);
+			Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
 			Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
 					.newInstance(NMSContainer.getUpdateLatency(), entityPlayerArray);
 
-			Field infoListField = ReflectionUtils.getField(packetPlayOutPlayerInfo, "b");
+			Field infoListField = ReflectionUtils.getField(packetPlayOutPlayerInfo.getClass(), "b");
 
 			Object packet = null;
 
@@ -155,7 +155,7 @@ public class FakePlayers implements IFakePlayers {
 				GameProfile profile = (GameProfile) ReflectionUtils.invokeMethod(infoData, "a");
 
 				if (profile.getId().equals(this.profile.getId())) {
-					Object gameMode = ReflectionUtils.getField(infoData, "c").get(infoData);
+					Object gameMode = ReflectionUtils.getField(infoData.getClass(), "c").get(infoData);
 
 					Constructor<?> playerInfoDataConstr = NMSContainer.getPlayerInfoDataConstructor();
 
@@ -177,11 +177,11 @@ public class FakePlayers implements IFakePlayers {
 
 			infoListField.set(packetPlayOutPlayerInfo, java.util.Arrays.asList(packet));
 
-			for (Player aOnline : Bukkit.getOnlinePlayers()) {
+			for (Player aOnline : tablist.getServer().getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
 				ReflectionUtils.sendPacket(aOnline, packet);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -192,7 +192,7 @@ public class FakePlayers implements IFakePlayers {
 			return;
 		}
 
-		if (!Bukkit.getServer().getOnlineMode()) {
+		if (!tablist.getServer().getOnlineMode()) {
 			Util.logConsole(java.util.logging.Level.WARNING, "Can't set skin for offline servers.");
 			return;
 		}
@@ -209,21 +209,21 @@ public class FakePlayers implements IFakePlayers {
 
 	@Override
 	public void removeFakePlayer() {
-		if (fakePl == null) {
+		if (fakeEntityPlayer == null) {
 			return;
 		}
 
 		try {
-			Object entityPlayerArray = Array.newInstance(fakePl.getClass(), 1);
-			Array.set(entityPlayerArray, 0, fakePl);
+			Object entityPlayerArray = Array.newInstance(fakeEntityPlayer.getClass(), 1);
+			Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
 			Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
 					.newInstance(NMSContainer.getRemovePlayer(), entityPlayerArray);
 
-			for (Player aOnline : Bukkit.getOnlinePlayers()) {
+			for (Player aOnline : tablist.getServer().getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
 			}
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

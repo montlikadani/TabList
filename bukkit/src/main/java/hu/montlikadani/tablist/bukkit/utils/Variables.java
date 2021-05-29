@@ -20,7 +20,7 @@ import hu.montlikadani.tablist.bukkit.utils.operators.OperatorNodes;
 import hu.montlikadani.tablist.bukkit.utils.operators.OperatorNodes.NodeType;
 import me.clip.placeholderapi.PlaceholderAPI;
 
-public class Variables {
+public final class Variables {
 
 	private TabList plugin;
 

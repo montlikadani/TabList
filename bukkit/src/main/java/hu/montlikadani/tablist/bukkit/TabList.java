@@ -43,6 +43,7 @@ import hu.montlikadani.tablist.bukkit.utils.plugin.VaultPermission;
 import hu.montlikadani.tablist.bukkit.utils.stuff.Complement;
 import hu.montlikadani.tablist.bukkit.utils.stuff.Complement1;
 import hu.montlikadani.tablist.bukkit.utils.stuff.Complement2;
+import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
 
 public final class TabList extends JavaPlugin {
 
@@ -333,21 +334,22 @@ public final class TabList extends JavaPlugin {
 			user.addToPlayerList();
 
 			if (ConfigValues.isPerWorldPlayerList()) {
-				getServer().getScheduler().callSyncMethod(this, () -> {
+				Tasks.submitSync(() -> {
 					user.setHidden(true);
 
 					if (user.isHidden()) {
 						((TabListPlayer) user).getPlayerList().showForWorld();
 					}
 
-					return null;
+					return 1;
 				});
 			} else if (user.isHidden()) {
-				getServer().getScheduler().callSyncMethod(this, () -> {
+				Tasks.submitSync(() -> {
 					TabListPlayer tlp = (TabListPlayer) user;
+
 					tlp.getPlayerList().showEveryone();
 					tlp.remove();
-					return null;
+					return 1;
 				});
 			}
 		}

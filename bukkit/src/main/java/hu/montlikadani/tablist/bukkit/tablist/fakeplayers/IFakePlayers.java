@@ -52,7 +52,7 @@ public interface IFakePlayers {
 	 * ping.
 	 * 
 	 * @param headId      a valid user uuid
-	 * @param pingLatency ping value (> 0)
+	 * @param pingLatency ping value
 	 */
 	void createFakePlayer(String headId, int pingLatency);
 
@@ -60,7 +60,7 @@ public interface IFakePlayers {
 	 * Attempts to set the fake player ping to a new one. If the fake player is not
 	 * added before, returns.
 	 * 
-	 * @param pingAmount ping value (> 0)
+	 * @param pingAmount ping value
 	 */
 	void setPing(int pingAmount);
 
