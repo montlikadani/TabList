@@ -11,7 +11,7 @@ public final class TabScoreboardReflection {
 	private Constructor<?> scoreboardTeamConstructor;
 
 	private Field scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamPrefix, scoreboardTeamSuffix,
-			/*scoreboardTeamColor, */scoreboardTeamNames, scoreboardTeamMode, scoreboardPlayers;
+			/*scoreboardTeamColor, */scoreboardTeamNames, scoreboardTeamMode, scoreboardPlayers, nameTagVisibility;
 
 	//private Object teamColor;
 
@@ -23,6 +23,7 @@ public final class TabScoreboardReflection {
 		scoreboardTeamDisplayName = ReflectionUtils.getField(packetPlayOutScoreboardTeam, "b");
 		scoreboardTeamPrefix = ReflectionUtils.getField(packetPlayOutScoreboardTeam, "c");
 		scoreboardTeamSuffix = ReflectionUtils.getField(packetPlayOutScoreboardTeam, "d");
+		nameTagVisibility = ReflectionUtils.getField(packetPlayOutScoreboardTeam, "e");
 
 		/*if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1)) {
 			scoreboardTeamColor = ReflectionUtils.getField(packetPlayOutScoreboardTeam, "g");
@@ -71,6 +72,10 @@ public final class TabScoreboardReflection {
 
 	public Field getScoreboardPlayers() {
 		return scoreboardPlayers;
+	}
+
+	public Field getNameTagVisibility() {
+		return nameTagVisibility;
 	}
 
 	/*public Object getTeamColor() {

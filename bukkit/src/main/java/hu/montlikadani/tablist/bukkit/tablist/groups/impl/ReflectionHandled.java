@@ -16,7 +16,10 @@ import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.reflection.NMSContainer;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.NameTagVisibility;
+import org.bukkit.scoreboard.Team;
 
+@SuppressWarnings("deprecation")
 public class ReflectionHandled implements ITabScoreboard {
 
 	private final TabScoreboardReflection scoreRef = new TabScoreboardReflection();
@@ -48,20 +51,68 @@ public class ReflectionHandled implements ITabScoreboard {
 			String teamName = groupPlayer.getFullGroupTeamName();
 
 			Object newTeamPacket = scoreRef.getScoreboardTeamConstructor().newInstance();
-			Object displayName = ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1)
-					? ReflectionUtils.getAsIChatBaseComponent(teamName)
-					: teamName;
 
 			scoreRef.getScoreboardTeamName().set(newTeamPacket, teamName);
 			scoreRef.getScoreboardTeamMode().set(newTeamPacket, 0);
-			scoreRef.getScoreboardTeamDisplayName().set(newTeamPacket, displayName);
+			scoreRef.getScoreboardTeamDisplayName().set(newTeamPacket,
+					ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1)
+							? ReflectionUtils.getAsIChatBaseComponent(teamName)
+							: teamName);
 			scoreRef.getScoreboardTeamNames().set(newTeamPacket, Collections.singletonList(player.getName()));
+
+			for (Team team : player.getScoreboard().getTeams()) {
+				if (!team.hasEntry(player.getName())) {
+					continue;
+				}
+
+				String optionName = "";
+
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1)) {
+					Team.OptionStatus optionStatus = team.getOption(Team.Option.NAME_TAG_VISIBILITY);
+
+					if (optionStatus == Team.OptionStatus.ALWAYS) {
+						continue;
+					}
+
+					switch (optionStatus) {
+					case FOR_OTHER_TEAMS:
+						optionName = "hideForOtherTeams";
+						break;
+					case FOR_OWN_TEAM:
+						optionName = "hideForOwnTeam";
+						break;
+					default:
+						optionName = optionStatus.name().toLowerCase();
+						break;
+					}
+				} else {
+					NameTagVisibility visibility = team.getNameTagVisibility();
+
+					if (visibility == NameTagVisibility.ALWAYS) {
+						continue;
+					}
+
+					switch (visibility) {
+					case HIDE_FOR_OTHER_TEAMS:
+						optionName = "hideForOtherTeams";
+						break;
+					case HIDE_FOR_OWN_TEAM:
+						optionName = "hideForOwnTeam";
+						break;
+					default:
+						optionName = visibility.name().toLowerCase();
+						break;
+					}
+				}
+
+				scoreRef.getNameTagVisibility().set(newTeamPacket, optionName);
+				break;
+			}
 
 			Array.set(entityPlayerArray, 0, handle);
 
 			Class<?> playOutPlayerInfo = NMSContainer.getPacketPlayOutPlayerInfo();
-			Class<?> playerInfoAction = NMSContainer.getEnumPlayerInfoAction();
-			Constructor<?> constr = playOutPlayerInfo.getDeclaredConstructor(playerInfoAction,
+			Constructor<?> constr = playOutPlayerInfo.getDeclaredConstructor(NMSContainer.getEnumPlayerInfoAction(),
 					entityPlayerArray.getClass());
 
 			constr.setAccessible(true);

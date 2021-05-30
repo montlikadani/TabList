@@ -35,7 +35,7 @@ public class Util {
 	}
 
 	public static void sendMsg(CommandSender sender, String s) {
-		if (s != null && !s.isEmpty()) {
+		if (sender != null && s != null && !s.isEmpty()) {
 			if (s.contains("\n")) {
 				for (String msg : s.split("\n")) {
 					sender.sendMessage(msg);

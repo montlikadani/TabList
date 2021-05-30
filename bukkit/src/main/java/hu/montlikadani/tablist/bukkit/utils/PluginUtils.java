@@ -18,14 +18,18 @@ public final class PluginUtils {
 
 	private static final TabList PLUGIN = TabListAPI.getPlugin();
 
-	public static boolean isAfk(Player p) {
+	public static boolean isAfk(Player player) {
+		if (player == null) {
+			return false;
+		}
+
 		Plugin ess = PLUGIN.getServer().getPluginManager().getPlugin("Essentials");
 		if (ess != null && ess.isEnabled()) {
-			return ((IEssentials) ess).getUser(p).isAfk();
+			return ((IEssentials) ess).getUser(player).isAfk();
 		}
 
 		if (PLUGIN.isPluginEnabled("CMI")) {
-			CMIUser user = CMI.getInstance().getPlayerManager().getUser(p);
+			CMIUser user = CMI.getInstance().getPlayerManager().getUser(player);
 			return user != null && user.isAfk();
 		}
 
