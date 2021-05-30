@@ -65,14 +65,9 @@ public class CommentedConfig extends YamlConfiguration {
 			return;
 		}
 
-		String data = insertComments(saveToString);
-		PrintWriter writer = new PrintWriter(file, StandardCharsets.UTF_8.name());
-
-		try {
-			writer.write(data);
-		} finally {
+		try (PrintWriter writer = new PrintWriter(file, StandardCharsets.UTF_8.name())) {
+			writer.write(insertComments(saveToString));
 			writer.flush();
-			writer.close();
 		}
 	}
 
