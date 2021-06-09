@@ -65,54 +65,48 @@ public final class TabList extends JavaPlugin {
 	public void onEnable() {
 		long load = System.currentTimeMillis();
 
-		try {
-			if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R1)) {
-				logConsole(Level.SEVERE,
-						"Your server version does not supported by this plugin! Please use 1.8+ or higher versions!");
-				getServer().getPluginManager().disablePlugin(this);
-				return;
-			}
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R1)) {
+			logConsole(Level.SEVERE,
+					"Your server version does not supported by this plugin! Please use 1.8+ or higher versions!");
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 
-			verifyServerSoftware();
+		verifyServerSoftware();
 
-			conf = new Configuration(this);
-			objects = new Objects(this);
-			groups = new Groups(this);
-			variables = new Variables(this);
-			tabManager = new TabManager(this);
-			fakePlayerHandler = new FakePlayerHandler(this);
+		conf = new Configuration(this);
+		objects = new Objects(this);
+		groups = new Groups(this);
+		variables = new Variables(this);
+		tabManager = new TabManager(this);
+		fakePlayerHandler = new FakePlayerHandler(this);
 
-			conf.loadFiles();
-			variables.loadExpressions();
+		conf.loadFiles();
+		variables.loadExpressions();
 
-			if (ConfigValues.isPlaceholderAPI() && isPluginEnabled("PlaceholderAPI")) {
-				logConsole("Hooked PlaceholderAPI version: "
-						+ me.clip.placeholderapi.PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
-			}
+		if (ConfigValues.isPlaceholderAPI() && isPluginEnabled("PlaceholderAPI")) {
+			logConsole("Hooked PlaceholderAPI version: "
+					+ me.clip.placeholderapi.PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
+		}
 
-			hasVault = initVaultPerm();
+		hasVault = initVaultPerm();
 
-			fakePlayerHandler.load();
-			loadAnimations();
-			loadListeners();
-			registerCommands();
-			tabManager.loadToggledTabs();
-			groups.load();
+		fakePlayerHandler.load();
+		loadAnimations();
+		loadListeners();
+		registerCommands();
+		tabManager.loadToggledTabs();
+		groups.load();
 
-			getServer().getOnlinePlayers().forEach(this::updateAll);
+		getServer().getOnlinePlayers().forEach(this::updateAll);
 
-			UpdateDownloader.checkFromGithub(getServer().getConsoleSender());
+		UpdateDownloader.checkFromGithub(getServer().getConsoleSender());
 
-			beginDataCollection();
+		beginDataCollection();
 
-			if (ConfigValues.isLogConsole()) {
-				Util.sendMsg(getServer().getConsoleSender(), colorMsg("&6&l[&5&lTab&c&lList&6&l]&7&l >&a Enabled&6 v"
-						+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)"));
-			}
-		} catch (Throwable t) {
-			t.printStackTrace();
-			logConsole(Level.WARNING,
-					"There was an error. Please report it here:\nhttps://github.com/montlikadani/TabList/issues");
+		if (ConfigValues.isLogConsole()) {
+			Util.sendMsg(getServer().getConsoleSender(), colorMsg("&6&l[&5&lTab&c&lList&6&l]&7&l >&a Enabled&6 v"
+					+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)"));
 		}
 	}
 
@@ -164,8 +158,9 @@ public final class TabList extends JavaPlugin {
 		boolean kyoriSupported = false;
 		try {
 			Class.forName("net.kyori.adventure.text.Component");
+			org.bukkit.entity.Player.class.getDeclaredMethod("displayName");
 			kyoriSupported = true;
-		} catch (ClassNotFoundException e) {
+		} catch (NoSuchMethodException | ClassNotFoundException e) {
 		}
 
 		complement = (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R3) && kyoriSupported) ? new Complement2()

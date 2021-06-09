@@ -82,9 +82,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	public void setSafePriority(int safePriority) {
 		if (safePriority < 0) {
 			safePriority = 0;
-		}
-
-		if (safePriority > 999999999) {
+		} else if (safePriority > 999999999) {
 			safePriority = 999999999;
 		}
 
@@ -105,7 +103,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 		boolean update = false;
 		Groups groups = plugin.getGroups();
 
-		if (!isPlayerCanSeeGroup() || (ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(player)
+		if (!isPlayerCanSeeGroup(player) || (ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(player)
 				&& !ConfigValues.isAfkStatusShowPlayerGroup())) {
 			if (group != null || globalGroup != null) {
 				removeGroup();
@@ -218,12 +216,7 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 		return update;
 	}
 
-	private boolean isPlayerCanSeeGroup() {
-		Player player = tabListUser.getPlayer();
-		if (player == null) {
-			return true;
-		}
-
+	private boolean isPlayerCanSeeGroup(Player player) {
 		if (((ConfigValues.isUseDisabledWorldsAsWhiteList()
 				&& !ConfigValues.getGroupsDisabledWorlds().contains(player.getWorld().getName()))
 				|| (!ConfigValues.isUseDisabledWorldsAsWhiteList()

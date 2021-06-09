@@ -172,10 +172,10 @@ public class TabHandler {
 			ThreadLocalRandom random = ThreadLocalRandom.current();
 
 			if (header != null)
-				he = header[random.nextInt(header.length)];
+				he = header[header.length == 1 ? 0 : random.nextInt(header.length)];
 
 			if (footer != null)
-				fo = footer[random.nextInt(footer.length)];
+				fo = footer[footer.length == 1 ? 0 : random.nextInt(footer.length)];
 		}
 
 		int r = 0;

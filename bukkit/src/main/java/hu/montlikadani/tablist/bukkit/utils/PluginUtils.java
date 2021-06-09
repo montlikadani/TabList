@@ -37,13 +37,13 @@ public final class PluginUtils {
 	}
 
 	public static boolean isVanished(Player player) {
-		if (PLUGIN.isPluginEnabled("SuperVanish") || PLUGIN.isPluginEnabled("PremiumVanish")) {
-			return VanishAPI.isInvisible(player);
-		}
-
 		Plugin ess = PLUGIN.getServer().getPluginManager().getPlugin("Essentials");
 		if (ess != null && ess.isEnabled()) {
 			return ((IEssentials) ess).getUser(player).isVanished();
+		}
+
+		if (PLUGIN.isPluginEnabled("SuperVanish") || PLUGIN.isPluginEnabled("PremiumVanish")) {
+			return VanishAPI.isInvisible(player);
 		}
 
 		if (PLUGIN.isPluginEnabled("CMI")) {
