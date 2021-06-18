@@ -26,6 +26,7 @@ public abstract class TabTitle {
 				playerListHeaderFooterConstructor = playerListHeaderFooter
 						.getConstructor(NMSContainer.getIChatBaseComponent());
 			} catch (NoSuchMethodException ex) {
+				ex.printStackTrace();
 			}
 		}
 	}

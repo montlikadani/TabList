@@ -5,7 +5,6 @@ import java.util.concurrent.CompletableFuture;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -13,10 +12,11 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.tablist.TabTitle;
 import hu.montlikadani.tablist.bukkit.user.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
 
-public final class Listeners implements Listener {
+public final class Listeners implements org.bukkit.event.Listener {
 
 	private TabList plugin;
 
@@ -54,7 +54,7 @@ public final class Listeners implements Listener {
 
 	@EventHandler
 	public void onWorldChange(PlayerChangedWorldEvent eve) {
-		plugin.getUser(eve.getPlayer()).ifPresent(plugin.getTabManager()::removePlayer);
+		TabTitle.sendTabTitle(eve.getPlayer(), "", "");
 		plugin.updateAll(eve.getPlayer());
 	}
 

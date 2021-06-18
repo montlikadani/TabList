@@ -47,7 +47,7 @@ public class TabHandler {
 			return;
 		}
 
-		TabTitle.sendTabTitle(player, "", "");
+		sendEmptyTab(player);
 
 		if (!TabConfigValues.isEnabled()) {
 			return;
@@ -139,6 +139,10 @@ public class TabHandler {
 		}
 	}
 
+	public void sendEmptyTab(Player player) {
+		TabTitle.sendTabTitle(player, "", "");
+	}
+
 	protected void sendTab() {
 		if (header == null && footer == null) {
 			return;
@@ -154,7 +158,7 @@ public class TabHandler {
 				|| TabConfigValues.getBlackListedPlayers().contains(player.getName()) || PluginUtils.isInGame(player)
 				|| TabManager.TABENABLED.getOrDefault(playerUUID, false)) {
 			if (!tabEmpty) { // Only send it once to allow other plugins to overwrite tablist
-				TabTitle.sendTabTitle(player, "", "");
+				sendEmptyTab(player);
 				tabEmpty = true;
 			}
 

@@ -64,15 +64,11 @@ public class TabManager {
 		}
 	}
 
-	public void removePlayer(TabListUser user) {
-		TabTitle.sendTabTitle(user.getPlayer(), "", "");
-	}
-
 	public void removeAll() {
 		cancelTask();
 
 		for (TabListUser user : plugin.getUsers()) {
-			TabTitle.sendTabTitle(user.getPlayer(), "", "");
+			user.getTabHandler().sendEmptyTab(user.getPlayer());
 		}
 	}
 

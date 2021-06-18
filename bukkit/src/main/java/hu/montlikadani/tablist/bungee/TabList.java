@@ -23,7 +23,7 @@ import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 import net.md_5.bungee.event.EventHandler;
 
-public class TabList extends Plugin implements Listener {
+public final class TabList extends Plugin implements Listener {
 
 	private Configuration config;
 	private TabManager tab;

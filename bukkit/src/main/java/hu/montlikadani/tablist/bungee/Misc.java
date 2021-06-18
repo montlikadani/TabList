@@ -16,7 +16,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 
-public class Misc {
+public final class Misc {
 
 	public static String colorMsg(String s) {
 		if (s == null) {

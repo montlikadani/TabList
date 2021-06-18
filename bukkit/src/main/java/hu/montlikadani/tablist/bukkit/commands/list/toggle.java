@@ -12,7 +12,6 @@ import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.tablist.TabManager;
-import hu.montlikadani.tablist.bukkit.tablist.TabTitle;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 
 @CommandProcessor(
@@ -70,7 +69,7 @@ public final class toggle implements ICommand {
 	private boolean toggleTab(TabListUser user) {
 		if (TabManager.TABENABLED.remove(user.getUniqueId()) == null) {
 			TabManager.TABENABLED.put(user.getUniqueId(), true);
-			TabTitle.sendTabTitle(user.getPlayer(), "", "");
+			user.getTabHandler().sendEmptyTab(user.getPlayer());
 			return false;
 		}
 

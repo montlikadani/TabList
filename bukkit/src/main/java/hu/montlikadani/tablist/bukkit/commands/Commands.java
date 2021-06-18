@@ -20,9 +20,9 @@ import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.IFakePlayers;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
-public class Commands implements CommandExecutor, TabCompleter {
+public final class Commands implements CommandExecutor, TabCompleter {
 
-	private TabList plugin;
+	private final TabList plugin;
 
 	private final Set<ICommand> cmds = new HashSet<>();
 

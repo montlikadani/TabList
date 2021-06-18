@@ -37,7 +37,10 @@ public final class Variables {
 			for (String f : ConfigValues.getPingColorFormats()) {
 				ExpressionNode node = new OperatorNodes(NodeType.PING);
 				node.setParseExpression(f);
-				nodes.add(node);
+
+				if (node.getCondition() != null) {
+					nodes.add(node);
+				}
 			}
 		}
 
@@ -45,7 +48,10 @@ public final class Variables {
 			for (String f : ConfigValues.getTpsColorFormats()) {
 				ExpressionNode node = new OperatorNodes(NodeType.TPS);
 				node.setParseExpression(f);
-				nodes.add(node);
+
+				if (node.getCondition() != null) {
+					nodes.add(node);
+				}
 			}
 		}
 
@@ -162,6 +168,7 @@ public final class Variables {
 		str = StringUtils.replace(str, "%motd%", plugin.getComplement().getMotd());
 
 		int staffs = 0;
+
 		if (str.indexOf("%staff-online%") >= 0) {
 			for (TabListUser user : plugin.getUsers()) {
 				Player player = user.getPlayer();

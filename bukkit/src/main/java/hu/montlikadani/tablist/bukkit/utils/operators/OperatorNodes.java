@@ -85,13 +85,12 @@ public class OperatorNodes implements ExpressionNode {
 
 	@Override
 	public boolean parse(double leftCond) {
-		if (condition == null) {
-			return false;
-		}
-
 		if (type == NodeType.TPS) {
+			if (leftCond < 0D)
+				return false;
+
 			double secondCondition = condition.getSecondCondition();
-			if (secondCondition < 0D || leftCond < 0D)
+			if (secondCondition < 0D)
 				return false;
 
 			// Making leftCond to be equally to secondCondition with tpsSize
@@ -120,10 +119,15 @@ public class OperatorNodes implements ExpressionNode {
 			default:
 				return false;
 			}
-		} else if (type == NodeType.PING) {
-			int firstCondition = (int) leftCond;
+		}
+
+		if (type == NodeType.PING) {
 			int secondCondition = (int) condition.getSecondCondition();
-			if (secondCondition < 0 || firstCondition < 0)
+			if (secondCondition < 0)
+				return false;
+
+			int firstCondition = (int) leftCond;
+			if (firstCondition < 0)
 				return false;
 
 			switch (condition.getOperator()) {

@@ -90,32 +90,41 @@ public class TabListAPI {
 	}
 
 	/**
-	 * Gets the current ping of player
+	 * Returns the amount of latency of the given player.
 	 * 
 	 * @param player Player
 	 * @return the current amount of ping of the given player
 	 */
 	public static int getPing(Player player) {
 		try {
-			Object nmsPlayer = ReflectionUtils.getHandle(player);
-			return ReflectionUtils.getField(nmsPlayer.getClass(), "ping", false).getInt(nmsPlayer);
-		} catch (Exception e) {
-			e.printStackTrace();
+			return player.getPing();
+		} catch (NoSuchMethodError e) {
+			try {
+				Object entityPlayer = ReflectionUtils.getHandle(player);
+				return ReflectionUtils.getField(entityPlayer.getClass(), "ping", false).getInt(entityPlayer);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
 
 		return 0;
 	}
 
 	/**
-	 * Gets the current tps (ticks per second) value of the server.
+	 * Returns the current TPS (ticks per second) value of the server.
 	 * 
-	 * @return The current TPS
+	 * @return The first value of TPS array according to
+	 *         {@link org.bukkit.Server#getTPS()}
 	 */
 	public static double getTPS() {
 		try {
-			Object server = ReflectionUtils.invokeMethod(Bukkit.getServer(), "getServer", false);
-			return ((double[]) ReflectionUtils.getField(server.getClass(), "recentTps", false).get(server))[0];
-		} catch (Exception e) {
+			return Bukkit.getServer().getTPS()[0];
+		} catch (NoSuchMethodError e) {
+			try {
+				Object server = ReflectionUtils.invokeMethod(Bukkit.getServer(), "getServer", false);
+				return ((double[]) ReflectionUtils.getField(server.getClass(), "recentTps", false).get(server))[0];
+			} catch (Exception ex) {
+			}
 		}
 
 		return 0d;

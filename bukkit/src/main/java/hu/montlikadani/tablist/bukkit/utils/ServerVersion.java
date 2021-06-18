@@ -65,22 +65,22 @@ public enum ServerVersion {
 	}
 
 	public static boolean isCurrentEqualOrHigher(ServerVersion v) {
-		return getCurrent().getValue() >= v.getValue();
+		return getCurrent().value >= v.value;
 	}
 
 	public static boolean isCurrentHigher(ServerVersion v) {
-		return getCurrent().getValue() > v.getValue();
+		return getCurrent().value > v.value;
 	}
 
 	public static boolean isCurrentLower(ServerVersion v) {
-		return getCurrent().getValue() < v.getValue();
+		return getCurrent().value < v.value;
 	}
 
 	public static boolean isCurrentEqualOrLower(ServerVersion v) {
-		return getCurrent().getValue() <= v.getValue();
+		return getCurrent().value <= v.value;
 	}
 
 	public static boolean isCurrentEqual(ServerVersion v) {
-		return getCurrent().getValue() == v.getValue();
+		return getCurrent().value == v.value;
 	}
 }

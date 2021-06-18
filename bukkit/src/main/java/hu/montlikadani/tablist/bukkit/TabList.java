@@ -105,7 +105,7 @@ public final class TabList extends JavaPlugin {
 		beginDataCollection();
 
 		if (ConfigValues.isLogConsole()) {
-			Util.sendMsg(getServer().getConsoleSender(), colorMsg("&6&l[&5&lTab&c&lList&6&l]&7&l >&a Enabled&6 v"
+			Util.sendMsg(getServer().getConsoleSender(), colorMsg("&6[&5Tab&cList&6]&7 >&a Enabled&6 v"
 					+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)"));
 		}
 	}
@@ -158,7 +158,7 @@ public final class TabList extends JavaPlugin {
 		boolean kyoriSupported = false;
 		try {
 			Class.forName("net.kyori.adventure.text.Component");
-			org.bukkit.entity.Player.class.getDeclaredMethod("displayName");
+			Player.class.getDeclaredMethod("displayName");
 			kyoriSupported = true;
 		} catch (NoSuchMethodException | ClassNotFoundException e) {
 		}
@@ -350,16 +350,16 @@ public final class TabList extends JavaPlugin {
 		}
 	}
 
-	public void onPlayerQuit(Player p) {
+	public void onPlayerQuit(Player player) {
 		if (!ConfigValues.isTablistObjectiveEnabled()) {
 			objects.cancelTask();
 			objects.unregisterObjectivesForEveryone();
 		}
 
 		users.removeIf(user -> {
-			tabManager.removePlayer(user);
+			user.getTabHandler().sendEmptyTab(player);
 			groups.removePlayerGroup(user);
-			return p.getUniqueId().equals(user.getUniqueId());
+			return player.getUniqueId().equals(user.getUniqueId());
 		});
 	}
 
