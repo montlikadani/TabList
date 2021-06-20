@@ -16,7 +16,8 @@ public final class TabScoreboardReflection {
 	//private Object teamColor;
 
 	public void init() throws Exception {
-		Class<?> packetPlayOutScoreboardTeam = ReflectionUtils.getNMSClass("PacketPlayOutScoreboardTeam");
+		Class<?> packetPlayOutScoreboardTeam = ReflectionUtils.getNMSClass("net.minecraft.network.protocol.game",
+				"PacketPlayOutScoreboardTeam");
 
 		scoreboardTeamConstructor = packetPlayOutScoreboardTeam.getConstructor();
 		scoreboardTeamName = ReflectionUtils.getField(packetPlayOutScoreboardTeam, "a");

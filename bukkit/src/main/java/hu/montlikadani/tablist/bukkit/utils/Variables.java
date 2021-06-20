@@ -129,14 +129,13 @@ public final class Variables {
 
 		str = Global.setSymbols(str);
 
-		String time = str.indexOf("%server-time%") >= 0 ? getTimeAsString(ConfigValues.getTimeFormat()) : "";
-		String date = str.indexOf("%date%") >= 0 ? getTimeAsString(ConfigValues.getDateFormat()) : "";
+		if (str.indexOf("%server-time%") >= 0) {
+			str = StringUtils.replace(str, "%server-time%", getTimeAsString(ConfigValues.getTimeFormat()));
+		}
 
-		if (!time.isEmpty())
-			str = StringUtils.replace(str, "%server-time%", time);
-
-		if (!date.isEmpty())
-			str = StringUtils.replace(str, "%date%", date);
+		if (str.indexOf("%date%") >= 0) {
+			str = StringUtils.replace(str, "%date%", getTimeAsString(ConfigValues.getDateFormat()));
+		}
 
 		if (str.indexOf("%server-ram-free%") >= 0) {
 			str = StringUtils.replace(str, "%server-ram-free%", Long.toString(r.freeMemory() / 1048576L));

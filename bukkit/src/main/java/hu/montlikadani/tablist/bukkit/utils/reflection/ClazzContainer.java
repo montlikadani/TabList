@@ -4,7 +4,9 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 
-public final class NMSContainer {
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
+
+public final class ClazzContainer {
 
 	private static Field infoList;
 
@@ -20,24 +22,24 @@ public final class NMSContainer {
 
 	static {
 		try {
-			iChatBaseComponent = getNMSClass("IChatBaseComponent");
-			packet = getNMSClass("Packet");
-			packetPlayOutPlayerInfo = getNMSClass("PacketPlayOutPlayerInfo");
-			entityPlayerClass = getNMSClass("EntityPlayer");
+			iChatBaseComponent = classByName("net.minecraft.network.chat", "IChatBaseComponent");
+			packet = classByName("net.minecraft.network.protocol", "Packet");
+			packetPlayOutPlayerInfo = classByName("net.minecraft.network.protocol.game", "PacketPlayOutPlayerInfo");
+			entityPlayerClass = classByName("net.minecraft.server.level", "EntityPlayer");
 
 			try {
-				minecraftServer = getNMSClass("MinecraftServer");
+				minecraftServer = classByName("net.minecraft.server", "MinecraftServer");
 			} catch (ClassNotFoundException c) {
 				try {
-					minecraftServer = getNMSClass("DedicatedServer");
+					minecraftServer = classByName("net.minecraft.server.dedicated", "DedicatedServer");
 				} catch (ClassNotFoundException e) {
 				}
 			}
 
 			try {
-				enumPlayerInfoAction = getNMSClass("EnumPlayerInfoAction");
+				enumPlayerInfoAction = classByName(null, "EnumPlayerInfoAction");
 			} catch (ClassNotFoundException c) {
-				for (Class<?> clazz : packetPlayOutPlayerInfo.getDeclaredClasses()) {
+				for (Class<?> clazz : packetPlayOutPlayerInfo.getClasses()) {
 					if (clazz.getName().contains("EnumPlayerInfoAction")) {
 						enumPlayerInfoAction = clazz;
 						break;
@@ -45,18 +47,28 @@ public final class NMSContainer {
 				}
 			}
 
-			addPlayer = enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction);
-			removePlayer = enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER").get(enumPlayerInfoAction);
-			updateGameMode = enumPlayerInfoAction.getDeclaredField("UPDATE_GAME_MODE").get(enumPlayerInfoAction);
-			updateLatency = enumPlayerInfoAction.getDeclaredField("UPDATE_LATENCY").get(enumPlayerInfoAction);
-			updateDisplayName = enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME").get(enumPlayerInfoAction);
+			try {
+				addPlayer = enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction);
+				updateGameMode = enumPlayerInfoAction.getDeclaredField("UPDATE_GAME_MODE").get(enumPlayerInfoAction);
+				updateLatency = enumPlayerInfoAction.getDeclaredField("UPDATE_LATENCY").get(enumPlayerInfoAction);
+				updateDisplayName = enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME")
+						.get(enumPlayerInfoAction);
+				removePlayer = enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER").get(enumPlayerInfoAction);
+			} catch (NoSuchFieldException ex) {
+				addPlayer = enumPlayerInfoAction.getDeclaredField("a").get(enumPlayerInfoAction);
+				updateGameMode = enumPlayerInfoAction.getDeclaredField("b").get(enumPlayerInfoAction);
+				updateLatency = enumPlayerInfoAction.getDeclaredField("c").get(enumPlayerInfoAction);
+				updateDisplayName = enumPlayerInfoAction.getDeclaredField("d").get(enumPlayerInfoAction);
+				removePlayer = enumPlayerInfoAction.getDeclaredField("e").get(enumPlayerInfoAction);
+			}
 
 			infoList = ReflectionUtils.getField(packetPlayOutPlayerInfo, "b");
 
 			try {
-				playerInfoData = getNMSClass("PacketPlayOutPlayerInfo$PlayerInfoData");
+				playerInfoData = classByName("net.minecraft.network.protocol.game",
+						"PacketPlayOutPlayerInfo$PlayerInfoData");
 			} catch (ClassNotFoundException e) {
-				playerInfoData = getNMSClass("PlayerInfoData");
+				playerInfoData = classByName(null, "PlayerInfoData");
 			}
 
 			if (playerInfoData != null) {
@@ -76,26 +88,42 @@ public final class NMSContainer {
 					entityPlayerArrayClass)).setAccessible(true);
 
 			try {
-				enumGameMode = getNMSClass("EnumGamemode");
+				enumGameMode = classByName("net.minecraft.world.level", "EnumGamemode");
 			} catch (ClassNotFoundException e) {
-				enumGameMode = getNMSClass("WorldSettings$EnumGamemode");
+				enumGameMode = classByName(null, "WorldSettings$EnumGamemode");
 			}
 
-			gameModeNotSet = enumGameMode.getDeclaredField("NOT_SET").get(enumGameMode);
-			gameModeSpectator = enumGameMode.getDeclaredField("SPECTATOR").get(enumGameMode);
-			gameModeSurvival = enumGameMode.getDeclaredField("SURVIVAL").get(enumGameMode);
+			try {
+				gameModeNotSet = enumGameMode.getDeclaredField("NOT_SET").get(enumGameMode);
+				gameModeSpectator = enumGameMode.getDeclaredField("SPECTATOR").get(enumGameMode);
+				gameModeSurvival = enumGameMode.getDeclaredField("SURVIVAL").get(enumGameMode);
+			} catch (NoSuchFieldException ex) {
+				Field field = enumGameMode.getDeclaredField("f");
+				field.setAccessible(true);
+
+				gameModeNotSet = field.get(enumGameMode);
+
+				(field = enumGameMode.getDeclaredField("d")).setAccessible(true);
+				gameModeSpectator = field.get(enumGameMode);
+
+				(field = enumGameMode.getDeclaredField("a")).setAccessible(true);
+				gameModeSurvival = field.get(enumGameMode);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	private NMSContainer() {
+	private ClazzContainer() {
 	}
 
 	// In ReflectionUtils static clause calls this class again which causes NPE
-	private static Class<?> getNMSClass(String name) throws ClassNotFoundException {
-		return Class.forName("net.minecraft.server."
-				+ hu.montlikadani.tablist.bukkit.utils.ServerVersion.getArrayVersion()[3] + "." + name);
+	private static Class<?> classByName(String newPackageName, String name) throws ClassNotFoundException {
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
+			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
+		}
+
+		return Class.forName(newPackageName + "." + name);
 	}
 
 	public static Class<?> getPacket() {

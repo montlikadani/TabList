@@ -15,7 +15,7 @@ public final class ReflectionUtils {
 
 	static {
 		try {
-			Class<?>[] declaredClasses = NMSContainer.getIChatBaseComponent().getDeclaredClasses();
+			Class<?>[] declaredClasses = ClazzContainer.getIChatBaseComponent().getDeclaredClasses();
 
 			if (declaredClasses.length > 0) {
 				jsonComponentMethod = declaredClasses[0].getMethod("a", String.class);
@@ -67,16 +67,16 @@ public final class ReflectionUtils {
 
 	public static Object getAsIChatBaseComponent(final String text) throws Exception {
 		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1)) {
-			return getJsonComponent().parseProperty(text, NMSContainer.getIChatBaseComponent());
+			return getJsonComponent().parseProperty(text);
 		}
 
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
-			Class<?> chatSerializer = getNMSClass("ChatSerializer");
-			return NMSContainer.getIChatBaseComponent().cast(
+			Class<?> chatSerializer = getNMSClass(null, "ChatSerializer");
+			return ClazzContainer.getIChatBaseComponent().cast(
 					chatSerializer.getMethod("a", String.class).invoke(chatSerializer, "{\"text\":\"" + text + "\"}"));
 		}
 
-		return jsonComponentMethod.invoke(NMSContainer.getIChatBaseComponent(), "{\"text\":\"" + text + "\"}");
+		return jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(), "{\"text\":\"" + text + "\"}");
 	}
 
 	public static Object invokeMethod(Object obj, String name) throws Exception {
@@ -95,8 +95,12 @@ public final class ReflectionUtils {
 		return met.invoke(obj);
 	}
 
-	public static Class<?> getNMSClass(String name) throws ClassNotFoundException {
-		return Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + "." + name);
+	public static Class<?> getNMSClass(String newPackageName, String name) throws ClassNotFoundException {
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
+			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
+		}
+
+		return Class.forName(newPackageName + "." + name);
 	}
 
 	public static Class<?> getCraftClass(String className) throws ClassNotFoundException {
@@ -124,9 +128,11 @@ public final class ReflectionUtils {
 
 		try {
 			Object playerHandle = getHandle(player);
-			Object playerConnection = getField(playerHandle.getClass(), "playerConnection").get(playerHandle);
+			Object playerConnection = getField(playerHandle.getClass(),
+					(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1) ? "b" : "playerConnection"))
+							.get(playerHandle);
 
-			playerConnection.getClass().getDeclaredMethod("sendPacket", NMSContainer.getPacket())
+			playerConnection.getClass().getDeclaredMethod("sendPacket", ClazzContainer.getPacket())
 					.invoke(playerConnection, packet);
 		} catch (Exception e) {
 		}
@@ -135,14 +141,21 @@ public final class ReflectionUtils {
 	public static class Classes {
 
 		public static Object getNewEntityPlayer(Object profile) {
-			Object serverIns = getServer(NMSContainer.getMinecraftServer());
+			Object serverIns = getServer(ClazzContainer.getMinecraftServer());
 
 			try {
-				Class<?> interactManager = getNMSClass("PlayerInteractManager");
-				Object managerIns = null;
-
 				// Only get the first world
 				Object worldServer = getHandle(org.bukkit.Bukkit.getServer().getWorlds().get(0));
+
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+					return ClazzContainer
+							.getEntityPlayerClass().getConstructor(ClazzContainer.getMinecraftServer(),
+									worldServer.getClass(), profile.getClass())
+							.newInstance(serverIns, worldServer, profile);
+				}
+
+				Class<?> interactManager = getNMSClass("net.minecraft.server.level", "PlayerInteractManager");
+				Object managerIns = null;
 
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
 					managerIns = interactManager.getConstructor(worldServer.getClass()).newInstance(worldServer);
@@ -152,8 +165,8 @@ public final class ReflectionUtils {
 					managerIns = interactManager.getConstructors()[0].newInstance(worldServer);
 				}
 
-				return NMSContainer
-						.getEntityPlayerClass().getConstructor(NMSContainer.getMinecraftServer(),
+				return ClazzContainer
+						.getEntityPlayerClass().getConstructor(ClazzContainer.getMinecraftServer(),
 								worldServer.getClass(), profile.getClass(), interactManager)
 						.newInstance(serverIns, worldServer, profile, managerIns);
 			} catch (Exception e) {
@@ -171,6 +184,7 @@ public final class ReflectionUtils {
 				try {
 					return server.getMethod("getServer").invoke(server);
 				} catch (ReflectiveOperationException e) {
+					e.printStackTrace();
 				}
 			}
 

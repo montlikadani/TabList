@@ -13,7 +13,7 @@ import hu.montlikadani.tablist.bukkit.tablist.groups.GroupPlayer;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.Util;
-import hu.montlikadani.tablist.bukkit.utils.reflection.NMSContainer;
+import hu.montlikadani.tablist.bukkit.utils.reflection.ClazzContainer;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.NameTagVisibility;
@@ -111,13 +111,13 @@ public class ReflectionHandled implements ITabScoreboard {
 
 			Array.set(entityPlayerArray, 0, handle);
 
-			Class<?> playOutPlayerInfo = NMSContainer.getPacketPlayOutPlayerInfo();
-			Constructor<?> constr = playOutPlayerInfo.getDeclaredConstructor(NMSContainer.getEnumPlayerInfoAction(),
+			Class<?> playOutPlayerInfo = ClazzContainer.getPacketPlayOutPlayerInfo();
+			Constructor<?> constr = playOutPlayerInfo.getDeclaredConstructor(ClazzContainer.getEnumPlayerInfoAction(),
 					entityPlayerArray.getClass());
 
 			constr.setAccessible(true);
 
-			packetPlayOutPlayerInfo = constr.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
+			packetPlayOutPlayerInfo = constr.newInstance(ClazzContainer.getUpdateDisplayName(), entityPlayerArray);
 
 			infoListField = ReflectionUtils.getField(playOutPlayerInfo, "b");
 			infoList = (List<Object>) infoListField.get(packetPlayOutPlayerInfo);
@@ -180,7 +180,7 @@ public class ReflectionHandled implements ITabScoreboard {
 					continue;
 				}
 
-				Constructor<?> playerInfoDataConstr = NMSContainer.getPlayerInfoDataConstructor();
+				Constructor<?> playerInfoDataConstr = ClazzContainer.getPlayerInfoDataConstructor();
 				Class<?> infoDataClass = infoData.getClass();
 				Object gameMode = ReflectionUtils.getField(infoDataClass, "c").get(infoData);
 				int ping = (int) ReflectionUtils.getField(infoDataClass, "b").get(infoData);

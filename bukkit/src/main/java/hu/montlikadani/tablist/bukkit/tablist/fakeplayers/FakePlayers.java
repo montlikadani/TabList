@@ -15,7 +15,7 @@ import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.Util;
-import hu.montlikadani.tablist.bukkit.utils.reflection.NMSContainer;
+import hu.montlikadani.tablist.bukkit.utils.reflection.ClazzContainer;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public class FakePlayers implements IFakePlayers {
@@ -73,8 +73,8 @@ public class FakePlayers implements IFakePlayers {
 				Object entityPlayerArray = Array.newInstance(fakeEntityPlayer.getClass(), 1);
 				Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
-				Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
-						.newInstance(NMSContainer.getUpdateDisplayName(), entityPlayerArray);
+				Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
+						.newInstance(ClazzContainer.getUpdateDisplayName(), entityPlayerArray);
 
 				ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
 			}
@@ -108,8 +108,8 @@ public class FakePlayers implements IFakePlayers {
 			Object entityPlayerArray = Array.newInstance(fakeEntityPlayer.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
-			Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
-					.newInstance(NMSContainer.getAddPlayer(), entityPlayerArray);
+			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
+					.newInstance(ClazzContainer.getAddPlayer(), entityPlayerArray);
 
 			for (Player aOnline : tablist.getServer().getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
@@ -142,8 +142,8 @@ public class FakePlayers implements IFakePlayers {
 			Object entityPlayerArray = Array.newInstance(fakeEntityPlayer.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
-			Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
-					.newInstance(NMSContainer.getUpdateLatency(), entityPlayerArray);
+			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
+					.newInstance(ClazzContainer.getUpdateLatency(), entityPlayerArray);
 
 			Field infoListField = ReflectionUtils.getField(packetPlayOutPlayerInfo.getClass(), "b");
 
@@ -152,15 +152,30 @@ public class FakePlayers implements IFakePlayers {
 			@SuppressWarnings("unchecked")
 			List<Object> infoList = (List<Object>) infoListField.get(packetPlayOutPlayerInfo);
 			for (Object infoData : infoList) {
-				GameProfile profile = (GameProfile) ReflectionUtils.invokeMethod(infoData, "a");
+				GameProfile profile;
+
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+					profile = (GameProfile) ReflectionUtils.getField(infoData.getClass(), "c").get(infoData);
+				} else {
+					profile = (GameProfile) ReflectionUtils.invokeMethod(infoData, "a");
+				}
 
 				if (profile.getId().equals(this.profile.getId())) {
-					Object gameMode = ReflectionUtils.getField(infoData.getClass(), "c").get(infoData);
+					Object gameMode;
 
-					Constructor<?> playerInfoDataConstr = NMSContainer.getPlayerInfoDataConstructor();
+					if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+						gameMode = ReflectionUtils.getField(infoData.getClass(), "b").get(infoData);
+					} else {
+						gameMode = ReflectionUtils.getField(infoData.getClass(), "c").get(infoData);
+					}
+
+					Constructor<?> playerInfoDataConstr = ClazzContainer.getPlayerInfoDataConstructor();
 
 					if (playerInfoDataConstr.getParameterCount() == 5) {
 						packet = playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
+								ReflectionUtils.getAsIChatBaseComponent(name));
+					} else if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+						packet = playerInfoDataConstr.newInstance(profile, ping, gameMode,
 								ReflectionUtils.getAsIChatBaseComponent(name));
 					} else {
 						packet = playerInfoDataConstr.newInstance(profile, ping, gameMode,
@@ -217,8 +232,8 @@ public class FakePlayers implements IFakePlayers {
 			Object entityPlayerArray = Array.newInstance(fakeEntityPlayer.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
-			Object packetPlayOutPlayerInfo = NMSContainer.getPlayOutPlayerInfoConstructor()
-					.newInstance(NMSContainer.getRemovePlayer(), entityPlayerArray);
+			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
+					.newInstance(ClazzContainer.getRemovePlayer(), entityPlayerArray);
 
 			for (Player aOnline : tablist.getServer().getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);

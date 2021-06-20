@@ -116,7 +116,7 @@ public class CommentedConfig extends YamlConfiguration {
 				}
 			}
 
-			if ((line.contains(": ") && keyOk) || (length > 1 && line.charAt(length - 1) == ':')) {
+			if ((keyOk && line.contains(": ")) || (length > 1 && line.charAt(length - 1) == ':')) {
 				commentedPath = false;
 				node = true;
 

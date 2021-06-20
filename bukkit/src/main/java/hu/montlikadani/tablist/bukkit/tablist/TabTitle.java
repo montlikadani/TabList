@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.Util;
-import hu.montlikadani.tablist.bukkit.utils.reflection.NMSContainer;
+import hu.montlikadani.tablist.bukkit.utils.reflection.ClazzContainer;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public abstract class TabTitle {
@@ -14,19 +14,25 @@ public abstract class TabTitle {
 
 	static {
 		try {
-			playerListHeaderFooter = ReflectionUtils.getNMSClass("PacketPlayOutPlayerListHeaderFooter");
+			playerListHeaderFooter = ReflectionUtils.getNMSClass("net.minecraft.network.protocol.game",
+					"PacketPlayOutPlayerListHeaderFooter");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
 
 		try {
 			playerListHeaderFooterConstructor = playerListHeaderFooter.getConstructor();
-		} catch (NoSuchMethodException e) {
+		} catch (NoSuchMethodException s) {
 			try {
 				playerListHeaderFooterConstructor = playerListHeaderFooter
-						.getConstructor(NMSContainer.getIChatBaseComponent());
-			} catch (NoSuchMethodException ex) {
-				ex.printStackTrace();
+						.getConstructor(ClazzContainer.getIChatBaseComponent(), ClazzContainer.getIChatBaseComponent());
+			} catch (NoSuchMethodException e) {
+				try {
+					playerListHeaderFooterConstructor = playerListHeaderFooter
+							.getConstructor(ClazzContainer.getIChatBaseComponent());
+				} catch (NoSuchMethodException ex) {
+					ex.printStackTrace();
+				}
 			}
 		}
 	}
@@ -45,10 +51,15 @@ public abstract class TabTitle {
 		}
 
 		try {
-			try {
-				Object packet = playerListHeaderFooterConstructor.newInstance(),
-						tabHeader = ReflectionUtils.getAsIChatBaseComponent(header),
-						tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);
+			Object tabHeader = ReflectionUtils.getAsIChatBaseComponent(header),
+					tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);
+
+			Object packet;
+
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+				packet = playerListHeaderFooterConstructor.newInstance(tabHeader, tabFooter);
+			} else {
+				packet = playerListHeaderFooterConstructor.newInstance();
 
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
 					ReflectionUtils.setField(packet, "header", tabHeader);
@@ -57,11 +68,13 @@ public abstract class TabTitle {
 					ReflectionUtils.setField(packet, "a", tabHeader);
 					ReflectionUtils.setField(packet, "b", tabFooter);
 				}
+			}
 
-				ReflectionUtils.sendPacket(player, packet);
-			} catch (Exception f) {
-				Object packet = null;
+			ReflectionUtils.sendPacket(player, packet);
+		} catch (Exception f) {
+			Object packet = null;
 
+			try {
 				try {
 					if (ServerVersion.isCurrentLower(ServerVersion.v1_12_R1)) {
 						packet = playerListHeaderFooterConstructor
@@ -78,9 +91,9 @@ public abstract class TabTitle {
 					ReflectionUtils.setField(packet, "b", ReflectionUtils.getAsIChatBaseComponent(footer));
 					ReflectionUtils.sendPacket(player, packet);
 				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-		} catch (Exception t) {
-			t.printStackTrace();
 		}
 	}
 }

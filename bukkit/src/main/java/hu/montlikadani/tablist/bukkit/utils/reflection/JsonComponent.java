@@ -22,7 +22,7 @@ public final class JsonComponent {
 	}
 
 	// Lock until not done by a thread to prevent NPE from client
-	public synchronized Object parseProperty(String text, Class<?> iChatBaseComponent) throws Exception {
+	public synchronized Object parseProperty(String text) throws Exception {
 		jsonList.clear();
 
 		JsonObject obj = new JsonObject();
@@ -131,7 +131,8 @@ public final class JsonComponent {
 		obj.addProperty("text", builder.toString());
 		jsonList.add(obj);
 
-		return ReflectionUtils.jsonComponentMethod.invoke(iChatBaseComponent, gson.toJson(jsonList));
+		return ReflectionUtils.jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(),
+				gson.toJson(jsonList));
 	}
 
 	public CompletableFuture<NavigableMap<String, String>> getSkinValue(String uuid) {

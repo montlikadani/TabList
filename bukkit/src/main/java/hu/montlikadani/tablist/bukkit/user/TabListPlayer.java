@@ -8,7 +8,6 @@ import hu.montlikadani.tablist.bukkit.tablist.playerlist.PlayerList;
 
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class TabListPlayer implements TabListUser {
@@ -21,7 +20,6 @@ public class TabListPlayer implements TabListUser {
 
 	private HidePlayers hidePlayers;
 	private PlayerList playerList;
-	private boolean hidden = false;
 
 	public TabListPlayer(TabList plugin, UUID uuid) {
 		this.plugin = plugin;
@@ -33,7 +31,7 @@ public class TabListPlayer implements TabListUser {
 
 	@Override
 	public Player getPlayer() {
-		return Bukkit.getPlayer(uuid);
+		return plugin.getServer().getPlayer(uuid);
 	}
 
 	@Override
@@ -53,12 +51,12 @@ public class TabListPlayer implements TabListUser {
 
 	@Override
 	public boolean isHidden() {
-		return hidden;
+		return playerList != null;
 	}
 
 	@Override
 	public void setHidden(boolean hidden) {
-		if (this.hidden = hidden) {
+		if (hidden) {
 			if (playerList == null) {
 				playerList = new PlayerList(plugin, this);
 			}
