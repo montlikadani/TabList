@@ -73,9 +73,8 @@ public final class JsonComponent {
 			} else if (charAt == '&' || charAt == '\u00a7') {
 				char nextChar = text.charAt(i + 1);
 
-				if (Character.isDigit(nextChar)
-						|| ((nextChar >= 'a' && nextChar <= 'f') || (nextChar == 'k' || nextChar == 'l'
-								|| nextChar == 'm' || nextChar == 'n' || nextChar == 'o' || nextChar == 'r'))) {
+				if (((nextChar >= 'a' && nextChar <= 'f') || (nextChar == 'k' || nextChar == 'l' || nextChar == 'm'
+						|| nextChar == 'n' || nextChar == 'o' || nextChar == 'r')) || Character.isDigit(nextChar)) {
 					obj.addProperty("text", builder.toString());
 					jsonList.add(obj);
 

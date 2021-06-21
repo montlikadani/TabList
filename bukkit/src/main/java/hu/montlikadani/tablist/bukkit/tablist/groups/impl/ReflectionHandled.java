@@ -160,7 +160,7 @@ public class ReflectionHandled implements ITabScoreboard {
 								ClazzContainer.getScoreboardConstructor().newInstance(),
 								groupPlayer.getFullGroupTeamName()), 1);
 			} else {
-				oldTeamPacket = ClazzContainer.getScoreboardTeamConstructor().newInstance();
+				oldTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
 
 				ClazzContainer.getScoreboardTeamName().set(oldTeamPacket, groupPlayer.getFullGroupTeamName());
 				ClazzContainer.getScoreboardTeamMode().set(oldTeamPacket, 1);
