@@ -22,7 +22,6 @@ import org.bukkit.scoreboard.Team;
 @SuppressWarnings("deprecation")
 public class ReflectionHandled implements ITabScoreboard {
 
-	private final TabScoreboardReflection scoreRef = new TabScoreboardReflection();
 	private final TabList plugin = TabListAPI.getPlugin();
 
 	private Object packetPlayOutPlayerInfo;
@@ -37,8 +36,6 @@ public class ReflectionHandled implements ITabScoreboard {
 				return;
 			}
 
-			scoreRef.init();
-
 			unregisterTeam(groupPlayer);
 
 			Player player = groupPlayer.getUser().getPlayer();
@@ -50,15 +47,26 @@ public class ReflectionHandled implements ITabScoreboard {
 			Object[] entityPlayerArray = (Object[]) Array.newInstance(handle.getClass(), 1);
 			String teamName = groupPlayer.getFullGroupTeamName();
 
-			Object newTeamPacket = scoreRef.getScoreboardTeamConstructor().newInstance();
+			Object newTeamPacket;
 
-			scoreRef.getScoreboardTeamName().set(newTeamPacket, teamName);
-			scoreRef.getScoreboardTeamMode().set(newTeamPacket, 0);
-			scoreRef.getScoreboardTeamDisplayName().set(newTeamPacket,
-					ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1)
-							? ReflectionUtils.getAsIChatBaseComponent(teamName)
-							: teamName);
-			scoreRef.getScoreboardTeamNames().set(newTeamPacket, Collections.singletonList(player.getName()));
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+				Object scoreTeam = ClazzContainer.getScoreboardTeamConstructor()
+						.newInstance(ClazzContainer.getScoreboardConstructor().newInstance(), teamName);
+
+				ClazzContainer.getScoreboardTeamSetDisplayName().invoke(scoreTeam,
+						ReflectionUtils.getAsIChatBaseComponent(teamName));
+				newTeamPacket = ClazzContainer.scoreboardTeamPacketByAction(scoreTeam, 0);
+			} else {
+				newTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
+
+				ClazzContainer.getScoreboardTeamName().set(newTeamPacket, teamName);
+				ClazzContainer.getScoreboardTeamMode().set(newTeamPacket, 0);
+				ClazzContainer.getScoreboardTeamDisplayName().set(newTeamPacket,
+						ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1)
+								? ReflectionUtils.getAsIChatBaseComponent(teamName)
+								: teamName);
+				ClazzContainer.getScoreboardTeamNames().set(newTeamPacket, Collections.singletonList(player.getName()));
+			}
 
 			for (Team team : player.getScoreboard().getTeams()) {
 				if (!team.hasEntry(player.getName())) {
@@ -105,21 +113,28 @@ public class ReflectionHandled implements ITabScoreboard {
 					}
 				}
 
-				scoreRef.getNameTagVisibility().set(newTeamPacket, optionName);
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+					for (Object f : ClazzContainer.getScoreboardNameTagVisibilityEnumConstants()) {
+						String name = (String) f.getClass().getDeclaredField("name").get(f);
+
+						if (optionName.equalsIgnoreCase(name)) {
+							ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(newTeamPacket, f);
+							break;
+						}
+					}
+				} else {
+					ClazzContainer.getNameTagVisibility().set(newTeamPacket, optionName);
+				}
+
 				break;
 			}
 
 			Array.set(entityPlayerArray, 0, handle);
 
-			Class<?> playOutPlayerInfo = ClazzContainer.getPacketPlayOutPlayerInfo();
-			Constructor<?> constr = playOutPlayerInfo.getDeclaredConstructor(ClazzContainer.getEnumPlayerInfoAction(),
-					entityPlayerArray.getClass());
+			packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
+					.newInstance(ClazzContainer.getUpdateDisplayName(), entityPlayerArray);
 
-			constr.setAccessible(true);
-
-			packetPlayOutPlayerInfo = constr.newInstance(ClazzContainer.getUpdateDisplayName(), entityPlayerArray);
-
-			infoListField = ReflectionUtils.getField(playOutPlayerInfo, "b");
+			infoListField = ReflectionUtils.getField(ClazzContainer.getPacketPlayOutPlayerInfo(), "b");
 			infoList = (List<Object>) infoListField.get(packetPlayOutPlayerInfo);
 
 			for (TabListUser user : plugin.getUsers()) {
@@ -138,15 +153,20 @@ public class ReflectionHandled implements ITabScoreboard {
 
 	@Override
 	public void unregisterTeam(GroupPlayer groupPlayer) {
-		if (scoreRef.getScoreboardTeamConstructor() == null) {
-			return;
-		}
-
 		try {
-			Object oldTeamPacket = scoreRef.getScoreboardTeamConstructor().newInstance();
+			Object oldTeamPacket;
 
-			scoreRef.getScoreboardTeamName().set(oldTeamPacket, groupPlayer.getFullGroupTeamName());
-			scoreRef.getScoreboardTeamMode().set(oldTeamPacket, 1);
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+				oldTeamPacket = ClazzContainer
+						.scoreboardTeamPacketByAction(ClazzContainer.getScoreboardTeamConstructor().newInstance(
+								ClazzContainer.getScoreboardConstructor().newInstance(),
+								groupPlayer.getFullGroupTeamName()), 1);
+			} else {
+				oldTeamPacket = ClazzContainer.getScoreboardTeamConstructor().newInstance();
+
+				ClazzContainer.getScoreboardTeamName().set(oldTeamPacket, groupPlayer.getFullGroupTeamName());
+				ClazzContainer.getScoreboardTeamMode().set(oldTeamPacket, 1);
+			}
 
 			for (TabListUser user : plugin.getUsers()) {
 				ReflectionUtils.sendPacket(user.getPlayer(), oldTeamPacket);
@@ -174,7 +194,13 @@ public class ReflectionHandled implements ITabScoreboard {
 			Object infoPacket = null;
 
 			for (Object infoData : infoList) {
-				GameProfile profile = (GameProfile) ReflectionUtils.invokeMethod(infoData, "a");
+				GameProfile profile;
+
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+					profile = (GameProfile) ReflectionUtils.getField(infoData.getClass(), "c").get(infoData);
+				} else {
+					profile = (GameProfile) ReflectionUtils.invokeMethod(infoData, "a");
+				}
 
 				if (!profile.getId().equals(groupPlayer.getUser().getUniqueId())) {
 					continue;
@@ -182,13 +208,30 @@ public class ReflectionHandled implements ITabScoreboard {
 
 				Constructor<?> playerInfoDataConstr = ClazzContainer.getPlayerInfoDataConstructor();
 				Class<?> infoDataClass = infoData.getClass();
-				Object gameMode = ReflectionUtils.getField(infoDataClass, "c").get(infoData);
-				int ping = (int) ReflectionUtils.getField(infoDataClass, "b").get(infoData);
+				Object gameMode;
 
-				infoPacket = playerInfoDataConstr.getParameterCount() == 5
-						? playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
-								nameComponent)
-						: playerInfoDataConstr.newInstance(profile, ping, gameMode, nameComponent);
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+					gameMode = ReflectionUtils.getField(infoData.getClass(), "b").get(infoData);
+				} else {
+					gameMode = ReflectionUtils.getField(infoData.getClass(), "c").get(infoData);
+				}
+
+				int ping;
+
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+					ping = (int) ReflectionUtils.getField(infoDataClass, "a").get(infoData);
+				} else {
+					ping = (int) ReflectionUtils.getField(infoDataClass, "b").get(infoData);
+				}
+
+				if (playerInfoDataConstr.getParameterCount() == 5) {
+					infoPacket = playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
+							nameComponent);
+				} else if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+					infoPacket = playerInfoDataConstr.newInstance(profile, ping, gameMode, nameComponent);
+				} else {
+					infoPacket = playerInfoDataConstr.newInstance(profile, ping, gameMode, nameComponent);
+				}
 
 				break;
 			}

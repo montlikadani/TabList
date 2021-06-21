@@ -14,7 +14,7 @@ public abstract class TabTitle {
 
 	static {
 		try {
-			playerListHeaderFooter = ReflectionUtils.getNMSClass("net.minecraft.network.protocol.game",
+			playerListHeaderFooter = ReflectionUtils.getPacketClass("net.minecraft.network.protocol.game",
 					"PacketPlayOutPlayerListHeaderFooter");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();

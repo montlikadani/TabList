@@ -71,7 +71,7 @@ public final class ReflectionUtils {
 		}
 
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
-			Class<?> chatSerializer = getNMSClass(null, "ChatSerializer");
+			Class<?> chatSerializer = getPacketClass(null, "ChatSerializer");
 			return ClazzContainer.getIChatBaseComponent().cast(
 					chatSerializer.getMethod("a", String.class).invoke(chatSerializer, "{\"text\":\"" + text + "\"}"));
 		}
@@ -95,7 +95,7 @@ public final class ReflectionUtils {
 		return met.invoke(obj);
 	}
 
-	public static Class<?> getNMSClass(String newPackageName, String name) throws ClassNotFoundException {
+	public static Class<?> getPacketClass(String newPackageName, String name) throws ClassNotFoundException {
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
 			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
 		}
@@ -122,7 +122,7 @@ public final class ReflectionUtils {
 	}
 
 	public static void sendPacket(Player player, Object packet) {
-		if (player == null) {
+		if (player == null || packet == null) {
 			return;
 		}
 
@@ -154,7 +154,7 @@ public final class ReflectionUtils {
 							.newInstance(serverIns, worldServer, profile);
 				}
 
-				Class<?> interactManager = getNMSClass("net.minecraft.server.level", "PlayerInteractManager");
+				Class<?> interactManager = getPacketClass("net.minecraft.server.level", "PlayerInteractManager");
 				Object managerIns = null;
 
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {

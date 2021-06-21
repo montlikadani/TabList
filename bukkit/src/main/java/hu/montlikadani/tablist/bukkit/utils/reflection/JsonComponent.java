@@ -160,14 +160,15 @@ public final class JsonComponent {
 	private String getContent(String link) {
 		try {
 			HttpsURLConnection conn = (HttpsURLConnection) new java.net.URL(link).openConnection();
-			BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 
-			String inputLine;
-			while ((inputLine = br.readLine()) != null) {
-				return inputLine;
+			try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream()))) {
+				String inputLine;
+
+				while ((inputLine = br.readLine()) != null) {
+					return inputLine;
+				}
 			}
 
-			br.close();
 			conn.disconnect();
 		} catch (java.io.IOException e) {
 			e.printStackTrace();
