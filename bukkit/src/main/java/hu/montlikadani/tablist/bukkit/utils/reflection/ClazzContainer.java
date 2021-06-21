@@ -10,7 +10,8 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 public final class ClazzContainer {
 
 	private static Field infoList, scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamPrefix,
-			scoreboardTeamSuffix, scoreboardTeamNames, scoreboardTeamMode, scoreboardPlayers, nameTagVisibility;
+			scoreboardTeamSuffix, scoreboardTeamNames, scoreboardTeamMode, scoreboardPlayers, nameTagVisibility,
+			playerInfoDataProfileField, playerInfoDataPing, playerInfoDataGameMode;
 
 	private static Class<?> iChatBaseComponent, packet, packetPlayOutPlayerInfo, enumPlayerInfoAction,
 			entityPlayerClass, enumGameMode, playerInfoData, minecraftServer, packetPlayOutScoreboardTeam,
@@ -21,7 +22,7 @@ public final class ClazzContainer {
 
 	private static Method scoreboardTeamSetPrefix, scoreboardTeamSetSuffix, scoreboardTeamSetNameTagVisibility,
 			scoreboardTeamSetDisplayName, packetScoreboardTeamRemove, packetScoreboardTeamUpdateCreate,
-			packetScoreboardTeamEntries;
+			packetScoreboardTeamEntries, playerInfoDataProfileMethod;
 
 	private static Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstructor, scoreboardConstructor,
 			scoreboardTeamConstructor, packetPlayOutScoreboardTeamConstructor;
@@ -129,15 +130,23 @@ public final class ClazzContainer {
 				playerInfoData = classByName(null, "PlayerInfoData");
 			}
 
-			if (playerInfoData != null) {
-				playerInfoDataConstructors = playerInfoData.getConstructors();
+			playerInfoDataConstructors = playerInfoData.getConstructors();
 
-				for (Constructor<?> constr : playerInfoDataConstructors) {
-					if (constr.getParameterCount() == 4 || constr.getParameterCount() == 5) {
-						(playerInfoDataConstr = constr).setAccessible(true);
-						break;
-					}
+			for (Constructor<?> constr : playerInfoDataConstructors) {
+				if (constr.getParameterCount() == 4 || constr.getParameterCount() == 5) {
+					(playerInfoDataConstr = constr).setAccessible(true);
+					break;
 				}
+			}
+
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+				(playerInfoDataProfileField = playerInfoData.getDeclaredField("c")).setAccessible(true);
+				(playerInfoDataPing = playerInfoData.getDeclaredField("a")).setAccessible(true);
+				(playerInfoDataGameMode = playerInfoData.getDeclaredField("b")).setAccessible(true);
+			} else {
+				(playerInfoDataProfileMethod = playerInfoData.getDeclaredMethod("a")).setAccessible(true);
+				(playerInfoDataPing = playerInfoData.getDeclaredField("b")).setAccessible(true);
+				(playerInfoDataGameMode = playerInfoData.getDeclaredField("c")).setAccessible(true);
 			}
 
 			Class<?> entityPlayerArrayClass = Array.newInstance(entityPlayerClass, 0).getClass();
@@ -366,5 +375,21 @@ public final class ClazzContainer {
 
 	public static Object[] getScoreboardNameTagVisibilityEnumConstants() {
 		return scoreboardNameTagVisibilityEnumConstants;
+	}
+
+	public static Field getPlayerInfoDataProfileField() {
+		return playerInfoDataProfileField;
+	}
+
+	public static Field getPlayerInfoDataPing() {
+		return playerInfoDataPing;
+	}
+
+	public static Method getPlayerInfoDataProfileMethod() {
+		return playerInfoDataProfileMethod;
+	}
+
+	public static Field getPlayerInfoDataGameMode() {
+		return playerInfoDataGameMode;
 	}
 }

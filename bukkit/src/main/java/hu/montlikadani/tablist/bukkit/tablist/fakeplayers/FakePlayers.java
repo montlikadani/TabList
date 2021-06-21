@@ -2,7 +2,6 @@ package hu.montlikadani.tablist.bukkit.tablist.fakeplayers;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
 
@@ -145,31 +144,23 @@ public class FakePlayers implements IFakePlayers {
 			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
 					.newInstance(ClazzContainer.getUpdateLatency(), entityPlayerArray);
 
-			Field infoListField = ReflectionUtils.getField(packetPlayOutPlayerInfo.getClass(), "b");
-
 			Object packet = null;
 
 			@SuppressWarnings("unchecked")
-			List<Object> infoList = (List<Object>) infoListField.get(packetPlayOutPlayerInfo);
+			List<Object> infoList = (List<Object>) ClazzContainer.getInfoList().get(packetPlayOutPlayerInfo);
+
 			for (Object infoData : infoList) {
 				GameProfile profile;
 
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-					profile = (GameProfile) ReflectionUtils.getField(infoData.getClass(), "c").get(infoData);
+					profile = (GameProfile) ClazzContainer.getPlayerInfoDataProfileField().get(infoData);
 				} else {
-					profile = (GameProfile) ReflectionUtils.invokeMethod(infoData, "a");
+					profile = (GameProfile) ClazzContainer.getPlayerInfoDataProfileMethod().invoke(infoData);
 				}
 
 				if (profile.getId().equals(this.profile.getId())) {
-					Object gameMode;
-
-					if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-						gameMode = ReflectionUtils.getField(infoData.getClass(), "b").get(infoData);
-					} else {
-						gameMode = ReflectionUtils.getField(infoData.getClass(), "c").get(infoData);
-					}
-
 					Constructor<?> playerInfoDataConstr = ClazzContainer.getPlayerInfoDataConstructor();
+					Object gameMode = ClazzContainer.getPlayerInfoDataGameMode().get(infoData);
 
 					if (playerInfoDataConstr.getParameterCount() == 5) {
 						packet = playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
@@ -190,7 +181,7 @@ public class FakePlayers implements IFakePlayers {
 				return;
 			}
 
-			infoListField.set(packetPlayOutPlayerInfo, java.util.Arrays.asList(packet));
+			ClazzContainer.getInfoList().set(packetPlayOutPlayerInfo, java.util.Arrays.asList(packet));
 
 			for (Player aOnline : tablist.getServer().getOnlinePlayers()) {
 				ReflectionUtils.sendPacket(aOnline, packetPlayOutPlayerInfo);
