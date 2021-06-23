@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 
-public class Util {
+public final class Util {
 
 	public static void logConsole(String msg) {
 		logConsole(Level.INFO, msg);
@@ -27,7 +27,7 @@ public class Util {
 			return "";
 		}
 
-		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1) && msg.contains("#")) {
+		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1) && msg.indexOf('#') >= 0) {
 			msg = Global.matchColorRegex(msg);
 		}
 
@@ -36,8 +36,10 @@ public class Util {
 
 	public static void sendMsg(CommandSender sender, String s) {
 		if (sender != null && s != null && !s.isEmpty()) {
-			if (s.contains("\n")) {
-				for (String msg : s.split("\n")) {
+			String[] split = s.split("\n");
+
+			if (split.length > 0) {
+				for (String msg : split) {
 					sender.sendMessage(msg);
 				}
 			} else {

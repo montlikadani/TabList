@@ -52,6 +52,12 @@ public class ReflectionHandled implements ITabScoreboard {
 				Object scoreTeam = ClazzContainer.getScoreboardTeamConstructor()
 						.newInstance(ClazzContainer.getScoreboardConstructor().newInstance(), teamName);
 
+				java.util.Collection<String> playerNameSet = (java.util.Collection<String>) ClazzContainer
+						.getPlayerNameSetMethod().invoke(scoreTeam);
+				playerNameSet.add(player.getName());
+
+				ClazzContainer.getScoreboardTeamNames().set(scoreTeam, playerNameSet);
+
 				ClazzContainer.getScoreboardTeamSetDisplayName().invoke(scoreTeam,
 						ReflectionUtils.getAsIChatBaseComponent(teamName));
 				newTeamPacket = ClazzContainer.scoreboardTeamPacketByAction(scoreTeam, 0);

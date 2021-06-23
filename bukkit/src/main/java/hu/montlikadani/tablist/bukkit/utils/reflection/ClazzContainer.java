@@ -22,7 +22,7 @@ public final class ClazzContainer {
 
 	private static Method scoreboardTeamSetPrefix, scoreboardTeamSetSuffix, scoreboardTeamSetNameTagVisibility,
 			scoreboardTeamSetDisplayName, packetScoreboardTeamRemove, packetScoreboardTeamUpdateCreate,
-			packetScoreboardTeamEntries, playerInfoDataProfileMethod;
+			packetScoreboardTeamEntries, playerInfoDataProfileMethod, playerNameSetMethod;
 
 	private static Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstructor, scoreboardConstructor,
 			scoreboardTeamConstructor, packetPlayOutScoreboardTeamConstructor;
@@ -78,8 +78,8 @@ public final class ClazzContainer {
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
 				scoreboardNameTagVisibility = classByName("net.minecraft.world.scores",
 						"ScoreboardTeamBase$EnumNameTagVisibility");
-				scoreboardTeamClass = classByName("net.minecraft.world.scores", "ScoreboardTeam");
 				scoreboardClass = classByName("net.minecraft.world.scores", "Scoreboard");
+				scoreboardTeamClass = classByName("net.minecraft.world.scores", "ScoreboardTeam");
 
 				scoreboardConstructor = scoreboardClass.getConstructor();
 
@@ -101,6 +101,8 @@ public final class ClazzContainer {
 
 				scoreboardNameTagVisibilityEnumConstants = scoreboardNameTagVisibility.getEnumConstants();
 				scoreboardTeamConstructor = scoreboardTeamClass.getConstructor(scoreboardClass, String.class);
+				(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("f")).setAccessible(true);
+				playerNameSetMethod = scoreboardTeamClass.getMethod("getPlayerNameSet");
 			} else {
 				packetPlayOutScoreboardTeamConstructor = packetPlayOutScoreboardTeam.getConstructor();
 
@@ -196,14 +198,11 @@ public final class ClazzContainer {
 	public static Object scoreboardTeamPacketByAction(Object scoreboardTeam, int action) throws Exception {
 		switch (action) {
 		case 0:
-			return ClazzContainer.getPacketScoreboardTeamUpdateCreate()
-					.invoke(ClazzContainer.getPacketPlayOutScoreboardTeam(), scoreboardTeam, true);
+			return packetScoreboardTeamUpdateCreate.invoke(packetPlayOutScoreboardTeam, scoreboardTeam, true);
 		case 1:
-			return ClazzContainer.getPacketScoreboardTeamRemove()
-					.invoke(ClazzContainer.getPacketPlayOutScoreboardTeam(), scoreboardTeam);
+			return packetScoreboardTeamRemove.invoke(packetPlayOutScoreboardTeam, scoreboardTeam);
 		case 2:
-			return ClazzContainer.getPacketScoreboardTeamUpdateCreate()
-					.invoke(ClazzContainer.getPacketPlayOutScoreboardTeam(), scoreboardTeam, false);
+			return packetScoreboardTeamUpdateCreate.invoke(packetPlayOutScoreboardTeam, scoreboardTeam, false);
 		default:
 			return null;
 		}
@@ -391,5 +390,9 @@ public final class ClazzContainer {
 
 	public static Field getPlayerInfoDataGameMode() {
 		return playerInfoDataGameMode;
+	}
+
+	public static Method getPlayerNameSetMethod() {
+		return playerNameSetMethod;
 	}
 }

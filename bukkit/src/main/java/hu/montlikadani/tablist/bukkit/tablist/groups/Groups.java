@@ -102,6 +102,7 @@ public final class Groups {
 		// Automatically add existing groups to the list for "lazy peoples"
 		if (ConfigValues.isSyncPluginsGroups() && plugin.hasVault()) {
 			boolean have = false;
+			ChatColor[] colors = ChatColor.values();
 
 			me: for (String s : plugin.getVaultPerm().getGroups()) {
 				for (String g : cs.getKeys(false)) {
@@ -111,7 +112,6 @@ public final class Groups {
 				}
 
 				// This again for lazy peoples
-				ChatColor[] colors = ChatColor.values();
 				ChatColor c = colors[java.util.concurrent.ThreadLocalRandom.current().nextInt(colors.length)];
 
 				cs.set(s + ".prefix", "&" + c.getChar() + s + "&r - ");

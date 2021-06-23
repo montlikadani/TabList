@@ -263,7 +263,7 @@ public final class TabList extends JavaPlugin {
 
 		int a = 0; // Make sure we're not generates infinite loop
 
-		while (a < 100 && !animations.isEmpty() && name.contains("%anim:")) { // when using multiple animations
+		while (a < 100 && !animations.isEmpty() && name.indexOf("%anim:") >= 0) { // when using multiple animations
 			for (TextAnimation ac : animations) {
 				name = StringUtils.replace(name, "%anim:" + ac.getName() + "%",
 						ac.getTime() > 0 ? ac.getText() : ac.getTexts()[0]);
