@@ -200,10 +200,10 @@ public final class Groups {
 	 */
 	public void removePlayerGroup(TabListUser user) {
 		GroupPlayer groupPlayer = user.getGroupPlayer();
+		sortedPlayers.remove(groupPlayer);
+
 		groupPlayer.getTabTeam().unregisterTeam(groupPlayer);
 		groupPlayer.removeGroup();
-
-		sortedPlayers.remove(groupPlayer);
 	}
 
 	/**
@@ -282,16 +282,18 @@ public final class Groups {
 		int priority = sortedPlayers.size();
 
 		for (GroupPlayer groupPlayer : sortedPlayers) {
-			if (ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(groupPlayer.getUser().getPlayer())) {
-				if (afkPlayersCache.add(groupPlayer)) {
-					setToSort(true);
+			if (ConfigValues.isAfkStatusEnabled() && ConfigValues.isAfkSortLast()) {
+				if (PluginUtils.isAfk(groupPlayer.getUser().getPlayer())) {
+					if (afkPlayersCache.add(groupPlayer)) {
+						setToSort(true);
+					}
+
+					continue;
 				}
 
-				continue;
-			}
-
-			if (afkPlayersCache.remove(groupPlayer)) {
-				setToSort(true);
+				if (afkPlayersCache.remove(groupPlayer)) {
+					setToSort(true);
+				}
 			}
 
 			setPlayerTeam(groupPlayer, priority--);
@@ -302,10 +304,12 @@ public final class Groups {
 			return;
 		}
 
-		int size = sortedPlayers.size();
+		if (ConfigValues.isAfkSortLast()) {
+			int size = sortedPlayers.size();
 
-		for (GroupPlayer afk : afkPlayersCache) {
-			setPlayerTeam(afk, size + 1);
+			for (GroupPlayer afk : afkPlayersCache) {
+				setPlayerTeam(afk, size + 1);
+			}
 		}
 
 		setToSort(false);

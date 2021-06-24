@@ -22,7 +22,6 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 	private String customPrefix, customSuffix, playerVaultGroup;
 
-	private boolean afk;
 	private int customPriority = Integer.MIN_VALUE;
 	private int safePriority = 0;
 
@@ -56,10 +55,6 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 	public TabListUser getUser() {
 		return tabListUser;
-	}
-
-	public boolean isAfk() {
-		return afk;
 	}
 
 	public void setCustomPrefix(String customPrefix) {
@@ -111,12 +106,6 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 			}
 
 			return update;
-		}
-
-		boolean afk = PluginUtils.isAfk(player);
-		if (this.afk != afk) {
-			this.afk = afk;
-			update = true;
 		}
 
 		for (TeamHandler team : groups.getGroupsList()) {
@@ -305,14 +294,6 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 
 	@Override
 	public int compareTo(GroupPlayer tlp) {
-		if (ConfigValues.isAfkSortLast()) {
-			int comp = Boolean.compare(isAfk(), tlp.isAfk());
-
-			if (comp != 0) {
-				return comp;
-			}
-		}
-
 		int ownPriority = getPriority();
 		int tlpPriority = tlp.getPriority();
 

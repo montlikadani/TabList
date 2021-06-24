@@ -2,7 +2,6 @@ package hu.montlikadani.tablist.bukkit.commands.list;
 
 import static hu.montlikadani.tablist.bukkit.utils.Util.sendMsg;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -53,7 +52,7 @@ public final class toggle implements ICommand {
 				return true;
 			}
 
-			Player player = Bukkit.getPlayer(args[1]);
+			Player player = plugin.getServer().getPlayer(args[1]);
 			if (player == null) {
 				sendMsg(sender, plugin.getMsg("toggle.player-not-found", "%player%", args[1]));
 				return false;

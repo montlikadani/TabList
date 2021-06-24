@@ -4,7 +4,6 @@ import static hu.montlikadani.tablist.bukkit.utils.Util.sendMsg;
 
 import java.io.IOException;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -113,7 +112,7 @@ public final class player implements ICommand {
 				return false;
 			}
 
-			plugin.getUser(Bukkit.getPlayer(target)).ifPresent(plugin.getGroups()::removePlayerGroup);
+			plugin.getUser(plugin.getServer().getPlayer(target)).ifPresent(plugin.getGroups()::removePlayerGroup);
 			plugin.getGroups().removeGroup(target);
 
 			sendMsg(sender, plugin.getMsg("set-group.removed", "%team%", target));
@@ -130,7 +129,7 @@ public final class player implements ICommand {
 			team.setSuffix(suffix);
 			team.setPriority(priority);
 
-			Player playerTarget = Bukkit.getPlayer(target);
+			Player playerTarget = plugin.getServer().getPlayer(target);
 			GroupPlayer groupPlayer = plugin.getGroups().addPlayer(playerTarget);
 
 			if (groupPlayer != null) {

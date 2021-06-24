@@ -22,7 +22,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 
 public final class Variables {
 
-	private TabList plugin;
+	private final TabList plugin;
 
 	private final List<ExpressionNode> nodes = new ArrayList<>();
 
