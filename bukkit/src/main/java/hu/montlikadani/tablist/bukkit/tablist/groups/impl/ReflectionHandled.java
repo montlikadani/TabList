@@ -30,11 +30,11 @@ public class ReflectionHandled implements ITabScoreboard {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void registerTeam(GroupPlayer groupPlayer) {
-		try {
-			if (packetPlayOutPlayerInfo != null && !plugin.getGroups().isToSort()) {
-				return;
-			}
+		if (packetPlayOutPlayerInfo != null && !plugin.getGroups().isToSort()) {
+			return;
+		}
 
+		try {
 			unregisterTeam(groupPlayer);
 
 			Player player = groupPlayer.getUser().getPlayer();
@@ -189,11 +189,11 @@ public class ReflectionHandled implements ITabScoreboard {
 
 		String name = groupPlayer.getCustomTabName();
 
-		try {
-			if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {
-				name = Util.colorMsg(name);
-			}
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {
+			name = Util.colorMsg(name);
+		}
 
+		try {
 			Object nameComponent = ReflectionUtils.getAsIChatBaseComponent(name);
 			Object infoPacket = null;
 

@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist.bukkit.tablist.groups;
 
-import java.util.Comparator;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
@@ -8,7 +7,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.stream.Collectors;
 
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import org.apache.commons.lang.Validate;
@@ -181,7 +179,7 @@ public final class Groups {
 		groupPlayer.update();
 		setToSort(true);
 		sortedPlayers.add(groupPlayer);
-		sortScoreboards();
+		sortPlayers();
 
 		return groupPlayer;
 	}
@@ -263,18 +261,19 @@ public final class Groups {
 			}
 		}
 
-		sortScoreboards();
+		sortPlayers();
 	}
 
 	/**
-	 * This method is used to sort and update players' scoreboards. Includes sorting
-	 * of AFK players. If there is no need to change the places of groups, they will
+	 * This method is used to sort and update players' groups. Includes sorting of
+	 * AFK players. If there is no need to change the places of groups, they will
 	 * only be updated in the custom name, prefix, suffix and others.
 	 */
-	public void sortScoreboards() {
+	private void sortPlayers() {
 		// TODO Improve or get rid from streams
-		Set<GroupPlayer> playerGroups = sortedPlayers.stream().sorted(Comparator.comparingInt(GroupPlayer::getPriority))
-				.collect(Collectors.toCollection(java.util.LinkedHashSet::new));
+		Set<GroupPlayer> playerGroups = sortedPlayers.stream()
+				.sorted(java.util.Comparator.comparingInt(GroupPlayer::getPriority))
+				.collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
 
 		sortedPlayers.clear();
 		sortedPlayers.addAll(playerGroups);
@@ -299,16 +298,11 @@ public final class Groups {
 			setPlayerTeam(groupPlayer, priority--);
 		}
 
-		if (ConfigValues.isHideGroupWhenAfk()) {
-			setToSort(false);
-			return;
-		}
-
-		if (ConfigValues.isAfkSortLast()) {
+		if (!ConfigValues.isHideGroupWhenAfk() && ConfigValues.isAfkSortLast()) {
 			int size = sortedPlayers.size();
 
 			for (GroupPlayer afk : afkPlayersCache) {
-				setPlayerTeam(afk, size + 1);
+				setPlayerTeam(afk, size++);
 			}
 		}
 

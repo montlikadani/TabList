@@ -196,6 +196,7 @@ public final class TabList extends JavaPlugin {
 	private void registerCommands() {
 		Optional.ofNullable(getCommand("tablist")).ifPresent(tl -> {
 			Commands cmds = new Commands(this);
+
 			tl.setExecutor(cmds);
 			tl.setTabCompleter(cmds);
 		});
