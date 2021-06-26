@@ -18,7 +18,6 @@ import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.IFakePlayers;
-import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public final class Commands implements CommandExecutor, TabCompleter {
 
@@ -36,16 +35,11 @@ public final class Commands implements CommandExecutor, TabCompleter {
 				try {
 					c = TabList.class.getClassLoader().loadClass("hu.montlikadani.tablist.bukkit.commands.list." + s);
 				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
 				}
 
-				if (c == null) {
-					continue;
-				}
-
-				if (ReflectionUtils.getJavaVersion() >= 9) {
+				if (c != null) {
 					cmds.add((ICommand) c.getDeclaredConstructor().newInstance());
-				} else {
-					cmds.add((ICommand) c.newInstance());
 				}
 			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();

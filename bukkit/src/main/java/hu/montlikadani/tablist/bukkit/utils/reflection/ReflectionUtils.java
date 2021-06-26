@@ -28,31 +28,6 @@ public final class ReflectionUtils {
 	private ReflectionUtils() {
 	}
 
-	private static int jVersion = 0;
-
-	public static int getJavaVersion() {
-		if (jVersion != 0) {
-			return jVersion;
-		}
-
-		String currentVersion = System.getProperty("java.version");
-		String[] split = currentVersion.split("_", 2);
-
-		if (split.length > 0) {
-			currentVersion = split[0];
-		}
-
-		currentVersion = currentVersion.replaceAll("[^\\d]|_", "");
-
-		for (int i = 8; i <= 18; i++) {
-			if (currentVersion.contains(Integer.toString(i))) {
-				return jVersion = i;
-			}
-		}
-
-		return 0;
-	}
-
 	public static JsonComponent getJsonComponent() {
 		if (jsonComponent == null) {
 			jsonComponent = new JsonComponent();
