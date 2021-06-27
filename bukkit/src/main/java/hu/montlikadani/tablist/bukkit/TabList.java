@@ -95,7 +95,7 @@ public final class TabList extends JavaPlugin {
 		loadAnimations();
 		loadListeners();
 		registerCommands();
-		tabManager.loadToggledTabs();
+		tabManager.getToggleBase().loadToggledTabs();
 		groups.load();
 
 		getServer().getOnlinePlayers().forEach(this::updateAll);
@@ -116,7 +116,7 @@ public final class TabList extends JavaPlugin {
 		objects.cancelTask();
 		objects.unregisterObjectivesForEveryone();
 
-		tabManager.saveToggledTabs();
+		tabManager.getToggleBase().saveToggledTabs();
 		tabManager.removeAll();
 
 		fakePlayerHandler.removeAllFakePlayer();

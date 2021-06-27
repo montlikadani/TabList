@@ -57,8 +57,8 @@ public class TabHandler {
 		final String pName = player.getName();
 
 		if (TabConfigValues.getDisabledWorlds().contains(world)
-				|| TabConfigValues.getBlackListedPlayers().contains(pName)
-				|| TabManager.TABENABLED.getOrDefault(playerUUID, false) || PluginUtils.isInGame(player)) {
+				|| TabConfigValues.getBlackListedPlayers().contains(pName) || TabToggleBase.isDisabled(playerUUID)
+				|| PluginUtils.isInGame(player)) {
 			return;
 		}
 
@@ -156,7 +156,7 @@ public class TabHandler {
 		if ((TabConfigValues.isHideTabWhenPlayerVanished() && PluginUtils.isVanished(player))
 				|| TabConfigValues.getDisabledWorlds().contains(player.getWorld().getName())
 				|| TabConfigValues.getBlackListedPlayers().contains(player.getName()) || PluginUtils.isInGame(player)
-				|| TabManager.TABENABLED.getOrDefault(playerUUID, false)) {
+				|| TabToggleBase.isDisabled(playerUUID)) {
 			if (!tabEmpty) { // Only send it once to allow other plugins to overwrite tablist
 				sendEmptyTab(player);
 				tabEmpty = true;

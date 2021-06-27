@@ -8,8 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.tablist.TabManager;
 import hu.montlikadani.tablist.bukkit.tablist.TabTitle;
+import hu.montlikadani.tablist.bukkit.tablist.TabToggleBase;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayers;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.IFakePlayers;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
@@ -49,9 +49,7 @@ public class TabListAPI {
 	 * @return true if toggled
 	 */
 	public static boolean isTabListToggled(UUID uuid) {
-		Validate.notNull(uuid, "Player UUID can't be null");
-
-		return TabManager.TABENABLED.getOrDefault(uuid, false);
+		return TabToggleBase.TAB_TOGGLE.contains(uuid);
 	}
 
 	/**

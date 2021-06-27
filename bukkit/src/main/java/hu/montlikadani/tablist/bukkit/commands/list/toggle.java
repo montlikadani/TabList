@@ -10,7 +10,7 @@ import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
-import hu.montlikadani.tablist.bukkit.tablist.TabManager;
+import hu.montlikadani.tablist.bukkit.tablist.TabToggleBase;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 
 @CommandProcessor(
@@ -40,13 +40,10 @@ public final class toggle implements ICommand {
 					return false;
 				}
 
-				if (plugin.getUsers().isEmpty()) {
-					sendMsg(sender, plugin.getMsg("toggle.no-player"));
-					return false;
-				}
-
-				for (TabListUser user : plugin.getUsers()) {
-					toggleTab(user);
+				if (!(TabToggleBase.globallySwitched = !TabToggleBase.globallySwitched)) {
+					for (TabListUser user : plugin.getUsers()) {
+						user.getTabHandler().updateTab();
+					}
 				}
 
 				return true;
@@ -66,8 +63,8 @@ public final class toggle implements ICommand {
 	}
 
 	private boolean toggleTab(TabListUser user) {
-		if (TabManager.TABENABLED.remove(user.getUniqueId()) == null) {
-			TabManager.TABENABLED.put(user.getUniqueId(), true);
+		if (!TabToggleBase.TAB_TOGGLE.remove(user.getUniqueId())) {
+			TabToggleBase.TAB_TOGGLE.add(user.getUniqueId());
 			user.getTabHandler().sendEmptyTab(user.getPlayer());
 			return false;
 		}

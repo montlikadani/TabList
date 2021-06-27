@@ -14,7 +14,6 @@ toggle:
   console-usage: "&cUse: &7/%command% toggle <player/all>"
   enabled: "&aTab is turned on!"
   disabled: "&cTab is turned off!"
-  no-player: "&cThere is no player available on the server."
   player-not-found: "&cThis player&7 %player%&c not found!"
 
 fake-player:
