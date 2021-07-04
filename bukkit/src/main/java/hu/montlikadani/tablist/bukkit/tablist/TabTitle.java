@@ -9,10 +9,11 @@ import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public abstract class TabTitle {
 
-	private static Class<?> playerListHeaderFooter;
 	private static java.lang.reflect.Constructor<?> playerListHeaderFooterConstructor;
 
 	static {
+		Class<?> playerListHeaderFooter = null;
+
 		try {
 			playerListHeaderFooter = ReflectionUtils.getPacketClass("net.minecraft.network.protocol.game",
 					"PacketPlayOutPlayerListHeaderFooter");
@@ -20,18 +21,20 @@ public abstract class TabTitle {
 			e.printStackTrace();
 		}
 
-		try {
-			playerListHeaderFooterConstructor = playerListHeaderFooter.getConstructor();
-		} catch (NoSuchMethodException s) {
+		if (playerListHeaderFooter != null) {
 			try {
-				playerListHeaderFooterConstructor = playerListHeaderFooter
-						.getConstructor(ClazzContainer.getIChatBaseComponent(), ClazzContainer.getIChatBaseComponent());
-			} catch (NoSuchMethodException e) {
+				playerListHeaderFooterConstructor = playerListHeaderFooter.getConstructor();
+			} catch (NoSuchMethodException s) {
 				try {
-					playerListHeaderFooterConstructor = playerListHeaderFooter
-							.getConstructor(ClazzContainer.getIChatBaseComponent());
-				} catch (NoSuchMethodException ex) {
-					ex.printStackTrace();
+					playerListHeaderFooterConstructor = playerListHeaderFooter.getConstructor(
+							ClazzContainer.getIChatBaseComponent(), ClazzContainer.getIChatBaseComponent());
+				} catch (NoSuchMethodException e) {
+					try {
+						playerListHeaderFooterConstructor = playerListHeaderFooter
+								.getConstructor(ClazzContainer.getIChatBaseComponent());
+					} catch (NoSuchMethodException ex) {
+						ex.printStackTrace();
+					}
 				}
 			}
 		}

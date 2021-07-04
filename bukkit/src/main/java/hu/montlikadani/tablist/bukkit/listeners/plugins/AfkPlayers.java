@@ -7,7 +7,7 @@ import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 
-public abstract class AfkPlayers {
+abstract class AfkPlayers {
 
 	private final TabList plugin = TabListAPI.getPlugin();
 

@@ -35,15 +35,15 @@ interval: 4
 random: false
 
 header:
-- "&5&m======================\n%anim:tablist%"
-- "&7<75> %anim:welcome% %player%&c!&7 <74>\n&6Ping:&r %ping%&7ms"
-- "&8<1>&7 Used ram, free, max:&e %server-ram-max%"
-- "%memory_bar%"
-- "  &e%server-ram-used%         %server-ram-free%"
+- "&5&m==========================\n%anim:tablist%"
+- "&7<75> %anim:welcome% %player%&c!&7 <74>"
+- ""
+- "&6Ping:&r %ping%&7ms&a TPS:&r %tps%\n"
 
 footer:
+- ""
 - "<13>&e&l Players:&6 %online-players%&7/&6%max-players%"
-- "&7<28> %anim:website%&7:&2 &nexample.com&7 <28>\n&5&m======================"
+- "&7<28> %anim:website%&7:&2 &nexample.com&7 <28>\n\n&5&m=========================="
 
 # Defines per world tablist for different worlds
 # You can separate worlds with ", " to show tablist in that worlds

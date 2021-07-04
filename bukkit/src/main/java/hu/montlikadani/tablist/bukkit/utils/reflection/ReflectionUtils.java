@@ -9,9 +9,11 @@ import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 
 public final class ReflectionUtils {
 
-	private static JsonComponent jsonComponent;
-
 	public static Method jsonComponentMethod;
+
+	private static JsonComponent jsonComponent;
+	private static Method playerHandleMethod, sendPacketMethod;
+	private static Field playerConnectionField;
 
 	static {
 		try {
@@ -102,13 +104,25 @@ public final class ReflectionUtils {
 		}
 
 		try {
-			Object playerHandle = getHandle(player);
-			Object playerConnection = getField(playerHandle.getClass(),
-					(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1) ? "b" : "playerConnection"))
-							.get(playerHandle);
+			if (playerHandleMethod == null) {
+				playerHandleMethod = player.getClass().getDeclaredMethod("getHandle");
+			}
 
-			playerConnection.getClass().getDeclaredMethod("sendPacket", ClazzContainer.getPacket())
-					.invoke(playerConnection, packet);
+			Object playerHandle = playerHandleMethod.invoke(player);
+
+			if (playerConnectionField == null) {
+				playerConnectionField = playerHandle.getClass().getDeclaredField(
+						(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1) ? "b" : "playerConnection"));
+			}
+
+			Object playerConnection = playerConnectionField.get(playerHandle);
+
+			if (sendPacketMethod == null) {
+				sendPacketMethod = playerConnection.getClass().getDeclaredMethod("sendPacket",
+						ClazzContainer.getPacket());
+			}
+
+			sendPacketMethod.invoke(playerConnection, packet);
 		} catch (Exception e) {
 		}
 	}
@@ -151,7 +165,7 @@ public final class ReflectionUtils {
 			return null;
 		}
 
-		public static Object getServer(Class<?> server) {
+		private static Object getServer(Class<?> server) {
 			try {
 				return server.getMethod("getServer")
 						.invoke(ReflectionUtils.getCraftClass("CraftServer").cast(org.bukkit.Bukkit.getServer()));

@@ -34,13 +34,16 @@ public abstract class UpdateDownloader {
 			try {
 				URL githubUrl = new URL(
 						"https://raw.githubusercontent.com/montlikadani/TabList/master/bukkit/src/main/resources/plugin.yml");
-				BufferedReader br = new BufferedReader(new InputStreamReader(githubUrl.openStream()));
-				String s;
 				String lineWithVersion = "";
-				while ((s = br.readLine()) != null) {
-					if (s.toLowerCase().contains("version")) {
-						lineWithVersion = s;
-						break;
+
+				try (BufferedReader br = new BufferedReader(new InputStreamReader(githubUrl.openStream()))) {
+					String s;
+
+					while ((s = br.readLine()) != null) {
+						if (s.toLowerCase().contains("version")) {
+							lineWithVersion = s;
+							break;
+						}
 					}
 				}
 

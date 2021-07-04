@@ -375,12 +375,12 @@ public final class TabList extends JavaPlugin {
 	// TODO optimise or get rid from this entirely
 	@SuppressWarnings("unchecked")
 	public <T> T getMsg(TypeToken<T> type, String key, Object... placeholders) {
-		if (key == null || key.isEmpty()) {
+		if (key == null) {
 			return (T) "null";
 		}
 
 		if (type.getRawType().isAssignableFrom(String.class)) {
-			String text = conf.getMessages().getString(key);
+			String text = conf.getMessages().getString(key, "");
 
 			if (text.isEmpty()) {
 				return (T) "";

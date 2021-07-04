@@ -1,13 +1,12 @@
 package hu.montlikadani.tablist.bukkit;
 
-import java.util.List;
-
 import org.bukkit.entity.Player;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.EnumWrappers;
@@ -28,9 +27,9 @@ public class ProtocolPackets extends PacketAdapter {
 
 		ProtocolPackets s = new ProtocolPackets();
 
-		/*if (ConfigValues.isRemoveGrayColorFromTabInSpec()) {
+		if (ConfigValues.isRemoveGrayColorFromTabInSpec()) {
 			ProtocolLibrary.getProtocolManager().addPacketListener(s);
-		}*/
+		}
 
 		if (ConfigValues.isHidePlayersFromTab()) {
 			ProtocolLibrary.getProtocolManager().addPacketListener(s.new EntitySpawn());
@@ -48,25 +47,27 @@ public class ProtocolPackets extends PacketAdapter {
 		}*/
 
 		try {
-			EnumWrappers.PlayerInfoAction action = event.getPacket().getPlayerInfoAction().read(0);
+			PacketContainer packet = event.getPacket().shallowClone();
+			EnumWrappers.PlayerInfoAction action = packet.getPlayerInfoAction().read(0);
 
 			if (action == EnumWrappers.PlayerInfoAction.UPDATE_GAME_MODE
 					|| action == EnumWrappers.PlayerInfoAction.ADD_PLAYER) {
-				List<PlayerInfoData> newInfoList = new java.util.ArrayList<>();
+				java.util.List<PlayerInfoData> dataList = packet.getPlayerInfoDataLists().read(0);
+				java.util.ListIterator<PlayerInfoData> dataListIt = dataList.listIterator();
+				java.util.UUID playerId = event.getPlayer().getUniqueId();
 
-				for (PlayerInfoData infoData : event.getPacket().getPlayerInfoDataLists().read(0)) {
+				while (dataListIt.hasNext()) {
+					PlayerInfoData infoData = dataListIt.next();
+
 					if (infoData.getGameMode() == EnumWrappers.NativeGameMode.SPECTATOR
-							&& !infoData.getProfile().getUUID().equals(event.getPlayer().getUniqueId())) {
-						newInfoList.add(new PlayerInfoData(infoData.getProfile(), infoData.getLatency(),
-								EnumWrappers.NativeGameMode.CREATIVE, infoData.getDisplayName()));
-
-						// Players still can't go through blocks even with the above condition
+							&& !infoData.getProfile().getUUID().equals(playerId)) {
+						dataListIt.set(new PlayerInfoData(infoData.getProfile(), infoData.getLatency(),
+								EnumWrappers.NativeGameMode.SURVIVAL, infoData.getDisplayName()));
 					}
 				}
 
-				if (!newInfoList.isEmpty()) {
-					event.getPacket().getPlayerInfoDataLists().write(0, newInfoList);
-				}
+				packet.getPlayerInfoDataLists().write(0, dataList);
+				event.setPacket(packet);
 			}
 		} catch (com.comphenix.protocol.reflect.FieldAccessException ex) {
 			ex.printStackTrace();

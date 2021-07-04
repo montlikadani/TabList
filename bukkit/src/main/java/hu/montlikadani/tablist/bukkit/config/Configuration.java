@@ -1,7 +1,6 @@
 package hu.montlikadani.tablist.bukkit.config;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -49,13 +48,6 @@ public class Configuration {
 		TabConfigValues.loadValues(tablist);
 
 		messages = createFile(messagesFile, messagesFile.getName(), false);
-
-		try {
-			messages.save(messagesFile);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-
 		animCreator = createFile(animationFile, animationFile.getName(), false);
 
 		if (ConfigValues.isPrefixSuffixEnabled()) {
@@ -72,7 +64,7 @@ public class Configuration {
 			if (newFile) {
 				try {
 					file.createNewFile();
-				} catch (IOException e) {
+				} catch (java.io.IOException e) {
 					e.printStackTrace();
 				}
 			} else {
