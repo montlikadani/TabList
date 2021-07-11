@@ -38,12 +38,13 @@ import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
 import hu.montlikadani.tablist.bukkit.utils.Util;
-import hu.montlikadani.tablist.bukkit.utils.Variables;
 import hu.montlikadani.tablist.bukkit.utils.plugin.VaultPermission;
 import hu.montlikadani.tablist.bukkit.utils.stuff.Complement;
 import hu.montlikadani.tablist.bukkit.utils.stuff.Complement1;
 import hu.montlikadani.tablist.bukkit.utils.stuff.Complement2;
+import hu.montlikadani.tablist.bukkit.utils.task.DelayedPermissionCheck;
 import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
+import hu.montlikadani.tablist.bukkit.utils.variables.Variables;
 
 public final class TabList extends JavaPlugin {
 
@@ -82,7 +83,7 @@ public final class TabList extends JavaPlugin {
 		fakePlayerHandler = new FakePlayerHandler(this);
 
 		conf.loadFiles();
-		variables.loadExpressions();
+		variables.load();
 
 		if (ConfigValues.isPlaceholderAPI() && isPluginEnabled("PlaceholderAPI")) {
 			logConsole("Hooked PlaceholderAPI version: "
@@ -224,13 +225,18 @@ public final class TabList extends JavaPlugin {
 		tabManager.removeAll();
 		groups.cancelUpdate();
 		fakePlayerHandler.removeAllFakePlayer();
+		DelayedPermissionCheck.clear();
 
 		loadListeners();
 		conf.loadFiles();
 		loadAnimations();
-		variables.loadExpressions();
+		variables.load();
 		fakePlayerHandler.load();
 		groups.load();
+
+		if (!ConfigValues.isTablistObjectiveEnabled()) {
+			objects.cancelTask();
+		}
 
 		getServer().getOnlinePlayers().forEach(pl -> updateAll(pl, true));
 	}
@@ -258,7 +264,7 @@ public final class TabList extends JavaPlugin {
 	}
 
 	public String makeAnim(String name) {
-		if (name == null) {
+		if (name == null || name.isEmpty()) {
 			return "";
 		}
 
@@ -287,12 +293,13 @@ public final class TabList extends JavaPlugin {
 			return tlu;
 		});
 
-		if (!ConfigValues.isTablistObjectiveEnabled()) {
-			objects.cancelTask();
-			objects.unregisterObjectivesForEveryone();
-		} else {
-			org.bukkit.scoreboard.Scoreboard board = player.getScoreboard();
+		org.bukkit.scoreboard.Scoreboard board = player.getScoreboard();
 
+		if (!ConfigValues.isTablistObjectiveEnabled()) {
+			for (Objects.ObjectTypes type : Objects.ObjectTypes.values()) {
+				objects.unregisterObjective(objects.getObject(board, type));
+			}
+		} else {
 			objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.PING));
 			objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.CUSTOM));
 
@@ -352,11 +359,6 @@ public final class TabList extends JavaPlugin {
 	}
 
 	public void onPlayerQuit(Player player) {
-		if (!ConfigValues.isTablistObjectiveEnabled()) {
-			objects.cancelTask();
-			objects.unregisterObjectivesForEveryone();
-		}
-
 		users.removeIf(user -> {
 			user.getTabHandler().sendEmptyTab(player);
 			groups.removePlayerGroup(user);
@@ -379,7 +381,9 @@ public final class TabList extends JavaPlugin {
 			return (T) "null";
 		}
 
-		if (type.getRawType().isAssignableFrom(String.class)) {
+		Class<? super T> rawType = type.getRawType();
+
+		if (rawType.isAssignableFrom(String.class)) {
 			String text = conf.getMessages().getString(key, "");
 
 			if (text.isEmpty()) {
@@ -399,11 +403,10 @@ public final class TabList extends JavaPlugin {
 			return (T) msg;
 		}
 
-		if (type.getRawType().isAssignableFrom(List.class)) {
+		if (rawType.isAssignableFrom(List.class)) {
 			List<String> list = conf.getMessages().getStringList(key);
-			int size = list.size();
 
-			for (int a = 0; a < size; a++) {
+			for (int a = 0; a < list.size(); a++) {
 				String one = colorMsg(list.get(a));
 
 				for (int i = 0; i < placeholders.length; i++) {

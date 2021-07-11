@@ -11,8 +11,9 @@ import hu.montlikadani.tablist.bukkit.tablist.groups.impl.ITabScoreboard;
 import hu.montlikadani.tablist.bukkit.tablist.groups.impl.ReflectionHandled;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
+import hu.montlikadani.tablist.bukkit.utils.task.DelayedPermissionCheck;
 
-public final class GroupPlayer implements Comparable<GroupPlayer> {
+public final class GroupPlayer {
 
 	private final TabListUser tabListUser;
 	private final ITabScoreboard tabTeam;
@@ -96,17 +97,19 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 		}
 
 		boolean update = false;
-		Groups groups = plugin.getGroups();
 
 		if (!isPlayerCanSeeGroup(player) || (ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(player)
 				&& !ConfigValues.isAfkStatusShowPlayerGroup())) {
 			if (group != null || globalGroup != null) {
 				removeGroup();
 				update = true;
+				plugin.getGroups().setToSort(false);
 			}
 
 			return update;
 		}
+
+		Groups groups = plugin.getGroups();
 
 		for (TeamHandler team : groups.getGroupsList()) {
 			if (player.getName().equalsIgnoreCase(team.getTeam())) {
@@ -178,20 +181,25 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 				continue;
 			}
 
-			if (PluginUtils.hasPermission(player, team.getPermission())) {
-				if (group != team) {
-					groups.setToSort(true);
-					update = true;
-					group = team;
+			if (!team.getPermission().isEmpty()) {
+				if (DelayedPermissionCheck.hasDelay(team.getPermission(), 4)) {
+					break;
 				}
 
-				break;
-			}
+				if (PluginUtils.hasPermission(player, team.getPermission())) {
+					if (group != team) {
+						groups.setToSort(true);
+						update = true;
+						group = team;
+					}
 
-			if (plugin.hasVault() && team.getPermission().isEmpty()) {
+					break;
+				}
+			} else if (plugin.hasVault()) {
 				for (String groupsVault : plugin.getVaultPerm().getPlayerGroups(player)) {
 					if (groupsVault.equalsIgnoreCase(team.getTeam())) {
 						if (group != team) {
+							groups.setToSort(true);
 							update = true;
 							group = team;
 						}
@@ -206,11 +214,10 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 	}
 
 	private boolean isPlayerCanSeeGroup(Player player) {
-		if (((ConfigValues.isUseDisabledWorldsAsWhiteList()
-				&& !ConfigValues.getGroupsDisabledWorlds().contains(player.getWorld().getName()))
-				|| (!ConfigValues.isUseDisabledWorldsAsWhiteList()
-						&& ConfigValues.getGroupsDisabledWorlds().contains(player.getWorld().getName())))
-				|| PluginUtils.isInGame(player)) {
+		boolean containsWorld = ConfigValues.getGroupsDisabledWorlds().contains(player.getWorld().getName());
+
+		if (((ConfigValues.isUseDisabledWorldsAsWhiteList() && !containsWorld)
+				|| (!ConfigValues.isUseDisabledWorldsAsWhiteList() && containsWorld)) || PluginUtils.isInGame(player)) {
 			return false;
 		}
 
@@ -290,17 +297,5 @@ public final class GroupPlayer implements Comparable<GroupPlayer> {
 		tabName = StringUtils.replace(tabName, "&#", "#");
 
 		return getPrefix() + tabName + getSuffix();
-	}
-
-	@Override
-	public int compareTo(GroupPlayer tlp) {
-		int ownPriority = getPriority();
-		int tlpPriority = tlp.getPriority();
-
-		if (ownPriority == tlpPriority) {
-			return getCustomTabName().compareTo(tlp.getCustomTabName());
-		}
-
-		return ownPriority - tlpPriority;
 	}
 }

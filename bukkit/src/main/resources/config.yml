@@ -83,20 +83,18 @@ placeholder-format:
 
   # TPS color format for %tps% placeholder.
   tps:
-    # How many numbers do you want to display after "." in %tps% placeholder?
-    # The number should be higher than 0.
-    # Example: 3 = 20.14
-    size: 2
-
-    # Adds ability to the tps value can be highest than default 20.0
-    value-can-be-higher: false
-
     enable: true
+
     # Operators usage: https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting
     formats:
     - '&a%tps% > 18.0'
     - '&6%tps% == 16.0'
     - '&c%tps% < 16.0'
+
+    # How many numbers do you want to display after "." in %tps% placeholder?
+    # The number should be higher than 0.
+    # Example: 3 = 20.14
+    size: 2
 
   # Memory bar settings for %memory_bar% variable
   memory-bar:

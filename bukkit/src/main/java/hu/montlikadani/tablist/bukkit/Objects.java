@@ -60,10 +60,6 @@ public final class Objects {
 	void startTask() {
 		cancelTask();
 
-		if (plugin.getUsers().isEmpty()) {
-			return;
-		}
-
 		task = Tasks.submitAsync(() -> {
 			if (plugin.getUsers().isEmpty()) {
 				cancelTask();

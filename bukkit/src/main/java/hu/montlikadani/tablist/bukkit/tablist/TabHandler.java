@@ -14,7 +14,7 @@ import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import hu.montlikadani.tablist.bukkit.utils.Util;
-import hu.montlikadani.tablist.bukkit.utils.Variables;
+import hu.montlikadani.tablist.bukkit.utils.variables.Variables;
 
 public class TabHandler {
 
@@ -43,7 +43,7 @@ public class TabHandler {
 		header = footer = null;
 
 		final Player player = plugin.getServer().getPlayer(playerUUID);
-		if (player == null || !player.isOnline()) {
+		if (player == null) {
 			return;
 		}
 
@@ -69,9 +69,7 @@ public class TabHandler {
 			if (c.contains("per-world." + world + ".per-player." + pName)) {
 				path = "per-world." + world + ".per-player." + pName + ".";
 				worldEnabled = true;
-			}
-
-			if (path.isEmpty()) {
+			} else {
 				t: for (String s : TabConfigValues.getPerWorldkeys()) {
 					for (String split : s.split(", ")) {
 						if (world.equals(split)) {
@@ -90,6 +88,7 @@ public class TabHandler {
 
 			if (plugin.hasVault() && path.isEmpty() && c.contains("per-world." + world + ".per-group")) {
 				String group = plugin.getVaultPerm().getPrimaryGroup(world, player);
+
 				if (group != null) {
 					group = group.toLowerCase();
 
@@ -149,7 +148,7 @@ public class TabHandler {
 		}
 
 		final Player player = plugin.getServer().getPlayer(playerUUID);
-		if (player == null || !player.isOnline()) {
+		if (player == null) {
 			return;
 		}
 

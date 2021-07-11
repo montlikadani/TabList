@@ -17,8 +17,8 @@ public final class Util {
 	}
 
 	public static void logConsole(Level level, String msg) {
-		if (ConfigValues.isLogConsole() && msg != null && !msg.trim().isEmpty()) {
-			org.bukkit.Bukkit.getLogger().log(level != null ? level : Level.INFO, "[TabList] " + msg);
+		if (ConfigValues.isLogConsole()) {
+			org.bukkit.Bukkit.getServer().getLogger().log(level, "[TabList] " + msg);
 		}
 	}
 

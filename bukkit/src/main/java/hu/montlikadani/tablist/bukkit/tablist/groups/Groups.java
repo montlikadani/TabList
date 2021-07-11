@@ -229,7 +229,7 @@ public final class Groups {
 	}
 
 	public void startTask() {
-		if (!ConfigValues.isPrefixSuffixEnabled() || plugin.getUsers().isEmpty()) {
+		if (!ConfigValues.isPrefixSuffixEnabled()) {
 			return;
 		}
 

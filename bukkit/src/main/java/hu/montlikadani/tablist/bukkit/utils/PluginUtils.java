@@ -17,6 +17,11 @@ import net.ess3.api.IEssentials;
 public final class PluginUtils {
 
 	private static final TabList PLUGIN = TabListAPI.getPlugin();
+	private static boolean rmEnabled = false;
+
+	static {
+		rmEnabled = PLUGIN.isPluginEnabled("RageMode");
+	}
 
 	public static boolean isAfk(Player player) {
 		if (player == null) {
@@ -79,7 +84,7 @@ public final class PluginUtils {
 			return VanishAPI.getInvisiblePlayers().size();
 		}
 
-		if (PLUGIN.isPluginEnabled("CMI") && CMI.getInstance() != null) {
+		if (PLUGIN.isPluginEnabled("CMI")) {
 			return CMI.getInstance().getVanishManager().getAllVanished().size();
 		}
 
@@ -106,7 +111,7 @@ public final class PluginUtils {
 	}
 
 	public static boolean isInGame(Player p) {
-		if (PLUGIN.isPluginEnabled("RageMode") && (hu.montlikadani.ragemode.config.ConfigValues.isTabEnabled()
+		if (rmEnabled && (hu.montlikadani.ragemode.config.ConfigValues.isTabEnabled()
 				|| hu.montlikadani.ragemode.config.ConfigValues.isTabFormatEnabled())) {
 			hu.montlikadani.ragemode.gameLogic.Game game = GameUtils.getGameByPlayer(p);
 

@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist.bukkit.utils.reflection;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -151,10 +150,8 @@ public final class ClazzContainer {
 				(playerInfoDataGameMode = playerInfoData.getDeclaredField("c")).setAccessible(true);
 			}
 
-			Class<?> entityPlayerArrayClass = Array.newInstance(entityPlayerClass, 0).getClass();
-
 			(playOutPlayerInfoConstructor = packetPlayOutPlayerInfo.getDeclaredConstructor(enumPlayerInfoAction,
-					entityPlayerArrayClass)).setAccessible(true);
+					java.lang.reflect.Array.newInstance(entityPlayerClass, 0).getClass())).setAccessible(true);
 
 			try {
 				enumGameMode = classByName("net.minecraft.world.level", "EnumGamemode");

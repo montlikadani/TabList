@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.bukkit.utils;
+package hu.montlikadani.tablist.bukkit.utils.variables;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.Global;
@@ -15,9 +14,10 @@ import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.api.TabListAPI;
+import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
+import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.operators.ExpressionNode;
 import hu.montlikadani.tablist.bukkit.utils.operators.OperatorNodes;
-import hu.montlikadani.tablist.bukkit.utils.operators.OperatorNodes.NodeType;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 public final class Variables {
@@ -25,17 +25,19 @@ public final class Variables {
 	private final TabList plugin;
 
 	private final List<ExpressionNode> nodes = new ArrayList<>();
+	private final java.util.Set<Variable> variables = new java.util.HashSet<>();
 
 	public Variables(TabList plugin) {
 		this.plugin = plugin;
 	}
 
-	public void loadExpressions() {
+	public void load() {
 		nodes.clear();
+		variables.clear();
 
 		if (ConfigValues.isPingFormatEnabled()) {
 			for (String f : ConfigValues.getPingColorFormats()) {
-				ExpressionNode node = new OperatorNodes(NodeType.PING);
+				ExpressionNode node = new OperatorNodes(OperatorNodes.NodeType.PING);
 				node.setParseExpression(f);
 
 				if (node.getCondition() != null) {
@@ -46,7 +48,7 @@ public final class Variables {
 
 		if (ConfigValues.isTpsFormatEnabled()) {
 			for (String f : ConfigValues.getTpsColorFormats()) {
-				ExpressionNode node = new OperatorNodes(NodeType.TPS);
+				ExpressionNode node = new OperatorNodes(OperatorNodes.NodeType.TPS);
 				node.setParseExpression(f);
 
 				if (node.getCondition() != null) {
@@ -64,17 +66,55 @@ public final class Variables {
 			for (int j = size - 1; j > i; j--) {
 				ExpressionNode node = nodes.get(i), node2 = nodes.get(j);
 
-				boolean firstPing = node.getType() == NodeType.PING;
+				boolean firstPing = node.getType() == OperatorNodes.NodeType.PING;
 
-				if ((firstPing && node2.getType() == NodeType.PING
+				if ((firstPing && node2.getType() == OperatorNodes.NodeType.PING
 						&& node.getCondition().getSecondCondition() < node2.getCondition().getSecondCondition())
-						|| (firstPing && node2.getType() == NodeType.TPS && node.getCondition()
+						|| (firstPing && node2.getType() == OperatorNodes.NodeType.TPS && node.getCondition()
 								.getSecondCondition() > node2.getCondition().getSecondCondition())) {
 					nodes.set(i, node2);
 					nodes.set(j, node);
 				}
 			}
 		}
+
+		variables.add(new Variable("date", 3).setVariable((v, str) -> str = str.replace(v.fullName,
+				v.setAndGetRemainingValue(getTimeAsString(ConfigValues.getDateFormat())))));
+
+		variables.add(new Variable("online-players", 2).setVariable((v, str) -> str = str.replace(v.fullName,
+				v.setAndGetRemainingValue(Integer.toString(PluginUtils.countVanishedPlayers())))));
+
+		variables.add(new Variable("max-players", 20).setVariable((v, str) -> str = str.replace(v.fullName,
+				v.setAndGetRemainingValue(Integer.toString(plugin.getServer().getMaxPlayers())))));
+
+		variables.add(new Variable("vanished-players", 2).setVariable((v, str) -> str = str.replace(v.fullName,
+				v.setAndGetRemainingValue(Integer.toString(PluginUtils.getVanishedPlayers())))));
+
+		variables.add(new Variable("servertype", -1).setVariable(
+				(v, str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getServer().getName()))));
+
+		variables.add(new Variable("mc-version", -1).setVariable((v, str) -> str = str.replace(v.fullName,
+				v.setAndGetRemainingValue(plugin.getServer().getBukkitVersion()))));
+
+		variables.add(new Variable("motd", 10).setVariable(
+				(v, str) -> str = str.replace("%motd%", v.setAndGetRemainingValue(plugin.getComplement().getMotd()))));
+
+		variables.add(new Variable("staff-online", 3).setVariable((v, str) -> {
+			int staffs = 0;
+
+			for (TabListUser user : plugin.getUsers()) {
+				Player player = user.getPlayer();
+
+				if (player == null || !PluginUtils.hasPermission(player, "tablist.onlinestaff")
+						|| (!ConfigValues.isCountVanishedStaff() && PluginUtils.isVanished(player))) {
+					continue;
+				}
+
+				staffs++;
+			}
+
+			str = str.replace(v.fullName, v.setAndGetRemainingValue(Integer.toString(staffs)));
+		}));
 	}
 
 	public String replaceVariables(Player pl, String str) {
@@ -115,87 +155,54 @@ public final class Variables {
 				builder.append(barChar);
 			}
 
-			str = StringUtils.replace(str, "%memory_bar%", builder.toString());
+			str = str.replace("%memory_bar%", builder.toString());
 		}
 
 		// TODO Remove or make more customisable variables
 		for (java.util.Map.Entry<String, String> map : TabConfigValues.CUSTOM_VARIABLES.entrySet()) {
-			str = StringUtils.replace(str, map.getKey(), map.getValue());
+			str = str.replace(map.getKey(), map.getValue());
 		}
 
 		if (pl != null) {
-			str = setPlaceholders(pl, str);
+			str = setPlayerPlaceholders(pl, str);
 		}
 
 		str = Global.setSymbols(str);
 
-		if (str.indexOf("%server-time%") >= 0) {
-			str = StringUtils.replace(str, "%server-time%", getTimeAsString(ConfigValues.getTimeFormat()));
+		for (Variable variable : variables) {
+			if (variable.isReplacedBefore()) {
+				str = str.replace(variable.fullName, variable.getRemainingValue());
+				continue;
+			}
+
+			if (variable.canReplace(str)) {
+				variable.getReplacer().accept(variable, str);
+			}
+
+			if (variable.getRemainingValue() != null) {
+				str = str.replace(variable.fullName, variable.getRemainingValue());
+			}
 		}
 
-		if (str.indexOf("%date%") >= 0) {
-			str = StringUtils.replace(str, "%date%", getTimeAsString(ConfigValues.getDateFormat()));
+		if (str.indexOf("%server-time%") >= 0) {
+			str = str.replace("%server-time%", getTimeAsString(ConfigValues.getTimeFormat()));
 		}
 
 		if (str.indexOf("%server-ram-free%") >= 0) {
-			str = StringUtils.replace(str, "%server-ram-free%", Long.toString(r.freeMemory() / 1048576L));
+			str = str.replace("%server-ram-free%", Long.toString(r.freeMemory() / 1048576L));
 		}
 
 		if (str.indexOf("%server-ram-max%") >= 0) {
-			str = StringUtils.replace(str, "%server-ram-max%", Long.toString(r.maxMemory() / 1048576L));
+			str = str.replace("%server-ram-max%", Long.toString(r.maxMemory() / 1048576L));
 		}
 
 		if (str.indexOf("%server-ram-used%") >= 0) {
-			str = StringUtils.replace(str, "%server-ram-used%",
-					Long.toString((r.totalMemory() - r.freeMemory()) / 1048576L));
+			str = str.replace("%server-ram-used%", Long.toString((r.totalMemory() - r.freeMemory()) / 1048576L));
 		}
-
-		if (str.indexOf("%online-players%") >= 0) {
-			str = StringUtils.replace(str, "%online-players%", Integer.toString(PluginUtils.countVanishedPlayers()));
-		}
-
-		if (str.indexOf("%max-players%") >= 0) {
-			str = StringUtils.replace(str, "%max-players%", Integer.toString(plugin.getServer().getMaxPlayers()));
-		}
-
-		if (str.indexOf("%vanished-players%") >= 0) {
-			str = StringUtils.replace(str, "%vanished-players%", Integer.toString(PluginUtils.getVanishedPlayers()));
-		}
-
-		str = StringUtils.replace(str, "%servertype%", plugin.getServer().getName());
-		str = StringUtils.replace(str, "%mc-version%", plugin.getServer().getBukkitVersion());
-		str = StringUtils.replace(str, "%motd%", plugin.getComplement().getMotd());
-
-		int staffs = 0;
-
-		if (str.indexOf("%staff-online%") >= 0) {
-			for (TabListUser user : plugin.getUsers()) {
-				Player player = user.getPlayer();
-
-				if (player == null) {
-					continue;
-				}
-
-				if (!player.hasPermission("tablist.onlinestaff")
-						|| (!ConfigValues.isCountVanishedStaff() && PluginUtils.isVanished(player))) {
-					continue;
-				}
-
-				staffs++;
-			}
-		}
-
-		if (staffs != 0)
-			str = StringUtils.replace(str, "%staff-online%", Integer.toString(staffs));
 
 		if (str.indexOf("%tps%") >= 0) {
 			double tps = TabListAPI.getTPS();
-
-			if (!ConfigValues.isTpsCanBeHigher() && tps > 20D) {
-				tps = 20D;
-			}
-
-			str = StringUtils.replace(str, "%tps%", tpsDot(tps));
+			str = str.replace("%tps%", (tps > 20D ? "*" : "") + tpsDot(tps));
 		}
 
 		// Don't use here colors because of some issues with hex
@@ -203,7 +210,7 @@ public final class Variables {
 	}
 
 	@SuppressWarnings("deprecation")
-	public String setPlaceholders(Player p, String s) {
+	String setPlayerPlaceholders(Player p, String s) {
 		if (ConfigValues.isPlaceholderAPI() && plugin.isPluginEnabled("PlaceholderAPI")) {
 			try {
 				s = PlaceholderAPI.setPlaceholders(p, s);
@@ -212,53 +219,54 @@ public final class Variables {
 			}
 		}
 
-		s = StringUtils.replace(s, "%player%", p.getName());
-		s = StringUtils.replace(s, "%player-displayname%", plugin.getComplement().getDisplayName(p));
-		s = StringUtils.replace(s, "%player-uuid%", p.getUniqueId().toString());
-		s = StringUtils.replace(s, "%world%", p.getWorld().getName());
-		s = StringUtils.replace(s, "%player-gamemode%", p.getGameMode().name());
+		s = s.replace("%player%", p.getName());
+		s = s.replace("%player-displayname%", plugin.getComplement().getDisplayName(p));
+		s = s.replace("%player-uuid%", p.getUniqueId().toString());
+		s = s.replace("%world%", p.getWorld().getName());
+		s = s.replace("%player-gamemode%", p.getGameMode().name());
 
 		if (s.indexOf("%player-health%") >= 0) {
-			s = StringUtils.replace(s, "%player-health%", Double.toString(p.getHealth()));
+			s = s.replace("%player-health%", Double.toString(p.getHealth()));
 		}
 
 		if (s.indexOf("%player-max-health%") >= 0) {
 			if (ServerVersion.isCurrentLower(ServerVersion.v1_9_R1)) {
-				s = StringUtils.replace(s, "%player-max-health%", Double.toString(p.getMaxHealth()));
+				s = s.replace("%player-max-health%", Double.toString(p.getMaxHealth()));
 			} else {
-				org.bukkit.attribute.AttributeInstance attr = p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
+				org.bukkit.attribute.AttributeInstance attr = p
+						.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
 
 				if (attr != null) { // Sometimes
-					s = StringUtils.replace(s, "%player-max-health%", Double.toString(attr.getDefaultValue()));
+					s = s.replace("%player-max-health%", Double.toString(attr.getDefaultValue()));
 				}
 			}
 		}
 
 		if (s.indexOf("%ping%") >= 0) {
-			s = StringUtils.replace(s, "%ping%", formatPing(TabListAPI.getPing(p)));
+			s = s.replace("%ping%", formatPing(TabListAPI.getPing(p)));
 		}
 
 		if (s.indexOf("%exp-to-level%") >= 0) {
-			s = StringUtils.replace(s, "%exp-to-level%", Integer.toString(p.getExpToLevel()));
+			s = s.replace("%exp-to-level%", Integer.toString(p.getExpToLevel()));
 		}
 
 		if (s.indexOf("%level%") >= 0) {
-			s = StringUtils.replace(s, "%level%", Integer.toString(p.getLevel()));
+			s = s.replace("%level%", Integer.toString(p.getLevel()));
 		}
 
 		if (s.indexOf("%xp%") >= 0) {
-			s = StringUtils.replace(s, "%xp%", Float.toString(p.getExp()));
+			s = s.replace("%xp%", Float.toString(p.getExp()));
 		}
 
 		if (s.indexOf("%light-level%") >= 0) {
-			s = StringUtils.replace(s, "%light-level%", Byte.toString(p.getLocation().getBlock().getLightLevel()));
+			s = s.replace("%light-level%", Byte.toString(p.getLocation().getBlock().getLightLevel()));
 		}
 
 		if (s.indexOf("%ip-address%") >= 0) {
 			java.net.InetSocketAddress address = p.getAddress();
 
 			if (address != null && address.getAddress() != null) {
-				s = StringUtils.replace(s, "%ip-address%", address.getAddress().toString().replace("/", ""));
+				s = s.replace("%ip-address%", address.getAddress().toString().replace("/", ""));
 			}
 		}
 
@@ -270,7 +278,7 @@ public final class Variables {
 			return "" + d;
 		}
 
-		String ds = parseExpression(d, NodeType.TPS);
+		String ds = parseExpression(d, OperatorNodes.NodeType.TPS);
 		int index = ds.indexOf('.');
 
 		if (index >= 0) {
@@ -289,7 +297,7 @@ public final class Variables {
 			return "" + ping;
 		}
 
-		return parseExpression(ping, NodeType.PING);
+		return parseExpression(ping, OperatorNodes.NodeType.PING);
 	}
 
 	private String parseExpression(double value, int type) {
@@ -308,7 +316,7 @@ public final class Variables {
 			builder.append(color.replaceAll("%tps%|%ping%", "").replace('&', '\u00a7'));
 		}
 
-		return (type == NodeType.PING ? builder.append((int) value) : builder.append(value)).toString();
+		return (type == OperatorNodes.NodeType.PING ? builder.append((int) value) : builder.append(value)).toString();
 	}
 
 	private String getTimeAsString(String pattern) {

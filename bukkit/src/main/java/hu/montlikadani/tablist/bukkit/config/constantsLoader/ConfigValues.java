@@ -13,7 +13,7 @@ public class ConfigValues {
 			hidePlayersFromTab, afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast,
 			useSystemZone, pingFormatEnabled, tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList,
 			syncPluginsGroups, hideGroupInVanish, hideGroupWhenAfk, preferPrimaryVaultGroup, tablistObjectiveEnabled,
-			tpsCanBeHigher, assignGlobalGroup;
+			assignGlobalGroup;
 
 	private static String afkFormatYes, afkFormatNo, timeZone, timeFormat, dateFormat, customObjectSetting,
 			memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
@@ -73,13 +73,11 @@ public class ConfigValues {
 		c.addComment("placeholder-format.ping.formats",
 				"Operators usage: https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
 		c.addComment("placeholder-format.tps", "TPS color format for %tps% placeholder.");
+		c.addComment("placeholder-format.tps.formats",
+				"Operators usage: https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
 		c.addComment("placeholder-format.tps.size",
 				"How many numbers do you want to display after \".\" in %tps% placeholder?",
 				"The number should be higher than 0.", "Example: 3 = 20.14");
-		c.addComment("placeholder-format.tps.value-can-be-higher",
-				"Adds ability to the tps value can be highest than default 20.0");
-		c.addComment("placeholder-format.tps.formats",
-				"Operators usage: https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
 		c.addComment("placeholder-format.memory-bar", "Memory bar settings for %memory_bar% variable");
 		c.addComment("placeholder-format.memory-bar.colors.allocation", "When the server memory less than 80");
 		c.addComment("placeholder-format.memory-bar.colors.released",
@@ -139,7 +137,6 @@ public class ConfigValues {
 		afkSortLast = c.get("placeholder-format.afk-status.sort-last", false);
 		useSystemZone = c.get("placeholder-format.time.use-system-zone", false);
 		pingFormatEnabled = c.get("placeholder-format.ping.enable", true);
-		tpsCanBeHigher = c.get("placeholder-format.tps.value-can-be-higher", false);
 		tpsFormatEnabled = c.get("placeholder-format.tps.enable", true);
 		prefixSuffixEnabled = c.get("change-prefix-suffix-in-tablist.enable", false);
 		useDisabledWorldsAsWhiteList = c.get("change-prefix-suffix-in-tablist.disabled-worlds.use-as-whitelist", false);
@@ -362,10 +359,6 @@ public class ConfigValues {
 
 	public static List<String> getPingColorFormats() {
 		return pingColorFormats;
-	}
-
-	public static boolean isTpsCanBeHigher() {
-		return tpsCanBeHigher;
 	}
 
 	public static List<String> getGroupsDisabledWorlds() {

@@ -18,7 +18,7 @@ import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
 
 public final class Listeners implements org.bukkit.event.Listener {
 
-	private TabList plugin;
+	private final TabList plugin;
 
 	public Listeners(TabList plugin) {
 		this.plugin = plugin;
