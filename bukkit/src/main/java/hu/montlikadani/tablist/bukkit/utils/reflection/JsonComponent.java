@@ -86,6 +86,17 @@ public final class JsonComponent {
 			} else if (charAt == '&' || charAt == '\u00a7') {
 				char nextChar = text.charAt(i + 1);
 
+				if (nextChar == '#') {
+					continue; // Skip plugins hex formatting
+				}
+
+				if (nextChar == 'x') {
+					text = text.replace(nextChar, '#').replace("\u00a7", "");
+					length = text.length();
+					i -= 3; // Go back to the beginning of hex
+					continue; // Replace and skip essentials's hex
+				}
+
 				if (((nextChar >= 'a' && nextChar <= 'f') || (nextChar == 'k' || nextChar == 'l' || nextChar == 'm'
 						|| nextChar == 'n' || nextChar == 'o' || nextChar == 'r')) || Character.isDigit(nextChar)) {
 					obj.addProperty("text", builder.toString());

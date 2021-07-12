@@ -247,16 +247,7 @@ public final class GroupPlayer {
 					+ prefix;
 		}
 
-		if (prefix.isEmpty()) {
-			return prefix;
-		}
-
-		prefix = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(prefix));
-
-		// Replace other plugin's bul...s with only #
-		prefix = StringUtils.replace(prefix, "&#", "#");
-
-		return prefix;
+		return prefix.isEmpty() ? prefix : plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(prefix));
 	}
 
 	public String getSuffix() {
@@ -274,17 +265,10 @@ public final class GroupPlayer {
 					PluginUtils.isAfk(player) ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo());
 		}
 
-		if (suffix.isEmpty()) {
-			return suffix;
-		}
-
-		suffix = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(suffix));
-		suffix = StringUtils.replace(suffix, "&#", "#");
-
-		return suffix;
+		return suffix.isEmpty() ? suffix : plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(suffix));
 	}
 
-	public String getCustomTabName() {
+	public String getTabNameWithPrefixSuffix() {
 		Player player = tabListUser.getPlayer();
 		String tabName = player != null ? player.getName() : "";
 
@@ -293,8 +277,6 @@ public final class GroupPlayer {
 		} else if (group != null && !group.getTabName().isEmpty()) {
 			tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(group.getTabName()));
 		}
-
-		tabName = StringUtils.replace(tabName, "&#", "#");
 
 		return getPrefix() + tabName + getSuffix();
 	}

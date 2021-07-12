@@ -187,14 +187,7 @@ public class ReflectionHandled implements ITabScoreboard {
 			return;
 		}
 
-		String name = groupPlayer.getCustomTabName();
-
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {
-			name = Util.colorMsg(name);
-		}
-
 		try {
-			Object nameComponent = ReflectionUtils.getAsIChatBaseComponent(name);
 			Object infoPacket = null;
 
 			for (Object infoData : infoList) {
@@ -210,6 +203,13 @@ public class ReflectionHandled implements ITabScoreboard {
 					continue;
 				}
 
+				String name = groupPlayer.getTabNameWithPrefixSuffix();
+
+				if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {
+					name = Util.colorMsg(name);
+				}
+
+				Object nameComponent = ReflectionUtils.getAsIChatBaseComponent(name);
 				Constructor<?> playerInfoDataConstr = ClazzContainer.getPlayerInfoDataConstructor();
 				Object gameMode = ClazzContainer.getPlayerInfoDataGameMode().get(infoData);
 				int ping = (int) ClazzContainer.getPlayerInfoDataPing().get(infoData);
