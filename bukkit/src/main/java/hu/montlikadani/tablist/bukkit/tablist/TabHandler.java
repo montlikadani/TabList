@@ -89,7 +89,7 @@ public class TabHandler {
 				}
 			}
 
-			if (plugin.hasVault() && path.isEmpty() && c.contains("per-world." + world + ".per-group")) {
+			if (plugin.hasVault() && c.contains("per-world." + world + ".per-group")) {
 				String group = plugin.getVaultPerm().getPrimaryGroup(world, player);
 
 				if (group != null) {
@@ -103,20 +103,18 @@ public class TabHandler {
 			}
 		}
 
-		if (path.isEmpty()) {
-			for (String name : TabConfigValues.getPermissionkeys()) {
-				if (PluginUtils.hasPermission(player, new Permission(name, PermissionDefault.NOT_OP).getName())) {
-					path = "permissions." + name + ".";
-					break;
-				}
+		for (String name : TabConfigValues.getPermissionkeys()) {
+			if (PluginUtils.hasPermission(player, new Permission(name, PermissionDefault.NOT_OP).getName())) {
+				path = "permissions." + name + ".";
+				break;
 			}
 		}
 
-		if (path.isEmpty() && c.contains("per-player." + pName)) {
+		if (c.contains("per-player." + pName)) {
 			path = "per-player." + pName + ".";
 		}
 
-		if (plugin.hasVault() && path.isEmpty() && c.contains("per-group")) {
+		if (plugin.hasVault() && c.contains("per-group")) {
 			String group = plugin.getVaultPerm().getPrimaryGroup(player);
 
 			if (group != null) {
