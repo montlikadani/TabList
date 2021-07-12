@@ -59,17 +59,30 @@ public final class JsonComponent {
 					i += closeIndex - i;
 				}
 			} else if (charAt == '#') {
-				colorName = text.substring(i, i + 7);
+				boolean isAllDigit = true;
 
-				if (builder.length() > 0) {
-					obj.addProperty("text", builder.toString());
-					jsonList.add(obj);
-					builder = new StringBuilder();
+				for (int b = i + 1; b < i + 7; b++) {
+					if (!Character.isLetterOrDigit(text.charAt(b))) {
+						isAllDigit = false;
+						break;
+					}
 				}
 
-				obj = new JsonObject();
-				obj.addProperty("color", colorName);
-				i += 6; // Increase loop with 6 to ignore hex digit
+				if (!isAllDigit) {
+					builder.append(charAt);
+				} else {
+					colorName = text.substring(i, i + 7);
+
+					if (builder.length() > 0) {
+						obj.addProperty("text", builder.toString());
+						jsonList.add(obj);
+						builder = new StringBuilder();
+					}
+
+					obj = new JsonObject();
+					obj.addProperty("color", colorName);
+					i += 6; // Increase loop with 6 to ignore hex digit
+				}
 			} else if (charAt == '&' || charAt == '\u00a7') {
 				char nextChar = text.charAt(i + 1);
 
