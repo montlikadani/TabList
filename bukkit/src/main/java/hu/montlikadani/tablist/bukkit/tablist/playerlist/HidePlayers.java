@@ -33,10 +33,10 @@ public final class HidePlayers {
 
 	public void addPlayerToTab(Player p, Player to) {
 		try {
-			Object playerConst = ReflectionUtils.getHandle(p);
+			Object entityPlayer = ReflectionUtils.getPlayerHandle(p);
 
-			Object entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
-			Array.set(entityPlayerArray, 0, playerConst);
+			Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
+			Array.set(entityPlayerArray, 0, entityPlayer);
 
 			Object packetPlayOutPlayerInfo = ClazzContainer.getPacketPlayOutPlayerInfo()
 					.getConstructor(ClazzContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
@@ -50,10 +50,10 @@ public final class HidePlayers {
 
 	public void removePlayerFromTab(Player p, Player to) {
 		try {
-			Object playerConst = ReflectionUtils.getHandle(p);
+			Object entityPlayer = ReflectionUtils.getPlayerHandle(p);
 
-			Object entityPlayerArray = Array.newInstance(playerConst.getClass(), 1);
-			Array.set(entityPlayerArray, 0, playerConst);
+			Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
+			Array.set(entityPlayerArray, 0, entityPlayer);
 
 			Object packetPlayOutPlayerInfo = ClazzContainer.getPacketPlayOutPlayerInfo()
 					.getConstructor(ClazzContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())

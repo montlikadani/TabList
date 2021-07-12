@@ -2,6 +2,7 @@ package hu.montlikadani.tablist.bukkit.tablist.fakeplayers;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.UUID;
 
@@ -67,7 +68,9 @@ public class FakePlayers implements IFakePlayers {
 
 				String dName = tablist.getPlaceholders().replaceVariables(player, displayName);
 
-				ReflectionUtils.setField(fakeEntityPlayer, "listName", ReflectionUtils.getAsIChatBaseComponent(dName));
+				Field listName = fakeEntityPlayer.getClass().getDeclaredField("listName");
+				listName.setAccessible(true);
+				listName.set(fakeEntityPlayer, ReflectionUtils.getAsIChatBaseComponent(dName));
 
 				Object entityPlayerArray = Array.newInstance(fakeEntityPlayer.getClass(), 1);
 				Array.set(entityPlayerArray, 0, fakeEntityPlayer);

@@ -42,7 +42,7 @@ public class ReflectionHandled implements ITabScoreboard {
 				return;
 			}
 
-			Object handle = ReflectionUtils.getHandle(player);
+			Object handle = ReflectionUtils.getPlayerHandle(player);
 			Object[] entityPlayerArray = (Object[]) Array.newInstance(handle.getClass(), 1);
 			String teamName = groupPlayer.getFullGroupTeamName();
 

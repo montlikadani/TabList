@@ -19,7 +19,10 @@ import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
  * 
  * @author montlikadani
  */
-public class TabListAPI {
+public final class TabListAPI {
+
+	private static java.lang.reflect.Field pingField, recentTpsField;
+	private static java.lang.reflect.Method serverMethod;
 
 	/**
 	 * Returns TabListAPI as a plugin
@@ -98,8 +101,13 @@ public class TabListAPI {
 			return player.getPing();
 		} catch (NoSuchMethodError e) {
 			try {
-				Object entityPlayer = ReflectionUtils.getHandle(player);
-				return ReflectionUtils.getField(entityPlayer.getClass(), "ping", false).getInt(entityPlayer);
+				Object entityPlayer = ReflectionUtils.getPlayerHandle(player);
+
+				if (pingField == null) {
+					(pingField = entityPlayer.getClass().getField("ping")).setAccessible(true);
+				}
+
+				return pingField.getInt(entityPlayer);
 			} catch (Exception ex) {
 				ex.printStackTrace();
 			}
@@ -119,8 +127,17 @@ public class TabListAPI {
 			return Bukkit.getServer().getTPS()[0];
 		} catch (NoSuchMethodError e) {
 			try {
-				Object server = ReflectionUtils.invokeMethod(Bukkit.getServer(), "getServer", false);
-				return ((double[]) ReflectionUtils.getField(server.getClass(), "recentTps", false).get(server))[0];
+				if (serverMethod == null) {
+					(serverMethod = Bukkit.getServer().getClass().getDeclaredMethod("getServer")).setAccessible(true);
+				}
+
+				Object server = serverMethod.invoke(Bukkit.getServer());
+
+				if (recentTpsField == null) {
+					(recentTpsField = server.getClass().getField("recentTps")).setAccessible(true);
+				}
+
+				return ((double[]) recentTpsField.get(server))[0];
 			} catch (Exception ex) {
 			}
 		}

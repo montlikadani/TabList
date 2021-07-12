@@ -38,8 +38,12 @@ public final class ReflectionUtils {
 		return jsonComponent;
 	}
 
-	public static Object getHandle(Object obj) throws Exception {
-		return invokeMethod(obj, "getHandle");
+	public static Object getPlayerHandle(Player player) throws Exception {
+		if (playerHandleMethod == null) {
+			playerHandleMethod = player.getClass().getDeclaredMethod("getHandle");
+		}
+
+		return playerHandleMethod.invoke(player);
 	}
 
 	public static Object getAsIChatBaseComponent(final String text) throws Exception {
@@ -56,22 +60,6 @@ public final class ReflectionUtils {
 		return jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(), "{\"text\":\"" + text + "\"}");
 	}
 
-	public static Object invokeMethod(Object obj, String name) throws Exception {
-		return invokeMethod(obj, name, true, false);
-	}
-
-	public static Object invokeMethod(Object obj, String name, boolean superClass) throws Exception {
-		return invokeMethod(obj, name, true, superClass);
-	}
-
-	public static Object invokeMethod(Object obj, String name, boolean declared, boolean superClass) throws Exception {
-		Class<?> target = superClass ? obj.getClass().getSuperclass() : obj.getClass();
-		Method met = declared ? target.getDeclaredMethod(name) : target.getMethod(name);
-
-		met.setAccessible(true);
-		return met.invoke(obj);
-	}
-
 	public static Class<?> getPacketClass(String newPackageName, String name) throws ClassNotFoundException {
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
 			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
@@ -84,31 +72,13 @@ public final class ReflectionUtils {
 		return Class.forName("org.bukkit.craftbukkit." + ServerVersion.getArrayVersion()[3] + "." + className);
 	}
 
-	public static Field getField(Class<?> clazz, String name) throws Exception {
-		return getField(clazz, name, true);
-	}
-
-	public static Field getField(Class<?> clazz, String name, boolean declared) throws Exception {
-		Field field = declared ? clazz.getDeclaredField(name) : clazz.getField(name);
-		field.setAccessible(true);
-		return field;
-	}
-
-	public static void setField(Object object, String fieldName, Object fieldValue) throws Exception {
-		getField(object.getClass(), fieldName).set(object, fieldValue);
-	}
-
 	public static void sendPacket(Player player, Object packet) {
 		if (player == null || packet == null) {
 			return;
 		}
 
 		try {
-			if (playerHandleMethod == null) {
-				playerHandleMethod = player.getClass().getDeclaredMethod("getHandle");
-			}
-
-			Object playerHandle = playerHandleMethod.invoke(player);
+			Object playerHandle = getPlayerHandle(player);
 
 			if (playerConnectionField == null) {
 				playerConnectionField = playerHandle.getClass().getDeclaredField(
@@ -134,7 +104,8 @@ public final class ReflectionUtils {
 
 			try {
 				// Only get the first world
-				Object worldServer = getHandle(org.bukkit.Bukkit.getServer().getWorlds().get(0));
+				org.bukkit.World world = org.bukkit.Bukkit.getServer().getWorlds().get(0);
+				Object worldServer = world.getClass().getDeclaredMethod("getHandle").invoke(world);
 
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
 					return ClazzContainer
@@ -168,7 +139,7 @@ public final class ReflectionUtils {
 		private static Object getServer(Class<?> server) {
 			try {
 				return server.getMethod("getServer")
-						.invoke(ReflectionUtils.getCraftClass("CraftServer").cast(org.bukkit.Bukkit.getServer()));
+						.invoke(getCraftClass("CraftServer").cast(org.bukkit.Bukkit.getServer()));
 			} catch (Exception x) {
 				try {
 					return server.getMethod("getServer").invoke(server);

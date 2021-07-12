@@ -1,5 +1,7 @@
 package hu.montlikadani.tablist.bukkit.tablist;
 
+import java.lang.reflect.Field;
+
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
@@ -10,6 +12,7 @@ import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 public abstract class TabTitle {
 
 	private static java.lang.reflect.Constructor<?> playerListHeaderFooterConstructor;
+	private static Field headerField, footerField;
 
 	static {
 		Class<?> playerListHeaderFooter = null;
@@ -53,10 +56,16 @@ public abstract class TabTitle {
 			footer = Util.colorMsg(footer);
 		}
 
+		Object tabHeader, tabFooter;
 		try {
-			Object tabHeader = ReflectionUtils.getAsIChatBaseComponent(header),
-					tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);
+			tabHeader = ReflectionUtils.getAsIChatBaseComponent(header);
+			tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);
+		} catch (Exception e1) {
+			e1.printStackTrace();
+			return;
+		}
 
+		try {
 			Object packet;
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
@@ -65,12 +74,25 @@ public abstract class TabTitle {
 				packet = playerListHeaderFooterConstructor.newInstance();
 
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-					ReflectionUtils.setField(packet, "header", tabHeader);
-					ReflectionUtils.setField(packet, "footer", tabFooter);
+					if (headerField == null) {
+						(headerField = packet.getClass().getDeclaredField("header")).setAccessible(true);
+					}
+
+					if (footerField == null) {
+						(footerField = packet.getClass().getDeclaredField("footer")).setAccessible(true);
+					}
 				} else {
-					ReflectionUtils.setField(packet, "a", tabHeader);
-					ReflectionUtils.setField(packet, "b", tabFooter);
+					if (headerField == null) {
+						(headerField = packet.getClass().getDeclaredField("a")).setAccessible(true);
+					}
+
+					if (footerField == null) {
+						(footerField = packet.getClass().getDeclaredField("b")).setAccessible(true);
+					}
 				}
+
+				headerField.set(packet, tabHeader);
+				footerField.set(packet, tabFooter);
 			}
 
 			ReflectionUtils.sendPacket(player, packet);
@@ -79,10 +101,7 @@ public abstract class TabTitle {
 
 			try {
 				try {
-					if (ServerVersion.isCurrentLower(ServerVersion.v1_12_R1)) {
-						packet = playerListHeaderFooterConstructor
-								.newInstance(ReflectionUtils.getAsIChatBaseComponent(header));
-					}
+					packet = playerListHeaderFooterConstructor.newInstance(tabHeader);
 				} catch (IllegalArgumentException e) {
 					try {
 						packet = playerListHeaderFooterConstructor.newInstance();
@@ -91,7 +110,11 @@ public abstract class TabTitle {
 				}
 
 				if (packet != null) {
-					ReflectionUtils.setField(packet, "b", ReflectionUtils.getAsIChatBaseComponent(footer));
+					if (footerField == null) {
+						(footerField = packet.getClass().getDeclaredField("b")).setAccessible(true);
+					}
+
+					footerField.set(packet, tabFooter);
 					ReflectionUtils.sendPacket(player, packet);
 				}
 			} catch (Exception e) {

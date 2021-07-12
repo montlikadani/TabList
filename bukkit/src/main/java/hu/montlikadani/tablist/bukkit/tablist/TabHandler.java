@@ -49,16 +49,19 @@ public class TabHandler {
 
 		sendEmptyTab(player);
 
-		if (!TabConfigValues.isEnabled()) {
+		if (!TabConfigValues.isEnabled() || TabToggleBase.isDisabled(playerUUID) || PluginUtils.isInGame(player)) {
 			return;
 		}
 
 		final String world = player.getWorld().getName();
+
+		if (TabConfigValues.getDisabledWorlds().contains(world)) {
+			return;
+		}
+
 		final String pName = player.getName();
 
-		if (TabConfigValues.getDisabledWorlds().contains(world)
-				|| TabConfigValues.getBlackListedPlayers().contains(pName) || TabToggleBase.isDisabled(playerUUID)
-				|| PluginUtils.isInGame(player)) {
+		if (TabConfigValues.getBlackListedPlayers().contains(pName)) {
 			return;
 		}
 
@@ -152,10 +155,10 @@ public class TabHandler {
 			return;
 		}
 
-		if ((TabConfigValues.isHideTabWhenPlayerVanished() && PluginUtils.isVanished(player))
+		if (TabToggleBase.isDisabled(playerUUID)
+				|| (TabConfigValues.isHideTabWhenPlayerVanished() && PluginUtils.isVanished(player))
 				|| TabConfigValues.getDisabledWorlds().contains(player.getWorld().getName())
-				|| TabConfigValues.getBlackListedPlayers().contains(player.getName()) || PluginUtils.isInGame(player)
-				|| TabToggleBase.isDisabled(playerUUID)) {
+				|| TabConfigValues.getBlackListedPlayers().contains(player.getName()) || PluginUtils.isInGame(player)) {
 			if (!tabEmpty) { // Only send it once to allow other plugins to overwrite tablist
 				sendEmptyTab(player);
 				tabEmpty = true;
