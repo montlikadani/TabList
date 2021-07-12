@@ -76,8 +76,24 @@ public class TabHandler {
 				t: for (String s : TabConfigValues.getPerWorldkeys()) {
 					for (String split : s.split(", ")) {
 						if (world.equals(split)) {
-							path = "per-world." + s + ".";
-							worldEnabled = worldList.add(split);
+							if (plugin.hasVault() && c.contains("per-world." + s + ".per-group")) {
+								String group = plugin.getVaultPerm().getPrimaryGroup(split, player);
+
+								if (group != null) {
+									group = group.toLowerCase();
+
+									if (c.contains("per-world." + s + ".per-group." + group)) {
+										path = "per-world." + s + ".per-group." + group + ".";
+										worldEnabled = true;
+									}
+								}
+							}
+
+							if (path.isEmpty()) {
+								path = "per-world." + s + ".";
+								worldEnabled = worldList.add(split);
+							}
+
 							break t;
 						}
 					}
