@@ -170,7 +170,7 @@ public final class Variables {
 		str = Global.setSymbols(str);
 
 		for (Variable variable : variables) {
-			if (variable.isReplacedBefore()) {
+			if (variable.isReplacedBefore() && variable.getRemainingValue() != null) {
 				str = str.replace(variable.fullName, variable.getRemainingValue());
 				continue;
 			}
@@ -202,7 +202,7 @@ public final class Variables {
 
 		if (str.indexOf("%tps%") >= 0) {
 			double tps = TabListAPI.getTPS();
-			str = str.replace("%tps%", (tps > 20D ? "*" : "") + tpsDot(tps));
+			str = str.replace("%tps%", (tps > 20.0 ? "*" : "") + tpsDot(tps > 20.0 ? 20D : tps));
 		}
 
 		// Don't use here colors because of some issues with hex
