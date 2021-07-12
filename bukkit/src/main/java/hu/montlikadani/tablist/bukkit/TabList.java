@@ -264,8 +264,8 @@ public final class TabList extends JavaPlugin {
 	}
 
 	public String makeAnim(String name) {
-		if (name == null || name.isEmpty()) {
-			return "";
+		if (name.isEmpty()) {
+			return name;
 		}
 
 		int a = 0; // Make sure we're not generates infinite loop
