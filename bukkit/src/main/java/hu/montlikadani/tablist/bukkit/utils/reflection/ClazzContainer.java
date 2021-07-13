@@ -10,7 +10,7 @@ public final class ClazzContainer {
 
 	private static Field infoList, scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamPrefix,
 			scoreboardTeamSuffix, scoreboardTeamNames, scoreboardTeamMode, scoreboardPlayers, nameTagVisibility,
-			playerInfoDataProfileField, playerInfoDataPing, playerInfoDataGameMode;
+			playerInfoDataProfileField, playerInfoDataPing, playerInfoDataGameMode, nameTagVisibilityNameField;
 
 	private static Class<?> iChatBaseComponent, packet, packetPlayOutPlayerInfo, enumPlayerInfoAction,
 			entityPlayerClass, enumGameMode, playerInfoData, minecraftServer, packetPlayOutScoreboardTeam,
@@ -99,6 +99,18 @@ public final class ClazzContainer {
 						String.class, packetPlayOutScoreboardTeam$a);
 
 				scoreboardNameTagVisibilityEnumConstants = scoreboardNameTagVisibility.getEnumConstants();
+
+				try {
+					nameTagVisibilityNameField = scoreboardNameTagVisibilityEnumConstants[0].getClass().getDeclaredField("name");
+				} catch (NoSuchFieldException ns) { // In case if name field not exist
+					for (Field fields : scoreboardNameTagVisibilityEnumConstants[0].getClass().getDeclaredFields()) {
+						if (fields.getType() == String.class) {
+							nameTagVisibilityNameField = fields;
+							break;
+						}
+					}
+				}
+
 				scoreboardTeamConstructor = scoreboardTeamClass.getConstructor(scoreboardClass, String.class);
 				(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("f")).setAccessible(true);
 				playerNameSetMethod = scoreboardTeamClass.getMethod("getPlayerNameSet");
@@ -391,5 +403,9 @@ public final class ClazzContainer {
 
 	public static Method getPlayerNameSetMethod() {
 		return playerNameSetMethod;
+	}
+
+	public static Field getNameTagVisibilityNameField() {
+		return nameTagVisibilityNameField;
 	}
 }

@@ -120,7 +120,7 @@ public class ReflectionHandled implements ITabScoreboard {
 
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
 					for (Object f : ClazzContainer.getScoreboardNameTagVisibilityEnumConstants()) {
-						String name = (String) f.getClass().getDeclaredField("name").get(f);
+						String name = (String) ClazzContainer.getNameTagVisibilityNameField().get(f);
 
 						if (optionName.equalsIgnoreCase(name)) {
 							ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(newTeamPacket, f);
