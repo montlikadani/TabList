@@ -1,0 +1,55 @@
+name: Bug Report
+description: Create a bug report to help us improve our project
+labels: 'Type: Unconfirmed'
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please fill out the below templates, creating an empty or non-filled issues will be closed immediately.
+  - type: dropdown
+    attributes:
+      label: Type of bug
+      multiple: true
+      options:
+        - Performance loss or memory leak
+        - Compatibility issue
+        - Error in console
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: TabList version
+      description: Run `/version tablist` in the console, then copy and paste the full output into here.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Software version
+      description: Run `/version` in the console, then copy and paste the full output into here.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Relevant plugins
+      description: If there is some conflicting or relevant plugins with tablist you can insert here the name of the plugin(s).
+  - type: input
+    attributes:
+      label: Console error (if applicable)
+      description: Upload the console error to https://paste.gg/ or any other paste server and insert the link into this box.
+  - type: textarea
+    attributes:
+      label: TabList configuration files
+      description: Upload your TabList config.yml file (and any other relevant files) to https://paste.gg/ or any other paste server and insert the link into this area.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Bug description
+      description: Explain your bug clearly and maybe include how to reproduce.
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        Below the text box, you can attach any related screenshots, files, links and timings/spark profiler reports.

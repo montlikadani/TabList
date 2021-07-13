@@ -1,6 +1,10 @@
-# IDE files
-.*
-
 # Build files
 target/
 bin/
+
+# IDE files
+Sponge/.project
+Sponge/.classpath
+bukkit/.project
+bukkit/.classpath
+*.prefs

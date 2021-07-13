@@ -5,16 +5,6 @@ labels: 'Type: Enhancement'
 
 ---
 
-<!-- These comments will not show. -->
-
 ### Description
-<!-- Write the suggestion(s) for what you want to be added. -->
-<!-- Write it purely and intelligently. -->
+<!-- Describe the suggestion(s) for what you want to be added. -->
 
-
-<!-- (Optional) Configuration option example(s) -->
-<!-- Use
-```
-boo: true
-```
-block to make it readable. -->

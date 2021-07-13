@@ -16,4 +16,4 @@ A configurable plugin that allows all online players that are one the server to 
 * [Sponge](https://ore.spongepowered.org/montlikadani/%5BAnimated-Tab%5D---TabList)
 
 ### Bug report/feature request
-If you find a bug or you want a feature to be added about the plugin, please make an issue here: https://github.com/montlikadani/TabList/issues
+If you find a bug or you want a feature to be added about the plugin, please make an issue here: https://github.com/montlikadani/TabList/issues/new/choose
