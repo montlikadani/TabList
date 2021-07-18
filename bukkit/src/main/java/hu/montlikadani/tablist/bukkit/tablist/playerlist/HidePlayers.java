@@ -38,8 +38,7 @@ public final class HidePlayers {
 			Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
 			Array.set(entityPlayerArray, 0, entityPlayer);
 
-			Object packetPlayOutPlayerInfo = ClazzContainer.getPacketPlayOutPlayerInfo()
-					.getConstructor(ClazzContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
 					.newInstance(ClazzContainer.getAddPlayer(), entityPlayerArray);
 
 			ReflectionUtils.sendPacket(to, packetPlayOutPlayerInfo);
@@ -55,8 +54,7 @@ public final class HidePlayers {
 			Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
 			Array.set(entityPlayerArray, 0, entityPlayer);
 
-			Object packetPlayOutPlayerInfo = ClazzContainer.getPacketPlayOutPlayerInfo()
-					.getConstructor(ClazzContainer.getEnumPlayerInfoAction(), entityPlayerArray.getClass())
+			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
 					.newInstance(ClazzContainer.getRemovePlayer(), entityPlayerArray);
 
 			Bukkit.getScheduler().runTaskLater(TabListAPI.getPlugin(),

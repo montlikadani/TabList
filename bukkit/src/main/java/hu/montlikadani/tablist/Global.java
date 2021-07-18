@@ -3,8 +3,6 @@ package hu.montlikadani.tablist;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang.StringUtils;
-
 public final class Global {
 
 	private Global() {
@@ -19,8 +17,8 @@ public final class Global {
 			String group = matcher.group(0);
 
 			try {
-				s = StringUtils.replace(s, group, net.md_5.bungee.api.ChatColor.of(group) + "");
-			} catch (Exception e) {
+				s = s.replace(group, net.md_5.bungee.api.ChatColor.of(group).toString());
+			} catch (IllegalArgumentException e) {
 			}
 		}
 

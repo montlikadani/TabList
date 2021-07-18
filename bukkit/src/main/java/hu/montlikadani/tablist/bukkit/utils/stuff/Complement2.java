@@ -12,7 +12,8 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 public class Complement2 implements Complement {
 
 	private Component deserialize(String t) {
-		return LegacyComponentSerializer.legacyAmpersand().deserialize(t);
+		// legacySection is used to deserialize hex colors from plain text too
+		return LegacyComponentSerializer.legacySection().deserialize(t);
 	}
 
 	private String serialize(Component component) {

@@ -37,28 +37,7 @@ public final class JsonComponent {
 			}
 
 			char charAt = text.charAt(i);
-			if (charAt == '{') {
-				int closeIndex = -1;
-
-				if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', i + 6)) >= 0) {
-					font = NamespacedKey.minecraft(text.substring(i + 6, closeIndex)).toString();
-				} else if (text.regionMatches(true, i, "{/font", 0, 6)
-						&& (closeIndex = text.indexOf('}', i + 6)) >= 0) {
-					font = NamespacedKey.minecraft("default").toString();
-				}
-
-				if (closeIndex >= 0) {
-					if (builder.length() > 0) {
-						obj.addProperty("text", builder.toString());
-						jsonList.add(obj);
-						builder = new StringBuilder();
-					}
-
-					obj = new JsonObject();
-					obj.addProperty("font", font);
-					i += closeIndex - i;
-				}
-			} else if (charAt == '#') {
+			if (charAt == '#') {
 				boolean isAllDigit = true;
 
 				for (int b = i + 1; b < i + 7; b++) {
@@ -145,6 +124,27 @@ public final class JsonComponent {
 					i++;
 				} else {
 					builder.append(charAt);
+				}
+			} else if (charAt == '{') {
+				int closeIndex = -1;
+
+				if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', i + 6)) >= 0) {
+					font = NamespacedKey.minecraft(text.substring(i + 6, closeIndex)).toString();
+				} else if (text.regionMatches(true, i, "{/font", 0, 6)
+						&& (closeIndex = text.indexOf('}', i + 6)) >= 0) {
+					font = NamespacedKey.minecraft("default").toString();
+				}
+
+				if (closeIndex >= 0) {
+					if (builder.length() > 0) {
+						obj.addProperty("text", builder.toString());
+						jsonList.add(obj);
+						builder = new StringBuilder();
+					}
+
+					obj = new JsonObject();
+					obj.addProperty("font", font);
+					i += closeIndex - i;
 				}
 			} else {
 				builder.append(charAt);

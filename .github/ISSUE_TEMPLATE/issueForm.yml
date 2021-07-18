@@ -32,7 +32,7 @@ body:
   - type: textarea
     attributes:
       label: Relevant plugins
-      description: If there is some conflicting or relevant plugins with tablist you can insert here the name of the plugin(s).
+      description: If there is some conflicting or relevant plugins with tablist you can insert here the name of the plugin(s). But it is enough if you run `/plugins` command and inserts here the output.
   - type: input
     attributes:
       label: Console error (if applicable)

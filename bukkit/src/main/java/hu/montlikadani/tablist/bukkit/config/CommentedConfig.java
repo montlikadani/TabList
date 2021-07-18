@@ -238,10 +238,6 @@ public class CommentedConfig extends YamlConfiguration {
 	public YamlConfiguration getYml() {
 		YamlConfiguration config = new YamlConfiguration();
 
-		if (file == null || !file.exists()) {
-			return config;
-		}
-
 		try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file))) {
 			config.load(reader);
 		} catch (FileNotFoundException e) {

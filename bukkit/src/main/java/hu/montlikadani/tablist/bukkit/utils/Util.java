@@ -4,9 +4,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 
@@ -23,18 +20,14 @@ public final class Util {
 	}
 
 	public static String colorMsg(String msg) {
-		if (msg == null) {
-			return "";
-		}
-
 		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1) && msg.indexOf('#') >= 0) {
 			msg = Global.matchColorRegex(msg);
 		}
 
-		return ChatColor.translateAlternateColorCodes('&', msg);
+		return org.bukkit.ChatColor.translateAlternateColorCodes('&', msg);
 	}
 
-	public static void sendMsg(CommandSender sender, String s) {
+	public static void sendMsg(org.bukkit.command.CommandSender sender, String s) {
 		if (sender != null && s != null && !s.isEmpty()) {
 			String[] split = s.split("\n");
 

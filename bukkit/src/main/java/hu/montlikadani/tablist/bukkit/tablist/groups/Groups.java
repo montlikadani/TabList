@@ -270,7 +270,7 @@ public final class Groups {
 	 * only be updated in the custom name, prefix, suffix and others.
 	 */
 	private void sortPlayers() {
-		// TODO Improve or get rid from streams
+		// TODO get rid from streams
 		Set<GroupPlayer> playerGroups = sortedPlayers.stream()
 				.sorted(java.util.Comparator.comparingInt(GroupPlayer::getPriority))
 				.collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));

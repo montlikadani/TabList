@@ -104,9 +104,6 @@
 		<repository>
 			<id>CodeMC</id>
 			<url>https://repo.codemc.org/repository/maven-public</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
 		</repository>
 	</repositories>
 

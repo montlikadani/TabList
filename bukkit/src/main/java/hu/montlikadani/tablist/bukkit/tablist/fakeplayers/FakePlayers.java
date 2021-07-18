@@ -56,7 +56,11 @@ public class FakePlayers implements IFakePlayers {
 			return;
 		}
 
-		displayName = Util.colorMsg(displayName);
+		if (displayName == null) {
+			displayName = "";
+		} else {
+			displayName = Util.colorMsg(displayName);
+		}
 
 		try {
 			for (TabListUser user : tablist.getUsers()) {

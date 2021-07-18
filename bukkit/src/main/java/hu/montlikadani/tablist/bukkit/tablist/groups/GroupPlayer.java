@@ -224,7 +224,6 @@ public final class GroupPlayer {
 		if ((ConfigValues.isHideGroupInVanish() && PluginUtils.isVanished(player))
 				|| (ConfigValues.isHideGroupWhenAfk() && PluginUtils.isAfk(player))) {
 			tabTeam.unregisterTeam(this);
-			removeGroup();
 			return false;
 		}
 
@@ -271,11 +270,14 @@ public final class GroupPlayer {
 	public String getTabNameWithPrefixSuffix() {
 		Player player = tabListUser.getPlayer();
 		String tabName = player != null ? player.getName() : "";
+		boolean isAfk = PluginUtils.isAfk(player);
 
-		if (ConfigValues.isAssignGlobalGroup() && globalGroup != null && !globalGroup.getTabName().isEmpty()) {
-			tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(globalGroup.getTabName()));
-		} else if (group != null && !group.getTabName().isEmpty()) {
-			tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(group.getTabName()));
+		if (!ConfigValues.isAfkStatusEnabled() || (isAfk && ConfigValues.isAfkStatusShowPlayerGroup()) || !isAfk) {
+			if (ConfigValues.isAssignGlobalGroup() && globalGroup != null && !globalGroup.getTabName().isEmpty()) {
+				tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(globalGroup.getTabName()));
+			} else if (group != null && !group.getTabName().isEmpty()) {
+				tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(group.getTabName()));
+			}
 		}
 
 		return getPrefix() + tabName + getSuffix();

@@ -12,14 +12,11 @@ abstract class AfkPlayers {
 	private final TabList plugin = TabListAPI.getPlugin();
 
 	protected void goAfk(Player player, boolean value) {
-		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowPlayerGroup()) {
+		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isPrefixSuffixEnabled()) {
 			String prop = value ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo();
 
-			if (!prop.isEmpty()) {
-				plugin.getComplement().setPlayerListName(player,
-						Util.colorMsg(ConfigValues.isAfkStatusShowInRightLeftSide() ? player.getName() + prop
-								: prop + player.getName()));
-			}
+			plugin.getComplement().setPlayerListName(player, Util.colorMsg(
+					ConfigValues.isAfkStatusShowInRightLeftSide() ? player.getName() + prop : prop + player.getName()));
 		}
 
 		if (ConfigValues.isHidePlayerFromTabAfk()) {
