@@ -3,7 +3,6 @@ package hu.montlikadani.tablist.bukkit;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -43,14 +42,13 @@ public final class Objects {
 		Scoreboard board = pl.getScoreboard();
 		Objective objective = getObject(board).orElse(null);
 		if (objective == null) {
-			String dName = ChatColor.RED + "\u2665";
+			String name = ConfigValues.getObjectType().objectName;
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-				objective = plugin.getComplement().registerNewObjective(board, ConfigValues.getObjectType().objectName,
-						"health", dName, RenderType.HEARTS);
+				objective = plugin.getComplement().registerNewObjective(board, name, "health", name, RenderType.HEARTS);
 			} else {
-				objective = board.registerNewObjective(ConfigValues.getObjectType().objectName, "health");
-				plugin.getComplement().setDisplayName(objective, dName);
+				objective = board.registerNewObjective(name, "health");
+				plugin.getComplement().setDisplayName(objective, org.bukkit.ChatColor.RED + "\u2665");
 			}
 
 			objective.setDisplaySlot(DisplaySlot.PLAYER_LIST);

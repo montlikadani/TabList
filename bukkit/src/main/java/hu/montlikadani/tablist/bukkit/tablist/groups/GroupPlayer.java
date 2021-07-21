@@ -96,19 +96,17 @@ public final class GroupPlayer {
 			return false;
 		}
 
-		boolean update = false;
-
 		if (!isPlayerCanSeeGroup(player) || (ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(player)
 				&& !ConfigValues.isAfkStatusShowPlayerGroup())) {
 			if (group != null || globalGroup != null) {
-				removeGroup();
-				update = true;
+				plugin.getGroups().removePlayerGroup(tabListUser);
 				plugin.getGroups().setToSort(false);
 			}
 
-			return update;
+			return false;
 		}
 
+		boolean update = false;
 		Groups groups = plugin.getGroups();
 
 		for (TeamHandler team : groups.getGroupsList()) {
@@ -270,14 +268,11 @@ public final class GroupPlayer {
 	public String getTabNameWithPrefixSuffix() {
 		Player player = tabListUser.getPlayer();
 		String tabName = player != null ? player.getName() : "";
-		boolean isAfk = PluginUtils.isAfk(player);
 
-		if (!ConfigValues.isAfkStatusEnabled() || (isAfk && ConfigValues.isAfkStatusShowPlayerGroup()) || !isAfk) {
-			if (ConfigValues.isAssignGlobalGroup() && globalGroup != null && !globalGroup.getTabName().isEmpty()) {
-				tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(globalGroup.getTabName()));
-			} else if (group != null && !group.getTabName().isEmpty()) {
-				tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(group.getTabName()));
-			}
+		if (ConfigValues.isAssignGlobalGroup() && globalGroup != null && !globalGroup.getTabName().isEmpty()) {
+			tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(globalGroup.getTabName()));
+		} else if (group != null && !group.getTabName().isEmpty()) {
+			tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(group.getTabName()));
 		}
 
 		return getPrefix() + tabName + getSuffix();

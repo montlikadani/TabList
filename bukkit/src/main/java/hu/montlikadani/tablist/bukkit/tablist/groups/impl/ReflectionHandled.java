@@ -42,10 +42,7 @@ public class ReflectionHandled implements ITabScoreboard {
 				return;
 			}
 
-			Object handle = ReflectionUtils.getPlayerHandle(player);
-			Object[] entityPlayerArray = (Object[]) Array.newInstance(handle.getClass(), 1);
 			String teamName = groupPlayer.getFullGroupTeamName();
-
 			Object newTeamPacket;
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
@@ -133,6 +130,9 @@ public class ReflectionHandled implements ITabScoreboard {
 
 				break;
 			}
+
+			Object handle = ReflectionUtils.getPlayerHandle(player);
+			Object[] entityPlayerArray = (Object[]) Array.newInstance(handle.getClass(), 1);
 
 			Array.set(entityPlayerArray, 0, handle);
 

@@ -9,6 +9,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Pattern;
 
 import org.bukkit.entity.Player;
 
@@ -21,14 +22,16 @@ public abstract class UpdateDownloader {
 	private static final TabList PLUGIN = TabListAPI.getPlugin();
 
 	private static File releasesFolder;
+	private static final Pattern versionPattern = Pattern.compile(": "),
+			integerVersionPattern = Pattern.compile("[^0-9]");
 
 	public static void checkFromGithub(org.bukkit.command.CommandSender sender) {
-		releasesFolder = new File(PLUGIN.getFolder(), "releases");
-
 		if (!ConfigValues.isCheckUpdate()) {
 			deleteDirectory();
 			return;
 		}
+
+		releasesFolder = new File(PLUGIN.getFolder(), "releases");
 
 		CompletableFuture.supplyAsync(() -> {
 			try {
@@ -47,12 +50,11 @@ public abstract class UpdateDownloader {
 					}
 				}
 
-				String versionString = lineWithVersion.split(": ", 2)[1],
-						nVersion = versionString.replaceAll("[^0-9]", ""),
-						cVersion = PLUGIN.getDescription().getVersion().replaceAll("[^0-9]", "");
+				String versionString = versionPattern.split(lineWithVersion, 2)[1];
 
-				int newVersion = Integer.parseInt(nVersion);
-				int currentVersion = Integer.parseInt(cVersion);
+				int newVersion = Integer.parseInt(integerVersionPattern.matcher(versionString).replaceAll(""));
+				int currentVersion = Integer
+						.parseInt(integerVersionPattern.matcher(PLUGIN.getDescription().getVersion()).replaceAll(""));
 
 				if (newVersion <= currentVersion || currentVersion >= newVersion) {
 					deleteDirectory();
@@ -65,7 +67,7 @@ public abstract class UpdateDownloader {
 									+ (ConfigValues.isDownloadUpdates() ? ""
 											: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/")));
 				} else {
-					Util.sendMsg(sender, "New version (" + versionString
+					PLUGIN.getLogger().log(java.util.logging.Level.INFO, "New version (" + versionString
 							+ ") is available at https://www.spigotmc.org/resources/46229/");
 				}
 
@@ -74,22 +76,20 @@ public abstract class UpdateDownloader {
 					return false;
 				}
 
-				final String name = "TabList-v" + versionString;
-
 				releasesFolder.mkdirs();
 
-				// Do not attempt to download the file again, when it is already downloaded
+				final String name = "TabList-v" + versionString;
 				final File jar = new File(releasesFolder, name + ".jar");
+
 				if (jar.exists()) {
-					return false;
+					return false; // Do not attempt to download the file again, when it is already downloaded
 				}
 
 				Util.logConsole("Downloading new version of TabList...");
 
-				final URL download = new URL(
-						"https://github.com/montlikadani/TabList/releases/latest/download/" + name + ".jar");
-
-				try (InputStream in = download.openStream()) {
+				try (InputStream in = new URL(
+						"https://github.com/montlikadani/TabList/releases/latest/download/" + name + ".jar")
+								.openStream()) {
 					Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
 				}
 
@@ -108,14 +108,18 @@ public abstract class UpdateDownloader {
 	}
 
 	private static void deleteDirectory() {
-		if (!releasesFolder.exists()) {
+		if (releasesFolder == null || !releasesFolder.exists()) {
 			return;
 		}
 
-		for (File file : releasesFolder.listFiles()) {
-			try {
-				file.delete();
-			} catch (SecurityException e) {
+		File[] files = releasesFolder.listFiles();
+
+		if (files != null) {
+			for (File file : files) {
+				try {
+					file.delete();
+				} catch (SecurityException e) {
+				}
 			}
 		}
 

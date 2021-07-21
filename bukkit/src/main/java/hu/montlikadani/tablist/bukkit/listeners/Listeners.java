@@ -1,7 +1,5 @@
 package hu.montlikadani.tablist.bukkit.listeners;
 
-import java.util.concurrent.CompletableFuture;
-
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,7 +10,6 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.tablist.TabTitle;
 import hu.montlikadani.tablist.bukkit.user.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
 
@@ -28,10 +25,7 @@ public final class Listeners implements org.bukkit.event.Listener {
 	public void onPlJoin(PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
 
-		CompletableFuture.supplyAsync(() -> {
-			plugin.updateAll(player);
-			return true;
-		});
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.updateAll(player));
 
 		if (player.isOp()) {
 			UpdateDownloader.checkFromGithub(player);
@@ -54,7 +48,6 @@ public final class Listeners implements org.bukkit.event.Listener {
 
 	@EventHandler
 	public void onWorldChange(PlayerChangedWorldEvent eve) {
-		TabTitle.sendTabTitle(eve.getPlayer(), "", "");
 		plugin.updateAll(eve.getPlayer());
 	}
 

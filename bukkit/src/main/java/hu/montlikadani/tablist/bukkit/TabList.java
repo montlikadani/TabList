@@ -18,6 +18,7 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Scoreboard;
 
 import com.google.common.reflect.TypeToken;
 
@@ -107,7 +108,7 @@ public final class TabList extends JavaPlugin {
 
 		if (ConfigValues.isLogConsole()) {
 			Util.sendMsg(getServer().getConsoleSender(), colorMsg("&6[&5Tab&cList&6]&7 >&a Enabled&6 v"
-					+ getDescription().getVersion() + "&a! (" + (System.currentTimeMillis() - load) + "ms)"));
+					+ getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
 		}
 	}
 
@@ -164,7 +165,8 @@ public final class TabList extends JavaPlugin {
 		} catch (NoSuchMethodException | ClassNotFoundException e) {
 		}
 
-		complement = (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R3) && kyoriSupported) ? new Complement2()
+		complement = (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R3) && kyoriSupported)
+				? new Complement2()
 				: new Complement1();
 	}
 
@@ -244,7 +246,8 @@ public final class TabList extends JavaPlugin {
 	private void loadAnimations() {
 		animations.clear();
 
-		org.bukkit.configuration.ConfigurationSection section = conf.getAnimCreator().getConfigurationSection("animations");
+		org.bukkit.configuration.ConfigurationSection section = conf.getAnimCreator()
+				.getConfigurationSection("animations");
 		if (section == null) {
 			return;
 		}
@@ -293,20 +296,21 @@ public final class TabList extends JavaPlugin {
 			return tlu;
 		});
 
-		org.bukkit.scoreboard.Scoreboard board = player.getScoreboard();
-
 		if (!ConfigValues.isTablistObjectiveEnabled()) {
-			for (Objects.ObjectTypes type : Objects.ObjectTypes.values()) {
-				objects.unregisterObjective(objects.getObject(board, type));
+			if (reload) {
+				Scoreboard board = player.getScoreboard();
+
+				for (Objects.ObjectTypes type : Objects.ObjectTypes.values()) {
+					objects.unregisterObjective(objects.getObject(board, type));
+				}
 			}
 		} else {
-			objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.PING));
-			objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.CUSTOM));
-
 			switch (ConfigValues.getObjectType()) {
 			case PING:
 			case CUSTOM:
-				objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.HEALTH));
+				if (reload) {
+					objects.unregisterObjective(objects.getObject(player.getScoreboard(), Objects.ObjectTypes.HEALTH));
+				}
 
 				if (objects.isCancelled()) {
 					objects.startTask();
@@ -314,7 +318,14 @@ public final class TabList extends JavaPlugin {
 
 				break;
 			case HEALTH:
-				if (!reload) {
+				if (reload) {
+					objects.cancelTask();
+
+					Scoreboard board = player.getScoreboard();
+
+					objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.PING));
+					objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.CUSTOM));
+				} else {
 					objects.registerHealthTab(player);
 				}
 
@@ -362,6 +373,11 @@ public final class TabList extends JavaPlugin {
 		users.removeIf(user -> {
 			user.getTabHandler().sendEmptyTab(player);
 			groups.removePlayerGroup(user);
+
+			Scoreboard board = player.getScoreboard();
+
+			objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.PING));
+			objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.CUSTOM));
 			return player.getUniqueId().equals(user.getUniqueId());
 		});
 	}
