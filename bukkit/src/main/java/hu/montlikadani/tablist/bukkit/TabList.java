@@ -17,7 +17,6 @@ import org.apache.commons.lang.StringUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scoreboard.Scoreboard;
 
 import com.google.common.reflect.TypeToken;
@@ -47,7 +46,7 @@ import hu.montlikadani.tablist.bukkit.utils.task.DelayedPermissionCheck;
 import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
 import hu.montlikadani.tablist.bukkit.utils.variables.Variables;
 
-public final class TabList extends JavaPlugin {
+public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	private VaultPermission vaultPermission;
 	private Objects objects;

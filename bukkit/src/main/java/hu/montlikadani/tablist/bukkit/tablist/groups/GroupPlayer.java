@@ -146,7 +146,6 @@ public final class GroupPlayer {
 			// Avoiding verbose spam
 			if (!found) {
 				playerVaultGroup = plugin.getVaultPerm().getPrimaryGroup(player);
-				groups.setToSort(true);
 			}
 		}
 
@@ -194,8 +193,9 @@ public final class GroupPlayer {
 					break;
 				}
 			} else if (plugin.hasVault()) {
-				for (String groupsVault : plugin.getVaultPerm().getPlayerGroups(player)) {
-					if (groupsVault.equalsIgnoreCase(team.getTeam())) {
+				for (String playerGroup : plugin.getVaultPerm().getPlayerGroups(player)) {
+					if (playerGroup.equalsIgnoreCase(team.getTeam())
+							|| StringUtils.containsIgnoreCase(team.getTeam(), playerGroup)) {
 						if (group != team) {
 							groups.setToSort(true);
 							update = true;
