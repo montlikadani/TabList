@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
-import org.apache.commons.lang.Validate;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -52,7 +51,7 @@ public final class Groups {
 	 * @return {@link TeamHandler} if present, otherwise {@link Optional#empty()}
 	 */
 	public Optional<TeamHandler> getTeam(String name) {
-		Validate.notEmpty(name, "The team name can't be empty/null");
+		org.apache.commons.lang.Validate.notEmpty(name, "The team name can't be empty/null");
 
 		for (TeamHandler handler : groupsList) {
 			if (handler.getTeam().equalsIgnoreCase(name)) {
@@ -110,7 +109,7 @@ public final class Groups {
 				}
 
 				// This again for lazy peoples
-				ChatColor c = colors[java.util.concurrent.ThreadLocalRandom.current().nextInt(colors.length)];
+				ChatColor c = colors[new java.util.Random().nextInt(colors.length)];
 
 				cs.set(s + ".prefix", "&" + c.getChar() + s + "&r - ");
 				have = true;
@@ -271,9 +270,9 @@ public final class Groups {
 	 */
 	private void sortPlayers() {
 		// TODO get rid from streams
-		Set<GroupPlayer> playerGroups = sortedPlayers.stream()
+		List<GroupPlayer> playerGroups = sortedPlayers.stream()
 				.sorted(java.util.Comparator.comparingInt(GroupPlayer::getPriority))
-				.collect(java.util.stream.Collectors.toCollection(java.util.LinkedHashSet::new));
+				.collect(java.util.stream.Collectors.toList());
 
 		sortedPlayers.clear();
 		sortedPlayers.addAll(playerGroups);

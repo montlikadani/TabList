@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 import org.bukkit.entity.Player;
 
@@ -300,6 +301,8 @@ public final class Variables {
 		return parseExpression(ping, OperatorNodes.NodeType.PING);
 	}
 
+	private final Pattern colorVariablePattern = Pattern.compile("%tps%|%ping%");
+
 	private String parseExpression(double value, int type) {
 		String color = "";
 
@@ -313,7 +316,7 @@ public final class Variables {
 
 		StringBuilder builder = new StringBuilder();
 		if (!color.isEmpty()) {
-			builder.append(color.replaceAll("%tps%|%ping%", "").replace('&', '\u00a7'));
+			builder.append(colorVariablePattern.matcher(color).replaceAll("").replace('&', '\u00a7'));
 		}
 
 		return (type == OperatorNodes.NodeType.PING ? builder.append((int) value) : builder.append(value)).toString();

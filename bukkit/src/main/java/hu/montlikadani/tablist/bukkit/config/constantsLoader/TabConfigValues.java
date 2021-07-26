@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -23,6 +24,8 @@ public final class TabConfigValues {
 	private static final Set<String> perWorldKeys = new HashSet<>(), permissionKeys = new HashSet<>();
 
 	public static final Map<String, String> CUSTOM_VARIABLES = new HashMap<>();
+
+	public static final Pattern COMMA_SPACE_SEPARATED_PATTERN = Pattern.compile(", ");
 
 	public static void loadValues(FileConfiguration c) {
 		CUSTOM_VARIABLES.clear();

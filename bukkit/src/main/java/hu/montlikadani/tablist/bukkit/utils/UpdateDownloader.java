@@ -19,7 +19,7 @@ import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 
 public abstract class UpdateDownloader {
 
-	private static final TabList PLUGIN = TabListAPI.getPlugin();
+	private static final TabList TL = TabListAPI.getPlugin();
 
 	private static File releasesFolder;
 	private static final Pattern versionPattern = Pattern.compile(": "),
@@ -31,7 +31,7 @@ public abstract class UpdateDownloader {
 			return;
 		}
 
-		releasesFolder = new File(PLUGIN.getFolder(), "releases");
+		releasesFolder = new File(TL.getFolder(), "releases");
 
 		CompletableFuture.supplyAsync(() -> {
 			try {
@@ -43,7 +43,7 @@ public abstract class UpdateDownloader {
 					String s;
 
 					while ((s = br.readLine()) != null) {
-						if (s.toLowerCase().contains("version")) {
+						if (s.contains("version")) {
 							lineWithVersion = s;
 							break;
 						}
@@ -54,7 +54,7 @@ public abstract class UpdateDownloader {
 
 				int newVersion = Integer.parseInt(integerVersionPattern.matcher(versionString).replaceAll(""));
 				int currentVersion = Integer
-						.parseInt(integerVersionPattern.matcher(PLUGIN.getDescription().getVersion()).replaceAll(""));
+						.parseInt(integerVersionPattern.matcher(TL.getDescription().getVersion()).replaceAll(""));
 
 				if (newVersion <= currentVersion || currentVersion >= newVersion) {
 					deleteDirectory();
@@ -67,7 +67,7 @@ public abstract class UpdateDownloader {
 									+ (ConfigValues.isDownloadUpdates() ? ""
 											: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/")));
 				} else {
-					PLUGIN.getLogger().log(java.util.logging.Level.INFO, "New version (" + versionString
+					TL.getLogger().log(java.util.logging.Level.INFO, "New version (" + versionString
 							+ ") is available at https://www.spigotmc.org/resources/46229/");
 				}
 

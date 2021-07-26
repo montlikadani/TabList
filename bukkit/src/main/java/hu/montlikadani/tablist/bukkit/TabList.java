@@ -85,9 +85,12 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		conf.loadFiles();
 		variables.load();
 
-		if (ConfigValues.isPlaceholderAPI() && isPluginEnabled("PlaceholderAPI")) {
-			logConsole("Hooked PlaceholderAPI version: "
-					+ me.clip.placeholderapi.PlaceholderAPIPlugin.getInstance().getDescription().getVersion());
+		if (ConfigValues.isPlaceholderAPI()) {
+			org.bukkit.plugin.Plugin papi = getServer().getPluginManager().getPlugin("PlaceholderAPI");
+
+			if (papi != null && papi.isEnabled()) {
+				logConsole("Hooked " + papi.getName() + " version: " + papi.getDescription().getVersion());
+			}
 		}
 
 		hasVault = initVaultPerm();

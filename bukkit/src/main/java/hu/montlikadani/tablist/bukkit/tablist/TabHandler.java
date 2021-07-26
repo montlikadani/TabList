@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.regex.Pattern;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -20,14 +19,11 @@ import hu.montlikadani.tablist.bukkit.utils.variables.Variables;
 public class TabHandler {
 
 	private final TabList plugin;
-
-	private UUID playerUUID;
+	private final UUID playerUUID;
 
 	private boolean worldEnabled = false, tabEmpty = false;
 
 	private final List<String> worldList = new ArrayList<>();
-
-	private final Pattern multipleWorldsPattern = Pattern.compile(", ");
 
 	private String[] header, footer;
 
@@ -77,7 +73,7 @@ public class TabHandler {
 				worldEnabled = true;
 			} else {
 				t: for (String s : TabConfigValues.getPerWorldkeys()) {
-					for (String split : multipleWorldsPattern.split(s)) {
+					for (String split : TabConfigValues.COMMA_SPACE_SEPARATED_PATTERN.split(s)) {
 						if (world.equals(split)) {
 							if (plugin.hasVault() && c.contains("per-world." + s + ".per-group")) {
 								String group = plugin.getVaultPerm().getPrimaryGroup(split, player);

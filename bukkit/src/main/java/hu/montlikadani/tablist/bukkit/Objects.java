@@ -39,19 +39,25 @@ public final class Objects {
 
 		// TODO Fix not show correctly the health after reload
 
-		Scoreboard board = pl.getScoreboard();
-		Objective objective = getObject(board).orElse(null);
-		if (objective == null) {
-			String name = ConfigValues.getObjectType().objectName;
+		final Scoreboard board = pl.getScoreboard();
 
-			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-				objective = plugin.getComplement().registerNewObjective(board, name, "health", name, RenderType.HEARTS);
-			} else {
-				objective = board.registerNewObjective(name, "health");
-				plugin.getComplement().setDisplayName(objective, org.bukkit.ChatColor.RED + "\u2665");
-			}
+		if (!getObject(board).isPresent()) {
+			Tasks.submitSync(() -> {
+				Objective objective;
 
-			objective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+					String name = ConfigValues.getObjectType().objectName;
+
+					objective = plugin.getComplement().registerNewObjective(board, name, "health", name,
+							RenderType.HEARTS);
+				} else {
+					objective = board.registerNewObjective(ConfigValues.getObjectType().objectName, "health");
+					plugin.getComplement().setDisplayName(objective, org.bukkit.ChatColor.RED + "\u2665");
+				}
+
+				objective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+				return 1;
+			});
 		}
 	}
 

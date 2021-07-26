@@ -8,7 +8,6 @@ import java.util.List;
 import com.mojang.authlib.GameProfile;
 
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 import hu.montlikadani.tablist.bukkit.tablist.groups.GroupPlayer;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
@@ -22,15 +21,19 @@ import org.bukkit.scoreboard.Team;
 @SuppressWarnings("deprecation")
 public class ReflectionHandled implements ITabScoreboard {
 
-	private final TabList plugin = TabListAPI.getPlugin();
+	private final TabList tl;
 
 	private Object packetPlayOutPlayerInfo;
 	private List<Object> infoList;
 
+	public ReflectionHandled(TabList tl) {
+		this.tl = tl;
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void registerTeam(GroupPlayer groupPlayer) {
-		if (packetPlayOutPlayerInfo != null && !plugin.getGroups().isToSort()) {
+		if (packetPlayOutPlayerInfo != null && !tl.getGroups().isToSort()) {
 			return;
 		}
 
@@ -141,8 +144,13 @@ public class ReflectionHandled implements ITabScoreboard {
 
 			infoList = (List<Object>) ClazzContainer.getInfoList().get(packetPlayOutPlayerInfo);
 
-			for (TabListUser user : plugin.getUsers()) {
-				ReflectionUtils.sendPacket(user.getPlayer(), newTeamPacket);
+			for (TabListUser user : tl.getUsers()) {
+				Player pl = user.getPlayer();
+
+				if (pl != null) {
+					ReflectionUtils.sendPacket(pl, packetPlayOutPlayerInfo);
+					ReflectionUtils.sendPacket(pl, newTeamPacket);
+				}
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -172,7 +180,7 @@ public class ReflectionHandled implements ITabScoreboard {
 				ClazzContainer.getScoreboardTeamMode().set(oldTeamPacket, 1);
 			}
 
-			for (TabListUser user : plugin.getUsers()) {
+			for (TabListUser user : tl.getUsers()) {
 				ReflectionUtils.sendPacket(user.getPlayer(), oldTeamPacket);
 			}
 		} catch (Exception exception) {
@@ -232,7 +240,7 @@ public class ReflectionHandled implements ITabScoreboard {
 
 			ClazzContainer.getInfoList().set(packetPlayOutPlayerInfo, Collections.singletonList(infoPacket));
 
-			for (TabListUser user : plugin.getUsers()) {
+			for (TabListUser user : tl.getUsers()) {
 				Player player = user.getPlayer();
 
 				if (player != null) {

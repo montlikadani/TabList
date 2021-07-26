@@ -2,7 +2,6 @@ package hu.montlikadani.tablist.bukkit.tablist.groups;
 
 import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
 
-import org.apache.commons.lang.StringUtils;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.TabList;
@@ -17,7 +16,7 @@ public final class GroupPlayer {
 
 	private final TabListUser tabListUser;
 	private final ITabScoreboard tabTeam;
-	private final TabList plugin;
+	private final TabList tl;
 
 	private TeamHandler group, globalGroup;
 
@@ -26,11 +25,11 @@ public final class GroupPlayer {
 	private int customPriority = Integer.MIN_VALUE;
 	private int safePriority = 0;
 
-	public GroupPlayer(TabList plugin, TabListUser tabListUser) {
-		this.plugin = plugin;
+	public GroupPlayer(TabList tl, TabListUser tabListUser) {
+		this.tl = tl;
 		this.tabListUser = tabListUser;
 
-		tabTeam = new ReflectionHandled();
+		tabTeam = new ReflectionHandled(tl);
 	}
 
 	public ITabScoreboard getTabTeam() {
@@ -39,7 +38,7 @@ public final class GroupPlayer {
 
 	public void setGroup(TeamHandler group) {
 		this.group = group;
-		plugin.getGroups().setToSort(true);
+		tl.getGroups().setToSort(true);
 	}
 
 	public TeamHandler getGroup() {
@@ -99,15 +98,15 @@ public final class GroupPlayer {
 		if (!isPlayerCanSeeGroup(player) || (ConfigValues.isAfkStatusEnabled() && PluginUtils.isAfk(player)
 				&& !ConfigValues.isAfkStatusShowPlayerGroup())) {
 			if (group != null || globalGroup != null) {
-				plugin.getGroups().removePlayerGroup(tabListUser);
-				plugin.getGroups().setToSort(false);
+				tl.getGroups().removePlayerGroup(tabListUser);
+				tl.getGroups().setToSort(false);
 			}
 
 			return false;
 		}
 
 		boolean update = false;
-		Groups groups = plugin.getGroups();
+		Groups groups = tl.getGroups();
 
 		for (TeamHandler team : groups.getGroupsList()) {
 			if (player.getName().equalsIgnoreCase(team.getTeam())) {
@@ -123,19 +122,18 @@ public final class GroupPlayer {
 
 				if (group != team) {
 					update = true;
-					group = team;
-					groups.setToSort(true);
+					setGroup(team);
 				}
 
 				return update;
 			}
 		}
 
-		if (plugin.hasVault()) {
+		if (tl.hasVault()) {
 			boolean found = false;
 
 			if (playerVaultGroup != null) {
-				for (String g : plugin.getVaultPerm().getPlayerGroups(player)) {
+				for (String g : tl.getVaultPerm().getPlayerGroups(player)) {
 					if (playerVaultGroup.equalsIgnoreCase(g)) {
 						found = true;
 						break;
@@ -144,15 +142,13 @@ public final class GroupPlayer {
 			}
 
 			// Avoiding verbose spam
-			if (!found) {
-				playerVaultGroup = plugin.getVaultPerm().getPrimaryGroup(player);
+			if (!found && ConfigValues.isPreferPrimaryVaultGroup()) {
+				playerVaultGroup = tl.getVaultPerm().getPrimaryGroup(player);
 			}
 		}
 
 		for (TeamHandler team : groups.getGroupsList()) {
-			if (playerVaultGroup != null && ConfigValues.isPreferPrimaryVaultGroup()
-					&& (playerVaultGroup.equalsIgnoreCase(team.getTeam())
-							|| StringUtils.containsIgnoreCase(team.getTeam(), playerVaultGroup))) {
+			if (playerVaultGroup != null && playerVaultGroup.equalsIgnoreCase(team.getTeam())) {
 				if (!team.isGlobal()) {
 					for (TeamHandler t : groups.getGroupsList()) {
 						if (t.isGlobal() && globalGroup != t) {
@@ -164,9 +160,8 @@ public final class GroupPlayer {
 				}
 
 				if (group != team) {
-					groups.setToSort(true);
 					update = true;
-					group = team;
+					setGroup(team);
 				}
 
 				return update;
@@ -185,21 +180,18 @@ public final class GroupPlayer {
 
 				if (PluginUtils.hasPermission(player, team.getPermission())) {
 					if (group != team) {
-						groups.setToSort(true);
 						update = true;
-						group = team;
+						setGroup(team);
 					}
 
 					break;
 				}
-			} else if (plugin.hasVault()) {
-				for (String playerGroup : plugin.getVaultPerm().getPlayerGroups(player)) {
-					if (playerGroup.equalsIgnoreCase(team.getTeam())
-							|| StringUtils.containsIgnoreCase(team.getTeam(), playerGroup)) {
+			} else if (tl.hasVault()) {
+				for (String playerGroup : tl.getVaultPerm().getPlayerGroups(player)) {
+					if (playerGroup.equalsIgnoreCase(team.getTeam())) {
 						if (group != team) {
-							groups.setToSort(true);
 							update = true;
-							group = team;
+							setGroup(team);
 						}
 
 						break;
@@ -244,7 +236,7 @@ public final class GroupPlayer {
 					+ prefix;
 		}
 
-		return prefix.isEmpty() ? prefix : plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(prefix));
+		return prefix.isEmpty() ? prefix : tl.getPlaceholders().replaceVariables(player, tl.makeAnim(prefix));
 	}
 
 	public String getSuffix() {
@@ -262,7 +254,7 @@ public final class GroupPlayer {
 					PluginUtils.isAfk(player) ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo());
 		}
 
-		return suffix.isEmpty() ? suffix : plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(suffix));
+		return suffix.isEmpty() ? suffix : tl.getPlaceholders().replaceVariables(player, tl.makeAnim(suffix));
 	}
 
 	public String getTabNameWithPrefixSuffix() {
@@ -270,9 +262,9 @@ public final class GroupPlayer {
 		String tabName = player != null ? player.getName() : "";
 
 		if (ConfigValues.isAssignGlobalGroup() && globalGroup != null && !globalGroup.getTabName().isEmpty()) {
-			tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(globalGroup.getTabName()));
+			tabName = tl.getPlaceholders().replaceVariables(player, tl.makeAnim(globalGroup.getTabName()));
 		} else if (group != null && !group.getTabName().isEmpty()) {
-			tabName = plugin.getPlaceholders().replaceVariables(player, plugin.makeAnim(group.getTabName()));
+			tabName = tl.getPlaceholders().replaceVariables(player, tl.makeAnim(group.getTabName()));
 		}
 
 		return getPrefix() + tabName + getSuffix();
