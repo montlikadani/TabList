@@ -376,6 +376,10 @@
 					<groupId>cglib</groupId>
 					<artifactId>cglib-nodep</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>net.bytebuddy</groupId>
+					<artifactId>byte-buddy</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
