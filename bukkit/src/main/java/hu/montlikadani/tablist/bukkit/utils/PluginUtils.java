@@ -42,22 +42,22 @@ public final class PluginUtils {
 	}
 
 	public static boolean isVanished(Player player) {
+		if (PLUGIN.isPluginEnabled("SuperVanish") || PLUGIN.isPluginEnabled("PremiumVanish")) {
+			return VanishAPI.isInvisible(player);
+		}
+
 		Plugin ess = PLUGIN.getServer().getPluginManager().getPlugin("Essentials");
 		if (ess != null && ess.isEnabled()) {
 			return ((IEssentials) ess).getUser(player).isVanished();
 		}
 
-		if (PLUGIN.isPluginEnabled("SuperVanish") || PLUGIN.isPluginEnabled("PremiumVanish")) {
-			return VanishAPI.isInvisible(player);
+		if (PLUGIN.isPluginEnabled("StaffFacilities")) {
+			return SFAPI.isPlayerVanished(player);
 		}
 
 		if (PLUGIN.isPluginEnabled("CMI")) {
 			CMIUser user = CMI.getInstance().getPlayerManager().getUser(player);
 			return user != null && user.isVanished();
-		}
-
-		if (PLUGIN.isPluginEnabled("StaffFacilities")) {
-			return SFAPI.isPlayerVanished(player);
 		}
 
 		return false;
@@ -75,21 +75,21 @@ public final class PluginUtils {
 	}
 
 	public static int getVanishedPlayers() {
+		if (PLUGIN.isPluginEnabled("SuperVanish") || PLUGIN.isPluginEnabled("PremiumVanish")) {
+			return VanishAPI.getInvisiblePlayers().size();
+		}
+
 		Plugin ess = PLUGIN.getServer().getPluginManager().getPlugin("Essentials");
 		if (ess != null && ess.isEnabled()) {
 			return ((IEssentials) ess).getVanishedPlayersNew().size();
 		}
 
-		if (PLUGIN.isPluginEnabled("SuperVanish") || PLUGIN.isPluginEnabled("PremiumVanish")) {
-			return VanishAPI.getInvisiblePlayers().size();
+		if (PLUGIN.isPluginEnabled("StaffFacilities")) {
+			return SFAPI.vanishedPlayersList().size();
 		}
 
 		if (PLUGIN.isPluginEnabled("CMI")) {
 			return CMI.getInstance().getVanishManager().getAllVanished().size();
-		}
-
-		if (PLUGIN.isPluginEnabled("StaffFacilities")) {
-			return SFAPI.vanishedPlayersList().size();
 		}
 
 		return 0;
