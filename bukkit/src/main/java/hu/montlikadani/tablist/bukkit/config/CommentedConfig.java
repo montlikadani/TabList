@@ -8,16 +8,14 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class CommentedConfig extends YamlConfiguration {
 
-	// Store comments until the server is not stopped, or the GC need memory
-	// This is needed for #save method
-	private final Map<String, String> comments = new java.util.HashMap<>();
+	// This map shouldn't be set as "weak" as this needed for #save method
+	private final java.util.Map<String, String> comments = new java.util.HashMap<>();
 
 	private YamlConfiguration config;
 	private File file;
@@ -197,7 +195,9 @@ public class CommentedConfig extends YamlConfiguration {
 		}
 
 		String leadingSpaces = "";
-		for (int n = 0; n < path.length(); n++) {
+		int length = path.length();
+
+		for (int n = 0; n < length; n++) {
 			if (path.charAt(n) == '.') {
 				leadingSpaces += "  ";
 			}

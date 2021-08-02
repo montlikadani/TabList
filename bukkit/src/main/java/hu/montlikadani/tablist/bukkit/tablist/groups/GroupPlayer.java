@@ -46,7 +46,9 @@ public final class GroupPlayer {
 	}
 
 	public String getFullGroupTeamName() {
-		return "tablist" + safePriority;
+		// We starts the sorting with "a" character and a number as without this will
+		// not work after the 10th player
+		return 'a' + (safePriority > 9 ? "" : "0") + safePriority;
 	}
 
 	public void removeGroup() {
@@ -72,13 +74,16 @@ public final class GroupPlayer {
 	/**
 	 * Sets variable safePriority.
 	 *
-	 * @param safePriority Safe priority value. Should be between 0 and 999999999.
+	 * @param safePriority Safe priority value
 	 */
 	public void setSafePriority(int safePriority) {
+		if (safePriority > 98) {
+			this.safePriority = 99;
+			return;
+		}
+
 		if (safePriority < 0) {
 			safePriority = 0;
-		} else if (safePriority > 999999999) {
-			safePriority = 999999999;
 		}
 
 		this.safePriority = safePriority;
