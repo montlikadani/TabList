@@ -201,6 +201,10 @@ public final class Variables {
 			str = str.replace("%server-ram-used%", Long.toString((r.totalMemory() - r.freeMemory()) / 1048576L));
 		}
 
+		if (str.indexOf("%tps-overflow%") >= 0) {
+			str = str.replace("%tps-overflow%", tpsDot(TabListAPI.getTPS()));
+		}
+
 		if (str.indexOf("%tps%") >= 0) {
 			double tps = TabListAPI.getTPS();
 			str = str.replace("%tps%", (tps > 20.0 ? "*" : "") + tpsDot(tps > 20.0 ? 20D : tps));
