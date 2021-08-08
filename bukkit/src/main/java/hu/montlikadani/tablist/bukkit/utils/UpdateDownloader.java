@@ -9,29 +9,23 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.concurrent.CompletableFuture;
+import java.util.logging.Level;
 import java.util.regex.Pattern;
 
-import org.bukkit.entity.Player;
-
 import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 
 public abstract class UpdateDownloader {
 
-	private static final TabList TL = TabListAPI.getPlugin();
-
 	private static File releasesFolder;
-	private static final Pattern versionPattern = Pattern.compile(": "),
-			integerVersionPattern = Pattern.compile("[^0-9]");
 
-	public static void checkFromGithub(org.bukkit.command.CommandSender sender) {
+	public static void checkFromGithub(TabList tabList) {
 		if (!ConfigValues.isCheckUpdate()) {
 			deleteDirectory();
 			return;
 		}
 
-		releasesFolder = new File(TL.getFolder(), "releases");
+		releasesFolder = new File(tabList.getFolder(), "releases");
 
 		CompletableFuture.supplyAsync(() -> {
 			try {
@@ -50,26 +44,30 @@ public abstract class UpdateDownloader {
 					}
 				}
 
-				String versionString = versionPattern.split(lineWithVersion, 2)[1];
+				String versionString = Pattern.compile(": ").split(lineWithVersion, 2)[1];
+				Pattern integerVersionPattern = Pattern.compile("[^0-9]");
 
 				int newVersion = Integer.parseInt(integerVersionPattern.matcher(versionString).replaceAll(""));
 				int currentVersion = Integer
-						.parseInt(integerVersionPattern.matcher(TL.getDescription().getVersion()).replaceAll(""));
+						.parseInt(integerVersionPattern.matcher(tabList.getDescription().getVersion()).replaceAll(""));
 
 				if (newVersion <= currentVersion || currentVersion >= newVersion) {
 					deleteDirectory();
 					return false;
 				}
 
-				if (sender instanceof Player) {
-					Util.sendMsg(sender,
-							Util.colorMsg("&aA new update for TabList is available!&4 Version:&7 " + versionString
-									+ (ConfigValues.isDownloadUpdates() ? ""
-											: "\n&6Download:&c &nhttps://www.spigotmc.org/resources/46229/")));
-				} else {
-					TL.getLogger().log(java.util.logging.Level.INFO, "New version (" + versionString
-							+ ") is available at https://www.spigotmc.org/resources/46229/");
+				tabList.getLogger().log(Level.INFO, "New update is available for TabList");
+				tabList.getLogger().log(Level.INFO,
+						"    Your version:" + currentVersion + "\n    New version " + versionString);
+
+				if (!ConfigValues.isDownloadUpdates()) {
+					tabList.getLogger().log(Level.INFO, "Download: https://www.spigotmc.org/resources/46229/");
+					tabList.getLogger().log(Level.INFO,
+							"\nAlways consider upgrading to the latest version, which may include fixes.");
 				}
+
+				tabList.getLogger().log(Level.INFO,
+						"\nTo disable update checking, go to the config file (not recommended)");
 
 				if (!ConfigValues.isDownloadUpdates()) {
 					deleteDirectory();

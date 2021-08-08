@@ -104,8 +104,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		getServer().getOnlinePlayers().forEach(this::updateAll);
 
-		UpdateDownloader.checkFromGithub(getServer().getConsoleSender());
-
+		UpdateDownloader.checkFromGithub(this);
 		beginDataCollection();
 
 		if (ConfigValues.isLogConsole()) {

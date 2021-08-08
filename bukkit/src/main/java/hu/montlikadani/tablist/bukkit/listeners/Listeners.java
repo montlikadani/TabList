@@ -11,7 +11,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.user.TabListPlayer;
-import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
 
 public final class Listeners implements org.bukkit.event.Listener {
 
@@ -23,13 +22,7 @@ public final class Listeners implements org.bukkit.event.Listener {
 
 	@EventHandler
 	public void onPlJoin(PlayerJoinEvent event) {
-		final Player player = event.getPlayer();
-
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.updateAll(player));
-
-		if (player.isOp()) {
-			UpdateDownloader.checkFromGithub(player);
-		}
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> plugin.updateAll(event.getPlayer()));
 	}
 
 	@EventHandler
