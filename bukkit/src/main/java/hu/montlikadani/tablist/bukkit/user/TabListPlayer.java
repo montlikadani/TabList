@@ -98,7 +98,7 @@ public class TabListPlayer implements TabListUser {
 		return o instanceof TabListPlayer && uuid.equals(((TabListPlayer) o).uuid);
 	}
 
-	public final void remove() {
+	public final void removeCache() {
 		playerList = null;
 	}
 

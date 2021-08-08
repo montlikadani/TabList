@@ -125,7 +125,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		fakePlayerHandler.removeAllFakePlayer();
 
-		addBackAllHiddenPlayers();
+		users.forEach(tlu -> tlu.setHidden(false));
+
 		conf.deleteEmptyFiles();
 
 		HandlerList.unregisterAll(this);
@@ -364,7 +365,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 					TabListPlayer tlp = (TabListPlayer) user;
 
 					tlp.getPlayerList().showEveryone();
-					tlp.remove();
+					tlp.removeCache();
 					return 1;
 				});
 			}
@@ -382,10 +383,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.CUSTOM));
 			return player.getUniqueId().equals(user.getUniqueId());
 		});
-	}
-
-	void addBackAllHiddenPlayers() {
-		users.forEach(tlu -> tlu.setHidden(false));
 	}
 
 	public String getMsg(String key, Object... placeholders) {

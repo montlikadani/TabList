@@ -216,7 +216,7 @@ public class CommentedConfig extends YamlConfiguration {
 			}
 
 			if (!newLine) {
-				line = "\n" + line;
+				line = System.lineSeparator() + line;
 				newLine = true;
 			}
 

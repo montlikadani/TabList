@@ -70,9 +70,19 @@ public final class JsonComponent {
 				}
 
 				if (nextChar == 'x') {
-					text = text.replace(nextChar, '#').replace("\u00a7", "");
+					text = org.apache.commons.lang.StringUtils.replace(
+							org.apache.commons.lang.StringUtils.replaceOnce(text, String.valueOf(nextChar), "#"),
+							"\u00a7", "", 10);
 					length = text.length();
-					i -= 3; // Go back to the beginning of hex
+
+					int b = 0;
+
+					while (b < 10 && text.charAt(i) != '#') {
+						i--; // Go back to the beginning of hex
+						b++; // To do not cause infinite loop
+					}
+
+					i--; // One more time to identify the next character #
 					continue; // Replace and skip essentials's hex
 				}
 
