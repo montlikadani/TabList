@@ -25,8 +25,6 @@ public abstract class UpdateDownloader {
 			return;
 		}
 
-		releasesFolder = new File(tabList.getFolder(), "releases");
-
 		CompletableFuture.supplyAsync(() -> {
 			try {
 				URL githubUrl = new URL(
@@ -56,27 +54,31 @@ public abstract class UpdateDownloader {
 					return false;
 				}
 
+				tabList.getLogger().log(Level.INFO, "-------------");
 				tabList.getLogger().log(Level.INFO, "New update is available for TabList");
 				tabList.getLogger().log(Level.INFO,
-						"    Your version:" + currentVersion + "\n    New version " + versionString);
+						"Your version: " + tabList.getDescription().getVersion() + ", New version " + versionString);
 
 				if (!ConfigValues.isDownloadUpdates()) {
 					tabList.getLogger().log(Level.INFO, "Download: https://www.spigotmc.org/resources/46229/");
+					tabList.getLogger().log(Level.INFO, "");
 					tabList.getLogger().log(Level.INFO,
-							"\nAlways consider upgrading to the latest version, which may include fixes.");
+							"Always consider upgrading to the latest version, which may include fixes.");
 				}
 
+				tabList.getLogger().log(Level.INFO, "");
 				tabList.getLogger().log(Level.INFO,
-						"\nTo disable update checking, go to the config file (not recommended)");
+						"To disable update checking, go to the config file (not recommended)");
+				tabList.getLogger().log(Level.INFO, "-------------");
 
 				if (!ConfigValues.isDownloadUpdates()) {
 					deleteDirectory();
 					return false;
 				}
 
-				releasesFolder.mkdirs();
+				(releasesFolder = new File(tabList.getFolder(), "releases")).mkdirs();
 
-				final String name = "TabList-v" + versionString;
+				final String name = "TabList-" + versionString;
 				final File jar = new File(releasesFolder, name + ".jar");
 
 				if (jar.exists()) {
