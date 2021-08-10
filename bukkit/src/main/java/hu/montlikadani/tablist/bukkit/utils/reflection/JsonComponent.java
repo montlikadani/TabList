@@ -12,6 +12,8 @@ import org.bukkit.NamespacedKey;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import hu.montlikadani.tablist.bukkit.utils.StrUtil;
+
 public final class JsonComponent {
 
 	private final com.google.gson.Gson gson = new com.google.gson.GsonBuilder().create();
@@ -22,7 +24,7 @@ public final class JsonComponent {
 	}
 
 	// Lock until not done by a thread to prevent NPE from client
-	public synchronized Object parseProperty(String text) throws Exception {
+	synchronized Object parseProperty(String text) throws Exception {
 		jsonList.clear();
 
 		JsonObject obj = new JsonObject();
@@ -65,24 +67,25 @@ public final class JsonComponent {
 			} else if (charAt == '&' || charAt == '\u00a7') {
 				char nextChar = text.charAt(i + 1);
 
-				if (nextChar == '#') {
-					continue; // Skip plugins hex formatting
-				}
-
-				if (nextChar == 'x') {
-					text = org.apache.commons.lang.StringUtils.replace(
-							org.apache.commons.lang.StringUtils.replaceOnce(text, String.valueOf(nextChar), "#"),
-							"\u00a7", "", 10);
-					length = text.length();
-
-					int b = 0;
-
-					while (b < 10 && text.charAt(i) != '#') {
-						i--; // Go back to the beginning of hex
-						b++; // To do not cause infinite loop
+				if (nextChar == 'x' || nextChar == '#') {
+					if (nextChar != '#') {
+						text = StrUtil.replaceNextChar(text, i, String.valueOf(nextChar), "#", 1);
 					}
 
-					i--; // One more time to identify the next character #
+					text = StrUtil.replaceNextChar(text, i, "\u00a7", "", 7);
+					length = text.length();
+
+					if (nextChar != '#') {
+						int b = 0;
+
+						while (b < 10 && text.charAt(i) != '#') {
+							i--; // Go back to the beginning of hex
+							b++; // To do not cause infinite loop
+						}
+
+						i--; // One more time to identify the next character #
+					}
+
 					continue; // Replace and skip essentials's hex
 				}
 

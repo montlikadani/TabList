@@ -13,7 +13,6 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
-import org.apache.commons.lang.StringUtils;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
@@ -42,7 +41,6 @@ import hu.montlikadani.tablist.bukkit.utils.plugin.VaultPermission;
 import hu.montlikadani.tablist.bukkit.utils.stuff.Complement;
 import hu.montlikadani.tablist.bukkit.utils.stuff.Complement1;
 import hu.montlikadani.tablist.bukkit.utils.stuff.Complement2;
-import hu.montlikadani.tablist.bukkit.utils.task.DelayedPermissionCheck;
 import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
 import hu.montlikadani.tablist.bukkit.utils.variables.Variables;
 
@@ -229,7 +227,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		tabManager.removeAll();
 		groups.cancelUpdate();
 		fakePlayerHandler.removeAllFakePlayer();
-		DelayedPermissionCheck.clear();
 
 		loadListeners();
 		conf.loadFiles();
@@ -277,8 +274,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		while (a < 100 && !animations.isEmpty() && name.indexOf("%anim:") >= 0) { // when using multiple animations
 			for (TextAnimation ac : animations) {
-				name = StringUtils.replace(name, "%anim:" + ac.getName() + "%",
-						ac.getTime() > 0 ? ac.getText() : ac.getTexts()[0]);
+				name = name.replace("%anim:" + ac.getName() + "%", ac.getTime() > 0 ? ac.getText() : ac.getTexts()[0]);
 			}
 
 			a++;
@@ -425,8 +421,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 				for (int i = 0; i < placeholders.length; i++) {
 					if (placeholders.length >= i + 2) {
-						one = StringUtils.replace(one, String.valueOf(placeholders[i]),
-								String.valueOf(placeholders[i + 1]));
+						one = one.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
 					}
 
 					i++;
@@ -446,13 +441,11 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	}
 
 	public Optional<TabListUser> getUser(UUID uuid) {
-		if (uuid == null) {
-			return Optional.empty();
-		}
-
-		for (TabListUser tlp : users) {
-			if (uuid.equals(tlp.getUniqueId())) {
-				return Optional.of(tlp);
+		if (uuid != null) {
+			for (TabListUser tlp : users) {
+				if (uuid.equals(tlp.getUniqueId())) {
+					return Optional.of(tlp);
+				}
 			}
 		}
 

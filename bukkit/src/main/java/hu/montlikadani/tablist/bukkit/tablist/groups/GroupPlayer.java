@@ -1,7 +1,5 @@
 package hu.montlikadani.tablist.bukkit.tablist.groups;
 
-import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
-
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.TabList;
@@ -10,7 +8,6 @@ import hu.montlikadani.tablist.bukkit.tablist.groups.impl.ITabScoreboard;
 import hu.montlikadani.tablist.bukkit.tablist.groups.impl.ReflectionHandled;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
-import hu.montlikadani.tablist.bukkit.utils.task.DelayedPermissionCheck;
 
 public final class GroupPlayer {
 
@@ -179,10 +176,6 @@ public final class GroupPlayer {
 			}
 
 			if (!team.getPermission().isEmpty()) {
-				if (DelayedPermissionCheck.hasDelay(team.getPermission(), 4)) {
-					break;
-				}
-
 				if (PluginUtils.hasPermission(player, team.getPermission())) {
 					if (group != team) {
 						update = true;
@@ -236,8 +229,7 @@ public final class GroupPlayer {
 		Player player = tabListUser.getPlayer();
 
 		if (player != null && ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			prefix = colorMsg(
-					PluginUtils.isAfk(player) ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo())
+			prefix = (PluginUtils.isAfk(player) ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo())
 					+ prefix;
 		}
 
@@ -255,8 +247,7 @@ public final class GroupPlayer {
 		Player player = tabListUser.getPlayer();
 
 		if (player != null && ConfigValues.isAfkStatusEnabled() && ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			suffix += colorMsg(
-					PluginUtils.isAfk(player) ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo());
+			suffix += PluginUtils.isAfk(player) ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo();
 		}
 
 		return suffix.isEmpty() ? suffix : tl.getPlaceholders().replaceVariables(player, tl.makeAnim(suffix));

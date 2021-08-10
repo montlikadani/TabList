@@ -28,15 +28,20 @@ public final class Listeners implements org.bukkit.event.Listener {
 	@EventHandler
 	public void onGamemodeChange(PlayerGameModeChangeEvent e) {
 		Player player = e.getPlayer();
+		boolean isSpectator = e.getNewGameMode() == GameMode.SPECTATOR;
 
-		plugin.getUser(player).map(user -> (TabListPlayer) user).filter(user -> user.getHidePlayers() != null)
-				.ifPresent(user -> {
-					if (e.getNewGameMode() == GameMode.SPECTATOR) {
-						user.getHidePlayers().addPlayerToTab(player, player);
-					} else {
-						user.getHidePlayers().removePlayerFromTab(player, player);
-					}
-				});
+		// Checks if the new game mode is spectator or the player's old game mode was
+		// spectator
+		if (isSpectator || player.getGameMode() == GameMode.SPECTATOR) {
+			plugin.getUser(player).filter(user -> user.isRemovedFromPlayerList()).map(user -> (TabListPlayer) user)
+					.ifPresent(user -> {
+						if (isSpectator) {
+							user.getHidePlayers().addPlayerToTab(player, player);
+						} else {
+							user.getHidePlayers().removePlayerFromTab(player, player);
+						}
+					});
+		}
 	}
 
 	@EventHandler

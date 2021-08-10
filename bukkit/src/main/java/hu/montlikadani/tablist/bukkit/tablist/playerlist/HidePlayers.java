@@ -1,33 +1,47 @@
 package hu.montlikadani.tablist.bukkit.tablist.playerlist;
 
 import java.lang.reflect.Array;
+import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.bukkit.api.TabListAPI;
+import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ClazzContainer;
 import hu.montlikadani.tablist.bukkit.utils.reflection.ReflectionUtils;
 
 public final class HidePlayers {
 
-	private Player to;
+	private final TabList plugin;
+	private final UUID to;
 
-	public HidePlayers(Player to) {
+	public HidePlayers(TabList plugin, UUID to) {
+		this.plugin = plugin;
 		this.to = to;
 	}
 
 	public void addPlayerToTab() {
-		for (Player pl : Bukkit.getOnlinePlayers()) {
-			addPlayerToTab(to, pl);
-			addPlayerToTab(pl, to);
+		Player player = plugin.getServer().getPlayer(to);
+
+		if (player == null) {
+			return;
+		}
+
+		for (Player pl : plugin.getServer().getOnlinePlayers()) {
+			addPlayerToTab(player, pl);
+			addPlayerToTab(pl, player);
 		}
 	}
 
 	public void removePlayerFromTab() {
-		for (Player pl : Bukkit.getOnlinePlayers()) {
-			removePlayerFromTab(to, pl);
-			removePlayerFromTab(pl, to);
+		Player player = plugin.getServer().getPlayer(to);
+
+		if (player == null) {
+			return;
+		}
+
+		for (Player pl : plugin.getServer().getOnlinePlayers()) {
+			removePlayerFromTab(player, pl);
+			removePlayerFromTab(pl, player);
 		}
 	}
 
@@ -57,7 +71,7 @@ public final class HidePlayers {
 			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
 					.newInstance(ClazzContainer.getRemovePlayer(), entityPlayerArray);
 
-			Bukkit.getScheduler().runTaskLater(TabListAPI.getPlugin(),
+			plugin.getServer().getScheduler().runTaskLater(plugin,
 					() -> ReflectionUtils.sendPacket(to, packetPlayOutPlayerInfo), 6L);
 		} catch (Exception e) {
 			e.printStackTrace();

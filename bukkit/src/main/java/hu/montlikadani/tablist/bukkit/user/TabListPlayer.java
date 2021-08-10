@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 public class TabListPlayer implements TabListUser {
 
 	private final TabList plugin;
-	private final UUID uuid;
+	private final UUID uniqueId;
 
 	private final GroupPlayer groupPlayer;
 	private final TabHandler tabHandler;
@@ -23,7 +23,7 @@ public class TabListPlayer implements TabListUser {
 
 	public TabListPlayer(TabList plugin, UUID uuid) {
 		this.plugin = plugin;
-		this.uuid = uuid;
+		this.uniqueId = uuid;
 
 		tabHandler = new TabHandler(plugin, uuid);
 		groupPlayer = new GroupPlayer(plugin, this);
@@ -31,12 +31,12 @@ public class TabListPlayer implements TabListUser {
 
 	@Override
 	public Player getPlayer() {
-		return plugin.getServer().getPlayer(uuid);
+		return plugin.getServer().getPlayer(uniqueId);
 	}
 
 	@Override
 	public UUID getUniqueId() {
-		return uuid;
+		return uniqueId;
 	}
 
 	@Override
@@ -76,12 +76,8 @@ public class TabListPlayer implements TabListUser {
 	@Override
 	public void removeFromPlayerList() {
 		if (hidePlayers == null) {
-			Player player = getPlayer();
-
-			if (player != null) {
-				hidePlayers = new HidePlayers(player);
-				hidePlayers.removePlayerFromTab();
-			}
+			hidePlayers = new HidePlayers(plugin, uniqueId);
+			hidePlayers.removePlayerFromTab();
 		}
 	}
 
@@ -95,7 +91,7 @@ public class TabListPlayer implements TabListUser {
 
 	@Override
 	public boolean equals(Object o) {
-		return o instanceof TabListPlayer && uuid.equals(((TabListPlayer) o).uuid);
+		return o instanceof TabListPlayer && uniqueId.equals(((TabListPlayer) o).uniqueId);
 	}
 
 	public final void removeCache() {
