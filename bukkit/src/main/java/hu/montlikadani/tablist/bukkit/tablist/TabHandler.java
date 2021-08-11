@@ -229,6 +229,8 @@ public class TabHandler {
 			return;
 		}
 
+		tabEmpty = false;
+
 		he = plugin.makeAnim(he);
 		fo = plugin.makeAnim(fo);
 
