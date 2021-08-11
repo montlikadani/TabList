@@ -334,8 +334,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.github.LeonMangler</groupId>
-			<artifactId>PremiumVanishAPI</artifactId>
-			<version>master-SNAPSHOT</version>
+			<artifactId>SuperVanish</artifactId>
+			<version>6.2.6</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
