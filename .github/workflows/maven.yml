@@ -16,6 +16,7 @@ jobs:
       uses: actions/setup-java@v2.3.0
       with:
         java-version: 16
+        distribution: 'temurin'
     - name: Build Bukkit with Maven
       run: mvn -B package --file ${{ github.workspace }}/bukkit/pom.xml
       if: github.ref == 'refs/heads/master'
