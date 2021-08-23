@@ -41,8 +41,7 @@ final class Variable {
 	}
 
 	public String setAndGetRemainingValue(String remainingValue) {
-		this.remainingValue = remainingValue;
-		return remainingValue;
+		return this.remainingValue = remainingValue;
 	}
 
 	public boolean canReplace(String str) {

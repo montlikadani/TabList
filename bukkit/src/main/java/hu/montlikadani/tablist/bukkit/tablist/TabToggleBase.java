@@ -71,11 +71,9 @@ public final class TabToggleBase {
 
 				try {
 					id = UUID.fromString(uuid);
+					TAB_TOGGLE.add(id);
 				} catch (IllegalArgumentException e) {
-					continue;
 				}
-
-				TAB_TOGGLE.add(id);
 			}
 		} else {
 			config.set("tablists", null);

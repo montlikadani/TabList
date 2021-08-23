@@ -31,7 +31,7 @@ public enum ServerVersion {
 	private static ServerVersion current;
 
 	ServerVersion() {
-		value = Integer.valueOf(name().replaceAll("[^\\d.]", ""));
+		value = Integer.valueOf(StrUtil.getNumberEscapeSequence().matcher(name()).replaceAll(""));
 	}
 
 	public int getValue() {

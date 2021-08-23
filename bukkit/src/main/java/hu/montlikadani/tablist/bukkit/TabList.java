@@ -272,7 +272,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		int a = 0; // Make sure we're not generates infinite loop
 
-		while (a < 100 && !animations.isEmpty() && name.indexOf("%anim:") >= 0) { // when using multiple animations
+		while (a < 100 && name.indexOf("%anim:") >= 0) { // when using multiple animations
 			for (TextAnimation ac : animations) {
 				name = name.replace("%anim:" + ac.getName() + "%", ac.getTime() > 0 ? ac.getText() : ac.getTexts()[0]);
 			}
@@ -387,10 +387,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	// TODO optimise or get rid from this entirely
 	@SuppressWarnings("unchecked")
 	public <T> T getMsg(TypeToken<T> type, String key, Object... placeholders) {
-		if (key == null) {
-			return (T) "null";
-		}
-
 		Class<? super T> rawType = type.getRawType();
 
 		if (rawType.isAssignableFrom(String.class)) {

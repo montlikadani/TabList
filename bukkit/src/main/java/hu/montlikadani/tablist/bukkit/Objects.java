@@ -16,6 +16,7 @@ import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
+import hu.montlikadani.tablist.bukkit.utils.StrUtil;
 import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
 
 @SuppressWarnings("deprecation")
@@ -100,7 +101,7 @@ public final class Objects {
 				} else if (ConfigValues.getObjectType() == ObjectTypes.CUSTOM) {
 					String result = plugin.getPlaceholders().replaceVariables(player,
 							ConfigValues.getCustomObjectSetting());
-					result = result.replaceAll("[^\\d]", "");
+					result = StrUtil.getNumberEscapeSequence().matcher(result).replaceAll("");
 
 					try {
 						objectScore.set(Integer.parseInt(result));

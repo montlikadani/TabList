@@ -170,9 +170,9 @@ public class ConfigValues {
 		}
 
 		tpsColorFormats = c.get("placeholder-format.tps.formats",
-				Arrays.asList("18.0 > &a", "16.0 == &6", "16.0 < &c"));
+				Arrays.asList("&a%tps% > 18.0", "&6%tps% == 16.0", "&c%tps% < 16.0"));
 		pingColorFormats = c.get("placeholder-format.ping.formats",
-				Arrays.asList("200 <= &a", "400 >= &6", "500 > &c"));
+				Arrays.asList("&a%ping% <= 200", "&6%ping% >= 200", "&c%ping% > 500"));
 		for (String f : pingColorFormats) { // TODO remove in the future
 			if (!f.contains("%ping%")) {
 				c.set("placeholder-format.ping.formats",
