@@ -102,6 +102,7 @@ public final class GroupPlayer {
 			if (group != null || globalGroup != null) {
 				tl.getGroups().removePlayerGroup(tabListUser);
 				tl.getGroups().setToSort(false);
+				return true;
 			}
 
 			return false;

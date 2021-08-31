@@ -97,58 +97,54 @@ public final class ReflectionUtils {
 		}
 	}
 
-	public static class Classes {
+	public static Object getNewEntityPlayer(Object profile) {
+		Object serverIns = getServer(ClazzContainer.getMinecraftServer());
 
-		public static Object getNewEntityPlayer(Object profile) {
-			Object serverIns = getServer(ClazzContainer.getMinecraftServer());
+		try {
+			// Only get the first world
+			org.bukkit.World world = org.bukkit.Bukkit.getServer().getWorlds().get(0);
+			Object worldServer = world.getClass().getDeclaredMethod("getHandle").invoke(world);
 
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+				return ClazzContainer.getEntityPlayerClass()
+						.getConstructor(ClazzContainer.getMinecraftServer(), worldServer.getClass(), profile.getClass())
+						.newInstance(serverIns, worldServer, profile);
+			}
+
+			Class<?> interactManager = getPacketClass("net.minecraft.server.level", "PlayerInteractManager");
+			Object managerIns = null;
+
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
+				managerIns = interactManager.getConstructor(worldServer.getClass()).newInstance(worldServer);
+			}
+
+			if (managerIns == null) {
+				managerIns = interactManager.getConstructors()[0].newInstance(worldServer);
+			}
+
+			return ClazzContainer
+					.getEntityPlayerClass().getConstructor(ClazzContainer.getMinecraftServer(), worldServer.getClass(),
+							profile.getClass(), interactManager)
+					.newInstance(serverIns, worldServer, profile, managerIns);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	private static Object getServer(Class<?> server) {
+		try {
+			return server.getMethod("getServer")
+					.invoke(getCraftClass("CraftServer").cast(org.bukkit.Bukkit.getServer()));
+		} catch (Exception x) {
 			try {
-				// Only get the first world
-				org.bukkit.World world = org.bukkit.Bukkit.getServer().getWorlds().get(0);
-				Object worldServer = world.getClass().getDeclaredMethod("getHandle").invoke(world);
-
-				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-					return ClazzContainer
-							.getEntityPlayerClass().getConstructor(ClazzContainer.getMinecraftServer(),
-									worldServer.getClass(), profile.getClass())
-							.newInstance(serverIns, worldServer, profile);
-				}
-
-				Class<?> interactManager = getPacketClass("net.minecraft.server.level", "PlayerInteractManager");
-				Object managerIns = null;
-
-				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
-					managerIns = interactManager.getConstructor(worldServer.getClass()).newInstance(worldServer);
-				}
-
-				if (managerIns == null) {
-					managerIns = interactManager.getConstructors()[0].newInstance(worldServer);
-				}
-
-				return ClazzContainer
-						.getEntityPlayerClass().getConstructor(ClazzContainer.getMinecraftServer(),
-								worldServer.getClass(), profile.getClass(), interactManager)
-						.newInstance(serverIns, worldServer, profile, managerIns);
-			} catch (Exception e) {
+				return server.getMethod("getServer").invoke(server);
+			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
-
-			return null;
 		}
 
-		private static Object getServer(Class<?> server) {
-			try {
-				return server.getMethod("getServer")
-						.invoke(getCraftClass("CraftServer").cast(org.bukkit.Bukkit.getServer()));
-			} catch (Exception x) {
-				try {
-					return server.getMethod("getServer").invoke(server);
-				} catch (ReflectiveOperationException e) {
-					e.printStackTrace();
-				}
-			}
-
-			return null;
-		}
+		return null;
 	}
 }

@@ -109,7 +109,7 @@ public class FakePlayers implements IFakePlayers {
 		try {
 			Util.tryParseId(headId).ifPresent(this::setSkin);
 
-			fakeEntityPlayer = ReflectionUtils.Classes.getNewEntityPlayer(profile);
+			fakeEntityPlayer = ReflectionUtils.getNewEntityPlayer(profile);
 
 			Object entityPlayerArray = Array.newInstance(fakeEntityPlayer.getClass(), 1);
 			Array.set(entityPlayerArray, 0, fakeEntityPlayer);

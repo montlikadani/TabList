@@ -96,9 +96,6 @@ public final class PluginUtils {
 	}
 
 	public static boolean hasPermission(Player player, String perm) {
-		if (perm.isEmpty())
-			return false;
-
 		if (PLUGIN.isPluginEnabled("PermissionsEx")) {
 			try {
 				return ru.tehkode.permissions.bukkit.PermissionsEx.getPermissionManager().has(player, perm);

@@ -28,16 +28,18 @@ public final class Util {
 	}
 
 	public static void sendMsg(org.bukkit.command.CommandSender sender, String s) {
-		if (sender != null && s != null && !s.isEmpty()) {
-			String[] split = s.split("\n");
+		if (s.isEmpty()) {
+			return;
+		}
 
-			if (split.length > 0) {
-				for (String msg : split) {
-					sender.sendMessage(msg);
-				}
-			} else {
-				sender.sendMessage(s);
+		String[] split = s.split("\n");
+
+		if (split.length > 0) {
+			for (String msg : split) {
+				sender.sendMessage(msg);
 			}
+		} else {
+			sender.sendMessage(s);
 		}
 	}
 
