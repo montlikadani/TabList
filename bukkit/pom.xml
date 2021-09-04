@@ -452,9 +452,19 @@
 					<groupId>com.google.code.findbugs</groupId>
 					<artifactId>jsr305</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>ca.jamiesinn.trailgui</groupId>
+					<artifactId>TrailGUI</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.dynmap</groupId>
+					<artifactId>Dynmap</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>me.kvq.plugin.trails</groupId>
+					<artifactId>SuperTrails</artifactId>
+				</exclusion>
 			</exclusions>
-			<type>pom</type>
-			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.github.xtomyserrax</groupId>
