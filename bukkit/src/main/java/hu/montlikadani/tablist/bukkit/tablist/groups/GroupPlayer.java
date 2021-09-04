@@ -110,9 +110,10 @@ public final class GroupPlayer {
 
 		boolean update = false;
 		Groups groups = tl.getGroups();
+		String playerName = player.getName();
 
 		for (TeamHandler team : groups.getGroupsList()) {
-			if (player.getName().equalsIgnoreCase(team.getTeam())) {
+			if (playerName.equalsIgnoreCase(team.getTeam())) {
 				if (!team.isGlobal()) {
 					for (TeamHandler t : groups.getGroupsList()) {
 						if (t.isGlobal() && globalGroup != t) {

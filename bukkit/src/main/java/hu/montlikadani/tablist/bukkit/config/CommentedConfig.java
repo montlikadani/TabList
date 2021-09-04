@@ -268,11 +268,6 @@ public class CommentedConfig extends YamlConfiguration {
 		return config.getInt(path);
 	}
 
-	public List<Integer> getIntList(String path, List<Integer> def) {
-		path = process(path, def);
-		return config.getIntegerList(path);
-	}
-
 	public List<String> get(String path, List<String> def) {
 		path = process(path, def);
 		return config.getStringList(path);
@@ -283,7 +278,7 @@ public class CommentedConfig extends YamlConfiguration {
 		return config.getString(path);
 	}
 
-	public double get(String path, Double def) {
+	public double get(String path, double def) {
 		path = process(path, def);
 		return config.getDouble(path);
 	}
