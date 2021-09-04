@@ -333,9 +333,14 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-			<groupId>com.github.LeonMangler</groupId>
+			<!--<groupId>com.github.LeonMangler</groupId>
 			<artifactId>SuperVanish</artifactId>
 			<version>6.2.6</version>
+			<scope>provided</scope>-->
+			<!-- Author is not available so we uses our fork -->
+			<groupId>com.github.montlikadani</groupId>
+			<artifactId>SuperVanish</artifactId>
+			<version>patch-1-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
