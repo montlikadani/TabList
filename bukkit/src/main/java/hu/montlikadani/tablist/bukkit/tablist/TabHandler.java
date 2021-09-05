@@ -118,9 +118,22 @@ public class TabHandler {
 			}
 		}
 
-		for (String name : TabConfigValues.getPermissionkeys()) {
-			if (PluginUtils.hasPermission(player, new Permission(name, PermissionDefault.NOT_OP).getName())) {
-				path = "permissions." + name + ".";
+		for (java.util.Map.Entry<String, String> map : TabConfigValues.getPermissionkeys().entrySet()) {
+			Permission perm = plugin.getServer().getPluginManager().getPermission(map.getValue());
+
+			// Hacky solution: permission should be added before we checks for the player,
+			// because operator players have all permissions by default
+			if (perm != null) {
+
+				// Set and recalculate existing permission
+				perm.setDefault(PermissionDefault.FALSE);
+			} else {
+				perm = new Permission(map.getValue(), PermissionDefault.NOT_OP);
+				plugin.getServer().getPluginManager().addPermission(perm);
+			}
+
+			if (PluginUtils.hasPermission(player, perm.getName())) {
+				path = "permissions." + map.getKey() + ".";
 				break;
 			}
 		}

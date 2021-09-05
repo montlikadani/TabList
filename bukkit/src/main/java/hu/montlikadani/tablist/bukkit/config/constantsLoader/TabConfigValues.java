@@ -21,7 +21,8 @@ public final class TabConfigValues {
 
 	private static String[] defaultHeader, defaultFooter;
 
-	private static final Set<String> perWorldKeys = new HashSet<>(), permissionKeys = new HashSet<>();
+	private static final Set<String> perWorldKeys = new HashSet<>();
+	private static final Map<String, String> permissionKeys = new HashMap<>();
 
 	public static final Map<String, String> CUSTOM_VARIABLES = new HashMap<>();
 
@@ -51,7 +52,9 @@ public final class TabConfigValues {
 		}
 
 		if ((section = c.getConfigurationSection("permissions")) != null) {
-			permissionKeys.addAll(section.getKeys(false));
+			for (String key : section.getKeys(false)) {
+				permissionKeys.put(key, section.getString(key + ".name", "tablist.permissionName"));
+			}
 		}
 
 		if ((section = c.getConfigurationSection("custom-variables")) != null) {
@@ -101,7 +104,7 @@ public final class TabConfigValues {
 		return perWorldKeys;
 	}
 
-	public static Set<String> getPermissionkeys() {
+	public static Map<String, String> getPermissionkeys() {
 		return permissionKeys;
 	}
 }

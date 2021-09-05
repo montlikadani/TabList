@@ -65,6 +65,8 @@
 							<artifact>com.comphenix.protocol</artifact>
 							<excludes>
 								<exclude>com/**</exclude>
+								<exclude>*.yml</exclude>
+								<exclude>META-INF/**</exclude>
 							</excludes>
 						</filter>
 					</filters>
@@ -73,6 +75,9 @@
 						<relocation>
 							<pattern>org.bstats</pattern>
 							<shadedPattern>hu.montlikadani.tablist.bukkit.utils</shadedPattern>
+							<excludes>
+								<exclude>META-INF/**</exclude>
+							</excludes>
 						</relocation>
 					</relocations>
 				</configuration>
