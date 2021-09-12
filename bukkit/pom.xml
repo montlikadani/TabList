@@ -69,6 +69,12 @@
 								<exclude>META-INF/**</exclude>
 							</excludes>
 						</filter>
+						<filter>
+							<artifact>com.comphenix.executors</artifact>
+							<excludes>
+								<exclude>com/**</exclude>
+							</excludes>
+						</filter>
 					</filters>
 
 					<relocations>
@@ -495,10 +501,6 @@
 			<artifactId>ProtocolLib</artifactId>
 			<version>4.7.0</version>
 			<exclusions>
-				<exclusion>
-					<groupId>com.comphenix.executors</groupId>
-					<artifactId>BukkitExecutors</artifactId>
-				</exclusion>
 				<exclusion>
 					<groupId>cglib</groupId>
 					<artifactId>cglib-nodep</artifactId>

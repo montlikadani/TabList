@@ -20,15 +20,21 @@ public final class JsonComponent {
 	private final JsonParser parser = new JsonParser();
 	private final java.util.List<JsonObject> jsonList = new java.util.concurrent.CopyOnWriteArrayList<>();
 
+	private String defaultFontNamespacedKey;
+
 	protected JsonComponent() {
 	}
 
-	// Lock until not done by a thread to prevent NPE from client
+	// Lock until this method is not exited to prevent NPE from client
 	synchronized Object parseProperty(String text) throws Exception {
 		jsonList.clear();
 
 		JsonObject obj = new JsonObject();
 		StringBuilder builder = new StringBuilder();
+
+		text = text.replace('\u00a7', '&');
+		text = text.replace("&#", "#");
+		text = text.replace("&x", "#");
 
 		int length = text.length();
 		String font = "", colorName = "";
@@ -39,58 +45,25 @@ public final class JsonComponent {
 			}
 
 			char charAt = text.charAt(i);
-			if (charAt == '#') {
-				boolean isAllDigit = true;
 
-				for (int b = i + 1; b < i + 7; b++) {
-					if (!Character.isLetterOrDigit(text.charAt(b))) {
-						isAllDigit = false;
-						break;
-					}
-				}
-
-				if (!isAllDigit) {
-					builder.append(charAt);
-				} else {
-					colorName = text.substring(i, i + 7);
-
-					if (builder.length() > 0) {
-						obj.addProperty("text", builder.toString());
-						jsonList.add(obj);
-						builder = new StringBuilder();
-					}
-
-					obj = new JsonObject();
-					obj.addProperty("color", colorName);
-					i += 6; // Increase loop with 6 to ignore hex digit
-				}
-			} else if (charAt == '&' || charAt == '\u00a7') {
+			if (charAt == '&') {
 				char nextChar = text.charAt(i + 1);
 
-				if (nextChar == 'x' || nextChar == '#') {
-					if (nextChar != '#') {
-						text = StrUtil.replaceNextChar(text, i, String.valueOf(nextChar), "#", 1);
-					}
+				if (isColorLetterOrDigit(nextChar)) {
 
-					text = StrUtil.replaceNextChar(text, i, "\u00a7", "", 7);
-					length = text.length();
+					// Finds hex colours that may be coming from essentials (&x&f ..) and removes
+					// the "&" character to match the TL hex colour
+					if (text.charAt(i + 2) == '&' && text.charAt(i + 4) == '&' && text.charAt(i + 6) == '&') {
+						text = StrUtil.replaceNextChar(text, i, "&", "", 6); // Replace "&" character 6 times
+						length = text.length(); // Text length is changed
 
-					if (nextChar != '#') {
-						int b = 0;
-
-						while (b < 10 && text.charAt(i) != '#') {
-							i--; // Go back to the beginning of hex
-							b++; // To do not cause infinite loop
+						if (i - 2 >= 0) { // It may be negative
+							i -= 2; // Go back to the beginning of hex colour
 						}
 
-						i--; // One more time to identify the next character #
+						continue;
 					}
 
-					continue; // Replace and skip essentials's hex
-				}
-
-				if (((nextChar >= 'a' && nextChar <= 'f') || (nextChar == 'k' || nextChar == 'l' || nextChar == 'm'
-						|| nextChar == 'n' || nextChar == 'o' || nextChar == 'r')) || Character.isDigit(nextChar)) {
 					obj.addProperty("text", builder.toString());
 					jsonList.add(obj);
 
@@ -138,6 +111,33 @@ public final class JsonComponent {
 				} else {
 					builder.append(charAt);
 				}
+			} else if (charAt == '#') {
+				boolean isAllDigit = true;
+
+				for (int b = i + 1; b < i + 7; b++) {
+					if (!Character.isLetterOrDigit(text.charAt(b))) {
+						isAllDigit = false;
+						break;
+					}
+				}
+
+				if (!isAllDigit) {
+					if (text.charAt(i + 1) != '&') { // Temporary solution to do not display # character
+						builder.append(charAt);
+					}
+				} else {
+					colorName = text.substring(i, i + 7);
+
+					if (builder.length() > 0) {
+						obj.addProperty("text", builder.toString());
+						jsonList.add(obj);
+						builder = new StringBuilder();
+					}
+
+					obj = new JsonObject();
+					obj.addProperty("color", colorName);
+					i += 6; // Increase loop with 6 to ignore hex digit
+				}
 			} else if (charAt == '{') {
 				int closeIndex = -1;
 
@@ -145,7 +145,10 @@ public final class JsonComponent {
 					font = NamespacedKey.minecraft(text.substring(i + 6, closeIndex)).toString();
 				} else if (text.regionMatches(true, i, "{/font", 0, 6)
 						&& (closeIndex = text.indexOf('}', i + 6)) >= 0) {
-					font = NamespacedKey.minecraft("default").toString();
+					if (defaultFontNamespacedKey == null)
+						defaultFontNamespacedKey = NamespacedKey.minecraft("default").toString();
+
+					font = defaultFontNamespacedKey;
 				}
 
 				if (closeIndex >= 0) {
@@ -169,6 +172,12 @@ public final class JsonComponent {
 
 		return ReflectionUtils.jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(),
 				gson.toJson(jsonList));
+	}
+
+	private boolean isColorLetterOrDigit(char ch) {
+		return ((ch >= 'a' && ch <= 'f')
+				|| (ch == 'k' || ch == 'l' || ch == 'm' || ch == 'n' || ch == 'o' || ch == 'r'))
+				|| Character.isDigit(ch);
 	}
 
 	public CompletableFuture<NavigableMap<String, String>> getSkinValue(String uuid) {

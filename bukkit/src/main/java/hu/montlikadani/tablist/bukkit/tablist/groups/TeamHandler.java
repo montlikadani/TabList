@@ -2,7 +2,7 @@ package hu.montlikadani.tablist.bukkit.tablist.groups;
 
 public class TeamHandler implements Cloneable {
 
-	private String team, prefix, suffix, tabName = "", permission;
+	private String team, prefix, suffix, tabName = "", permission = "";
 
 	private boolean global = false;
 

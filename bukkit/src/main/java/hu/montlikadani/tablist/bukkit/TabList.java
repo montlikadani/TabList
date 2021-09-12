@@ -36,7 +36,6 @@ import hu.montlikadani.tablist.bukkit.user.TabListPlayer;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.UpdateDownloader;
-import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.plugin.VaultPermission;
 import hu.montlikadani.tablist.bukkit.utils.stuff.Complement;
 import hu.montlikadani.tablist.bukkit.utils.stuff.Complement1;
@@ -106,7 +105,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		beginDataCollection();
 
 		if (ConfigValues.isLogConsole()) {
-			Util.sendMsg(getServer().getConsoleSender(), colorMsg("&6[&5Tab&cList&6]&7 >&a Enabled&6 v"
+			getServer().getConsoleSender().sendMessage(colorMsg("&6[&5Tab&cList&6]&7 >&a Enabled&6 v"
 					+ getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
 		}
 	}
