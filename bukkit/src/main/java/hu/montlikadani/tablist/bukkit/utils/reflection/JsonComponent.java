@@ -53,7 +53,8 @@ public final class JsonComponent {
 
 					// Finds hex colours that may be coming from essentials (&x&f ..) and removes
 					// the "&" character to match the TL hex colour
-					if (text.charAt(i + 2) == '&' && text.charAt(i + 4) == '&' && text.charAt(i + 6) == '&') {
+					if (i + 2 < length && text.charAt(i + 2) == '&' && (i + 4 >= length || text.charAt(i + 4) == '&')
+							&& (i + 6 >= length || text.charAt(i + 6) == '&')) {
 						text = StrUtil.replaceNextChar(text, i, "&", "", 6); // Replace "&" character 6 times
 						length = text.length(); // Text length is changed
 
@@ -122,7 +123,8 @@ public final class JsonComponent {
 				}
 
 				if (!isAllDigit) {
-					if (text.charAt(i + 1) != '&') { // Temporary solution to do not display # character
+					// Temporary solution to do not display # character
+					if (i + 1 < length && text.charAt(i + 1) != '&') {
 						builder.append(charAt);
 					}
 				} else {
