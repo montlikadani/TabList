@@ -46,10 +46,10 @@ public class ReflectionHandled implements ITabScoreboard {
 			}
 
 			String teamName = groupPlayer.getFullGroupTeamName();
-			Object newTeamPacket;
+			Object newTeamPacket, scoreTeam = null;
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-				Object scoreTeam = ClazzContainer.getScoreboardTeamConstructor()
+				scoreTeam = ClazzContainer.getScoreboardTeamConstructor()
 						.newInstance(ClazzContainer.getScoreboardConstructor().newInstance(), teamName);
 
 				java.util.Collection<String> playerNameSet = (java.util.Collection<String>) ClazzContainer
@@ -123,7 +123,7 @@ public class ReflectionHandled implements ITabScoreboard {
 						String name = (String) ClazzContainer.getNameTagVisibilityNameField().get(f);
 
 						if (optionName.equalsIgnoreCase(name)) {
-							ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(newTeamPacket, f);
+							ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(scoreTeam, f);
 							break;
 						}
 					}
