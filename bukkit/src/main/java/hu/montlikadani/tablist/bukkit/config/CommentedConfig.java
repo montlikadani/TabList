@@ -59,7 +59,7 @@ public class CommentedConfig extends YamlConfiguration {
 		com.google.common.io.Files.createParentDirs(file);
 
 		String saveToString = saveToString();
-		if (saveToString.trim().isEmpty()) {
+		if (saveToString.isEmpty()) {
 			return;
 		}
 

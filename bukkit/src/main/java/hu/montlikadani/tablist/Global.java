@@ -33,11 +33,7 @@ public final class Global {
 		int i = -1;
 
 		for (String symbol : Symbols.SYMBOLS) {
-			String sym = "<" + ++i + ">";
-
-			if (s.indexOf(sym) >= 0) {
-				s = s.replace(sym, symbol);
-			}
+			s = s.replace("<" + ++i + ">", symbol);
 		}
 
 		return s;
