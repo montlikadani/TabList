@@ -94,7 +94,7 @@ public abstract class UpdateDownloader {
 				}
 
 				return true;
-			} catch (FileNotFoundException f) {
+			} catch (FileNotFoundException | java.net.UnknownHostException f) {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
