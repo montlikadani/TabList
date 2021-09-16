@@ -241,12 +241,7 @@ public class ReflectionHandled implements ITabScoreboard {
 			ClazzContainer.getInfoList().set(packetPlayOutPlayerInfo, Collections.singletonList(infoPacket));
 
 			for (TabListUser user : tl.getUsers()) {
-				Player player = user.getPlayer();
-
-				if (player != null) {
-					ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
-					ReflectionUtils.sendPacket(player, infoPacket);
-				}
+				ReflectionUtils.sendPacket(user.getPlayer(), packetPlayOutPlayerInfo);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
