@@ -74,10 +74,6 @@ public class ReflectionHandled implements ITabScoreboard {
 			}
 
 			for (Team team : player.getScoreboard().getTeams()) {
-				if (!team.hasEntry(player.getName())) {
-					continue;
-				}
-
 				String optionName = "";
 
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1)) {

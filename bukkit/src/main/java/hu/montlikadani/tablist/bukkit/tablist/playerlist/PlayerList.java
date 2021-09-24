@@ -90,10 +90,12 @@ public class PlayerList {
 			return;
 		}
 
+		java.util.UUID worldId = player.getWorld().getUID();
+
 		for (TabListUser user : plugin.getUsers()) {
 			Player pls = user.getPlayer();
 
-			if (pls != null && player.getWorld().getUID().equals(pls.getWorld().getUID())) {
+			if (pls != null && worldId.equals(pls.getWorld().getUID())) {
 				show(player, pls);
 				show(pls, player);
 			}
