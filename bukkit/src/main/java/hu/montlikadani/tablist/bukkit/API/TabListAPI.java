@@ -24,6 +24,13 @@ public final class TabListAPI {
 	private static java.lang.reflect.Field pingField, recentTpsField;
 	private static java.lang.reflect.Method serverMethod;
 
+	static {
+		try {
+			(serverMethod = Bukkit.getServer().getClass().getDeclaredMethod("getServer")).setAccessible(true);
+		} catch (NoSuchMethodException ex) {
+		}
+	}
+
 	/**
 	 * Returns TabListAPI as a plugin
 	 * 
@@ -127,10 +134,6 @@ public final class TabListAPI {
 			return Bukkit.getServer().getTPS()[0];
 		} catch (NoSuchMethodError e) {
 			try {
-				if (serverMethod == null) {
-					(serverMethod = Bukkit.getServer().getClass().getDeclaredMethod("getServer")).setAccessible(true);
-				}
-
 				Object server = serverMethod.invoke(Bukkit.getServer());
 
 				if (recentTpsField == null) {

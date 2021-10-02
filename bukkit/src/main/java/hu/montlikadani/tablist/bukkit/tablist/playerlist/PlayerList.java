@@ -73,13 +73,8 @@ public class PlayerList {
 				continue;
 			}
 
-			if (!pls.canSee(player)) {
-				show(pls, player);
-			}
-
-			if (!player.canSee(pls)) {
-				show(player, pls);
-			}
+			show(pls, player);
+			show(player, pls);
 		}
 	}
 

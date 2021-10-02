@@ -26,7 +26,7 @@ public final class Variables {
 	private final TabList plugin;
 
 	private final List<ExpressionNode> nodes = new ArrayList<>();
-	private final java.util.Set<Variable> variables = new java.util.HashSet<>();
+	private final java.util.Set<Variable> variables = new java.util.HashSet<>(8);
 
 	public Variables(TabList plugin) {
 		this.plugin = plugin;
@@ -118,19 +118,22 @@ public final class Variables {
 		}));
 	}
 
+	private final long MB = 1024 * 1024;
+
 	public String replaceVariables(Player pl, String str) {
 		if (str.isEmpty()) {
 			return str;
 		}
 
-		Runtime r = Runtime.getRuntime();
+		Runtime runtime = Runtime.getRuntime();
 
 		if (!ConfigValues.getMemoryBarChar().isEmpty() && str.indexOf("%memory_bar%") >= 0) {
 			StringBuilder builder = new StringBuilder();
 
-			int barSize = ConfigValues.getMemoryBarSize(), totalMemory = (int) (r.totalMemory() / 1048576),
-					usedMemory = totalMemory - (int) (r.freeMemory() / 1048576),
-					maxMemory = (int) (r.maxMemory() / 1048576);
+			int barSize = ConfigValues.getMemoryBarSize(),
+					totalMemory = (int) (runtime.totalMemory() / MB),
+					usedMemory = totalMemory - (int) (runtime.freeMemory() / MB),
+					maxMemory = (int) (runtime.maxMemory() / MB);
 
 			float usedMem = (float) usedMemory / maxMemory;
 			float totalMem = (float) totalMemory / maxMemory;
@@ -140,19 +143,22 @@ public final class Variables {
 			builder.append(
 					usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
 
-			for (int i = 0; i < (int) (barSize * usedMem); i++) {
+			int totalBarSize = (int) (barSize * usedMem);
+			for (int i = 0; i < totalBarSize; i++) {
 				builder.append(barChar);
 			}
 
 			builder.append(ConfigValues.getMemoryBarFreeColor());
 
-			for (int i = 0; i < (int) (barSize * (totalMem - usedMem)); i++) {
+			totalBarSize = (int) (barSize * (totalMem - usedMem));
+			for (int i = 0; i < totalBarSize; i++) {
 				builder.append(barChar);
 			}
 
 			builder.append(ConfigValues.getMemoryBarReleasedColor());
 
-			for (int i = 0; i < (int) (barSize * (1 - totalMem)); i++) {
+			totalBarSize = (int) (barSize * (1 - totalMem));
+			for (int i = 0; i < totalBarSize; i++) {
 				builder.append(barChar);
 			}
 
@@ -190,15 +196,15 @@ public final class Variables {
 		}
 
 		if (str.indexOf("%server-ram-free%") >= 0) {
-			str = str.replace("%server-ram-free%", Long.toString(r.freeMemory() / 1048576L));
+			str = str.replace("%server-ram-free%", Long.toString(runtime.freeMemory() / MB));
 		}
 
 		if (str.indexOf("%server-ram-max%") >= 0) {
-			str = str.replace("%server-ram-max%", Long.toString(r.maxMemory() / 1048576L));
+			str = str.replace("%server-ram-max%", Long.toString(runtime.maxMemory() / MB));
 		}
 
 		if (str.indexOf("%server-ram-used%") >= 0) {
-			str = str.replace("%server-ram-used%", Long.toString((r.totalMemory() - r.freeMemory()) / 1048576L));
+			str = str.replace("%server-ram-used%", Long.toString((runtime.totalMemory() - runtime.freeMemory()) / MB));
 		}
 
 		if (str.indexOf("%tps-overflow%") >= 0) {

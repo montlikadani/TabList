@@ -37,7 +37,7 @@ public final class JsonComponent {
 		text = text.replace("&x", "#");
 
 		int length = text.length();
-		String font = "", colorName = "";
+		String font = "";
 
 		for (int i = 0; i < length; i++) {
 			if (i >= length) {
@@ -53,8 +53,13 @@ public final class JsonComponent {
 
 					// Finds hex colours that may be coming from essentials (&x&f ..) and removes
 					// the "&" character to match the TL hex colour
+					//
+					// This is a very expensive inspection and not ideal, it should be a more
+					// optimal one.
 					if (i + 2 < length && text.charAt(i + 2) == '&' && (i + 4 >= length || text.charAt(i + 4) == '&')
-							&& (i + 6 >= length || text.charAt(i + 6) == '&')) {
+							&& (i + 6 >= length || text.charAt(i + 6) == '&')
+							&& (i + 8 >= length || text.charAt(i + 8) == '&')
+							&& (i + 10 >= length || text.charAt(i + 10) == '&')) {
 						text = StrUtil.replaceNextChar(text, i, "&", "", 6); // Replace "&" character 6 times
 						length = text.length(); // Text length is changed
 
@@ -65,18 +70,12 @@ public final class JsonComponent {
 						continue;
 					}
 
-					obj.addProperty("text", builder.toString());
-					jsonList.add(obj);
+					if (builder.length() > 0) {
+						obj.addProperty("text", builder.toString());
+						jsonList.add(obj);
 
-					obj = new JsonObject();
-					builder = new StringBuilder();
-
-					if (!colorName.isEmpty()) {
-						obj.addProperty("color", colorName);
-					}
-
-					if (!font.isEmpty()) {
-						obj.addProperty("font", font);
+						obj = new JsonObject();
+						builder = new StringBuilder();
 					}
 
 					switch (nextChar) {
@@ -96,16 +95,21 @@ public final class JsonComponent {
 						obj.addProperty("bold", true);
 						break;
 					case 'r':
-						obj.addProperty("color", colorName = "white");
+						obj.addProperty("color", "white");
 						break;
 					default:
 						org.bukkit.ChatColor colorChar = org.bukkit.ChatColor.getByChar(nextChar);
 
 						if (colorChar != null) {
-							obj.addProperty("color", colorName = colorChar.name().toLowerCase());
+							obj.addProperty("color", colorChar.name().toLowerCase());
 						}
 
 						break;
+					}
+
+					if (!font.isEmpty()) {
+						obj.addProperty("font", font);
+						font = "";
 					}
 
 					i++;
@@ -116,7 +120,7 @@ public final class JsonComponent {
 				boolean isAllDigit = true;
 
 				for (int b = i + 1; b < i + 7; b++) {
-					if (!Character.isLetterOrDigit(text.charAt(b))) {
+					if (b >= length || !Character.isLetterOrDigit(text.charAt(b))) {
 						isAllDigit = false;
 						break;
 					}
@@ -128,8 +132,6 @@ public final class JsonComponent {
 						builder.append(charAt);
 					}
 				} else {
-					colorName = text.substring(i, i + 7);
-
 					if (builder.length() > 0) {
 						obj.addProperty("text", builder.toString());
 						jsonList.add(obj);
@@ -137,7 +139,7 @@ public final class JsonComponent {
 					}
 
 					obj = new JsonObject();
-					obj.addProperty("color", colorName);
+					obj.addProperty("color", text.substring(i, i + 7));
 					i += 6; // Increase loop with 6 to ignore hex digit
 				}
 			} else if (charAt == '{') {
@@ -162,6 +164,7 @@ public final class JsonComponent {
 
 					obj = new JsonObject();
 					obj.addProperty("font", font);
+					font = "";
 					i += closeIndex - i;
 				}
 			} else {
@@ -172,8 +175,10 @@ public final class JsonComponent {
 		obj.addProperty("text", builder.toString());
 		jsonList.add(obj);
 
+		// Minecraft JSON is weird, it must begin with ["", to actually return the
+		// expected format
 		return ReflectionUtils.jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(),
-				gson.toJson(jsonList));
+				"[\"\"," + StrUtil.replaceNextChar(gson.toJson(jsonList), 0, "[", "", 1));
 	}
 
 	private boolean isColorLetterOrDigit(char ch) {
@@ -195,8 +200,7 @@ public final class JsonComponent {
 			JsonObject json = parser.parse(content).getAsJsonObject();
 			String value = json.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
 
-			json = parser.parse(new String(org.apache.commons.codec.binary.Base64.decodeBase64(value)))
-					.getAsJsonObject();
+			json = parser.parse(new String(java.util.Base64.getDecoder().decode(value))).getAsJsonObject();
 			String texture = json.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url")
 					.getAsString();
 			map.put(value, texture);

@@ -383,7 +383,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		return getMsg(TypeToken.of(String.class), key, placeholders);
 	}
 
-	// TODO optimise or get rid from this entirely
 	@SuppressWarnings("unchecked")
 	public <T> T getMsg(TypeToken<T> type, String key, Object... placeholders) {
 		Class<? super T> rawType = type.getRawType();
