@@ -98,22 +98,31 @@ public final class Groups {
 			return;
 		}
 
+		Set<String> keys = cs.getKeys(false);
+
+		if (keys.isEmpty()) {
+			if (!groupsList.isEmpty()) {
+				startTask();
+			}
+
+			return;
+		}
+
 		// Automatically add existing groups to the list for "lazy peoples"
 		if (ConfigValues.isSyncPluginsGroups() && plugin.hasVault()) {
 			boolean have = false;
 			ChatColor[] colors = ChatColor.values();
+			java.util.Random random = new java.util.Random();
 
 			me: for (String s : plugin.getVaultPerm().getGroups()) {
-				for (String g : cs.getKeys(false)) {
+				for (String g : keys) {
 					if (s.equalsIgnoreCase(g)) {
 						continue me;
 					}
 				}
 
 				// This again for lazy peoples
-				ChatColor c = colors[new java.util.Random().nextInt(colors.length)];
-
-				cs.set(s + ".prefix", "&" + c.getChar() + s + "&r - ");
+				cs.set(s + ".prefix", "&" + colors[random.nextInt(colors.length)].getChar() + s + "&r - ");
 				have = true;
 			}
 
@@ -127,24 +136,24 @@ public final class Groups {
 		}
 
 		int last = 0;
-		for (String g : cs.getKeys(false)) {
+		for (String g : keys) {
 			if (g.equalsIgnoreCase("exampleGroup")) {
 				continue;
 			}
 
 			String prefix = cs.getString(g + ".prefix", ""), suffix = cs.getString(g + ".suffix", ""),
-					tabName = cs.getString(g + ".tabname", ""), perm = cs.getString(g + ".permission", "");
+					perm = cs.getString(g + ".permission", "");
 			int priority = cs.getInt(g + ".sort-priority", last + 1);
 
 			TeamHandler th = new TeamHandler(g, prefix, suffix, perm, last = priority);
-			th.setTabName(tabName);
+			th.setTabName(cs.getString(g + ".tabname", ""));
 			groupsList.add(th);
 		}
 
-		// Sort groups by priority to match the lowest priority firstly (lowest priority
-		// is on the top of other)
-		List<TeamHandler> newSortedList = groupsList.stream().sorted(Comparator.comparingInt(TeamHandler::getPriority))
-				.collect(Collectors.toList());
+		// Sort groups by priority to match the lowest priority firstly (highest
+		// priority is on the top of other)
+		List<TeamHandler> newSortedList = groupsList.stream()
+				.sorted(Comparator.comparingInt(TeamHandler::getPriority).reversed()).collect(Collectors.toList());
 		groupsList.clear();
 		groupsList.addAll(newSortedList);
 
