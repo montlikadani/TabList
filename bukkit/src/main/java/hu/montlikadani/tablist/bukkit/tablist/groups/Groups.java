@@ -1,12 +1,14 @@
 package hu.montlikadani.tablist.bukkit.tablist.groups;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.stream.Collectors;
 
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import org.bukkit.ChatColor;
@@ -138,6 +140,13 @@ public final class Groups {
 			th.setTabName(tabName);
 			groupsList.add(th);
 		}
+
+		// Sort groups by priority to match the lowest priority firstly (lowest priority
+		// is on the top of other)
+		List<TeamHandler> newSortedList = groupsList.stream().sorted(Comparator.comparingInt(TeamHandler::getPriority))
+				.collect(Collectors.toList());
+		groupsList.clear();
+		groupsList.addAll(newSortedList);
 
 		startTask();
 	}
@@ -271,8 +280,7 @@ public final class Groups {
 	private void sortPlayers() {
 		// TODO get rid from streams
 		List<GroupPlayer> playerGroups = sortedPlayers.stream()
-				.sorted(java.util.Comparator.comparingInt(GroupPlayer::getPriority))
-				.collect(java.util.stream.Collectors.toList());
+				.sorted(Comparator.comparingInt(GroupPlayer::getPriority)).collect(Collectors.toList());
 
 		sortedPlayers.clear();
 		sortedPlayers.addAll(playerGroups);

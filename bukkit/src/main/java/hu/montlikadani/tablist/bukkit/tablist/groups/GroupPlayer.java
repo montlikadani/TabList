@@ -50,6 +50,7 @@ public final class GroupPlayer {
 
 	public void removeGroup() {
 		group = globalGroup = null;
+		playerVaultGroup = null;
 	}
 
 	public TabListUser getUser() {
@@ -196,6 +197,10 @@ public final class GroupPlayer {
 
 						break;
 					}
+				}
+
+				if (group == team) {
+					break;
 				}
 			}
 		}
