@@ -23,7 +23,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 	private final TabList plugin;
 
-	private final Set<ICommand> cmds = new HashSet<>();
+	private final Set<ICommand> cmds = new HashSet<>(5);
 
 	public Commands(TabList plugin) {
 		this.plugin = plugin;
@@ -140,7 +140,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 				}
 			} else if (args[0].equalsIgnoreCase("group") || args[0].equalsIgnoreCase("player")) {
 				for (ContextArguments ca : ContextArguments.values()) {
-					cmds.add(ca.toString().toLowerCase());
+					cmds.add(ca.loweredName);
 				}
 			}
 
@@ -154,7 +154,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 	private Set<String> getCmds(CommandSender sender) {
 		// Try to avoid using stream for tab-complete
-		Set<String> c = new HashSet<>();
+		Set<String> c = new HashSet<>(cmds.size());
 
 		boolean isPlayer = sender instanceof Player;
 
@@ -171,5 +171,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 	public enum ContextArguments {
 		PREFIX, SUFFIX, PRIORITY, TABNAME, REMOVE;
+
+		public final String loweredName = toString().toLowerCase();
 	}
 }

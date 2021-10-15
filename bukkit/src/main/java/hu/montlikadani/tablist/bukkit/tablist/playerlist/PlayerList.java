@@ -40,25 +40,6 @@ public class PlayerList {
 		}
 	}
 
-	public void show() {
-		Player player = user.getPlayer();
-
-		if (player == null) {
-			return;
-		}
-
-		for (TabListUser user : plugin.getUsers()) {
-			Player pl = user.getPlayer();
-
-			if (pl == null) {
-				continue;
-			}
-
-			show(player, pl);
-			show(pl, player);
-		}
-	}
-
 	public void showEveryone() {
 		Player player = user.getPlayer();
 

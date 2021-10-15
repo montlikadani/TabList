@@ -63,7 +63,7 @@ public class TabListPlayer implements TabListUser {
 
 			playerList.hide();
 		} else if (playerList != null) {
-			playerList.show();
+			playerList.showEveryone();
 			playerList = null;
 		}
 	}

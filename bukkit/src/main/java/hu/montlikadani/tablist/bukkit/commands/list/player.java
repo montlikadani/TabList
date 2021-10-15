@@ -80,7 +80,7 @@ public final class player implements ICommand {
 				return false;
 			}
 
-			config.set("groups." + target + "." + argument.toString().toLowerCase(), result);
+			config.set("groups." + target + "." + argument.loweredName, result);
 			break;
 		case PRIORITY:
 			if (!args[3].matches("[0-9]+")) {

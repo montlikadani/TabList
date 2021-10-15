@@ -83,21 +83,17 @@ public class CommentedConfig extends YamlConfiguration {
 		for (int s = 0; s < split.length; s++) {
 			final String line = split[s];
 
-			if (line.startsWith("#")) {
+			if (line.charAt(0) == '#') {
 				continue; // Ignore comments
 			}
 
 			int length = line.length();
 			boolean keyOk = true;
+			int index = line.indexOf(": ");
 
-			if (line.contains(": ")) {
-				int index = line.indexOf(": ");
-
-				if (index < 0) {
-					index = length - 1;
-				}
-
+			if (index >= 0) {
 				int whiteSpace = 0;
+
 				for (int n = 0; n < length; n++) {
 					if (line.charAt(n) == ' ') {
 						whiteSpace++;
@@ -114,12 +110,11 @@ public class CommentedConfig extends YamlConfiguration {
 				}
 			}
 
-			if ((keyOk && line.contains(": ")) || (length > 1 && line.charAt(length - 1) == ':')) {
+			if ((keyOk && index >= 0) || (length > 1 && line.charAt(length - 1) == ':')) {
 				commentedPath = false;
 				node = true;
 
-				int index = line.indexOf(": ");
-				if (index < 0) {
+				if (index < 0 && (index = line.indexOf(": ")) < 0) {
 					index = length - 1;
 				}
 
@@ -136,13 +131,15 @@ public class CommentedConfig extends YamlConfiguration {
 						}
 					}
 
-					if (whiteSpace / 2 > depth) {
+					int newDepth = whiteSpace / 2;
+
+					if (newDepth > depth) {
 						currentPath.append('.').append(line.substring(whiteSpace, index));
 						depth++;
-					} else if (whiteSpace / 2 < depth) {
-						int newDepth = whiteSpace / 2;
+					} else if (newDepth < depth) {
+						int d = depth - newDepth;
 
-						for (int i = 0; i < depth - newDepth; i++) {
+						for (int i = 0; i < d; i++) {
 							currentPath.replace(currentPath.lastIndexOf("."), currentPath.length(), "");
 						}
 

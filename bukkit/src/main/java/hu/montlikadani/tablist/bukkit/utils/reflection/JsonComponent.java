@@ -18,7 +18,7 @@ public final class JsonComponent {
 
 	private final com.google.gson.Gson gson = new com.google.gson.GsonBuilder().create();
 	private final JsonParser parser = new JsonParser();
-	private final java.util.List<JsonObject> jsonList = new java.util.concurrent.CopyOnWriteArrayList<>();
+	private final java.util.List<JsonObject> jsonList = new java.util.ArrayList<>(10);
 
 	private String defaultFontNamespacedKey;
 
@@ -56,6 +56,7 @@ public final class JsonComponent {
 					//
 					// This is a very expensive inspection and not ideal, it should be a more
 					// optimal one.
+					// The expected pattern would be: (?>&[0-9a-f]){5}
 					if (i + 2 < length && text.charAt(i + 2) == '&' && (i + 4 >= length || text.charAt(i + 4) == '&')
 							&& (i + 6 >= length || text.charAt(i + 6) == '&')
 							&& (i + 8 >= length || text.charAt(i + 8) == '&')
@@ -63,8 +64,9 @@ public final class JsonComponent {
 						text = StrUtil.replaceNextChar(text, i, "&", "", 6); // Replace "&" character 6 times
 						length = text.length(); // Text length is changed
 
-						if (i - 2 >= 0) { // It may be negative
-							i -= 2; // Go back to the beginning of hex colour
+						int k = i - 2;
+						if (k >= 0) { // It may be negative
+							i = k; // Go back to the beginning of hex colour
 						}
 
 						continue;
