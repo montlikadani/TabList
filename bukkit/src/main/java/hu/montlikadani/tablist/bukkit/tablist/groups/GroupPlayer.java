@@ -212,7 +212,7 @@ public final class GroupPlayer {
 		boolean containsWorld = ConfigValues.getGroupsDisabledWorlds().contains(player.getWorld().getName());
 
 		if (((ConfigValues.isUseDisabledWorldsAsWhiteList() && !containsWorld)
-				|| (!ConfigValues.isUseDisabledWorldsAsWhiteList() && containsWorld)) || PluginUtils.isInGame(player)) {
+				|| (!ConfigValues.isUseDisabledWorldsAsWhiteList() && containsWorld))) {
 			return false;
 		}
 

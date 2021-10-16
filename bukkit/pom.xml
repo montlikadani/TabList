@@ -486,12 +486,6 @@
 			<systemPath>${project.basedir}/lib/PermissionsEx-1.23.4.jar</systemPath>
 		</dependency>
 		<dependency>
-			<groupId>com.github.montlikadani</groupId>
-			<artifactId>RageMode</artifactId>
-			<version>1.8.7</version>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>
 			<version>4.7.0</version>

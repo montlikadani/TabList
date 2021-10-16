@@ -14,7 +14,6 @@ import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.Util;
-import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 import hu.montlikadani.tablist.bukkit.utils.StrUtil;
 import hu.montlikadani.tablist.bukkit.utils.task.Tasks;
@@ -78,8 +77,7 @@ public final class Objects {
 					continue;
 				}
 
-				if (ConfigValues.getObjectsDisabledWorlds().contains(player.getWorld().getName())
-						|| PluginUtils.isInGame(player)) {
+				if (ConfigValues.getObjectsDisabledWorlds().contains(player.getWorld().getName())) {
 					continue;
 				}
 

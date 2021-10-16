@@ -7,7 +7,6 @@ import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Containers.CMIUser;
 
 import de.myzelyam.api.vanish.VanishAPI;
-import hu.montlikadani.ragemode.gameUtils.GameUtils;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
@@ -17,11 +16,6 @@ import net.ess3.api.IEssentials;
 public final class PluginUtils {
 
 	private static final TabList PLUGIN = TabListAPI.getPlugin();
-	private static boolean rmEnabled = false;
-
-	static {
-		rmEnabled = PLUGIN.isPluginEnabled("RageMode");
-	}
 
 	public static boolean isAfk(Player player) {
 		if (player == null) {
@@ -105,16 +99,5 @@ public final class PluginUtils {
 		}
 
 		return player.hasPermission(perm);
-	}
-
-	public static boolean isInGame(Player p) {
-		if (rmEnabled && (hu.montlikadani.ragemode.config.ConfigValues.isTabEnabled()
-				|| hu.montlikadani.ragemode.config.ConfigValues.isTabFormatEnabled())) {
-			hu.montlikadani.ragemode.gameLogic.Game game = GameUtils.getGameByPlayer(p);
-
-			return game != null && game.isGameRunning();
-		}
-
-		return false;
 	}
 }
