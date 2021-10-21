@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.bukkit.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -7,27 +8,37 @@ import com.Zrips.CMI.CMI;
 import com.Zrips.CMI.Containers.CMIUser;
 
 import de.myzelyam.api.vanish.VanishAPI;
-import hu.montlikadani.tablist.bukkit.TabList;
-import hu.montlikadani.tablist.bukkit.api.TabListAPI;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import me.xtomyserrax.StaffFacilities.SFAPI;
 import net.ess3.api.IEssentials;
 
 public final class PluginUtils {
 
-	private static final TabList PLUGIN = TabListAPI.getPlugin();
+	private static final Plugin ESSENTIALS, CMIP, PEX, SUPER_VANISH, PREMIUM_VANISH, STAFF_FACILITIES;
+
+	static {
+		org.bukkit.plugin.PluginManager pm = Bukkit.getServer().getPluginManager();
+
+		// Some people still uses "PlugMan" things so we caches the plugin's object and
+		// checks with isEnabled if its enabled
+		ESSENTIALS = pm.getPlugin("Essentials");
+		CMIP = pm.getPlugin("CMI");
+		PEX = pm.getPlugin("PermissionsEx");
+		SUPER_VANISH = pm.getPlugin("SuperVanish");
+		PREMIUM_VANISH = pm.getPlugin("PremiumVanish");
+		STAFF_FACILITIES = pm.getPlugin("StaffFacilities");
+	}
 
 	public static boolean isAfk(Player player) {
 		if (player == null) {
 			return false;
 		}
 
-		Plugin ess = PLUGIN.getServer().getPluginManager().getPlugin("Essentials");
-		if (ess != null && ess.isEnabled()) {
-			return ((IEssentials) ess).getUser(player).isAfk();
+		if (ESSENTIALS != null && ESSENTIALS.isEnabled()) {
+			return ((IEssentials) ESSENTIALS).getUser(player).isAfk();
 		}
 
-		if (PLUGIN.isPluginEnabled("CMI")) {
+		if (CMIP != null && CMIP.isEnabled()) {
 			CMIUser user = CMI.getInstance().getPlayerManager().getUser(player);
 			return user != null && user.isAfk();
 		}
@@ -36,20 +47,20 @@ public final class PluginUtils {
 	}
 
 	public static boolean isVanished(Player player) {
-		if (PLUGIN.isPluginEnabled("SuperVanish") || PLUGIN.isPluginEnabled("PremiumVanish")) {
+		if ((SUPER_VANISH != null && SUPER_VANISH.isEnabled())
+				|| (PREMIUM_VANISH != null && PREMIUM_VANISH.isEnabled())) {
 			return VanishAPI.isInvisible(player);
 		}
 
-		Plugin ess = PLUGIN.getServer().getPluginManager().getPlugin("Essentials");
-		if (ess != null && ess.isEnabled()) {
-			return ((IEssentials) ess).getUser(player).isVanished();
+		if (ESSENTIALS != null && ESSENTIALS.isEnabled()) {
+			return ((IEssentials) ESSENTIALS).getUser(player).isVanished();
 		}
 
-		if (PLUGIN.isPluginEnabled("StaffFacilities")) {
+		if (STAFF_FACILITIES != null && STAFF_FACILITIES.isEnabled()) {
 			return SFAPI.isPlayerVanished(player);
 		}
 
-		if (PLUGIN.isPluginEnabled("CMI")) {
+		if (CMIP != null && CMIP.isEnabled()) {
 			CMIUser user = CMI.getInstance().getPlayerManager().getUser(player);
 			return user != null && user.isVanished();
 		}
@@ -58,7 +69,7 @@ public final class PluginUtils {
 	}
 
 	public static int countVanishedPlayers() {
-		final int plSize = PLUGIN.getServer().getOnlinePlayers().size();
+		final int plSize = Bukkit.getServer().getOnlinePlayers().size();
 
 		if (!ConfigValues.isIgnoreVanishedPlayers()) {
 			return plSize;
@@ -69,20 +80,20 @@ public final class PluginUtils {
 	}
 
 	public static int getVanishedPlayers() {
-		if (PLUGIN.isPluginEnabled("SuperVanish") || PLUGIN.isPluginEnabled("PremiumVanish")) {
+		if ((SUPER_VANISH != null && SUPER_VANISH.isEnabled())
+				|| (PREMIUM_VANISH != null && PREMIUM_VANISH.isEnabled())) {
 			return VanishAPI.getInvisiblePlayers().size();
 		}
 
-		Plugin ess = PLUGIN.getServer().getPluginManager().getPlugin("Essentials");
-		if (ess != null && ess.isEnabled()) {
-			return ((IEssentials) ess).getVanishedPlayersNew().size();
+		if (ESSENTIALS != null && ESSENTIALS.isEnabled()) {
+			return ((IEssentials) ESSENTIALS).getVanishedPlayersNew().size();
 		}
 
-		if (PLUGIN.isPluginEnabled("StaffFacilities")) {
+		if (STAFF_FACILITIES != null && STAFF_FACILITIES.isEnabled()) {
 			return SFAPI.vanishedPlayersList().size();
 		}
 
-		if (PLUGIN.isPluginEnabled("CMI")) {
+		if (CMIP != null && CMIP.isEnabled()) {
 			return CMI.getInstance().getVanishManager().getAllVanished().size();
 		}
 
@@ -90,7 +101,7 @@ public final class PluginUtils {
 	}
 
 	public static boolean hasPermission(Player player, String perm) {
-		if (PLUGIN.isPluginEnabled("PermissionsEx")) {
+		if (PEX != null && PEX.isEnabled()) {
 			try {
 				return ru.tehkode.permissions.bukkit.PermissionsEx.getPermissionManager().has(player, perm);
 			} catch (Throwable e) {

@@ -355,28 +355,38 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 					return 1;
 				});
 			} else if (user.isHidden()) {
-				Tasks.submitSync(() -> {
-					TabListPlayer tlp = (TabListPlayer) user;
+				final TabListPlayer tlp = (TabListPlayer) user;
 
+				Tasks.submitSync(() -> {
 					tlp.getPlayerList().showEveryone();
-					tlp.removeCache();
 					return 1;
 				});
+
+				tlp.removeCache();
 			}
 		}
 	}
 
 	public void onPlayerQuit(Player player) {
-		users.removeIf(user -> {
-			user.getTabHandler().sendEmptyTab(player);
-			groups.removePlayerGroup(user);
+		java.util.Iterator<TabListUser> iterator = users.iterator();
+		UUID playerId = player.getUniqueId();
 
-			Scoreboard board = player.getScoreboard();
+		while (iterator.hasNext()) {
+			TabListUser user = iterator.next();
 
-			objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.PING));
-			objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.CUSTOM));
-			return player.getUniqueId().equals(user.getUniqueId());
-		});
+			if (playerId.equals(user.getUniqueId())) {
+				user.getTabHandler().sendEmptyTab(player);
+				groups.removePlayerGroup(user);
+
+				Scoreboard board = player.getScoreboard();
+
+				objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.PING));
+				objects.unregisterObjective(objects.getObject(board, Objects.ObjectTypes.CUSTOM));
+
+				iterator.remove();
+				break;
+			}
+		}
 	}
 
 	public String getMsg(String key, Object... placeholders) {

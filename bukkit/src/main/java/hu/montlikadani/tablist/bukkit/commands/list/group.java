@@ -60,7 +60,6 @@ public final class group implements ICommand {
 		FileConfiguration config = plugin.getConf().getGroups();
 
 		int priority = 0;
-		boolean contains = false;
 
 		switch (argument) {
 		case PREFIX:
@@ -90,8 +89,11 @@ public final class group implements ICommand {
 			config.set("groups." + target + ".sort-priority", priority);
 			break;
 		case REMOVE:
-			if (contains = config.contains("groups." + target)) {
+			if (config.contains("groups." + target)) {
 				config.set("groups." + target, null);
+			} else {
+				sendMsg(sender, plugin.getMsg("set-group.not-found", "%team%", target));
+				return false;
 			}
 
 			break;
@@ -106,11 +108,6 @@ public final class group implements ICommand {
 		}
 
 		if (argument == ContextArguments.REMOVE) {
-			if (!contains) {
-				sendMsg(sender, plugin.getMsg("set-group.not-found", "%team%", target));
-				return false;
-			}
-
 			plugin.getGroups().removeGroup(target);
 			sendMsg(sender, plugin.getMsg("set-group.removed", "%team%", target));
 		} else {

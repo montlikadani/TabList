@@ -17,7 +17,6 @@ import hu.montlikadani.tablist.bukkit.utils.StrUtil;
 public final class JsonComponent {
 
 	private final com.google.gson.Gson gson = new com.google.gson.GsonBuilder().create();
-	private final JsonParser parser = new JsonParser();
 	private final java.util.List<JsonObject> jsonList = new java.util.ArrayList<>(10);
 
 	private String defaultFontNamespacedKey;
@@ -189,6 +188,7 @@ public final class JsonComponent {
 				|| Character.isDigit(ch);
 	}
 
+	@SuppressWarnings("deprecation")
 	public CompletableFuture<NavigableMap<String, String>> getSkinValue(String uuid) {
 		return CompletableFuture.supplyAsync(() -> {
 			NavigableMap<String, String> map = new java.util.TreeMap<>();
@@ -199,12 +199,26 @@ public final class JsonComponent {
 				return map;
 			}
 
-			JsonObject json = parser.parse(content).getAsJsonObject();
-			String value = json.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+			JsonObject json;
 
-			json = parser.parse(new String(java.util.Base64.getDecoder().decode(value))).getAsJsonObject();
+			try {
+				json = JsonParser.parseString(content).getAsJsonObject();
+			} catch (NoSuchMethodError e) {
+				json = new JsonParser().parse(content).getAsJsonObject();
+			}
+
+			String value = json.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+			String decodedValue = new String(java.util.Base64.getDecoder().decode(value));
+
+			try {
+				json = JsonParser.parseString(decodedValue).getAsJsonObject();
+			} catch (NoSuchMethodError e) {
+				json = new JsonParser().parse(decodedValue).getAsJsonObject();
+			}
+
 			String texture = json.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url")
 					.getAsString();
+
 			map.put(value, texture);
 			return map;
 		});

@@ -220,21 +220,28 @@ public final class Variables {
 		return str;
 	}
 
+	private org.bukkit.plugin.Plugin papi;
+
 	@SuppressWarnings("deprecation")
 	String setPlayerPlaceholders(Player p, String s) {
-		if (ConfigValues.isPlaceholderAPI() && plugin.isPluginEnabled("PlaceholderAPI")) {
-			try {
+		if (ConfigValues.isPlaceholderAPI()) {
+			if (papi == null) {
+				papi = plugin.getServer().getPluginManager().getPlugin("PlaceholderAPI");
+			}
+
+			if (papi != null && papi.isEnabled()) {
 				s = PlaceholderAPI.setPlaceholders(p, s);
-			} catch (NullPointerException e) {
-				// Some placeholders may returns null, so we ignore that
 			}
 		}
 
 		s = s.replace("%player%", p.getName());
-		s = s.replace("%player-displayname%", plugin.getComplement().getDisplayName(p));
 		s = s.replace("%player-uuid%", p.getUniqueId().toString());
 		s = s.replace("%world%", p.getWorld().getName());
 		s = s.replace("%player-gamemode%", p.getGameMode().name());
+
+		if (!plugin.isPaper() || s.indexOf("%player-displayname%") >= 0) {
+			s = s.replace("%player-displayname%", plugin.getComplement().getDisplayName(p));
+		}
 
 		if (s.indexOf("%player-health%") >= 0) {
 			s = s.replace("%player-health%", Double.toString(p.getHealth()));
@@ -247,7 +254,7 @@ public final class Variables {
 				org.bukkit.attribute.AttributeInstance attr = p
 						.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
 
-				if (attr != null) { // Sometimes
+				if (attr != null) {
 					s = s.replace("%player-max-health%", Double.toString(attr.getDefaultValue()));
 				}
 			}
@@ -322,9 +329,8 @@ public final class Variables {
 			}
 		}
 
-		color = color.trim();
-
 		StringBuilder builder = new StringBuilder();
+
 		if (!color.isEmpty()) {
 			builder.append(colorVariablePattern.matcher(color).replaceAll("").replace('&', '\u00a7'));
 		}

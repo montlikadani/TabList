@@ -34,8 +34,8 @@ public final class Listeners implements org.bukkit.event.Listener {
 		if (isSpectator || e.getPlayer().getGameMode() == GameMode.SPECTATOR) {
 			Player player = e.getPlayer();
 
-			plugin.getUser(player).filter(user -> user.isRemovedFromPlayerList()).map(user -> (TabListPlayer) user)
-					.ifPresent(user -> {
+			plugin.getUser(player.getUniqueId()).filter(user -> user.isRemovedFromPlayerList())
+					.map(user -> (TabListPlayer) user).ifPresent(user -> {
 						if (isSpectator) {
 							user.getHidePlayers().addPlayerToTab(player, player);
 						} else {

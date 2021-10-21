@@ -62,7 +62,6 @@ public final class player implements ICommand {
 		FileConfiguration config = plugin.getConf().getGroups();
 
 		int priority = 0;
-		boolean contains = false;
 
 		switch (argument) {
 		case PREFIX:
@@ -91,8 +90,11 @@ public final class player implements ICommand {
 			config.set("groups." + target + ".sort-priority", priority = Integer.parseInt(args[3]));
 			break;
 		case REMOVE:
-			if (contains = config.contains("groups." + target)) {
+			if (config.contains("groups." + target)) {
 				config.set("groups." + target, null);
+			} else {
+				sendMsg(sender, plugin.getMsg("set-group.not-found", "%team%", target));
+				return false;
 			}
 
 			break;
@@ -107,11 +109,6 @@ public final class player implements ICommand {
 		}
 
 		if (argument == ContextArguments.REMOVE) {
-			if (!contains) {
-				sendMsg(sender, plugin.getMsg("set-group.not-found", "%team%", target));
-				return false;
-			}
-
 			plugin.getUser(plugin.getServer().getPlayer(target)).ifPresent(plugin.getGroups()::removePlayerGroup);
 			plugin.getGroups().removeGroup(target);
 

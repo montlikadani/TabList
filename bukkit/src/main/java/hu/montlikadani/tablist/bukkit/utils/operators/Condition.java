@@ -24,7 +24,7 @@ public class Condition {
 			} catch (NumberFormatException e) {
 			}
 
-			color = parseable[1].matches("&|#") ? parseable[1] : parseable[0];
+			color = (parseable[1].matches("&|#") ? parseable[1] : parseable[0]).trim();
 		}
 	}
 

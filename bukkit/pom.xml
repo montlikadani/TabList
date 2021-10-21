@@ -69,12 +69,6 @@
 								<exclude>META-INF/**</exclude>
 							</excludes>
 						</filter>
-						<filter>
-							<artifact>com.comphenix.executors</artifact>
-							<excludes>
-								<exclude>com/**</exclude>
-							</excludes>
-						</filter>
 					</filters>
 
 					<relocations>
@@ -511,9 +505,9 @@
 		<dependency>
 			<groupId>com.Zrips.CMI.CMI</groupId>
 			<artifactId>CMIAPI</artifactId>
-			<version>8.7.8.2</version>
+			<version>9.0.0.0</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/lib/CMIAPI8.7.8.2.jar</systemPath>
+			<systemPath>${project.basedir}/lib/CMI9.0.0.0API.jar</systemPath>
 		</dependency>
 	</dependencies>
 </project>
