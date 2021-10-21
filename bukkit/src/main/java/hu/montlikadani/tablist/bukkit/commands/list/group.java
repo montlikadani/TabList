@@ -37,7 +37,7 @@ public final class group implements ICommand {
 		String target = args[1];
 
 		ContextArguments argument = ContextArguments.PREFIX;
-		switch (args[2].toLowerCase()) {
+		switch (args[2].toLowerCase(java.util.Locale.ENGLISH)) {
 		case "prefix":
 			argument = ContextArguments.PREFIX;
 			break;

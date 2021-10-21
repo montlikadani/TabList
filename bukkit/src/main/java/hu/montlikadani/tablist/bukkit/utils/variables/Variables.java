@@ -216,6 +216,10 @@ public final class Variables {
 			str = str.replace("%tps%", (tps > 20.0 ? "*" : "") + tpsDot(tps > 20.0 ? 20D : tps));
 		}
 
+		if (ConfigValues.isFakePlayers() && str.indexOf("%fake-players%") >= 0) {
+			str = str.replace("%fake-players%", Integer.toString(plugin.getFakePlayerHandler().getFakePlayers().size()));
+		}
+
 		// Don't use here colors because of some issues with hex
 		return str;
 	}

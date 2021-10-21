@@ -26,11 +26,9 @@ public final class FakePlayerHandler {
 	}
 
 	public Optional<IFakePlayers> getFakePlayerByName(String name) {
-		if (name != null && !name.isEmpty()) {
-			for (IFakePlayers fp : fakePlayers) {
-				if (fp.getName().equalsIgnoreCase(name)) {
-					return Optional.of(fp);
-				}
+		for (IFakePlayers fp : fakePlayers) {
+			if (fp.getName().equalsIgnoreCase(name)) {
+				return Optional.of(fp);
 			}
 		}
 
@@ -76,12 +74,8 @@ public final class FakePlayerHandler {
 		}
 	}
 
-	public EditingResult createPlayer(String name, String displayName) {
-		return createPlayer(name, displayName, "", -1);
-	}
-
 	public EditingResult createPlayer(final String name, String displayName, final String headUUID, int ping) {
-		if (name == null || name.trim().isEmpty()) {
+		if (name == null || name.isEmpty()) {
 			return EditingResult.UNKNOWN;
 		}
 
@@ -148,15 +142,17 @@ public final class FakePlayerHandler {
 			}
 		}
 
-		fp.get().removeFakePlayer();
-		fakePlayers.remove(fp.get());
+		IFakePlayers fpl = fp.get();
+
+		fpl.removeFakePlayer();
+		fakePlayers.remove(fpl);
 		return EditingResult.OK;
 	}
 
 	public EditingResult renamePlayer(final String oldName, final String newName) {
 		Optional<IFakePlayers> fp = getFakePlayerByName(oldName);
 
-		if (newName == null || !fp.isPresent()) {
+		if (!fp.isPresent()) {
 			return EditingResult.NOT_EXIST;
 		}
 
@@ -206,14 +202,14 @@ public final class FakePlayerHandler {
 	}
 
 	public EditingResult setPing(String name, int amount) {
+		if (amount < -1) {
+			return EditingResult.PING_AMOUNT;
+		}
+
 		Optional<IFakePlayers> fp = getFakePlayerByName(name);
 
 		if (!fp.isPresent()) {
 			return EditingResult.NOT_EXIST;
-		}
-
-		if (amount < -1) {
-			return EditingResult.PING_AMOUNT;
 		}
 
 		plugin.getConf().getFakeplayers().set("list." + name + ".ping", amount);

@@ -60,7 +60,7 @@ public final class fakeplayers implements ICommand {
 
 		Actions action = Actions.ADD;
 		try {
-			action = Actions.valueOf(args[1].toUpperCase());
+			action = Actions.valueOf(args[1].toUpperCase(java.util.Locale.ENGLISH));
 		} catch (IllegalArgumentException e) {
 		}
 
