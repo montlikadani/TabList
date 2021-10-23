@@ -82,14 +82,25 @@ public final class Variables {
 		variables.add(new Variable("date", 3).setVariable((v, str) -> str = str.replace(v.fullName,
 				v.setAndGetRemainingValue(getTimeAsString(ConfigValues.getDateFormat())))));
 
-		variables.add(new Variable("online-players", 2).setVariable((v, str) -> str = str.replace(v.fullName,
-				v.setAndGetRemainingValue(Integer.toString(PluginUtils.countVanishedPlayers())))));
+		variables.add(new Variable("online-players", 2).setVariable((v, str) -> {
+			int players = PluginUtils.countVanishedPlayers();
+
+			if (ConfigValues.isCountFakePlayersToOnlinePlayers()) {
+				players += plugin.getFakePlayerHandler().getFakePlayers().size();
+			}
+
+			str = str.replace(v.fullName, v.setAndGetRemainingValue(Integer.toString(players)));
+		}));
 
 		variables.add(new Variable("max-players", 20).setVariable((v, str) -> str = str.replace(v.fullName,
 				v.setAndGetRemainingValue(Integer.toString(plugin.getServer().getMaxPlayers())))));
 
-		variables.add(new Variable("vanished-players", 2).setVariable((v, str) -> str = str.replace(v.fullName,
-				v.setAndGetRemainingValue(Integer.toString(PluginUtils.getVanishedPlayers())))));
+		variables.add(new Variable("vanished-players", 2).setVariable((v, str) -> {
+			int vanishedPlayers = PluginUtils.getVanishedPlayers();
+
+			str = str.replace(v.fullName,
+					v.setAndGetRemainingValue(vanishedPlayers == 0 ? "0" : Integer.toString(vanishedPlayers)));
+		}));
 
 		variables.add(new Variable("servertype", -1).setVariable(
 				(v, str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getServer().getName()))));
@@ -97,8 +108,14 @@ public final class Variables {
 		variables.add(new Variable("mc-version", -1).setVariable((v, str) -> str = str.replace(v.fullName,
 				v.setAndGetRemainingValue(plugin.getServer().getBukkitVersion()))));
 
-		variables.add(new Variable("motd", 10).setVariable(
-				(v, str) -> str = str.replace("%motd%", v.setAndGetRemainingValue(plugin.getComplement().getMotd()))));
+		variables.add(new Variable("motd", 10).setVariable((v,
+				str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getComplement().getMotd()))));
+
+		variables.add(new Variable("fake-players", 3).setVariable((v, str) -> {
+			int pls = plugin.getFakePlayerHandler().getFakePlayers().size();
+
+			str = str.replace(v.fullName, v.setAndGetRemainingValue(pls == 0 ? "0" : Integer.toString(pls)));
+		}));
 
 		variables.add(new Variable("staff-online", 3).setVariable((v, str) -> {
 			int staffs = 0;
@@ -114,7 +131,7 @@ public final class Variables {
 				staffs++;
 			}
 
-			str = str.replace(v.fullName, v.setAndGetRemainingValue(Integer.toString(staffs)));
+			str = str.replace(v.fullName, v.setAndGetRemainingValue(staffs == 0 ? "0" : Integer.toString(staffs)));
 		}));
 	}
 
@@ -130,8 +147,7 @@ public final class Variables {
 		if (!ConfigValues.getMemoryBarChar().isEmpty() && str.indexOf("%memory_bar%") >= 0) {
 			StringBuilder builder = new StringBuilder();
 
-			int barSize = ConfigValues.getMemoryBarSize(),
-					totalMemory = (int) (runtime.totalMemory() / MB),
+			int barSize = ConfigValues.getMemoryBarSize(), totalMemory = (int) (runtime.totalMemory() / MB),
 					usedMemory = totalMemory - (int) (runtime.freeMemory() / MB),
 					maxMemory = (int) (runtime.maxMemory() / MB);
 
@@ -214,10 +230,6 @@ public final class Variables {
 		if (str.indexOf("%tps%") >= 0) {
 			double tps = TabListAPI.getTPS();
 			str = str.replace("%tps%", (tps > 20.0 ? "*" : "") + tpsDot(tps > 20.0 ? 20D : tps));
-		}
-
-		if (ConfigValues.isFakePlayers() && str.indexOf("%fake-players%") >= 0) {
-			str = str.replace("%fake-players%", Integer.toString(plugin.getFakePlayerHandler().getFakePlayers().size()));
 		}
 
 		// Don't use here colors because of some issues with hex
@@ -322,7 +334,7 @@ public final class Variables {
 		return parseExpression(ping, OperatorNodes.NodeType.PING);
 	}
 
-	private final Pattern colorVariablePattern = Pattern.compile("%tps%|%ping%");
+	private final Pattern colorVariablePattern = Pattern.compile("%tps%|%tps-overflow%|%ping%");
 
 	private String parseExpression(double value, int type) {
 		String color = "";

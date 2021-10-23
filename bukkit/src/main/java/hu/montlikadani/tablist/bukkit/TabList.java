@@ -1,6 +1,6 @@
 package hu.montlikadani.tablist.bukkit;
 
-import static hu.montlikadani.tablist.bukkit.utils.Util.colorMsg;
+import static hu.montlikadani.tablist.bukkit.utils.Util.colorText;
 import static hu.montlikadani.tablist.bukkit.utils.Util.logConsole;
 
 import java.io.File;
@@ -17,8 +17,6 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.scoreboard.Scoreboard;
-
-import com.google.common.reflect.TypeToken;
 
 import hu.montlikadani.tablist.TextAnimation;
 import hu.montlikadani.tablist.bukkit.commands.Commands;
@@ -56,7 +54,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	private boolean isPaper = false, hasVault = false;
 
-	private final Set<TextAnimation> animations = new HashSet<>();
+	private final Set<TextAnimation> animations = new HashSet<>(8);
 	private final Set<TabListUser> users = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	@Override
@@ -105,7 +103,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		beginDataCollection();
 
 		if (ConfigValues.isLogConsole()) {
-			getServer().getConsoleSender().sendMessage(colorMsg("&6[&5Tab&cList&6]&7 >&a Enabled&6 v"
+			getServer().getConsoleSender().sendMessage(colorText("&6[&5Tab&cList&6]&7 >&a Enabled&6 v"
 					+ getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
 		}
 	}
@@ -349,7 +347,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 					user.setHidden(true);
 
 					if (user.isHidden()) {
-						((TabListPlayer) user).getPlayerList().showForWorld();
+						((TabListPlayer) user).getPlayerList().displayInWorld();
 					}
 
 					return 1;
@@ -387,57 +385,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				break;
 			}
 		}
-	}
-
-	public String getMsg(String key, Object... placeholders) {
-		return getMsg(TypeToken.of(String.class), key, placeholders);
-	}
-
-	@SuppressWarnings("unchecked")
-	public <T> T getMsg(TypeToken<T> type, String key, Object... placeholders) {
-		Class<? super T> rawType = type.getRawType();
-
-		if (rawType.isAssignableFrom(String.class)) {
-			String text = conf.getMessages().getString(key, "");
-
-			if (text.isEmpty()) {
-				return (T) "";
-			}
-
-			String msg = colorMsg(text);
-
-			for (int i = 0; i < placeholders.length; i++) {
-				if (placeholders.length >= i + 2) {
-					msg = msg.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
-				}
-
-				i++;
-			}
-
-			return (T) msg;
-		}
-
-		if (rawType.isAssignableFrom(List.class)) {
-			List<String> list = conf.getMessages().getStringList(key);
-
-			for (int a = 0; a < list.size(); a++) {
-				String one = colorMsg(list.get(a));
-
-				for (int i = 0; i < placeholders.length; i++) {
-					if (placeholders.length >= i + 2) {
-						one = one.replace(String.valueOf(placeholders[i]), String.valueOf(placeholders[i + 1]));
-					}
-
-					i++;
-				}
-
-				list.set(a, one);
-			}
-
-			return (T) list;
-		}
-
-		return (T) "no msg";
 	}
 
 	public Optional<TabListUser> getUser(Player player) {

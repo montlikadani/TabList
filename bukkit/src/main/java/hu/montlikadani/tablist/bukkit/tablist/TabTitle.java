@@ -52,8 +52,8 @@ public abstract class TabTitle {
 		if (footer == null) footer = "";
 
 		if (ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2)) {
-			header = Util.colorMsg(header);
-			footer = Util.colorMsg(footer);
+			header = Util.colorText(header);
+			footer = Util.colorText(footer);
 		}
 
 		Object tabHeader, tabFooter;

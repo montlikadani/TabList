@@ -1,8 +1,11 @@
 package hu.montlikadani.tablist.bukkit.tablist.playerlist;
 
+import java.util.List;
+
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.bukkit.TabList;
+import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.ServerVersion;
 
@@ -18,7 +21,7 @@ public class PlayerList {
 
 	public void hideShow() {
 		hide();
-		showForWorld();
+		displayInWorld();
 	}
 
 	public void hide() {
@@ -59,21 +62,52 @@ public class PlayerList {
 		}
 	}
 
-	public void showForWorld() {
+	public void displayInWorld() {
 		Player player = user.getPlayer();
 
 		if (player == null) {
 			return;
 		}
 
+		boolean checked = false;
 		java.util.UUID worldId = player.getWorld().getUID();
 
 		for (TabListUser user : plugin.getUsers()) {
+			if (!checked && user.getUniqueId().equals(this.user.getUniqueId())) {
+				show(player, player);
+				show(player, player);
+				checked = true;
+				continue;
+			}
+
 			Player pls = user.getPlayer();
 
-			if (pls != null && worldId.equals(pls.getWorld().getUID())) {
+			if (pls == null) {
+				continue;
+			}
+
+			org.bukkit.World playerWorld = pls.getWorld();
+
+			if (worldId.equals(playerWorld.getUID())) {
 				show(player, pls);
 				show(pls, player);
+				continue;
+			}
+
+			if (ConfigValues.PER_WORLD_LIST_NAMES.isEmpty()) {
+				continue;
+			}
+
+			String worldName = playerWorld.getName();
+
+			for (List<String> keys : ConfigValues.PER_WORLD_LIST_NAMES) {
+				for (String name : keys) {
+					if (name.equalsIgnoreCase(worldName)) {
+						show(pls, player);
+						show(player, pls);
+						break;
+					}
+				}
 			}
 		}
 	}

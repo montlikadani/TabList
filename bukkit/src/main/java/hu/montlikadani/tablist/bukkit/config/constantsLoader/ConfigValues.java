@@ -3,17 +3,19 @@ package hu.montlikadani.tablist.bukkit.config.constantsLoader;
 import java.util.Arrays;
 import java.util.List;
 
+import org.bukkit.configuration.ConfigurationSection;
+
 import hu.montlikadani.tablist.bukkit.Objects.ObjectTypes;
 import hu.montlikadani.tablist.bukkit.config.CommentedConfig;
 
 public class ConfigValues {
 
 	private static boolean checkUpdate, downloadUpdates, logConsole = true, placeholderAPI, perWorldPlayerList,
-			fakePlayers, removeGrayColorFromTabInSpec, ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk,
-			hidePlayersFromTab, afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast,
-			useSystemZone, pingFormatEnabled, tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList,
-			syncPluginsGroups, hideGroupInVanish, hideGroupWhenAfk, preferPrimaryVaultGroup, tablistObjectiveEnabled,
-			assignGlobalGroup;
+			fakePlayers, countFakePlayersToOnlinePlayers, removeGrayColorFromTabInSpec, ignoreVanishedPlayers,
+			countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled,
+			afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone, pingFormatEnabled,
+			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish,
+			hideGroupWhenAfk, preferPrimaryVaultGroup, tablistObjectiveEnabled, assignGlobalGroup;
 
 	private static String afkFormatYes, afkFormatNo, timeZone, timeFormat, dateFormat, customObjectSetting,
 			memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
@@ -25,14 +27,16 @@ public class ConfigValues {
 
 	private static int tpsSize, groupsRefreshInterval, objectRefreshInterval, memoryBarSize;
 
+	public static final List<List<String>> PER_WORLD_LIST_NAMES = new java.util.ArrayList<>();
+
+	@SuppressWarnings("serial")
 	public static void loadValues(CommentedConfig c) {
-		c.copyDefaults(true);
+		c.copyDefaults();
 
 		c.addComment("hook.placeholderapi", "Hook to PlaceholderAPI to use custom placeholders.");
-		c.addComment("hook.RageMode", "Hook to my RageMode plugin. (https://www.spigotmc.org/resources/69169/)",
-				"If true, then tablist, groups and tablist objects will be disabled while", "running a game.");
-		c.addComment("per-world-player-list", "Different player list in different world.");
-		c.addComment("enable-fake-players", "Fake players that can be added to the player list.");
+		c.addComment("fake-players", "Fake players that can be added to the player list.");
+		c.addComment("fake-players.count-fake-players-to-online-players",
+				"Do we count the added fake players to the %online-players% placeholder?");
 		c.addComment("remove-gray-color-from-tab-in-spectator",
 				"If enabled, the gray color will not appear to other players when the player's game mode is spectator.",
 				"The gray color will only show for the spectator player.", "Requires ProtocolLib!");
@@ -50,6 +54,10 @@ public class ConfigValues {
 				"group set is retained as it is not changed during removal, so your group",
 				"will be restored if this option is disabled.",
 				"Requires ProtocolLib to fix view distance issue! (https://github.com/montlikadani/TabList/issues/147)");
+		c.addComment("per-world-player-list", "Different player list in different world.");
+		c.addComment("per-world-player-list.world-groups",
+				"You can specify worlds, which will share the same list of players");
+		c.addComment("per-world-player-list.world-groups.example1", "The key name, can be anything");
 		c.addComment("placeholder-format", "Placeholders formatting");
 		c.addComment("placeholder-format.afk-status",
 				"When the player changes the AFK status, change his tablist name format?");
@@ -108,8 +116,7 @@ public class ConfigValues {
 				"after the player's name (before the ping indicator).");
 		c.addComment("tablist-object-type.type", "Types:", "ping - player's ping", "health - player's health",
 				"custom - custom placeholder");
-		c.addComment("tablist-object-type.refresh-interval", "Interval for objects refreshing. In seconds.",
-				"Note: The health is not updating auto due to display issues.");
+		c.addComment("tablist-object-type.refresh-interval", "Interval for objects refreshing in seconds.");
 		c.addComment("tablist-object-type.disabled-worlds", "In these worlds the objects will not be displayed");
 		c.addComment("tablist-object-type.object-settings", "Objective settings");
 		c.addComment("tablist-object-type.object-settings.health",
@@ -124,13 +131,39 @@ public class ConfigValues {
 		c.addComment("logconsole", "Log plugin messages to console?");
 
 		placeholderAPI = c.get("hook.placeholderapi", false);
-		perWorldPlayerList = c.get("per-world-player-list", false);
-		fakePlayers = c.get("enable-fake-players", false);
+		fakePlayers = c.get("fake-players.enabled", c.getConfig().getBoolean("enable-fake-players"));
+		countFakePlayersToOnlinePlayers = c.get("fake-players.count-fake-players-to-online-players", false);
 		removeGrayColorFromTabInSpec = c.get("remove-gray-color-from-tab-in-spectator", false);
 		ignoreVanishedPlayers = c.get("ignore-vanished-players-in-online-players", false);
 		countVanishedStaff = c.get("count-vanished-staffs", true);
 		hidePlayerFromTabAfk = c.get("hide-player-from-tab-when-afk", false);
 		hidePlayersFromTab = c.get("hide-players-from-tablist", false);
+		perWorldPlayerList = c.get("per-world-player-list.enabled", c.getConfig().getBoolean("per-world-player-list"));
+
+		ConfigurationSection section = c.getConfig().getConfigurationSection("per-world-player-list.world-groups");
+
+		if (section == null) {
+			section = c.createSection("per-world-player-list.world-groups",
+					new java.util.HashMap<String, List<String>>() {
+						{
+							put("exampleGroup2", Arrays.asList("exampleWorld2", "exampleAnotherWorld2"));
+							put("example1", Arrays.asList("exampleWorld", "exampleAnotherWorld"));
+						}
+					});
+		} else {
+			c.set(section.getCurrentPath(), section);
+		}
+
+		if (perWorldPlayerList) {
+			for (String key : section.getKeys(false)) {
+				List<String> list = section.getStringList(key);
+
+				if (!list.isEmpty()) {
+					PER_WORLD_LIST_NAMES.add(list);
+				}
+			}
+		}
+
 		afkStatusEnabled = c.get("placeholder-format.afk-status.enable", false);
 		afkStatusShowInRightLeftSide = c.get("placeholder-format.afk-status.show-in-right-or-left-side", true);
 		afkStatusShowPlayerGroup = c.get("placeholder-format.afk-status.show-player-group", true);
@@ -147,10 +180,6 @@ public class ConfigValues {
 		preferPrimaryVaultGroup = c.get("change-prefix-suffix-in-tablist.prefer-primary-vault-group", true);
 		tablistObjectiveEnabled = c.get("tablist-object-type.enable", false);
 
-		checkUpdate = c.get("check-update", true);
-		downloadUpdates = c.get("download-updates", false);
-		logConsole = c.get("logconsole", true);
-
 		afkFormatYes = c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r ");
 		afkFormatNo = c.get("placeholder-format.afk-status.format-no", "");
 		timeZone = c.get("placeholder-format.time.time-zone", "GMT0");
@@ -165,7 +194,8 @@ public class ConfigValues {
 		customObjectSetting = c.get("tablist-object-type.object-settings.custom.value", "%level%");
 
 		try {
-			objectType = ObjectTypes.valueOf(c.get("tablist-object-type.type", "ping").toUpperCase());
+			objectType = ObjectTypes
+					.valueOf(c.get("tablist-object-type.type", "ping").toUpperCase(java.util.Locale.ENGLISH));
 		} catch (IllegalArgumentException e) {
 		}
 
@@ -191,6 +221,10 @@ public class ConfigValues {
 		memoryBarSize = c.get("placeholder-format.memory-bar.size", 80);
 		groupsRefreshInterval = c.get("change-prefix-suffix-in-tablist.refresh-interval", 30);
 		objectRefreshInterval = c.get("tablist-object-type.refresh-interval", 3) * 20;
+
+		checkUpdate = c.get("check-update", true);
+		downloadUpdates = c.get("download-updates", false);
+		logConsole = c.get("logconsole", true);
 
 		c.save();
 		c.cleanUp();
@@ -235,6 +269,10 @@ public class ConfigValues {
 
 	public static boolean isFakePlayers() {
 		return fakePlayers;
+	}
+
+	public static boolean isCountFakePlayersToOnlinePlayers() {
+		return countFakePlayersToOnlinePlayers;
 	}
 
 	public static boolean isRemoveGrayColorFromTabInSpec() {

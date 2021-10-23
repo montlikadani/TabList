@@ -19,7 +19,7 @@ public final class Util {
 		}
 	}
 
-	public static String colorMsg(String msg) {
+	public static String colorText(String msg) {
 		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1) && msg.indexOf('#') >= 0) {
 			msg = Global.matchColorRegex(msg);
 		}

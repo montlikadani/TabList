@@ -13,6 +13,7 @@ import org.bukkit.permissions.PermissionDefault;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
+import hu.montlikadani.tablist.bukkit.utils.StrUtil;
 import hu.montlikadani.tablist.bukkit.utils.Util;
 import hu.montlikadani.tablist.bukkit.utils.variables.Variables;
 
@@ -73,7 +74,7 @@ public class TabHandler {
 				worldEnabled = true;
 			} else {
 				t: for (String s : TabConfigValues.getPerWorldkeys()) {
-					for (String split : TabConfigValues.COMMA_SPACE_SEPARATED_PATTERN.split(s)) {
+					for (String split : StrUtil.getCommaSpaceSeparatedPattern().split(s)) {
 						if (world.equals(split)) {
 							if (plugin.hasVault() && c.contains("per-world." + s + ".per-group")) {
 								String group = plugin.getVaultPerm().getPrimaryGroup(split, player);

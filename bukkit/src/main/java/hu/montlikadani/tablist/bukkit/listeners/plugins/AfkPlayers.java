@@ -22,7 +22,7 @@ abstract class AfkPlayers {
 
 			String prop = value ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo();
 
-			plugin.getComplement().setPlayerListName(player, Util.colorMsg(
+			plugin.getComplement().setPlayerListName(player, Util.colorText(
 					ConfigValues.isAfkStatusShowInRightLeftSide() ? player.getName() + prop : prop + player.getName()));
 		}
 	}

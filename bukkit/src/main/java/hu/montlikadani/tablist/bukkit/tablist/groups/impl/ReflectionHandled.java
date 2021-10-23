@@ -210,7 +210,7 @@ public class ReflectionHandled implements ITabScoreboard {
 				String name = groupPlayer.getTabNameWithPrefixSuffix();
 
 				if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {
-					name = Util.colorMsg(name);
+					name = Util.colorText(name);
 				}
 
 				Object nameComponent = ReflectionUtils.getAsIChatBaseComponent(name);

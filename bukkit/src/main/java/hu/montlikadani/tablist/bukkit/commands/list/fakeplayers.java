@@ -3,19 +3,17 @@ package hu.montlikadani.tablist.bukkit.commands.list;
 import static hu.montlikadani.tablist.bukkit.utils.Util.sendMsg;
 
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
-import com.google.common.reflect.TypeToken;
-
 import hu.montlikadani.tablist.bukkit.Perm;
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
+import hu.montlikadani.tablist.bukkit.config.ConfigMessages;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler;
 import hu.montlikadani.tablist.bukkit.tablist.fakeplayers.FakePlayerHandler.EditingResult;
@@ -35,7 +33,7 @@ public final class fakeplayers implements ICommand {
 	}
 
 	private void sendList(String label, CommandSender sender) {
-		sendMsg(sender, Util.colorMsg("&6/" + label + " fakeplayers"
+		sendMsg(sender, Util.colorText("&6/" + label + " fakeplayers"
 				+ "\n          &6add <name> [ping] -&7 Adds a new fake player with their name."
 				+ "\n          &6remove <name> -&7 Removes the given fake player."
 				+ "\n          &6list -&7 Lists all the available fake players."
@@ -45,11 +43,10 @@ public final class fakeplayers implements ICommand {
 				+ "\n          &6setping <name> <amount> -&7 Sets the ping of the given fake player."));
 	}
 
-	@SuppressWarnings("serial")
 	@Override
 	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
 		if (!ConfigValues.isFakePlayers()) {
-			sendMsg(sender, plugin.getMsg("fake-player.disabled"));
+			sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_DISABLED));
 			return true;
 		}
 
@@ -79,23 +76,24 @@ public final class fakeplayers implements ICommand {
 
 			if ((output = handler.createPlayer(name, name, args.length > 3 ? args[3] : "",
 					ping)) == EditingResult.ALREADY_EXIST) {
-				sendMsg(sender, plugin.getMsg("fake-player.already-added", "%name%", name));
+				sendMsg(sender,
+						ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_ALREADY_ADDED, "%name%", name));
 				return true;
 			}
 
 			if (output == EditingResult.OK) {
-				sendMsg(sender, plugin.getMsg("fake-player.added", "%name%", name));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_ADDED, "%name%", name));
 			}
 
 			break;
 		case REMOVE:
 			if ((output = handler.removePlayer(args[2])) == EditingResult.NOT_EXIST) {
-				sendMsg(sender, plugin.getMsg("fake-player.not-exists"));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
 				return true;
 			}
 
 			if (output == EditingResult.OK) {
-				sendMsg(sender, plugin.getMsg("fake-player.removed", "%name%", args[2]));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_REMOVED, "%name%", args[2]));
 			}
 
 			break;
@@ -105,12 +103,12 @@ public final class fakeplayers implements ICommand {
 			}
 
 			if ((output = handler.renamePlayer(args[2], args[3])) == EditingResult.NOT_EXIST) {
-				sendMsg(sender, plugin.getMsg("fake-player.not-exists"));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
 				return true;
 			}
 
 			if (output == EditingResult.OK) {
-				sendMsg(sender, Util.colorMsg("&2Old name: &e" + args[2] + "&2, new name: &e" + args[3]));
+				sendMsg(sender, Util.colorText("&2Old name: &e" + args[2] + "&2, new name: &e" + args[3]));
 			}
 
 			break;
@@ -118,7 +116,7 @@ public final class fakeplayers implements ICommand {
 			Set<IFakePlayers> list = handler.getFakePlayers();
 
 			if (list.isEmpty()) {
-				sendMsg(sender, plugin.getMsg("fake-player.no-fake-player"));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NO_FAKE_PLAYER));
 				return true;
 			}
 
@@ -133,12 +131,12 @@ public final class fakeplayers implements ICommand {
 				msg += one.getName();
 			}
 
-			plugin.getMsg(new TypeToken<List<String>>() {}.getSubtype(List.class), "fake-player.list", "%amount%", list.size(), "%fake-players%", msg)
-					.forEach(line -> sendMsg(sender, Util.colorMsg(line)));
+			ConfigMessages.getList(ConfigMessages.MessageKeys.FAKE_PLAYER_LIST, "%amount%", list.size(),
+					"%fake-players%", msg).forEach(line -> sendMsg(sender, Util.colorText(line)));
 			break;
 		case SETSKIN:
 			if ((output = handler.setSkin(args[2], args[3])) == EditingResult.NOT_EXIST) {
-				sendMsg(sender, plugin.getMsg("fake-player.not-exists"));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
 				return true;
 			}
 
@@ -151,12 +149,13 @@ public final class fakeplayers implements ICommand {
 			int amount = Util.tryParse(args[3]).orElse(-1);
 
 			if ((output = handler.setPing(args[2], amount)) == EditingResult.NOT_EXIST) {
-				sendMsg(sender, plugin.getMsg("fake-player.not-exists"));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
 				return true;
 			}
 
 			if (output == EditingResult.PING_AMOUNT) {
-				sendMsg(sender, plugin.getMsg("fake-player.ping-can-not-be-less", "%amount%", amount));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_PING_CAN_NOT_BE_LESS,
+						"%amount%", amount));
 			}
 
 			break;
@@ -170,7 +169,7 @@ public final class fakeplayers implements ICommand {
 			output = handler.setDisplayName(args[2], builder.toString().replace("\"", ""));
 
 			if (output == EditingResult.NOT_EXIST) {
-				sendMsg(sender, plugin.getMsg("fake-player.not-exists"));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
 			}
 
 			break;

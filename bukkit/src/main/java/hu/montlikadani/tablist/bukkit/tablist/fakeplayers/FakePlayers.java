@@ -59,7 +59,7 @@ public class FakePlayers implements IFakePlayers {
 		if (displayName == null) {
 			displayName = "";
 		} else {
-			displayName = Util.colorMsg(displayName);
+			displayName = Util.colorText(displayName);
 		}
 
 		try {

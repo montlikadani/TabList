@@ -1,7 +1,6 @@
 package hu.montlikadani.tablist.bukkit.config;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -33,12 +32,17 @@ public class CommentedConfig extends YamlConfiguration {
 		return file;
 	}
 
-	public void load() {
-		try {
-			load(file);
+	private YamlConfiguration getYml() {
+		YamlConfiguration config = new YamlConfiguration();
+
+		try (InputStreamReader reader = new InputStreamReader(new java.io.FileInputStream(file))) {
+			config.load(reader);
+		} catch (FileNotFoundException e) {
 		} catch (InvalidConfigurationException | IOException e) {
 			org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, e.getLocalizedMessage());
 		}
+
+		return config;
 	}
 
 	public void save() {
@@ -232,55 +236,37 @@ public class CommentedConfig extends YamlConfiguration {
 		}
 	}
 
-	public YamlConfiguration getYml() {
-		YamlConfiguration config = new YamlConfiguration();
-
-		try (InputStreamReader reader = new InputStreamReader(new FileInputStream(file))) {
-			config.load(reader);
-		} catch (FileNotFoundException e) {
-		} catch (InvalidConfigurationException | IOException e) {
-			org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, e.getLocalizedMessage());
-		}
-
-		return config;
-	}
-
-	public void copyDefaults(boolean value) {
-		config.options().copyDefaults(value);
-	}
-
-	private String process(String path, Object value) {
-		config.addDefault(path, value);
-		copySetting(path);
-		return path;
+	public void copyDefaults() {
+		config.options().copyDefaults(true);
 	}
 
 	public boolean get(String path, boolean def) {
-		path = process(path, def);
-		return config.getBoolean(path);
+		boolean value = config.getBoolean(path, def);
+
+		set(path, value);
+		return value;
 	}
 
 	public int get(String path, int def) {
-		path = process(path, def);
-		return config.getInt(path);
+		int value = config.getInt(path, def);
+
+		set(path, value);
+		return value;
 	}
 
 	public List<String> get(String path, List<String> def) {
-		path = process(path, def);
-		return config.getStringList(path);
+		config.addDefault(path, def);
+
+		List<String> value = config.getStringList(path);
+
+		set(path, value);
+		return value;
 	}
 
 	public String get(String path, String def) {
-		path = process(path, def);
-		return config.getString(path);
-	}
+		String value = config.getString(path, def);
 
-	public double get(String path, double def) {
-		path = process(path, def);
-		return config.getDouble(path);
-	}
-
-	private void copySetting(String path) {
-		set(path, config.get(path));
+		set(path, value);
+		return value;
 	}
 }

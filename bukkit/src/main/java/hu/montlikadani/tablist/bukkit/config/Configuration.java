@@ -13,17 +13,18 @@ public class Configuration {
 
 	private TabList plugin;
 
-	private FileConfiguration tablist, messages, groups, fakePlayers, animCreator;
+	private FileConfiguration tablist, groups, fakePlayers, animCreator;
 	private CommentedConfig config;
-	private File configFile, messagesFile, animationFile, tablistFile, groupsFile, fakePlayersFile;
+	private ConfigMessages messages;
+	private File configFile, animationFile, tablistFile, groupsFile, fakePlayersFile;
 
 	public Configuration(TabList plugin) {
 		this.plugin = plugin;
 
 		File folder = plugin.getFolder();
+		messages = new ConfigMessages(folder);
 
 		configFile = new File(folder, "config.yml");
-		messagesFile = new File(folder, "messages.yml");
 		animationFile = new File(folder, "animcreator.yml");
 		tablistFile = new File(folder, "tablist.yml");
 		groupsFile = new File(folder, "groups.yml");
@@ -32,6 +33,7 @@ public class Configuration {
 
 	public void loadFiles() {
 		// Monument
+		// TODO Planned remove in version: 5.5.8
 		File names = new File(plugin.getFolder(), "names.yml");
 		if (names.exists()) {
 			names.delete();
@@ -46,8 +48,8 @@ public class Configuration {
 
 		ConfigValues.loadValues(config);
 		TabConfigValues.loadValues(tablist);
+		messages.createAndLoad();
 
-		messages = createFile(messagesFile, messagesFile.getName(), false);
 		animCreator = createFile(animationFile, animationFile.getName(), false);
 
 		if (ConfigValues.isPrefixSuffixEnabled()) {
@@ -85,7 +87,7 @@ public class Configuration {
 		return config;
 	}
 
-	public FileConfiguration getMessages() {
+	public ConfigMessages getMessages() {
 		return messages;
 	}
 
@@ -111,14 +113,6 @@ public class Configuration {
 
 	public FileConfiguration getTablist() {
 		return tablist;
-	}
-
-	public File getConfigFile() {
-		return configFile;
-	}
-
-	public File getMessagesFile() {
-		return messagesFile;
 	}
 
 	public File getAnimationFile() {

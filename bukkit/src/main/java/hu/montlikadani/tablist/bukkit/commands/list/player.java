@@ -14,6 +14,7 @@ import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.commands.CommandProcessor;
 import hu.montlikadani.tablist.bukkit.commands.ICommand;
 import hu.montlikadani.tablist.bukkit.commands.Commands.ContextArguments;
+import hu.montlikadani.tablist.bukkit.config.ConfigMessages;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.bukkit.tablist.groups.GroupPlayer;
 import hu.montlikadani.tablist.bukkit.tablist.groups.TeamHandler;
@@ -75,7 +76,7 @@ public final class player implements ICommand {
 
 			String result = builder.toString().replace("\"", "");
 			if (result.trim().isEmpty()) {
-				sendMsg(sender, plugin.getMsg("set-group.meta-could-not-be-empty"));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_COULD_NOT_BE_EMPTY));
 				return false;
 			}
 
@@ -83,7 +84,7 @@ public final class player implements ICommand {
 			break;
 		case PRIORITY:
 			if (!args[3].matches("[0-9]+")) {
-				sendMsg(sender, plugin.getMsg("set-group.priority-must-be-number"));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_PRIORITY_MUST_BE_NUMBER));
 				return false;
 			}
 
@@ -93,7 +94,7 @@ public final class player implements ICommand {
 			if (config.contains("groups." + target)) {
 				config.set("groups." + target, null);
 			} else {
-				sendMsg(sender, plugin.getMsg("set-group.not-found", "%team%", target));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_NOT_FOUND, "%team%", target));
 				return false;
 			}
 
@@ -112,7 +113,7 @@ public final class player implements ICommand {
 			plugin.getUser(plugin.getServer().getPlayer(target)).ifPresent(plugin.getGroups()::removePlayerGroup);
 			plugin.getGroups().removeGroup(target);
 
-			sendMsg(sender, plugin.getMsg("set-group.removed", "%team%", target));
+			sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_REMOVED, "%team%", target));
 		} else {
 			String prefix = config.getString("groups." + target + ".prefix", ""),
 					suffix = config.getString("groups." + target + ".suffix", ""),
@@ -151,7 +152,8 @@ public final class player implements ICommand {
 				plugin.getGroups().getGroupsList().add(team);
 			}
 
-			sendMsg(sender, plugin.getMsg("set-group.meta-set", "%team%", target, "%meta%", prefix + tabName + suffix));
+			sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_SET, "%team%", target,
+					"%meta%", prefix + tabName + suffix));
 		}
 
 		return false;

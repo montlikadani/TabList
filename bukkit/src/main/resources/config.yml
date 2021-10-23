@@ -2,11 +2,12 @@ hook:
   # Hook to PlaceholderAPI to use custom placeholders.
   placeholderapi: true
 
-# Different player list in different world.
-per-world-player-list: false
-
 # Fake players that can be added to the player list.
-enable-fake-players: false
+fake-players:
+  enabled: false
+
+  # Do we count the added fake players to the %online-players% placeholder?
+  count-fake-players-to-online-players: false
 
 # If enabled, the gray color will not appear to other players when the player's game mode is spectator.
 # The gray color will only show for the spectator player.
@@ -33,6 +34,21 @@ hide-player-from-tab-when-afk: false
 # will be restored if this option is disabled.
 # Requires ProtocolLib to fix view distance issue! (https://github.com/montlikadani/TabList/issues/147)
 hide-players-from-tablist: false
+
+# Different player list in different world.
+per-world-player-list:
+  enabled: false
+
+  # You can specify worlds, which will share the same list of players
+  world-groups:
+    # The key name, can be anything
+    example1:
+    - exampleWorld
+    - exampleAnotherWorld
+
+    exampleGroup2:
+    - exampleWorld2
+    - exampleAnotherWorld2
 
 # Placeholders formatting
 placeholder-format:
@@ -158,8 +174,7 @@ tablist-object-type:
   # custom - custom placeholder
   type: ping
 
-  # Interval for objects refreshing. In seconds.
-  # Note: The health is not updating auto due to display issues.
+  # Interval for objects refreshing in seconds.
   refresh-interval: 3
 
   # In these worlds the objects will not be displayed

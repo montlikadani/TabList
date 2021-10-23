@@ -67,11 +67,8 @@ public final class TabToggleBase {
 					continue;
 				}
 
-				UUID id;
-
 				try {
-					id = UUID.fromString(uuid);
-					TAB_TOGGLE.add(id);
+					TAB_TOGGLE.add(UUID.fromString(uuid));
 				} catch (IllegalArgumentException e) {
 				}
 			}
