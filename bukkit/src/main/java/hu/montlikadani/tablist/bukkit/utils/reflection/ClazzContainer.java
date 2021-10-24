@@ -100,10 +100,11 @@ public final class ClazzContainer {
 
 				scoreboardNameTagVisibilityEnumConstants = scoreboardNameTagVisibility.getEnumConstants();
 
+				Class<?> enumConstantClass = scoreboardNameTagVisibilityEnumConstants[0].getClass();
 				try {
-					nameTagVisibilityNameField = scoreboardNameTagVisibilityEnumConstants[0].getClass().getDeclaredField("name");
+					nameTagVisibilityNameField = enumConstantClass.getDeclaredField("name");
 				} catch (NoSuchFieldException ns) { // In case if name field not exist
-					for (Field fields : scoreboardNameTagVisibilityEnumConstants[0].getClass().getDeclaredFields()) {
+					for (Field fields : enumConstantClass.getDeclaredFields()) {
 						if (fields.getType() == String.class) {
 							nameTagVisibilityNameField = fields;
 							break;

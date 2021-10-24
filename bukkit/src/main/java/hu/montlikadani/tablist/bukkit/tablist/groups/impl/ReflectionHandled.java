@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 import com.mojang.authlib.GameProfile;
 
@@ -73,9 +74,9 @@ public class ReflectionHandled implements ITabScoreboard {
 				ClazzContainer.getScoreboardTeamNames().set(newTeamPacket, Collections.singletonList(player.getName()));
 			}
 
-			for (Team team : player.getScoreboard().getTeams()) {
-				String optionName = "";
+			String optionName = null;
 
+			for (Team team : player.getScoreboard().getTeams()) {
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1)) {
 					Team.OptionStatus optionStatus = team.getOption(Team.Option.NAME_TAG_VISIBILITY);
 
@@ -91,7 +92,7 @@ public class ReflectionHandled implements ITabScoreboard {
 						optionName = "hideForOwnTeam";
 						break;
 					default:
-						optionName = optionStatus.name().toLowerCase();
+						optionName = optionStatus.name().toLowerCase(Locale.ENGLISH);
 						break;
 					}
 				} else {
@@ -109,16 +110,19 @@ public class ReflectionHandled implements ITabScoreboard {
 						optionName = "hideForOwnTeam";
 						break;
 					default:
-						optionName = visibility.name().toLowerCase();
+						optionName = visibility.name().toLowerCase(Locale.ENGLISH);
 						break;
 					}
 				}
 
+				break;
+			}
+
+			if (optionName != null) {
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
 					for (Object f : ClazzContainer.getScoreboardNameTagVisibilityEnumConstants()) {
-						String name = (String) ClazzContainer.getNameTagVisibilityNameField().get(f);
-
-						if (optionName.equalsIgnoreCase(name)) {
+						if (optionName
+								.equalsIgnoreCase((String) ClazzContainer.getNameTagVisibilityNameField().get(f))) {
 							ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(scoreTeam, f);
 							break;
 						}
@@ -126,8 +130,6 @@ public class ReflectionHandled implements ITabScoreboard {
 				} else {
 					ClazzContainer.getNameTagVisibility().set(newTeamPacket, optionName);
 				}
-
-				break;
 			}
 
 			Object handle = ReflectionUtils.getPlayerHandle(player);
