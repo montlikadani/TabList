@@ -189,7 +189,7 @@ public final class GroupPlayer {
 				}
 			} else if (tl.hasVault()) {
 				for (String playerGroup : tl.getVaultPerm().getPlayerGroups(player)) {
-					if (playerGroup.equalsIgnoreCase(team.getTeam())) {
+					if (playerGroup != null && playerGroup.equalsIgnoreCase(team.getTeam())) {
 						if (group != team) {
 							update = true;
 							setGroup(team);
