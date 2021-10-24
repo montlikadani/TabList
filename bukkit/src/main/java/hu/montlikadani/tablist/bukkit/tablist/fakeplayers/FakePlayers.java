@@ -70,11 +70,10 @@ public class FakePlayers implements IFakePlayers {
 					continue;
 				}
 
-				String dName = tablist.getPlaceholders().replaceVariables(player, displayName);
-
 				Field listName = fakeEntityPlayer.getClass().getDeclaredField("listName");
 				listName.setAccessible(true);
-				listName.set(fakeEntityPlayer, ReflectionUtils.getAsIChatBaseComponent(dName));
+				listName.set(fakeEntityPlayer, ReflectionUtils
+						.getAsIChatBaseComponent(tablist.getPlaceholders().replaceVariables(player, displayName)));
 
 				Object entityPlayerArray = Array.newInstance(fakeEntityPlayer.getClass(), 1);
 				Array.set(entityPlayerArray, 0, fakeEntityPlayer);
@@ -210,9 +209,7 @@ public class FakePlayers implements IFakePlayers {
 			return;
 		}
 
-		this.headId = headId.toString();
-
-		ReflectionUtils.getJsonComponent().getSkinValue(this.headId).thenAcceptAsync(map -> {
+		ReflectionUtils.getJsonComponent().getSkinValue(this.headId = headId.toString()).thenAcceptAsync(map -> {
 			java.util.Map.Entry<String, String> e = map.pollFirstEntry();
 
 			profile.getProperties().get("textures").clear();

@@ -192,8 +192,7 @@ public final class JsonComponent {
 	public CompletableFuture<NavigableMap<String, String>> getSkinValue(String uuid) {
 		return CompletableFuture.supplyAsync(() -> {
 			NavigableMap<String, String> map = new java.util.TreeMap<>();
-			String content = getContent(
-					"https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.replace("-", ""));
+			String content = getContent("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid);
 
 			if (content == null) {
 				return map;

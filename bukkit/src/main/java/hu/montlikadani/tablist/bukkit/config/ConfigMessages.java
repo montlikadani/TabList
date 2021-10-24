@@ -47,7 +47,7 @@ public final class ConfigMessages {
 
 				if (!isFileExists) {
 					messagesConfig.set(key.path, str = (String) key.defaultValue);
-				} else if ((str = messagesConfig.getString(key.path)) == null) {
+				} else if ((str = messagesConfig.getString(key.path, null)) == null) {
 					continue;
 				}
 
@@ -65,7 +65,7 @@ public final class ConfigMessages {
 				}
 
 				List<?> list = messagesConfig.getList(key.path, null);
-				key.value = list != null ? list.toArray() : new String[0];
+				key.value = list != null ? list.toArray() : key.defaultValue;
 			}
 		}
 

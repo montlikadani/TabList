@@ -36,7 +36,9 @@ public class TeamHandler implements Cloneable {
 	}
 
 	public void setTabName(String tabName) {
-		this.tabName = tabName == null ? "" : tabName;
+		if (tabName != null) {
+			this.tabName = tabName;
+		}
 	}
 
 	public void setPermission(String permission) {

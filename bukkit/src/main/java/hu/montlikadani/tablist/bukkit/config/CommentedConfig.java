@@ -236,10 +236,6 @@ public class CommentedConfig extends YamlConfiguration {
 		}
 	}
 
-	public void copyDefaults() {
-		config.options().copyDefaults(true);
-	}
-
 	public boolean get(String path, boolean def) {
 		boolean value = config.getBoolean(path, def);
 

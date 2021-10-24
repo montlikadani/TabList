@@ -31,7 +31,7 @@ public class ConfigValues {
 
 	@SuppressWarnings("serial")
 	public static void loadValues(CommentedConfig c) {
-		c.copyDefaults();
+		c.getConfig().options().copyDefaults(true);
 
 		c.addComment("hook.placeholderapi", "Hook to PlaceholderAPI to use custom placeholders.");
 		c.addComment("fake-players", "Fake players that can be added to the player list.");
