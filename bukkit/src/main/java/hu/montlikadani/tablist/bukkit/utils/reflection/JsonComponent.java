@@ -102,7 +102,7 @@ public final class JsonComponent {
 						org.bukkit.ChatColor colorChar = org.bukkit.ChatColor.getByChar(nextChar);
 
 						if (colorChar != null) {
-							obj.addProperty("color", colorChar.name().toLowerCase());
+							obj.addProperty("color", colorChar.name().toLowerCase(java.util.Locale.ENGLISH));
 						}
 
 						break;
@@ -206,7 +206,12 @@ public final class JsonComponent {
 				json = new JsonParser().parse(content).getAsJsonObject();
 			}
 
-			String value = json.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+			com.google.gson.JsonArray jsonArray = json.get("properties").getAsJsonArray();
+			if (jsonArray.isEmpty()) {
+				return map;
+			}
+
+			String value = jsonArray.get(0).getAsJsonObject().get("value").getAsString();
 			String decodedValue = new String(java.util.Base64.getDecoder().decode(value));
 
 			try {

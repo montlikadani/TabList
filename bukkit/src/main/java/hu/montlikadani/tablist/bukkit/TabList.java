@@ -182,8 +182,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				new org.bstats.charts.SimplePie("enable_tablist", () -> Boolean.toString(TabConfigValues.isEnabled())));
 
 		if (ConfigValues.isTablistObjectiveEnabled()) {
-			metrics.addCustomChart(new org.bstats.charts.SimplePie("object_type",
-					ConfigValues.getObjectType().toString()::toLowerCase));
+			metrics.addCustomChart(
+					new org.bstats.charts.SimplePie("object_type", () -> ConfigValues.getObjectType().loweredName));
 		}
 
 		metrics.addCustomChart(new org.bstats.charts.SimplePie("enable_fake_players",

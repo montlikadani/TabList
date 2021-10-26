@@ -9,7 +9,6 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.user.TabListUser;
@@ -22,13 +21,21 @@ public class FakePlayers implements IFakePlayers {
 
 	public String displayName = "";
 
-	private final TabList tablist = org.bukkit.plugin.java.JavaPlugin.getPlugin(TabList.class);
+	private final TabList tablist;
 
 	private String name = "", headId = "";
 	private int ping = -1;
 
 	private Object fakeEntityPlayer;
 	private GameProfile profile;
+
+	public FakePlayers() {
+		tablist = org.bukkit.plugin.java.JavaPlugin.getPlugin(TabList.class);
+	}
+
+	protected FakePlayers(TabList tablist) {
+		this.tablist = tablist;
+	}
 
 	@Override
 	public String getName() {
@@ -101,12 +108,14 @@ public class FakePlayers implements IFakePlayers {
 			displayName = "";
 		}
 
+		java.util.Optional<UUID> opt = Util.tryParseId(headId);
+
 		if (profile == null) {
-			profile = new GameProfile(UUID.randomUUID(), name);
+			profile = new GameProfile(opt.orElse(UUID.randomUUID()), name);
 		}
 
 		try {
-			Util.tryParseId(headId).ifPresent(this::setSkin);
+			opt.ifPresent(this::setSkin);
 
 			fakeEntityPlayer = ReflectionUtils.getNewEntityPlayer(profile);
 
@@ -213,7 +222,8 @@ public class FakePlayers implements IFakePlayers {
 			java.util.Map.Entry<String, String> e = map.pollFirstEntry();
 
 			profile.getProperties().get("textures").clear();
-			profile.getProperties().put("textures", new Property("textures", e.getKey(), e.getValue()));
+			profile.getProperties().put("textures",
+					new com.mojang.authlib.properties.Property("textures", e.getKey(), e.getValue()));
 		});
 	}
 

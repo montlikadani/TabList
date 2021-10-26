@@ -73,11 +73,7 @@ public final class Objects {
 			for (TabListUser user : plugin.getUsers()) {
 				Player player = user.getPlayer();
 
-				if (player == null) {
-					continue;
-				}
-
-				if (ConfigValues.getObjectsDisabledWorlds().contains(player.getWorld().getName())) {
+				if (player == null || ConfigValues.getObjectsDisabledWorlds().contains(player.getWorld().getName())) {
 					continue;
 				}
 
@@ -91,10 +87,13 @@ public final class Objects {
 					if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
 						object.setRenderType(RenderType.INTEGER);
 					}
+
+					if (ConfigValues.getObjectType() == ObjectTypes.PING) {
+						plugin.getComplement().setDisplayName(object, "ms");
+					}
 				}
 
 				if (ConfigValues.getObjectType() == ObjectTypes.PING) {
-					plugin.getComplement().setDisplayName(object, "ms");
 					objectScore.set(TabListAPI.getPing(player));
 				} else if (ConfigValues.getObjectType() == ObjectTypes.CUSTOM) {
 					String result = plugin.getPlaceholders().replaceVariables(player,
@@ -171,6 +170,8 @@ public final class Objects {
 
 	public enum ObjectTypes {
 		HEALTH("showhealth"), PING("PingTab"), CUSTOM("customObj");
+
+		public final String loweredName = toString().toLowerCase(java.util.Locale.ENGLISH);
 
 		private String objectName;
 

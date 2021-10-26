@@ -25,10 +25,11 @@ public final class ConfigMessages {
 		return file;
 	}
 
+	@SuppressWarnings("unchecked")
 	public void createAndLoad() {
-		boolean isFileExists = file.exists();
+		boolean fileWasExisted = file.exists();
 
-		if (!isFileExists) {
+		if (!fileWasExisted) {
 			try {
 				if (!file.createNewFile()) {
 					return;
@@ -41,14 +42,15 @@ public final class ConfigMessages {
 
 		messagesConfig = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(file);
 
+		boolean saveRequired = false;
+
 		for (MessageKeys key : MessageKeys.values()) {
 			if (key.type == String.class) {
 				String str;
 
-				if (!isFileExists) {
+				if (!fileWasExisted || (str = messagesConfig.getString(key.path, null)) == null) {
 					messagesConfig.set(key.path, str = (String) key.defaultValue);
-				} else if ((str = messagesConfig.getString(key.path, null)) == null) {
-					continue;
+					saveRequired = true;
 				}
 
 				if (str.indexOf('%') < 0) {
@@ -59,17 +61,32 @@ public final class ConfigMessages {
 
 				key.value = str;
 			} else if (key.type == String[].class) {
-				if (!isFileExists) {
+				if (!fileWasExisted) {
 					messagesConfig.set(key.path, key.defaultValue);
+					saveRequired = true;
 					continue;
 				}
 
-				List<?> list = messagesConfig.getList(key.path, null);
-				key.value = list != null ? list.toArray() : key.defaultValue;
+				List<String> list;
+
+				try {
+					list = (List<String>) messagesConfig.getList(key.path, null);
+				} catch (ClassCastException ccast) {
+					messagesConfig.set(key.path, key.value = key.defaultValue);
+					saveRequired = true;
+					continue;
+				}
+
+				if (list == null) {
+					messagesConfig.set(key.path, key.value = key.defaultValue);
+					saveRequired = true;
+				} else {
+					key.value = list.toArray(new String[list.size()]);
+				}
 			}
 		}
 
-		if (!isFileExists) {
+		if (saveRequired) {
 			try {
 				messagesConfig.save(file);
 			} catch (IOException e) {

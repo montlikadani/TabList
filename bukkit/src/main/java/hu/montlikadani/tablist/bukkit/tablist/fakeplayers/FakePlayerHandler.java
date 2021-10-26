@@ -51,7 +51,7 @@ public final class FakePlayerHandler {
 			final String headUUID = cs.getString(name + ".headuuid", "");
 			final int ping = cs.getInt(name + ".ping", -1);
 
-			final FakePlayers fp = new FakePlayers();
+			final FakePlayers fp = new FakePlayers(plugin);
 			fp.displayName = cs.getString(name + ".displayname", "");
 			fp.setName(name);
 
@@ -102,7 +102,7 @@ public final class FakePlayerHandler {
 			return EditingResult.UNKNOWN;
 		}
 
-		IFakePlayers fp = new FakePlayers();
+		IFakePlayers fp = new FakePlayers(plugin);
 		fp.setName(name);
 		fp.setDisplayName(displayName);
 		fp.createFakePlayer(headUUID, ping);
