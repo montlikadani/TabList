@@ -17,11 +17,10 @@ import hu.montlikadani.tablist.bukkit.config.constantsLoader.ConfigValues;
 
 public abstract class UpdateDownloader {
 
-	private static File releasesFolder;
-
 	public static void checkFromGithub(TabList tabList) {
+		deleteDirectory(tabList);
+
 		if (!ConfigValues.isCheckUpdate()) {
-			deleteDirectory();
 			return;
 		}
 
@@ -50,7 +49,6 @@ public abstract class UpdateDownloader {
 						.parseInt(integerVersionPattern.matcher(tabList.getDescription().getVersion()).replaceAll(""));
 
 				if (newVersion <= currentVersion || currentVersion >= newVersion) {
-					deleteDirectory();
 					return false;
 				}
 
@@ -72,14 +70,16 @@ public abstract class UpdateDownloader {
 				tabList.getLogger().log(Level.INFO, "-------------");
 
 				if (!ConfigValues.isDownloadUpdates()) {
-					deleteDirectory();
 					return false;
 				}
 
-				(releasesFolder = new File(tabList.getFolder(), "releases")).mkdirs();
+				File updateFolder = tabList.getServer().getUpdateFolderFile();
+				if (!updateFolder.mkdirs()) {
+					return false;
+				}
 
 				final String name = "TabList-" + versionString;
-				final File jar = new File(releasesFolder, name + ".jar");
+				final File jar = new File(updateFolder, name + ".jar");
 
 				if (jar.exists()) {
 					return false; // Do not attempt to download the file again, when it is already downloaded
@@ -102,13 +102,16 @@ public abstract class UpdateDownloader {
 			return false;
 		}).thenAccept(success -> {
 			if (success) {
-				Util.logConsole("The new TabList has been downloaded to releases folder.");
+				Util.logConsole("The new TabList has been downloaded to plugins/update folder.");
 			}
 		});
 	}
 
-	private static void deleteDirectory() {
-		if (releasesFolder == null || !releasesFolder.exists()) {
+	// Old releases directory
+	private static void deleteDirectory(TabList tabList) {
+		File releasesFolder = new File(tabList.getFolder(), "releases");
+
+		if (!releasesFolder.exists()) {
 			return;
 		}
 
