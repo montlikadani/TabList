@@ -240,7 +240,7 @@ public class ConfigValues {
 		objectRefreshInterval = c.get("tablist-object-type.refresh-interval", 3) * 20;
 
 		checkUpdate = c.get("check-update", true);
-		downloadUpdates = c.get("download-updates", false);
+		downloadUpdates = c.get("download-updates", true);
 		logConsole = c.get("logconsole", true);
 
 		c.save();
