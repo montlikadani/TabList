@@ -271,7 +271,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		while (a < 100 && name.indexOf("%anim:") >= 0) { // when using multiple animations
 			for (TextAnimation ac : animations) {
-				name = name.replace("%anim:" + ac.getName() + "%", ac.getTime() > 0 ? ac.getText() : ac.getTexts()[0]);
+				name = name.replace("%anim:" + ac.getName() + "%", ac.getText());
 			}
 
 			a++;

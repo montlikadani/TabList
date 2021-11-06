@@ -205,7 +205,7 @@ public class ReflectionHandled implements ITabScoreboard {
 					profile = (GameProfile) ClazzContainer.getPlayerInfoDataProfileMethod().invoke(infoData);
 				}
 
-				if (!profile.getId().equals(groupPlayer.getUser().getUniqueId())) {
+				if (!groupPlayer.getUser().getUniqueId().equals(profile.getId())) {
 					continue;
 				}
 

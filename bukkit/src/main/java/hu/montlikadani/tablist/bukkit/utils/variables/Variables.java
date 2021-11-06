@@ -79,8 +79,10 @@ public final class Variables {
 			}
 		}
 
-		variables.add(new Variable("date", 3).setVariable((v, str) -> str = str.replace(v.fullName,
-				v.setAndGetRemainingValue(getTimeAsString(ConfigValues.getDateFormat())))));
+		if (ConfigValues.getDateFormat() != null) {
+			variables.add(new Variable("date", 3).setVariable((v, str) -> str = str.replace(v.fullName,
+					v.setAndGetRemainingValue(getTimeAsString(ConfigValues.getDateFormat())))));
+		}
 
 		variables.add(new Variable("online-players", 2).setVariable((v, str) -> {
 			int players = PluginUtils.countVanishedPlayers();
@@ -207,7 +209,7 @@ public final class Variables {
 			}
 		}
 
-		if (str.indexOf("%server-time%") >= 0) {
+		if (ConfigValues.getTimeFormat() != null && str.indexOf("%server-time%") >= 0) {
 			str = str.replace("%server-time%", getTimeAsString(ConfigValues.getTimeFormat()));
 		}
 
@@ -354,15 +356,11 @@ public final class Variables {
 		return (type == OperatorNodes.NodeType.PING ? builder.append((int) value) : builder.append(value)).toString();
 	}
 
-	private String getTimeAsString(String pattern) {
-		if (pattern.isEmpty()) {
-			return pattern;
-		}
-
+	private String getTimeAsString(DateTimeFormatter formatterPattern) {
 		TimeZone zone = ConfigValues.isUseSystemZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
 				: TimeZone.getTimeZone(ConfigValues.getTimeZone());
 		LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
 
-		return now.format(DateTimeFormatter.ofPattern(pattern));
+		return now.format(formatterPattern);
 	}
 }

@@ -99,12 +99,8 @@ public final class ConfigMessages {
 		String text = key.<String>get();
 
 		if (variables.length > 0 && !text.isEmpty()) {
-			for (int i = 0; i < variables.length; i++) {
-				if (variables.length >= i + 2) {
-					text = text.replace(String.valueOf(variables[i]), String.valueOf(variables[i + 1]));
-				}
-
-				i++;
+			for (int i = 0; i < variables.length; i += 2) {
+				text = text.replace(String.valueOf(variables[i]), String.valueOf(variables[i + 1]));
 			}
 
 			text = Util.colorText(text);
@@ -171,10 +167,6 @@ public final class ConfigMessages {
 			path(mainSection);
 			this.value = defaultValue = value;
 			type = String.class;
-		}
-
-		MessageKeys(String[] value) {
-			this(null, value);
 		}
 
 		MessageKeys(String mainSection, String[] value) {

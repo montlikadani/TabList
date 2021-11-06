@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.bukkit.config.constantsLoader;
 
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,8 +18,10 @@ public class ConfigValues {
 			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish,
 			hideGroupWhenAfk, preferPrimaryVaultGroup, tablistObjectiveEnabled, assignGlobalGroup;
 
-	private static String afkFormatYes, afkFormatNo, timeZone, timeFormat, dateFormat, customObjectSetting,
-			memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
+	private static String afkFormatYes, afkFormatNo, timeZone, customObjectSetting, memoryBarChar, memoryBarUsedColor,
+			memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
+
+	private static DateTimeFormatter timeFormat, dateFormat;
 
 	private static ObjectTypes objectType = ObjectTypes.PING;
 
@@ -183,8 +186,22 @@ public class ConfigValues {
 		afkFormatYes = c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r ");
 		afkFormatNo = c.get("placeholder-format.afk-status.format-no", "");
 		timeZone = c.get("placeholder-format.time.time-zone", "GMT0");
-		timeFormat = c.get("placeholder-format.time.time-format.format", "mm:HH");
-		dateFormat = c.get("placeholder-format.time.date-format.format", "dd/MM/yyyy");
+
+		String tf = c.get("placeholder-format.time.time-format.format", "mm:HH");
+
+		if (!tf.isEmpty()) {
+			try {
+				timeFormat = DateTimeFormatter.ofPattern(tf);
+			} catch (IllegalArgumentException e) {
+			}
+		}
+
+		if (!(tf = c.get("placeholder-format.time.date-format.format", "dd/MM/yyyy")).isEmpty()) {
+			try {
+				dateFormat = DateTimeFormatter.ofPattern(tf);
+			} catch (IllegalArgumentException e) {
+			}
+		}
 
 		memoryBarChar = c.get("placeholder-format.memory-bar.char", "|");
 		memoryBarUsedColor = c.get("placeholder-format.memory-bar.colors.used", "&c");
@@ -327,11 +344,11 @@ public class ConfigValues {
 		return useSystemZone;
 	}
 
-	public static String getTimeFormat() {
+	public static DateTimeFormatter getTimeFormat() {
 		return timeFormat;
 	}
 
-	public static String getDateFormat() {
+	public static DateTimeFormatter getDateFormat() {
 		return dateFormat;
 	}
 

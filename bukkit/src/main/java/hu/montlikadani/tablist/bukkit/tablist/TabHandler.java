@@ -2,7 +2,6 @@ package hu.montlikadani.tablist.bukkit.tablist;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -12,6 +11,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import hu.montlikadani.tablist.bukkit.TabList;
 import hu.montlikadani.tablist.bukkit.config.constantsLoader.TabConfigValues;
+import hu.montlikadani.tablist.bukkit.user.TabListUser;
 import hu.montlikadani.tablist.bukkit.utils.PluginUtils;
 import hu.montlikadani.tablist.bukkit.utils.StrUtil;
 import hu.montlikadani.tablist.bukkit.utils.Util;
@@ -20,7 +20,7 @@ import hu.montlikadani.tablist.bukkit.utils.variables.Variables;
 public class TabHandler {
 
 	private final TabList plugin;
-	private final UUID playerUUID;
+	private final TabListUser user;
 
 	private boolean worldEnabled = false, tabEmpty = false;
 
@@ -28,13 +28,9 @@ public class TabHandler {
 
 	private String[] header, footer;
 
-	public TabHandler(TabList plugin, UUID playerUUID) {
+	public TabHandler(TabList plugin, TabListUser user) {
 		this.plugin = plugin;
-		this.playerUUID = playerUUID;
-	}
-
-	public UUID getPlayerUUID() {
-		return playerUUID;
+		this.user = user;
 	}
 
 	public void updateTab() {
@@ -42,14 +38,14 @@ public class TabHandler {
 		worldEnabled = tabEmpty = false;
 		header = footer = null;
 
-		final Player player = plugin.getServer().getPlayer(playerUUID);
+		final Player player = user.getPlayer();
 		if (player == null) {
 			return;
 		}
 
 		sendEmptyTab(player);
 
-		if (!TabConfigValues.isEnabled() || TabToggleBase.isDisabled(playerUUID)) {
+		if (!TabConfigValues.isEnabled() || TabToggleBase.isDisabled(user.getUniqueId())) {
 			return;
 		}
 
@@ -177,12 +173,12 @@ public class TabHandler {
 			return;
 		}
 
-		final Player player = plugin.getServer().getPlayer(playerUUID);
+		final Player player = user.getPlayer();
 		if (player == null) {
 			return;
 		}
 
-		if (TabToggleBase.isDisabled(playerUUID)
+		if (TabToggleBase.isDisabled(user.getUniqueId())
 				|| (TabConfigValues.isHideTabWhenPlayerVanished() && PluginUtils.isVanished(player))
 				|| TabConfigValues.getDisabledWorlds().contains(player.getWorld().getName())
 				|| TabConfigValues.getBlackListedPlayers().contains(player.getName())) {

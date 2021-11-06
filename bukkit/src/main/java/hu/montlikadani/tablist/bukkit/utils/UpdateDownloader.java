@@ -102,7 +102,8 @@ public abstract class UpdateDownloader {
 			return false;
 		}).thenAccept(success -> {
 			if (success) {
-				Util.logConsole("The new TabList has been downloaded to plugins/update folder.");
+				Util.logConsole(
+						"The new TabList has been downloaded to " + tabList.getServer().getUpdateFolder() + " folder.");
 			}
 		});
 	}

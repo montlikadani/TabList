@@ -21,11 +21,11 @@ public class TabListPlayer implements TabListUser {
 	private HidePlayers hidePlayers;
 	private PlayerList playerList;
 
-	public TabListPlayer(TabList plugin, UUID uuid) {
+	public TabListPlayer(TabList plugin, UUID uniqueId) {
 		this.plugin = plugin;
-		this.uniqueId = uuid;
+		this.uniqueId = uniqueId;
 
-		tabHandler = new TabHandler(plugin, uuid);
+		tabHandler = new TabHandler(plugin, this);
 		groupPlayer = new GroupPlayer(plugin, this);
 	}
 
