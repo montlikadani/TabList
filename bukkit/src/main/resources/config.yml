@@ -82,16 +82,15 @@ placeholder-format:
 
     # Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
     # Format of %server-time% placeholder.
-    time-format:
-      format: "mm:HH"
+    time-format: "mm:HH"
+
     # Format of %date% placeholder.
-    date-format:
-      format: "dd/MM/yyyy"
+    date-format: "dd/MM/yyyy"
 
   # Ping color format for %ping% placeholder.
   ping:
     enable: true
-    # Operators usage: https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting
+    # https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting
     formats:
     - "&a%ping% <= 200"
     - "&6%ping% >= 200"
@@ -101,7 +100,7 @@ placeholder-format:
   tps:
     enable: true
 
-    # Operators usage: https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting
+    # https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting
     formats:
     - '&a%tps% > 18.0'
     - '&6%tps% == 16.0'

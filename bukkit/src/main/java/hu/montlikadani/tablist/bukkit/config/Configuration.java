@@ -33,7 +33,6 @@ public class Configuration {
 
 	public void loadFiles() {
 		// Monument
-		// TODO Planned remove in version: 5.5.8
 		File names = new File(plugin.getFolder(), "names.yml");
 		if (names.exists()) {
 			names.delete();

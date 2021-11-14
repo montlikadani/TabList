@@ -16,33 +16,24 @@ public class CommentedConfig extends YamlConfiguration {
 	// This map shouldn't be set as "weak" as this needed for #save method
 	private final java.util.Map<String, String> comments = new java.util.HashMap<>();
 
-	private YamlConfiguration config;
 	private File file;
 
 	public CommentedConfig(File file) {
 		this.file = file;
-		config = getYml();
-	}
-
-	public YamlConfiguration getConfig() {
-		return config;
+		loadFile();
 	}
 
 	public File getFile() {
 		return file;
 	}
 
-	private YamlConfiguration getYml() {
-		YamlConfiguration config = new YamlConfiguration();
-
+	private void loadFile() {
 		try (InputStreamReader reader = new InputStreamReader(new java.io.FileInputStream(file))) {
-			config.load(reader);
+			load(reader);
 		} catch (FileNotFoundException e) {
 		} catch (InvalidConfigurationException | IOException e) {
 			org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, e.getLocalizedMessage());
 		}
-
-		return config;
 	}
 
 	public void save() {
@@ -237,30 +228,30 @@ public class CommentedConfig extends YamlConfiguration {
 	}
 
 	public boolean get(String path, boolean def) {
-		boolean value = config.getBoolean(path, def);
+		boolean value = getBoolean(path, def);
 
 		set(path, value);
 		return value;
 	}
 
 	public int get(String path, int def) {
-		int value = config.getInt(path, def);
+		int value = getInt(path, def);
 
 		set(path, value);
 		return value;
 	}
 
 	public List<String> get(String path, List<String> def) {
-		config.addDefault(path, def);
+		addDefault(path, def);
 
-		List<String> value = config.getStringList(path);
+		List<String> value = getStringList(path);
 
 		set(path, value);
 		return value;
 	}
 
 	public String get(String path, String def) {
-		String value = config.getString(path, def);
+		String value = getString(path, def);
 
 		set(path, value);
 		return value;

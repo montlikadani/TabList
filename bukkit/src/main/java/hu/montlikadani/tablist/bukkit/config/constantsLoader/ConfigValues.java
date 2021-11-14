@@ -34,7 +34,7 @@ public class ConfigValues {
 
 	@SuppressWarnings("serial")
 	public static void loadValues(CommentedConfig c) {
-		c.getConfig().options().copyDefaults(true);
+		c.options().copyDefaults(true);
 
 		c.addComment("hook.placeholderapi", "Hook to PlaceholderAPI to use custom placeholders.");
 		c.addComment("fake-players", "Fake players that can be added to the player list.");
@@ -82,10 +82,10 @@ public class ConfigValues {
 		c.addComment("placeholder-format.time.date-format", "Format of %date% placeholder.");
 		c.addComment("placeholder-format.ping", "Ping color format for %ping% placeholder.");
 		c.addComment("placeholder-format.ping.formats",
-				"Operators usage: https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
+				"https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
 		c.addComment("placeholder-format.tps", "TPS color format for %tps% placeholder.");
 		c.addComment("placeholder-format.tps.formats",
-				"Operators usage: https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
+				"https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
 		c.addComment("placeholder-format.tps.size",
 				"How many numbers do you want to display after \".\" in %tps% placeholder?",
 				"The number should be higher than 0.", "Example: 3 = 20.14");
@@ -134,16 +134,16 @@ public class ConfigValues {
 		c.addComment("logconsole", "Log plugin messages to console?");
 
 		placeholderAPI = c.get("hook.placeholderapi", false);
-		fakePlayers = c.get("fake-players.enabled", c.getConfig().getBoolean("enable-fake-players"));
+		fakePlayers = c.get("fake-players.enabled", c.getBoolean("enable-fake-players"));
 		countFakePlayersToOnlinePlayers = c.get("fake-players.count-fake-players-to-online-players", false);
 		removeGrayColorFromTabInSpec = c.get("remove-gray-color-from-tab-in-spectator", false);
 		ignoreVanishedPlayers = c.get("ignore-vanished-players-in-online-players", false);
 		countVanishedStaff = c.get("count-vanished-staffs", true);
 		hidePlayerFromTabAfk = c.get("hide-player-from-tab-when-afk", false);
 		hidePlayersFromTab = c.get("hide-players-from-tablist", false);
-		perWorldPlayerList = c.get("per-world-player-list.enabled", c.getConfig().getBoolean("per-world-player-list"));
+		perWorldPlayerList = c.get("per-world-player-list.enabled", c.getBoolean("per-world-player-list"));
 
-		ConfigurationSection section = c.getConfig().getConfigurationSection("per-world-player-list.world-groups");
+		ConfigurationSection section = c.getConfigurationSection("per-world-player-list.world-groups");
 
 		if (section == null) {
 			section = c.createSection("per-world-player-list.world-groups",
@@ -187,7 +187,12 @@ public class ConfigValues {
 		afkFormatNo = c.get("placeholder-format.afk-status.format-no", "");
 		timeZone = c.get("placeholder-format.time.time-zone", "GMT0");
 
-		String tf = c.get("placeholder-format.time.time-format.format", "mm:HH");
+		String last = c.getString("placeholder-format.time.time-format.format", "mm:HH");
+
+		// Need to remove as this still exists so it will returns memorySection
+		c.set("placeholder-format.time.time-format", null);
+
+		String tf = c.get("placeholder-format.time.time-format", last);
 
 		if (!tf.isEmpty()) {
 			try {
@@ -196,7 +201,10 @@ public class ConfigValues {
 			}
 		}
 
-		if (!(tf = c.get("placeholder-format.time.date-format.format", "dd/MM/yyyy")).isEmpty()) {
+		last = c.getString("placeholder-format.time.date-format.format", "dd/MM/yyyy");
+		c.set("placeholder-format.time.date-format", null);
+
+		if (!(tf = c.get("placeholder-format.time.date-format", last)).isEmpty()) {
 			try {
 				dateFormat = DateTimeFormatter.ofPattern(tf);
 			} catch (IllegalArgumentException e) {

@@ -62,7 +62,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 		boolean isPlayer = sender instanceof Player;
 
-		boolean isHelp = false;
+		boolean isHelp;
 		if ((isHelp = args[0].equalsIgnoreCase("help")) && isPlayer && !sender.hasPermission(Perm.HELP.getPerm())) {
 			sendMsg(sender,
 					ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.HELP.getPerm()));

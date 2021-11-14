@@ -132,7 +132,7 @@ public final class fakeplayers implements ICommand {
 			}
 
 			ConfigMessages.getList(ConfigMessages.MessageKeys.FAKE_PLAYER_LIST, "%amount%", list.size(),
-					"%fake-players%", msg).forEach(line -> sendMsg(sender, Util.colorText(line)));
+					"%fake-players%", msg).forEach(line -> sendMsg(sender, line));
 			break;
 		case SETSKIN:
 			if ((output = handler.setSkin(args[2], args[3])) == EditingResult.NOT_EXIST) {

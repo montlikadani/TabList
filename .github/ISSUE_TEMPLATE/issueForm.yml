@@ -17,7 +17,7 @@ body:
         - Other
     validations:
       required: true
-  - type: textarea
+  - type: input
     attributes:
       label: TabList version
       description: Run `/version tablist` in the console, then copy and paste the full output into here.
@@ -33,7 +33,7 @@ body:
     attributes:
       label: Relevant plugins
       description: If there is some conflicting or relevant plugins with tablist you can insert here the name of the plugin(s). But it is enough if you run `/plugins` command and inserts here the output.
-  - type: input
+  - type: textarea
     attributes:
       label: Console error (if applicable)
       description: Upload the console error to https://paste.gg/ or any other paste server and insert the link into this box.

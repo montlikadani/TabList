@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist.bukkit;
 
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.bukkit.entity.Player;
@@ -33,32 +32,33 @@ public final class Objects {
 	void registerHealthTab(Player pl) {
 		if (ConfigValues.getObjectsDisabledWorlds().contains(pl.getWorld().getName())
 				|| ConfigValues.getHealthObjectRestricted().contains(pl.getName())) {
-			unregisterObjective(getObject(pl.getScoreboard()));
+			unregisterObjective(pl.getScoreboard().getObjective(ConfigValues.getObjectType().objectName));
 			return;
 		}
 
 		// TODO Fix not show correctly the health after reload
 
 		final Scoreboard board = pl.getScoreboard();
+		final String objectName = ConfigValues.getObjectType().objectName;
 
-		if (!getObject(board).isPresent()) {
-			Tasks.submitSync(() -> {
-				Objective objective;
-
-				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-					String name = ConfigValues.getObjectType().objectName;
-
-					objective = plugin.getComplement().registerNewObjective(board, name, "health", name,
-							RenderType.HEARTS);
-				} else {
-					objective = board.registerNewObjective(ConfigValues.getObjectType().objectName, "health");
-					plugin.getComplement().setDisplayName(objective, org.bukkit.ChatColor.RED + "\u2665");
-				}
-
-				objective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-				return 1;
-			});
+		if (board.getObjective(objectName) != null) {
+			return;
 		}
+
+		Tasks.submitSync(() -> {
+			Objective objective;
+
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+				objective = plugin.getComplement().registerNewObjective(board, objectName, "health", objectName,
+						RenderType.HEARTS);
+			} else {
+				objective = board.registerNewObjective(objectName, "health");
+				plugin.getComplement().setDisplayName(objective, org.bukkit.ChatColor.RED + "\u2665");
+			}
+
+			objective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+			return 1;
+		});
 	}
 
 	void startTask() {
@@ -77,10 +77,11 @@ public final class Objects {
 					continue;
 				}
 
-				Objective object = getObject(player.getScoreboard()).orElse(null);
+				ObjectTypes type = ConfigValues.getObjectType();
+				Objective object = player.getScoreboard().getObjective(type.objectName);
+
 				if (object == null) {
-					object = player.getScoreboard().registerNewObjective(ConfigValues.getObjectType().objectName,
-							"dummy");
+					object = player.getScoreboard().registerNewObjective(type.objectName, "dummy");
 
 					object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
 
@@ -88,14 +89,14 @@ public final class Objects {
 						object.setRenderType(RenderType.INTEGER);
 					}
 
-					if (ConfigValues.getObjectType() == ObjectTypes.PING) {
+					if (type == ObjectTypes.PING) {
 						plugin.getComplement().setDisplayName(object, "ms");
 					}
 				}
 
-				if (ConfigValues.getObjectType() == ObjectTypes.PING) {
+				if (type == ObjectTypes.PING) {
 					objectScore.set(TabListAPI.getPing(player));
-				} else if (ConfigValues.getObjectType() == ObjectTypes.CUSTOM) {
+				} else if (type == ObjectTypes.CUSTOM) {
 					String result = plugin.getPlaceholders().replaceVariables(player,
 							ConfigValues.getCustomObjectSetting());
 					result = StrUtil.getNumberEscapeSequence().matcher(result).replaceAll("");
@@ -109,20 +110,22 @@ public final class Objects {
 					}
 				}
 
-				String pName = player.getName();
-				if (pName.length() > 40) {
-					pName = pName.substring(0, 40);
-				}
+				String entry = player.getName();
 
-				final String entry = pName;
+				if (entry.length() > 40) {
+					entry = entry.substring(0, 40);
+				}
 
 				if (object.getScore(entry).getScore() != objectScore.get()) {
 					for (TabListUser us : plugin.getUsers()) {
 						Player pl = us.getPlayer();
 
 						if (pl != null) {
-							getObject(pl.getScoreboard())
-									.ifPresent(objective -> objective.getScore(entry).setScore(objectScore.get()));
+							Objective objective = pl.getScoreboard().getObjective(type.objectName);
+
+							if (objective != null) {
+								objective.getScore(entry).setScore(objectScore.get());
+							}
 						}
 					}
 				}
@@ -142,30 +145,10 @@ public final class Objects {
 		return task == null;
 	}
 
-	public void unregisterObjective(final Optional<Objective> obj) {
-		obj.ifPresent(Objective::unregister);
-	}
-
-	public void unregisterObjectivesForEveryone() {
-		if (!plugin.getUsers().isEmpty()) {
-			for (ObjectTypes t : ObjectTypes.values()) {
-				for (TabListUser user : plugin.getUsers()) {
-					Player player = user.getPlayer();
-
-					if (player != null) {
-						unregisterObjective(getObject(player.getScoreboard(), t));
-					}
-				}
-			}
+	public void unregisterObjective(Objective obj) {
+		if (obj != null) {
+			obj.unregister();
 		}
-	}
-
-	public Optional<Objective> getObject(Scoreboard board) {
-		return getObject(board, ConfigValues.getObjectType());
-	}
-
-	public Optional<Objective> getObject(Scoreboard board, ObjectTypes type) {
-		return Optional.ofNullable(board.getObjective(type.objectName));
 	}
 
 	public enum ObjectTypes {

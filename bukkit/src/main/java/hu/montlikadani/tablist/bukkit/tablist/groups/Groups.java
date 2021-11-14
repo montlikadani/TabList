@@ -217,6 +217,10 @@ public final class Groups {
 		GroupPlayer groupPlayer = user.getGroupPlayer();
 		sortedPlayers.remove(groupPlayer);
 
+		if (!sortedPlayers.isEmpty()) {
+			sortPlayers();
+		}
+
 		groupPlayer.getTabTeam().unregisterTeam(groupPlayer);
 		groupPlayer.removeGroup();
 	}
@@ -324,5 +328,4 @@ public final class Groups {
 
 		setToSort(false);
 	}
-
 }

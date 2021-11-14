@@ -94,10 +94,6 @@ public class TabListPlayer implements TabListUser {
 		return o instanceof TabListPlayer && uniqueId.equals(((TabListPlayer) o).uniqueId);
 	}
 
-	public final void removeCache() {
-		playerList = null;
-	}
-
 	public HidePlayers getHidePlayers() {
 		return hidePlayers;
 	}
