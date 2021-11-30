@@ -11,30 +11,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2.4.0
-    # https://github.com/dorny/paths-filter
-    # We uses 2.10.0 version of this due to https://github.com/dorny/paths-filter/issues/115
-    - uses: dorny/paths-filter@v2.10.0
-      id: changes
-      with:
-        filters: |
-          bukkit:
-          - 'bukkit/**'
-          - 'global/**'
-
     - name: Set up JDK 16
-      # run only if 'bukkit' files were changed
-      if: steps.changes.outputs.bukkit == 'true'
       uses: actions/setup-java@v2.3.1
       with:
         java-version: 16
         distribution: 'temurin'
 
     - name: Build Bukkit
-      if: steps.changes.outputs.bukkit == 'true'
       run: mvn -B package -pl bukkit,global --file ${{ github.workspace }}/pom.xml
 
     - name: Upload Bukkit artifact
-      if: steps.changes.outputs.bukkit == 'true'
       uses: actions/upload-artifact@v2.2.4
       with:
         name: tablist-dev
@@ -45,28 +31,16 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2.4.0
-    - uses: dorny/paths-filter@v2.10.0
-      id: changes
-      with:
-        filters: |
-          bungee:
-          - 'bungee/**'
-          - 'global/**'
-
     - name: Set up JDK 16
-      # run only if 'bungee' files were changed
-      if: steps.changes.outputs.bungee == 'true'
       uses: actions/setup-java@v2.3.1
       with:
         java-version: 16
         distribution: 'temurin'
 
     - name: Build Bungee
-      if: steps.changes.outputs.bungee == 'true'
       run: mvn -B package -pl bungee,global --file ${{ github.workspace }}/pom.xml
 
     - name: Upload Bungee artifact
-      if: steps.changes.outputs.bungee == 'true'
       uses: actions/upload-artifact@v2.2.4
       with:
         name: tablist-dev
