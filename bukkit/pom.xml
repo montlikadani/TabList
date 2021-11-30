@@ -2,47 +2,27 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>hu.montlikadani</groupId>
-	<artifactId>TabList</artifactId>
-	<packaging>jar</packaging>
-	<name>TabList</name>
+
+	<parent>
+		<groupId>hu.montlikadani</groupId>
+		<artifactId>TabList</artifactId>
+		<version>1.0.0</version>
+	</parent>
+
+	<artifactId>bukkit</artifactId>
+	<name>TabList-bukkit</name>
 	<version>5.5.7</version>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
 	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<artifactId>maven-antrun-plugin</artifactId>
-					<version>3.0.0</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-assembly-plugin</artifactId>
-					<version>3.3.0</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-dependency-plugin</artifactId>
-					<version>3.2.0</version>
-				</plugin>
-				<plugin>
-					<artifactId>maven-release-plugin</artifactId>
-					<version>3.0.0-M4</version>
-				</plugin>
-			</plugins>
-		</pluginManagement>
+		<finalName>${project.name}-${project.version}</finalName>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+		</resources>
+
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.8.1</version>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -74,7 +54,7 @@
 					<relocations>
 						<relocation>
 							<pattern>org.bstats</pattern>
-							<shadedPattern>hu.montlikadani.tablist.bukkit.utils</shadedPattern>
+							<shadedPattern>hu.montlikadani.tablist.utils</shadedPattern>
 							<excludes>
 								<exclude>META-INF/**</exclude>
 							</excludes>
@@ -82,102 +62,10 @@
 					</relocations>
 				</configuration>
 			</plugin>
-			<plugin>
-				<artifactId>maven-clean-plugin</artifactId>
-				<version>3.1.0</version>
-				<executions>
-					<execution>
-						<id>default-clean</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>clean</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-resources-plugin</artifactId>
-				<version>3.2.0</version>
-				<executions>
-					<execution>
-						<id>default-testResources</id>
-						<phase>process-test-resources</phase>
-						<goals>
-							<goal>testResources</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>default-resources</id>
-						<phase>process-resources</phase>
-						<goals>
-							<goal>resources</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>3.2.0</version>
-				<executions>
-					<execution>
-						<id>default-jar</id>
-						<phase>package</phase>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.0.0-M5</version>
-				<executions>
-					<execution>
-						<id>default-test</id>
-						<phase>test</phase>
-						<goals>
-							<goal>test</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-install-plugin</artifactId>
-				<version>3.0.0-M1</version>
-				<executions>
-					<execution>
-						<id>default-install</id>
-						<phase>install</phase>
-						<goals>
-							<goal>install</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-			<plugin>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<version>3.0.0-M1</version>
-				<executions>
-					<execution>
-						<id>default-deploy</id>
-						<phase>deploy</phase>
-						<goals>
-							<goal>deploy</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
 		</plugins>
 	</build>
 
 	<repositories>
-		<repository>
-			<id>bungeecord-repo</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<releases>
-				<enabled>false</enabled>
-			</releases>
-		</repository>
 		<repository>
 			<id>papermc</id>
 			<url>https://papermc.io/repo/repository/maven-public/</url>
@@ -218,11 +106,16 @@
 	</repositories>
 
 	<dependencies>
+		<dependency>
+			<groupId>hu.montlikadani</groupId>
+			<artifactId>global</artifactId>
+			<version>1.0.0</version>
+		</dependency>
 		<!-- Mojang -->
 		<dependency>
 			<groupId>com.mojang</groupId>
 			<artifactId>authlib</artifactId>
-			<version>3.1.36</version>
+			<version>3.2.38</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -249,12 +142,16 @@
 					<groupId>commons-io</groupId>
 					<artifactId>commons-io</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-lang3</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>io.papermc.paper</groupId>
 			<artifactId>paper-api</artifactId>
-			<version>1.17.1-R0.1-SNAPSHOT</version>
+			<version>1.18-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -280,37 +177,6 @@
 				<exclusion>
 					<groupId>org.checkerframework</groupId>
 					<artifactId>checker-qual</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- BungeeCord -->
-		<dependency>
-			<groupId>net.md-5</groupId>
-			<artifactId>bungeecord-api</artifactId>
-			<version>1.17-R0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>com.google.guava</groupId>
-					<artifactId>guava</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>
-						netty-transport-native-unix-common
-					</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.md-5</groupId>
-					<artifactId>bungeecord-chat</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>io.netty</groupId>
-					<artifactId>netty-codec</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>se.llbit</groupId>
-					<artifactId>jo-nbt</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>

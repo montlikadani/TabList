@@ -1,5 +1,4 @@
-# Format of the displayed name: prefix - tabname - suffix
-# This will be applied to all players without any other group assigned
+# This global group will be applied to all players
 globalGroup:
   prefix: ""
   tabname: ""

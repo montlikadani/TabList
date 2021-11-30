@@ -1,5 +1,5 @@
 name: TabList
-main: hu.montlikadani.tablist.bukkit.TabList
+main: hu.montlikadani.tablist.TabList
 version: 5.5.7
 author: montlikadani
 description: An ultimate animated tablist.

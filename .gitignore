@@ -3,8 +3,16 @@ target/
 bin/
 
 # IDE files
-Sponge/.project
-Sponge/.classpath
+bungee/.project
+bungee/.classpath
+bungee/.settings
+bungee/target
+
 bukkit/.project
 bukkit/.classpath
-*.prefs
+bukkit/.settings
+bukkit/target
+
+.project
+.classpath
+.settings
