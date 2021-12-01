@@ -87,12 +87,14 @@ public final class ClazzContainer {
 					scoreboardTeamSetSuffix = scoreboardTeamClass.getMethod("c", iChatBaseComponent);
 					scoreboardTeamSetDisplayName = scoreboardTeamClass.getMethod("a", iChatBaseComponent);
 					playerNameSetMethod = scoreboardTeamClass.getMethod("g"); // getPlayers
+					(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("e")).setAccessible(true); // players
 				} else {
 					scoreboardTeamSetPrefix = scoreboardTeamClass.getMethod("setPrefix", iChatBaseComponent);
 					scoreboardTeamSetSuffix = scoreboardTeamClass.getMethod("setSuffix", iChatBaseComponent);
 					scoreboardTeamSetNameTagVisibility = scoreboardTeamClass.getMethod("setNameTagVisibility",
 							scoreboardNameTagVisibility);
 					playerNameSetMethod = scoreboardTeamClass.getMethod("getPlayerNameSet");
+					(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("f")).setAccessible(true);
 				}
 
 				packetScoreboardTeamRemove = packetPlayOutScoreboardTeam.getMethod("a", scoreboardTeamClass);
@@ -120,7 +122,6 @@ public final class ClazzContainer {
 				}
 
 				scoreboardTeamConstructor = scoreboardTeamClass.getConstructor(scoreboardClass, String.class);
-				(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("f")).setAccessible(true);
 			} else {
 				packetPlayOutScoreboardTeamConstructor = packetPlayOutScoreboardTeam.getConstructor();
 

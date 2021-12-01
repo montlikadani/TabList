@@ -11,10 +11,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2.4.0
-    - name: Set up JDK 16
+    - name: Set up JDK
       uses: actions/setup-java@v2.3.1
       with:
-        java-version: 16
+        java-version: 17
         distribution: 'temurin'
 
     - name: Build Bukkit
@@ -31,10 +31,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2.4.0
-    - name: Set up JDK 16
+    - name: Set up JDK
       uses: actions/setup-java@v2.3.1
       with:
-        java-version: 16
+        java-version: 17
         distribution: 'temurin'
 
     - name: Build Bungee
