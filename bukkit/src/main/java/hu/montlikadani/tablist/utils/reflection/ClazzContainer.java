@@ -91,6 +91,7 @@ public final class ClazzContainer {
 				} else {
 					scoreboardTeamSetPrefix = scoreboardTeamClass.getMethod("setPrefix", iChatBaseComponent);
 					scoreboardTeamSetSuffix = scoreboardTeamClass.getMethod("setSuffix", iChatBaseComponent);
+					scoreboardTeamSetDisplayName = scoreboardTeamClass.getMethod("setDisplayName", iChatBaseComponent);
 					scoreboardTeamSetNameTagVisibility = scoreboardTeamClass.getMethod("setNameTagVisibility",
 							scoreboardNameTagVisibility);
 					playerNameSetMethod = scoreboardTeamClass.getMethod("getPlayerNameSet");
