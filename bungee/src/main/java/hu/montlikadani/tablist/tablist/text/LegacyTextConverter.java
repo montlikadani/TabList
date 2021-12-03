@@ -203,7 +203,7 @@ public final class LegacyTextConverter {
 		object.addProperty("text", builder.toString());
 		JSON_OBJECTS.add(object);
 
-		return "[\"\"," + hu.montlikadani.tablist.Global.replaceFrom(GSON.toJson(JSON_OBJECTS), 0, "[", "", 1);
+		return "[\"\"," + Global.replaceFrom(GSON.toJson(JSON_OBJECTS), 0, "[", "", 1);
 	}
 
 	private static boolean isHexaColour(int start, int endIndex, int maxLength, String text) {
