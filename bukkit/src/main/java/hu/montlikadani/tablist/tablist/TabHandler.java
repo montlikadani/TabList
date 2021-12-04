@@ -33,7 +33,7 @@ public class TabHandler {
 		this.user = user;
 	}
 
-	public void updateTab() {
+	public void loadTabComponents() {
 		worldList.clear();
 		worldEnabled = tabEmpty = false;
 		header = footer = null;

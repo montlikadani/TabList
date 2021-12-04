@@ -39,7 +39,7 @@ public final class TabManager {
 			return;
 		}
 
-		user.getTabHandler().updateTab();
+		user.getTabHandler().loadTabComponents();
 
 		final int refreshTime = TabConfigValues.getUpdateInterval();
 		if (refreshTime < 1) {

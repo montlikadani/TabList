@@ -41,15 +41,15 @@ public final class toggle implements ICommand {
 
 		if (args.length == 2) {
 			if (args[1].equalsIgnoreCase("all")) {
-				if (sender instanceof Player && !sender.hasPermission(Perm.TOGGLEALL.getPerm())) {
+				if (sender instanceof Player && !sender.hasPermission(Perm.TOGGLEALL.permission)) {
 					sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%",
-							Perm.TOGGLEALL.getPerm()));
+							Perm.TOGGLEALL.permission));
 					return false;
 				}
 
 				if (!(TabToggleBase.globallySwitched = !TabToggleBase.globallySwitched)) {
 					for (TabListUser user : plugin.getUsers()) {
-						user.getTabHandler().updateTab();
+						user.getTabHandler().loadTabComponents();
 					}
 				}
 
@@ -79,7 +79,7 @@ public final class toggle implements ICommand {
 			return false;
 		}
 
-		user.getTabHandler().updateTab();
+		user.getTabHandler().loadTabComponents();
 		return true;
 	}
 }

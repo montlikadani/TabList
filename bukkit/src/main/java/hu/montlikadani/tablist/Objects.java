@@ -15,6 +15,7 @@ import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.StrUtil;
 import hu.montlikadani.tablist.utils.task.Tasks;
+import hu.montlikadani.tablist.utils.variables.simplePlaceholder.SimplePluginPlaceholder;
 
 @SuppressWarnings("deprecation")
 public final class Objects {
@@ -24,7 +25,7 @@ public final class Objects {
 
 	private BukkitTask task;
 
-	public Objects(TabList plugin) {
+	Objects(TabList plugin) {
 		this.plugin = plugin;
 	}
 
@@ -60,8 +61,14 @@ public final class Objects {
 		});
 	}
 
+	private SimplePluginPlaceholder customPlaceholder;
+
 	void startTask() {
 		cancelTask();
+
+		if (ConfigValues.getObjectType() == ObjectTypes.CUSTOM) {
+			customPlaceholder = SimplePluginPlaceholder.findOne(ConfigValues.getCustomObjectSetting());
+		}
 
 		task = Tasks.submitAsync(() -> {
 			if (plugin.getUsers().isEmpty()) {
@@ -102,17 +109,7 @@ public final class Objects {
 				if (type == ObjectTypes.PING) {
 					objectScore.set(TabListAPI.getPing(player));
 				} else if (type == ObjectTypes.CUSTOM) {
-					String result = plugin.getPlaceholders().replaceVariables(player,
-							ConfigValues.getCustomObjectSetting());
-					result = StrUtil.getNumberEscapeSequence().matcher(result).replaceAll("");
-
-					try {
-						objectScore.set(Integer.parseInt(result));
-					} catch (NumberFormatException e) {
-						hu.montlikadani.tablist.utils.Util.logConsole(
-								"Invalid custom objective with " + ConfigValues.getCustomObjectSetting() + " value.");
-						return;
-					}
+					objectScore.set(getValue(player, ConfigValues.getCustomObjectSetting()));
 				}
 
 				String entry = player.getName();
@@ -140,6 +137,41 @@ public final class Objects {
 				}
 			}
 		}, ConfigValues.getObjectRefreshInterval(), ConfigValues.getObjectRefreshInterval());
+	}
+
+	private int getValue(Player player, final String text) {
+		if (customPlaceholder == null) {
+			return parsePapi(player, text);
+		}
+
+		switch (customPlaceholder.placeholder) {
+		case EXP_TO_LEVEL:
+			return player.getExpToLevel();
+		case LEVEL:
+			return player.getLevel();
+		case PING:
+			return TabListAPI.getPing(player);
+		case LIGHT_LEVEL:
+			return player.getLocation().getBlock().getLightLevel();
+		default:
+			return parsePapi(player, text);
+		}
+	}
+
+	private int parsePapi(Player player, String from) {
+		if (plugin.hasPapi()) {
+			String result = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, from);
+			result = StrUtil.getNumberEscapeSequence().matcher(result).replaceAll("");
+
+			try {
+				return Integer.parseInt(result);
+			} catch (NumberFormatException e) {
+				hu.montlikadani.tablist.utils.Util.logConsole(
+						"Invalid custom objective with " + ConfigValues.getCustomObjectSetting() + " value.");
+			}
+		}
+
+		return 0;
 	}
 
 	public void cancelTask() {

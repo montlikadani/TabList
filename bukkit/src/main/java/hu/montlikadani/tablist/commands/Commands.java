@@ -63,9 +63,9 @@ public final class Commands implements CommandExecutor, TabCompleter {
 		boolean isPlayer = sender instanceof Player;
 
 		boolean isHelp;
-		if ((isHelp = args[0].equalsIgnoreCase("help")) && isPlayer && !sender.hasPermission(Perm.HELP.getPerm())) {
+		if ((isHelp = args[0].equalsIgnoreCase("help")) && isPlayer && !sender.hasPermission(Perm.HELP.permission)) {
 			sendMsg(sender,
-					ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.HELP.getPerm()));
+					ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.HELP.permission));
 			return true;
 		}
 
@@ -79,7 +79,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			}
 
 			if (isHelp) {
-				if (!isPlayer || sender.hasPermission(proc.permission().getPerm())) {
+				if (!isPlayer || sender.hasPermission(proc.permission().permission)) {
 					String params = proc.params().isEmpty() ? "" : " " + proc.params();
 					sendMsg(sender, colorText("&7/" + label + " " + proc.name() + params + " -&6 " + proc.desc()));
 				}
@@ -100,9 +100,9 @@ public final class Commands implements CommandExecutor, TabCompleter {
 				return true;
 			}
 
-			if (isPlayer && !sender.hasPermission(proc.permission().getPerm())) {
+			if (isPlayer && !sender.hasPermission(proc.permission().permission)) {
 				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%",
-						proc.permission().getPerm()));
+						proc.permission().permission));
 				return true;
 			}
 
@@ -165,7 +165,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 		for (ICommand cmd : cmds) {
 			CommandProcessor proc = cmd.getClass().getAnnotation(CommandProcessor.class);
 
-			if (proc != null && (!isPlayer || sender.hasPermission(proc.permission().getPerm()))) {
+			if (proc != null && (!isPlayer || sender.hasPermission(proc.permission().permission))) {
 				c.add(proc.name());
 			}
 		}

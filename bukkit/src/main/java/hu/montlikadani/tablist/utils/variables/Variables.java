@@ -243,16 +243,20 @@ public final class Variables {
 		return str;
 	}
 
-	private org.bukkit.plugin.Plugin papi;
-
 	@SuppressWarnings("deprecation")
 	String setPlayerPlaceholders(Player p, String s) {
-		if (ConfigValues.isPlaceholderAPI()) {
-			if (papi == null) {
-				papi = plugin.getServer().getPluginManager().getPlugin("PlaceholderAPI");
-			}
+		// TODO we need optimization for these variables so that there is only a
+		// one-time check for placeholders at load time.
 
-			if (papi != null && papi.isEnabled()) {
+		if (plugin.hasPapi()) {
+			if (s.indexOf("server_total_chunks%") >= 0 || s.indexOf("server_total_living_entities%") >= 0
+					|| s.indexOf("server_total_entities%") >= 0 || s.indexOf("%sync:") >= 0) {
+				s = s.replace("sync:", "");
+
+				final String str = s;
+
+				s = hu.montlikadani.tablist.utils.task.Tasks.submitSync(() -> PlaceholderAPI.setPlaceholders(p, str));
+			} else {
 				s = PlaceholderAPI.setPlaceholders(p, s);
 			}
 		}
@@ -300,7 +304,7 @@ public final class Variables {
 		}
 
 		if (s.indexOf("%light-level%") >= 0) {
-			s = s.replace("%light-level%", Byte.toString(p.getLocation().getBlock().getLightLevel()));
+			s = s.replace("%light-level%", Integer.toString((int) p.getLocation().getBlock().getLightLevel()));
 		}
 
 		if (s.indexOf("%ip-address%") >= 0) {

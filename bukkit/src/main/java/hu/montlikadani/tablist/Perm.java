@@ -9,20 +9,15 @@ public enum Perm {
 	PLAYER_META("playermeta"),
 	TOGGLE,
 	TOGGLEALL("toggle.all"),
-	//SEESPECTATOR("seespectators"),
 	;
 
-	private String perm;
+	public final String permission;
 
 	Perm() {
-		this("");
+		this.permission = "tablist." + toString().toLowerCase(java.util.Locale.ENGLISH);
 	}
 
-	Perm(String perm) {
-		this.perm = "tablist." + (perm.isEmpty() ? toString().toLowerCase(java.util.Locale.ENGLISH) : perm);
-	}
-
-	public String getPerm() {
-		return perm;
+	Perm(String permission) {
+		this.permission = "tablist." + permission;
 	}
 }

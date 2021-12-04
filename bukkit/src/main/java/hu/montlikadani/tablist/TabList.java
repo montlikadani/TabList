@@ -51,6 +51,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	private FakePlayerHandler fakePlayerHandler;
 	private Complement complement;
 
+	private org.bukkit.plugin.Plugin papi;
+
 	private boolean isPaper = false, hasVault = false;
 
 	private final Set<TextAnimation> animations = new HashSet<>(8);
@@ -84,12 +86,9 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		conf.loadFiles();
 		variables.load();
 
-		if (ConfigValues.isPlaceholderAPI()) {
-			org.bukkit.plugin.Plugin papi = getServer().getPluginManager().getPlugin("PlaceholderAPI");
-
-			if (papi != null && papi.isEnabled()) {
-				logConsole("Hooked " + papi.getName() + " version: " + papi.getDescription().getVersion());
-			}
+		if (ConfigValues.isPlaceholderAPI()
+				&& (papi = getServer().getPluginManager().getPlugin("PlaceholderAPI")) != null && papi.isEnabled()) {
+			logConsole("Hooked " + papi.getName() + " version: " + papi.getDescription().getVersion());
 		}
 
 		hasVault = initVaultPerm();
@@ -430,6 +429,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	public boolean isPaper() {
 		return isPaper;
+	}
+
+	public boolean hasPapi() {
+		return papi != null && papi.isEnabled();
 	}
 
 	public Variables getPlaceholders() {
