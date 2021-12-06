@@ -11,7 +11,7 @@
 
 	<artifactId>bukkit</artifactId>
 	<name>TabList-bukkit</name>
-	<version>5.5.9</version>
+	<version>5.6.0</version>
 
 	<build>
 		<finalName>${project.name}-${project.version}</finalName>
