@@ -189,12 +189,15 @@ public class ConfigValues {
 		afkFormatNo = c.get("placeholder-format.afk-status.format-no", "");
 		timeZone = c.get("placeholder-format.time.time-zone", "GMT0");
 
-		String last = c.getString("placeholder-format.time.time-format.format", "mm:HH");
+		String old = "placeholder-format.time.time-format.format";
+		String last = c.getString(old, null);
 
-		// Need to remove as this still exists so it will returns memorySection
-		c.set("placeholder-format.time.time-format", null);
+		if (last != null) {
+			c.set(old, null); // Need to remove as this still exists so it will returns memorySection
+			c.set("placeholder-format.time.time-format", last);
+		}
 
-		String tf = c.get("placeholder-format.time.time-format", last);
+		String tf = c.get("placeholder-format.time.time-format", "mm:HH");
 
 		if (!tf.isEmpty()) {
 			try {
@@ -203,10 +206,12 @@ public class ConfigValues {
 			}
 		}
 
-		last = c.getString("placeholder-format.time.date-format.format", "dd/MM/yyyy");
-		c.set("placeholder-format.time.date-format", null);
+		if ((last = c.getString(old = "placeholder-format.time.date-format.format", null)) != null) {
+			c.set(old, null);
+			c.set("placeholder-format.time.date-format", last);
+		}
 
-		if (!(tf = c.get("placeholder-format.time.date-format", last)).isEmpty()) {
+		if (!(tf = c.get("placeholder-format.time.date-format", "dd/MM/yyyy")).isEmpty()) {
 			try {
 				dateFormat = DateTimeFormatter.ofPattern(tf);
 			} catch (IllegalArgumentException e) {

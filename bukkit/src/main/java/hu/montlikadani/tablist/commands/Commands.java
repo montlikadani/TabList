@@ -117,6 +117,8 @@ public final class Commands implements CommandExecutor, TabCompleter {
 		return true;
 	}
 
+	private final ContextArguments[] values = ContextArguments.values();
+
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 		List<String> cmds = new ArrayList<>(this.cmds.size());
@@ -143,7 +145,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 					cmds.add(fp.getName());
 				}
 			} else if (args[0].equalsIgnoreCase("group") || args[0].equalsIgnoreCase("player")) {
-				for (ContextArguments ca : ContextArguments.values()) {
+				for (ContextArguments ca : values) {
 					cmds.add(ca.loweredName);
 				}
 			}

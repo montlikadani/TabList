@@ -29,7 +29,7 @@ import hu.montlikadani.tablist.utils.Util;
 public final class fakeplayers implements ICommand {
 
 	private enum Actions {
-		ADD, RENAME, SETDISPLAYNAME, SETSKIN, SETPING, REMOVE, LIST;
+		ADD, RENAME, SETDISPLAYNAME, SETSKIN, SETPING, REMOVE, LIST
 	}
 
 	private void sendList(String label, CommandSender sender) {
