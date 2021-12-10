@@ -304,7 +304,7 @@ public final class Variables {
 		}
 
 		if (s.indexOf("%light-level%") >= 0) {
-			s = s.replace("%light-level%", Integer.toString((int) p.getLocation().getBlock().getLightLevel()));
+			s = s.replace("%light-level%", Integer.toString(p.getLocation().getBlock().getLightLevel()));
 		}
 
 		if (s.indexOf("%ip-address%") >= 0) {

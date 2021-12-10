@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.utils.reflection;
 
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.NavigableMap;
 import java.util.concurrent.CompletableFuture;
@@ -186,39 +187,43 @@ public final class JsonComponent {
 	public CompletableFuture<NavigableMap<String, String>> getSkinValue(String uuid) {
 		return CompletableFuture.supplyAsync(() -> {
 			NavigableMap<String, String> map = new java.util.TreeMap<>();
-			InputStreamReader content = getContent(
-					"https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unasigned=false");
 
-			if (content == null) {
-				return map;
+			try (InputStreamReader content = getContent(
+					"https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unasigned=false")) {
+				if (content == null) {
+					return map;
+				}
+
+				JsonObject json;
+
+				try {
+					json = JsonParser.parseReader(content).getAsJsonObject();
+				} catch (NoSuchMethodError e) {
+					json = new JsonParser().parse(content).getAsJsonObject();
+				}
+
+				com.google.gson.JsonArray jsonArray = json.get("properties").getAsJsonArray();
+				if (jsonArray.isEmpty()) {
+					return map;
+				}
+
+				String value = jsonArray.get(0).getAsJsonObject().get("value").getAsString();
+				String decodedValue = new String(java.util.Base64.getDecoder().decode(value));
+
+				try {
+					json = JsonParser.parseString(decodedValue).getAsJsonObject();
+				} catch (NoSuchMethodError e) {
+					json = new JsonParser().parse(decodedValue).getAsJsonObject();
+				}
+
+				String texture = json.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url")
+						.getAsString();
+
+				map.put(value, texture);
+			} catch (IOException e1) {
+				e1.printStackTrace();
 			}
 
-			JsonObject json;
-
-			try {
-				json = JsonParser.parseReader(content).getAsJsonObject();
-			} catch (NoSuchMethodError e) {
-				json = new JsonParser().parse(content).getAsJsonObject();
-			}
-
-			com.google.gson.JsonArray jsonArray = json.get("properties").getAsJsonArray();
-			if (jsonArray.isEmpty()) {
-				return map;
-			}
-
-			String value = jsonArray.get(0).getAsJsonObject().get("value").getAsString();
-			String decodedValue = new String(java.util.Base64.getDecoder().decode(value));
-
-			try {
-				json = JsonParser.parseString(decodedValue).getAsJsonObject();
-			} catch (NoSuchMethodError e) {
-				json = new JsonParser().parse(decodedValue).getAsJsonObject();
-			}
-
-			String texture = json.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url")
-					.getAsString();
-
-			map.put(value, texture);
 			return map;
 		});
 	}
