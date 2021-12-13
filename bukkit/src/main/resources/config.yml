@@ -165,9 +165,9 @@ change-prefix-suffix-in-tablist:
 # Shows your current health (with life indicator), your current ping or any NUMBER placeholder
 # after the player's name (before the ping indicator).
 tablist-object-type:
-  enable: true
 
   # Types:
+  # none - disables tablist objects
   # ping - player's ping
   # health - player's health
   # custom - custom placeholder
@@ -189,7 +189,7 @@ tablist-object-type:
       - exampleplayer
       - players
 
-    # Custom placeholder - accepts only number-ending placeholders, like %level%.
+    # Custom placeholder - accepts only number-ending placeholders, like %level%
     custom:
       value: "%level%"
 

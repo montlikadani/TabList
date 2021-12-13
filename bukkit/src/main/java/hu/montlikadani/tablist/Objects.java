@@ -193,13 +193,19 @@ public final class Objects {
 	}
 
 	public enum ObjectTypes {
-		HEALTH("showhealth"), PING("PingTab"), CUSTOM("customObj");
+		HEALTH("showhealth"), PING("PingTab"), CUSTOM("customObj"), NONE("");
 
-		public final String loweredName = toString().toLowerCase(java.util.Locale.ENGLISH);
+		public final String loweredName;
 
 		private final String objectName;
 
 		ObjectTypes(String objectName) {
+			if (!objectName.isEmpty()) {
+				loweredName = toString().toLowerCase(java.util.Locale.ENGLISH);
+			} else {
+				loweredName = "";
+			}
+
 			this.objectName = objectName;
 		}
 

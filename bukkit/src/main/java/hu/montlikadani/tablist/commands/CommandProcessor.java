@@ -14,7 +14,7 @@ public @interface CommandProcessor {
 	/**
 	 * @return the name of this command
 	 */
-	String name() default "";
+	String name();
 
 	/**
 	 * @return the parameters of this command

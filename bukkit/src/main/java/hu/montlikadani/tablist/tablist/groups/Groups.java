@@ -57,7 +57,7 @@ public final class Groups {
 	 */
 	public Optional<TeamHandler> getTeam(String name) {
 		if (name.isEmpty()) {
-			throw new IllegalArgumentException("The team name can't be empty");
+			throw new IllegalArgumentException("The team name can not be empty");
 		}
 
 		for (TeamHandler handler : groupsList) {

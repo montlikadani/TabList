@@ -118,6 +118,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		if (!users.isEmpty()) {
 			for (Objects.ObjectTypes t : Objects.ObjectTypes.values()) {
+				if (t == Objects.ObjectTypes.NONE) {
+					continue;
+				}
+
 				for (TabListUser user : users) {
 					Player player = user.getPlayer();
 
@@ -195,7 +199,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		metrics.addCustomChart(
 				new org.bstats.charts.SimplePie("enable_tablist", () -> Boolean.toString(TabConfigValues.isEnabled())));
 
-		if (ConfigValues.isTablistObjectiveEnabled()) {
+		if (ConfigValues.getObjectType() != Objects.ObjectTypes.NONE) {
 			metrics.addCustomChart(
 					new org.bstats.charts.SimplePie("object_type", () -> ConfigValues.getObjectType().loweredName));
 		}
@@ -246,7 +250,9 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		fakePlayerHandler.load();
 		groups.load();
 
-		if (!ConfigValues.isTablistObjectiveEnabled()) {
+		Objects.ObjectTypes current = ConfigValues.getObjectType();
+
+		if (current == Objects.ObjectTypes.NONE || current == Objects.ObjectTypes.HEALTH) {
 			objects.cancelTask();
 		}
 
@@ -310,44 +316,42 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			return tlu;
 		});
 
-		if (!ConfigValues.isTablistObjectiveEnabled()) {
+		switch (ConfigValues.getObjectType()) {
+		case PING:
+		case CUSTOM:
+			if (reload) {
+				objects.unregisterObjective(
+						player.getScoreboard().getObjective(Objects.ObjectTypes.HEALTH.getObjectName()));
+			}
+
+			if (objects.isCancelled()) {
+				objects.startTask();
+			}
+
+			break;
+		case HEALTH:
+			if (reload) {
+				Scoreboard board = player.getScoreboard();
+
+				objects.unregisterObjective(board.getObjective(Objects.ObjectTypes.PING.getObjectName()));
+				objects.unregisterObjective(board.getObjective(Objects.ObjectTypes.CUSTOM.getObjectName()));
+			} else {
+				objects.registerHealthTab(player);
+			}
+
+			break;
+		default:
 			if (reload) {
 				Scoreboard board = player.getScoreboard();
 
 				for (Objects.ObjectTypes type : Objects.ObjectTypes.values()) {
-					objects.unregisterObjective(board.getObjective(type.getObjectName()));
+					if (type != Objects.ObjectTypes.NONE) {
+						objects.unregisterObjective(board.getObjective(type.getObjectName()));
+					}
 				}
 			}
-		} else {
-			switch (ConfigValues.getObjectType()) {
-			case PING:
-			case CUSTOM:
-				if (reload) {
-					objects.unregisterObjective(
-							player.getScoreboard().getObjective(Objects.ObjectTypes.HEALTH.getObjectName()));
-				}
 
-				if (objects.isCancelled()) {
-					objects.startTask();
-				}
-
-				break;
-			case HEALTH:
-				if (reload) {
-					objects.cancelTask();
-
-					Scoreboard board = player.getScoreboard();
-
-					objects.unregisterObjective(board.getObjective(Objects.ObjectTypes.PING.getObjectName()));
-					objects.unregisterObjective(board.getObjective(Objects.ObjectTypes.CUSTOM.getObjectName()));
-				} else {
-					objects.registerHealthTab(player);
-				}
-
-				break;
-			default:
-				break;
-			}
+			break;
 		}
 
 		if (ConfigValues.isFakePlayers()) {

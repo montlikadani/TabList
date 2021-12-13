@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.bukkit.configuration.ConfigurationSection;
 
-import hu.montlikadani.tablist.Objects.ObjectTypes;
+import hu.montlikadani.tablist.Objects;
 import hu.montlikadani.tablist.config.CommentedConfig;
 
 public class ConfigValues {
@@ -16,14 +16,14 @@ public class ConfigValues {
 			countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled,
 			afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone, pingFormatEnabled,
 			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish,
-			hideGroupWhenAfk, preferPrimaryVaultGroup, tablistObjectiveEnabled, assignGlobalGroup;
+			hideGroupWhenAfk, preferPrimaryVaultGroup, assignGlobalGroup;
 
 	private static String afkFormatYes, afkFormatNo, timeZone, customObjectSetting, memoryBarChar, memoryBarUsedColor,
 			memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
 
 	private static DateTimeFormatter timeFormat, dateFormat;
 
-	private static ObjectTypes objectType = ObjectTypes.PING;
+	private static Objects.ObjectTypes objectType = Objects.ObjectTypes.PING;
 
 	private static List<String> tpsColorFormats, pingColorFormats, groupsDisabledWorlds, healthObjectRestricted,
 			objectsDisabledWorlds;
@@ -119,8 +119,8 @@ public class ConfigValues {
 		c.addComment("tablist-object-type", "Tablist objective types",
 				"Shows your current health (with life indicator), your current ping or any NUMBER placeholder",
 				"after the player's name (before the ping indicator).");
-		c.addComment("tablist-object-type.type", "Types:", "ping - player's ping", "health - player's health",
-				"custom - custom placeholder");
+		c.addComment("tablist-object-type.type", "Types:", "none - disables tablist objects", "ping - player's ping",
+				"health - player's health", "custom - custom placeholder");
 		c.addComment("tablist-object-type.refresh-interval", "Interval for objects refreshing in seconds.");
 		c.addComment("tablist-object-type.disabled-worlds", "In these worlds the objects will not be displayed");
 		c.addComment("tablist-object-type.object-settings", "Objective settings");
@@ -129,7 +129,7 @@ public class ConfigValues {
 		c.addComment("tablist-object-type.object-settings.health.restricted-players",
 				"For these players the health will not be displayed");
 		c.addComment("tablist-object-type.object-settings.custom",
-				"Custom placeholder - accepts only number-ending placeholders, like %level%.");
+				"Custom placeholder - accepts only number-ending placeholders, like %level%");
 		c.addComment("check-update", "Check for updates?");
 		c.addComment("download-updates", "Download new releases to \"releases\" folder?",
 				"This only works if the \"check-update\" is true.");
@@ -183,7 +183,6 @@ public class ConfigValues {
 		hideGroupWhenAfk = c.get("change-prefix-suffix-in-tablist.hide-group-when-player-afk", false);
 		assignGlobalGroup = c.get("change-prefix-suffix-in-tablist.assign-global-group-to-normal", false);
 		preferPrimaryVaultGroup = c.get("change-prefix-suffix-in-tablist.prefer-primary-vault-group", true);
-		tablistObjectiveEnabled = c.get("tablist-object-type.enable", false);
 
 		afkFormatYes = c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r ");
 		afkFormatNo = c.get("placeholder-format.afk-status.format-no", "");
@@ -225,11 +224,19 @@ public class ConfigValues {
 		memoryBarReleasedColor = c.get("placeholder-format.memory-bar.colors.released", "&6");
 		customObjectSetting = c.get("tablist-object-type.object-settings.custom.value", "%level%");
 
-		try {
-			objectType = ObjectTypes
-					.valueOf(c.get("tablist-object-type.type", "ping").toUpperCase(java.util.Locale.ENGLISH));
-		} catch (IllegalArgumentException e) {
+		if (!c.getBoolean("tablist-object-type.enable", true)) {
+			c.set("tablist-object-type.type", "none");
+
+			objectType = Objects.ObjectTypes.NONE;
+		} else {
+			try {
+				objectType = Objects.ObjectTypes
+						.valueOf(c.get("tablist-object-type.type", "ping").toUpperCase(java.util.Locale.ENGLISH));
+			} catch (IllegalArgumentException e) {
+			}
 		}
+
+		c.set("tablist-object-type.enable", null);
 
 		tpsColorFormats = c.get("placeholder-format.tps.formats",
 				Arrays.asList("&a%tps% > 18.0", "&6%tps% == 16.0", "&c%tps% < 16.0"));
@@ -403,11 +410,7 @@ public class ConfigValues {
 		return preferPrimaryVaultGroup;
 	}
 
-	public static boolean isTablistObjectiveEnabled() {
-		return tablistObjectiveEnabled;
-	}
-
-	public static ObjectTypes getObjectType() {
+	public static Objects.ObjectTypes getObjectType() {
 		return objectType;
 	}
 

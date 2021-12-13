@@ -194,8 +194,6 @@ public class ReflectionHandled implements ITabScoreboard {
 		}
 
 		try {
-			Object infoPacket = null;
-
 			for (Object infoData : infoList) {
 				GameProfile profile;
 
@@ -219,6 +217,7 @@ public class ReflectionHandled implements ITabScoreboard {
 				Constructor<?> playerInfoDataConstr = ClazzContainer.getPlayerInfoDataConstructor();
 				Object gameMode = ClazzContainer.getPlayerInfoDataGameMode().get(infoData);
 				int ping = (int) ClazzContainer.getPlayerInfoDataPing().get(infoData);
+				Object infoPacket;
 
 				if (playerInfoDataConstr.getParameterCount() == 5) {
 					infoPacket = playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
@@ -229,17 +228,13 @@ public class ReflectionHandled implements ITabScoreboard {
 					infoPacket = playerInfoDataConstr.newInstance(profile, ping, gameMode, nameComponent);
 				}
 
+				ClazzContainer.getInfoList().set(packetPlayOutPlayerInfo, Collections.singletonList(infoPacket));
+
+				for (TabListUser user : tl.getUsers()) {
+					ReflectionUtils.sendPacket(user.getPlayer(), packetPlayOutPlayerInfo);
+				}
+
 				break;
-			}
-
-			if (infoPacket == null || packetPlayOutPlayerInfo == null) {
-				return; // Somehow the 2nd condition is null sometimes
-			}
-
-			ClazzContainer.getInfoList().set(packetPlayOutPlayerInfo, Collections.singletonList(infoPacket));
-
-			for (TabListUser user : tl.getUsers()) {
-				ReflectionUtils.sendPacket(user.getPlayer(), packetPlayOutPlayerInfo);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

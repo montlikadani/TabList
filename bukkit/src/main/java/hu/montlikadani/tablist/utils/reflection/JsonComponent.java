@@ -47,17 +47,19 @@ public final class JsonComponent {
 				char nextChar = text.charAt(i + 1);
 
 				if (Global.isValidColourCharacter(nextChar)) {
+					int current = i + 2;
 
 					// Finds hex colours that may be coming from essentials (&x&f ..) and removes
 					// the "&" character to match the TL hex colour
 					//
 					// This is a very expensive inspection and not ideal, it should be a more
-					// optimal one.
+					// optimal one (and cleaner).
 					// The expected pattern would be: (?>&[0-9a-f]){5}
-					if (i + 2 < length && text.charAt(i + 2) == '&' && (i + 4 >= length || text.charAt(i + 4) == '&')
-							&& (i + 6 >= length || text.charAt(i + 6) == '&')
-							&& (i + 8 >= length || text.charAt(i + 8) == '&')
-							&& (i + 10 >= length || text.charAt(i + 10) == '&')) {
+					if (current < length && text.charAt(current) == '&'
+							&& ((current = i + 4) >= length || text.charAt(current) == '&')
+							&& ((current = i + 6) >= length || text.charAt(current) == '&')
+							&& ((current = i + 8) >= length || text.charAt(current) == '&')
+							&& ((current = i + 10) >= length || text.charAt(current) == '&')) {
 						text = Global.replaceFrom(text, i, "&", "", 6); // Replace "&" character 6 times
 						length = text.length(); // Text length is changed
 
