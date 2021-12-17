@@ -113,7 +113,7 @@ public final class LegacyTextConverter {
 		component.setText(builder.toString());
 		COMPONENTS.add(component);
 
-		return COMPONENTS.toArray(new BaseComponent[COMPONENTS.size()]);
+		return COMPONENTS.toArray(new BaseComponent[0]);
 	}
 
 	public static synchronized String toJson(String text) {

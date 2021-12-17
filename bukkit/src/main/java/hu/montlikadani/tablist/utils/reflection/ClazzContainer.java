@@ -126,7 +126,14 @@ public final class ClazzContainer {
 
 				scoreboardTeamConstructor = scoreboardTeamClass.getConstructor(scoreboardClass, String.class);
 			} else {
-				packetPlayOutScoreboardTeamConstructor = packetPlayOutScoreboardTeam.getConstructor();
+				try {
+					packetPlayOutScoreboardTeamConstructor = packetPlayOutScoreboardTeam.getDeclaredConstructor();
+				} catch (NoSuchMethodException e) {
+					packetPlayOutScoreboardTeamConstructor = packetPlayOutScoreboardTeam.getDeclaredConstructor(
+							scoreboardTeamClass = classByName(null, "ScoreboardTeam"), int.class);
+				}
+
+				packetPlayOutScoreboardTeamConstructor.setAccessible(true);
 
 				(scoreboardTeamName = packetPlayOutScoreboardTeam.getDeclaredField("a")).setAccessible(true);
 				(scoreboardTeamDisplayName = packetPlayOutScoreboardTeam.getDeclaredField("b")).setAccessible(true);

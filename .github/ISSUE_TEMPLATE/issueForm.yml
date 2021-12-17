@@ -9,7 +9,7 @@ body:
   - type: dropdown
     attributes:
       label: Type of bug
-      multiple: true
+      multiple: false
       options:
         - Performance loss or memory leak
         - Compatibility issue
@@ -46,10 +46,8 @@ body:
   - type: textarea
     attributes:
       label: Bug description
-      description: Explain your bug clearly and maybe include how to reproduce.
+      description: |
+        Explain your bug clearly and if possible include how to reproduce.
+        You can also attach any related screenshots, files, links and timings/spark profiler reports.
     validations:
       required: true
-  - type: markdown
-    attributes:
-      value: |
-        Below the text box, you can attach any related screenshots, files, links and timings/spark profiler reports.

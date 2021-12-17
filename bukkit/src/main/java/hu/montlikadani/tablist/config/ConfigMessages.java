@@ -53,7 +53,7 @@ public final class ConfigMessages {
 					saveRequired = true;
 				}
 
-				if (str.indexOf('%') < 0) {
+				if (str.indexOf('%') == -1) {
 					// In case if the string does not contain any placeholder store the text
 					// formatting too
 					str = Util.colorText(str);
@@ -78,7 +78,7 @@ public final class ConfigMessages {
 					messagesConfig.set(key.path, key.value = key.defaultValue);
 					saveRequired = true;
 				} else {
-					key.value = list.toArray(new String[list.size()]);
+					key.value = list.toArray(new String[0]);
 				}
 			}
 		}

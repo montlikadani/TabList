@@ -113,9 +113,9 @@ public final class ConfigConstants {
 			permission = section.getString(key + ".permission", "");
 
 			List<?> list = section.getList(key + ".name", java.util.Collections.EMPTY_LIST);
-			int size = list.size();
 
-			texts = size != 0 ? list.toArray(new String[size]) : new String[] { section.getString(key + ".name", "") };
+			texts = list.size() != 0 ? list.toArray(new String[0])
+					: new String[] { section.getString(key + ".name", "") };
 
 			for (int a = 0; a < texts.length; a++) {
 				texts[a] = hu.montlikadani.tablist.Global.setSymbols(texts[a]);

@@ -20,7 +20,7 @@ public final class Util {
 	}
 
 	public static String colorText(String msg) {
-		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1) && msg.indexOf('#') >= 0) {
+		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1) && msg.indexOf('#') != -1) {
 			msg = Global.matchHexColour(msg);
 		}
 

@@ -15,8 +15,8 @@ public class Condition {
 		if (parseable.length > 1) {
 			try {
 				secondCondition = Double.parseDouble(
-						parseable[(parseable[0].indexOf("%tps%") >= 0 || parseable[0].indexOf("%tps-overflow%") >= 0
-								|| parseable[0].indexOf("%ping%") >= 0) ? 1 : 0]);
+						parseable[(parseable[0].indexOf("%tps%") != -1 || parseable[0].indexOf("%tps-overflow%") != -1
+								|| parseable[0].indexOf("%ping%") != -1) ? 1 : 0]);
 			} catch (NumberFormatException e) {
 			}
 

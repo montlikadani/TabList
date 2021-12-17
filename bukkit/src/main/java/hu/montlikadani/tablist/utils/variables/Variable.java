@@ -53,7 +53,7 @@ final class Variable {
 			return false;
 		}
 
-		if (str.indexOf(fullName) >= 0) {
+		if (str.indexOf(fullName) != -1) {
 			rateInstant = Instant.now().plusSeconds(refreshSeconds);
 			return true;
 		}

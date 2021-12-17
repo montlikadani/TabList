@@ -73,7 +73,7 @@ public class CommentedConfig extends YamlConfiguration {
 		boolean commentedPath = false, node = false;
 		int depth = 0;
 
-		String[] split = yaml.split("[" + System.lineSeparator() + "]");
+		String[] split = yaml.split('[' + System.lineSeparator() + ']');
 
 		for (int s = 0; s < split.length; s++) {
 			final String line = split[s];
@@ -86,7 +86,7 @@ public class CommentedConfig extends YamlConfiguration {
 			boolean keyOk = true;
 			int index = line.indexOf(": ");
 
-			if (index >= 0) {
+			if (index != -1) {
 				int whiteSpace = 0;
 
 				for (int n = 0; n < length; n++) {
@@ -99,17 +99,17 @@ public class CommentedConfig extends YamlConfiguration {
 
 				String key = line.substring(whiteSpace, index);
 
-				if (key.contains(" ") || key.contains("&") || key.contains(".") || key.contains("'")
-						|| key.contains("\"")) {
+				if (key.indexOf(' ') != -1 || key.indexOf('&') != -1 || key.indexOf('.') != -1 || key.indexOf("'") != -1
+						|| key.indexOf('\'') != -1) {
 					keyOk = false;
 				}
 			}
 
-			if ((keyOk && index >= 0) || (length > 1 && line.charAt(length - 1) == ':')) {
+			if ((keyOk && index != -1) || (length > 1 && line.charAt(length - 1) == ':')) {
 				commentedPath = false;
 				node = true;
 
-				if (index < 0 && (index = line.indexOf(": ")) < 0) {
+				if (index == -1 && (index = line.indexOf(": ")) == -1) {
 					index = length - 1;
 				}
 
@@ -129,7 +129,7 @@ public class CommentedConfig extends YamlConfiguration {
 					int newDepth = whiteSpace / 2;
 
 					if (newDepth > depth) {
-						currentPath.append('.').append(line.substring(whiteSpace, index));
+						currentPath.append('.' + line.substring(whiteSpace, index));
 						depth++;
 					} else if (newDepth < depth) {
 						int d = depth - newDepth;

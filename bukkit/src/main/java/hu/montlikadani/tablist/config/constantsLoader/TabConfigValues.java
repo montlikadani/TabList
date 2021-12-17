@@ -59,9 +59,7 @@ public final class TabConfigValues {
 
 	public static String[] stringToArrayConversion(Object obj) {
 		if (obj instanceof List) {
-			List<?> list = (List<?>) obj;
-
-			return list.toArray(new String[list.size()]);
+			return ((List<?>) obj).toArray(new String[0]);
 		}
 
 		if (obj instanceof String) {

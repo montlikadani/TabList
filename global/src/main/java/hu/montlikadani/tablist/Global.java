@@ -25,7 +25,7 @@ public final class Global {
 	}
 
 	public static String setSymbols(String s) {
-		if (s.indexOf('<') < 0) {
+		if (s.indexOf('<') == -1) {
 			return s;
 		}
 

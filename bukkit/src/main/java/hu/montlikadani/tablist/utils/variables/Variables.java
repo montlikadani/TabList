@@ -153,7 +153,7 @@ public final class Variables {
 
 		Runtime runtime = Runtime.getRuntime();
 
-		if (!ConfigValues.getMemoryBarChar().isEmpty() && str.indexOf("%memory_bar%") >= 0) {
+		if (!ConfigValues.getMemoryBarChar().isEmpty() && str.indexOf("%memory_bar%") != -1) {
 			StringBuilder builder = new StringBuilder();
 
 			int barSize = ConfigValues.getMemoryBarSize(), totalMemory = (int) (runtime.totalMemory() / MB),
@@ -214,27 +214,27 @@ public final class Variables {
 			}
 		}
 
-		if (ConfigValues.getTimeFormat() != null && str.indexOf("%server-time%") >= 0) {
+		if (ConfigValues.getTimeFormat() != null && str.indexOf("%server-time%") != -1) {
 			str = str.replace("%server-time%", getTimeAsString(ConfigValues.getTimeFormat()));
 		}
 
-		if (str.indexOf("%server-ram-free%") >= 0) {
+		if (str.indexOf("%server-ram-free%") != -1) {
 			str = str.replace("%server-ram-free%", Long.toString(runtime.freeMemory() / MB));
 		}
 
-		if (str.indexOf("%server-ram-max%") >= 0) {
+		if (str.indexOf("%server-ram-max%") != -1) {
 			str = str.replace("%server-ram-max%", Long.toString(runtime.maxMemory() / MB));
 		}
 
-		if (str.indexOf("%server-ram-used%") >= 0) {
+		if (str.indexOf("%server-ram-used%") != -1) {
 			str = str.replace("%server-ram-used%", Long.toString((runtime.totalMemory() - runtime.freeMemory()) / MB));
 		}
 
-		if (str.indexOf("%tps-overflow%") >= 0) {
+		if (str.indexOf("%tps-overflow%") != -1) {
 			str = str.replace("%tps-overflow%", tpsDot(TabListAPI.getTPS()));
 		}
 
-		if (str.indexOf("%tps%") >= 0) {
+		if (str.indexOf("%tps%") != -1) {
 			double tps = TabListAPI.getTPS();
 			str = str.replace("%tps%", (tps > 20.0 ? "*" : "") + tpsDot(tps > 20.0 ? 20D : tps));
 		}
@@ -249,8 +249,8 @@ public final class Variables {
 		// one-time check for placeholders at load time.
 
 		if (plugin.hasPapi()) {
-			if (s.indexOf("server_total_chunks%") >= 0 || s.indexOf("server_total_living_entities%") >= 0
-					|| s.indexOf("server_total_entities%") >= 0 || s.indexOf("%sync:") >= 0) {
+			if (s.indexOf("server_total_chunks%") != -1 || s.indexOf("server_total_living_entities%") != -1
+					|| s.indexOf("server_total_entities%") != -1 || s.indexOf("%sync:") != -1) {
 				s = s.replace("sync:", "");
 
 				final String str = s;
@@ -266,15 +266,15 @@ public final class Variables {
 		s = s.replace("%world%", p.getWorld().getName());
 		s = s.replace("%player-gamemode%", p.getGameMode().name());
 
-		if (!plugin.isPaper() || s.indexOf("%player-displayname%") >= 0) {
+		if (!plugin.isPaper() || s.indexOf("%player-displayname%") != -1) {
 			s = s.replace("%player-displayname%", plugin.getComplement().getDisplayName(p));
 		}
 
-		if (s.indexOf("%player-health%") >= 0) {
+		if (s.indexOf("%player-health%") != -1) {
 			s = s.replace("%player-health%", Double.toString(p.getHealth()));
 		}
 
-		if (s.indexOf("%player-max-health%") >= 0) {
+		if (s.indexOf("%player-max-health%") != -1) {
 			if (ServerVersion.isCurrentLower(ServerVersion.v1_9_R1)) {
 				s = s.replace("%player-max-health%", Double.toString(p.getMaxHealth()));
 			} else {
@@ -287,27 +287,27 @@ public final class Variables {
 			}
 		}
 
-		if (s.indexOf("%ping%") >= 0) {
+		if (s.indexOf("%ping%") != -1) {
 			s = s.replace("%ping%", formatPing(TabListAPI.getPing(p)));
 		}
 
-		if (s.indexOf("%exp-to-level%") >= 0) {
+		if (s.indexOf("%exp-to-level%") != -1) {
 			s = s.replace("%exp-to-level%", Integer.toString(p.getExpToLevel()));
 		}
 
-		if (s.indexOf("%level%") >= 0) {
+		if (s.indexOf("%level%") != -1) {
 			s = s.replace("%level%", Integer.toString(p.getLevel()));
 		}
 
-		if (s.indexOf("%xp%") >= 0) {
+		if (s.indexOf("%xp%") != -1) {
 			s = s.replace("%xp%", Float.toString(p.getExp()));
 		}
 
-		if (s.indexOf("%light-level%") >= 0) {
+		if (s.indexOf("%light-level%") != -1) {
 			s = s.replace("%light-level%", Integer.toString(p.getLocation().getBlock().getLightLevel()));
 		}
 
-		if (s.indexOf("%ip-address%") >= 0) {
+		if (s.indexOf("%ip-address%") != -1) {
 			java.net.InetSocketAddress address = p.getAddress();
 
 			if (address != null && address.getAddress() != null) {

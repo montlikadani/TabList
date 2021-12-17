@@ -6,7 +6,7 @@ public final class SimplePluginPlaceholder {
 
 	public static SimplePluginPlaceholder findOne(String str) {
 		for (PluginPlaceholders placeholder : VALUES) {
-			if (!placeholder.isPapiVariable() && str.indexOf(placeholder.name) >= 0) {
+			if (!placeholder.isPapiVariable() && str.indexOf(placeholder.name) != -1) {
 				return new SimplePluginPlaceholder(placeholder);
 			}
 		}
