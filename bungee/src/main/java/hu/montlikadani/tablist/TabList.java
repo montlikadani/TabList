@@ -27,8 +27,6 @@ public final class TabList extends Plugin implements Listener {
 	private TabManager tab;
 	private Groups groups;
 
-	private int cver = 7;
-
 	@Override
 	public void onEnable() {
 		tab = new TabManager(this);
@@ -85,10 +83,13 @@ public final class TabList extends Plugin implements Listener {
 			config = ConfigurationProvider.getProvider(net.md_5.bungee.config.YamlConfiguration.class).load(file);
 			ConfigConstants.load(config);
 
-			if (!config.get("config-version").equals(cver)) {
+			int newConfigVersion = 8;
+			int configVersion = config.getInt("config-version", 0);
+
+			if (configVersion != newConfigVersion) {
 				getLogger().log(java.util.logging.Level.WARNING,
-						"Found outdated configuration (bungeeconfig.yml)! (Your version: "
-								+ config.getInt("config-version") + " | Newest version: " + cver + ")");
+						"Found outdated configuration (bungeeconfig.yml)! (Your version: " + configVersion
+								+ " | Newest version: " + newConfigVersion + ")");
 			}
 		} catch (java.io.IOException e) {
 			e.printStackTrace();

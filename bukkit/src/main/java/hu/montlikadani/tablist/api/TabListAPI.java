@@ -167,6 +167,6 @@ public final class TabListAPI {
 			}
 		}
 
-		return 0d;
+		return 0.0;
 	}
 }

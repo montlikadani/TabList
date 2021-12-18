@@ -77,6 +77,10 @@ public final class Objects {
 			}
 
 			for (TabListUser user : plugin.getUsers()) {
+				if (user.getScoreName().isEmpty()) {
+					continue;
+				}
+
 				Player player = user.getPlayer();
 
 				if (player == null || ConfigValues.getObjectsDisabledWorlds().contains(player.getWorld().getName())) {
@@ -112,17 +116,7 @@ public final class Objects {
 					objectScore.set(getValue(player, ConfigValues.getCustomObjectSetting()));
 				}
 
-				String entry = player.getName();
-
-				if (ServerVersion.isCurrentLower(ServerVersion.v1_18_R1)) {
-					if (entry.length() > 40) {
-						entry = entry.substring(0, 40);
-					}
-				} else if (entry.length() > Short.MAX_VALUE) {
-					entry = entry.substring(0, Short.MAX_VALUE);
-				}
-
-				if (object.getScore(entry).getScore() != objectScore.get()) {
+				if (object.getScore(user.getScoreName()).getScore() != objectScore.get()) {
 					for (TabListUser us : plugin.getUsers()) {
 						Player pl = us.getPlayer();
 
@@ -130,7 +124,7 @@ public final class Objects {
 							Objective objective = pl.getScoreboard().getObjective(type.objectName);
 
 							if (objective != null) {
-								objective.getScore(entry).setScore(objectScore.get());
+								objective.getScore(user.getScoreName()).setScore(objectScore.get());
 							}
 						}
 					}
@@ -201,7 +195,7 @@ public final class Objects {
 
 		ObjectTypes(String objectName) {
 			if (!objectName.isEmpty()) {
-				loweredName = toString().toLowerCase(java.util.Locale.ENGLISH);
+				loweredName = name().toLowerCase(java.util.Locale.ENGLISH);
 			} else {
 				loweredName = "";
 			}

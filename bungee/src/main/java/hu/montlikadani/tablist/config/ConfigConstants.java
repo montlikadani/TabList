@@ -1,11 +1,14 @@
 package hu.montlikadani.tablist.config;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import hu.montlikadani.tablist.Misc;
+import hu.montlikadani.tablist.logicalOperators.LogicalNode;
+import hu.montlikadani.tablist.logicalOperators.OperatorNodes;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.config.Configuration;
 
@@ -26,10 +29,13 @@ public final class ConfigConstants {
 
 	public static final java.util.Set<GroupSettings> GROUP_SETTINGS = new java.util.HashSet<>();
 
+	private static final List<LogicalNode> LOGICAL_NODES = new ArrayList<>();
+
 	public static void load(Configuration conf) {
 		CUSTOM_VARIABLES.clear();
 		TAB_SETTINGS.clear();
 		GROUP_SETTINGS.clear();
+		LOGICAL_NODES.clear();
 
 		String tf = conf.getString("placeholder-format.time.time-format", "mm:HH");
 
@@ -93,7 +99,7 @@ public final class ConfigConstants {
 				key.value = value.isEmpty() ? Misc.EMPTY_COMPONENT : Misc.getComponentOfText(Misc.colorMsg(value));
 			} else if (key.type == List.class) {
 				List<String> list = conf.getStringList(key.path);
-				List<BaseComponent> formatted = new java.util.ArrayList<>(list.size());
+				List<BaseComponent> formatted = new ArrayList<>(list.size());
 
 				for (String one : list) {
 					formatted.add(Misc.getComponentOfText(Misc.colorMsg(one)));
@@ -102,6 +108,28 @@ public final class ConfigConstants {
 				key.value = formatted;
 			}
 		}
+
+		for (String f : conf.getStringList("placeholder-format.ping-formatting")) {
+			if (f.isEmpty()) {
+				continue;
+			}
+
+			LogicalNode node = new OperatorNodes(LogicalNode.NodeType.getPing()).parseInput(f);
+
+			if (node.getCondition() != null) {
+				LOGICAL_NODES.add(node);
+			}
+		}
+
+		OperatorNodes.reverseOrderOfArray(LOGICAL_NODES);
+	}
+
+	public static String formatPing(int ping) {
+		if (LOGICAL_NODES.isEmpty()) {
+			return Integer.toString(ping);
+		}
+
+		return OperatorNodes.parseCondition(ping, LogicalNode.NodeType.getLastPing(), LOGICAL_NODES);
 	}
 
 	public static final class GroupSettings {
@@ -221,13 +249,9 @@ public final class ConfigConstants {
 	}
 
 	public enum MessageKeys {
-		RELOAD_CONFIG(false),
-		NO_PERMISSION(false),
+		RELOAD_CONFIG(false), NO_PERMISSION(false),
 
-		TOGGLE_NO_CONSOLE(true),
-		TOGGLE_NO_PLAYER(true),
-		TOGGLE_ENABLED(true),
-		TOGGLE_DISABLED(true),
+		TOGGLE_NO_CONSOLE(true), TOGGLE_NO_PLAYER(true), TOGGLE_ENABLED(true), TOGGLE_DISABLED(true),
 		TOGGLE_NO_PLAYERS_AVAILABLE(true),
 
 		CHAT_MESSAGES(false, List.class);

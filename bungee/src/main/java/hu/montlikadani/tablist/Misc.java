@@ -29,7 +29,7 @@ public final class Misc {
 	}
 
 	public static String colorMsg(String s) {
-		if (s.indexOf("#") >= 0) {
+		if (s.indexOf('#') != -1) {
 			s = Global.matchHexColour(s);
 		}
 
@@ -48,6 +48,8 @@ public final class Misc {
 		return new ComponentBuilder(s).getComponent(0);
 	}
 
+	private final static long MB = 1024 * 1024;
+
 	@SuppressWarnings("deprecation")
 	public static String replaceVariables(String str, ProxiedPlayer p) {
 		// TODO Remove or make more customisable variables
@@ -55,11 +57,11 @@ public final class Misc {
 			str = str.replace(map.getKey(), map.getValue());
 		}
 
-		if (ConfigConstants.getTimeFormat() != null && str.indexOf("%time%") >= 0) {
+		if (ConfigConstants.getTimeFormat() != null && str.indexOf("%time%") != -1) {
 			str = str.replace("%time%", getTimeAsString(ConfigConstants.getTimeFormat()));
 		}
 
-		if (ConfigConstants.getDateFormat() != null && str.indexOf("%date%") >= 0) {
+		if (ConfigConstants.getDateFormat() != null && str.indexOf("%date%") != -1) {
 			str = str.replace("%date%", getTimeAsString(ConfigConstants.getDateFormat()));
 		}
 
@@ -72,7 +74,7 @@ public final class Misc {
 			str = str.replace("%bungee-motd%", info.getMotd());
 		}
 
-		if (str.indexOf("%ip%") >= 0) {
+		if (str.indexOf("%ip%") != -1) {
 			InetSocketAddress address = null;
 			SocketAddress sAddress = null;
 
@@ -91,24 +93,24 @@ public final class Misc {
 		str = str.replace("%display-name%", p.getDisplayName());
 		str = str.replace("%bungee-online%", Integer.toString(ProxyServer.getInstance().getOnlineCount()));
 
-		if (str.indexOf("%ping%") >= 0)
-			str = str.replace("%ping%", Integer.toString(p.getPing()));
+		if (str.indexOf("%ping%") != -1)
+			str = str.replace("%ping%", ConfigConstants.formatPing(p.getPing()));
 
 		Runtime runtime = Runtime.getRuntime();
 
-		if (str.indexOf("%ram-used%") >= 0)
-			str = str.replace("%ram-used%", Long.toString((runtime.totalMemory() - runtime.freeMemory()) / 1048576L));
+		if (str.indexOf("%ram-used%") != -1)
+			str = str.replace("%ram-used%", Long.toString((runtime.totalMemory() - runtime.freeMemory()) / MB));
 
-		if (str.indexOf("%ram-max%") >= 0)
-			str = str.replace("%ram-max%", Long.toString(runtime.maxMemory() / 1048576L));
+		if (str.indexOf("%ram-max%") != -1)
+			str = str.replace("%ram-max%", Long.toString(runtime.maxMemory() / MB));
 
-		if (str.indexOf("%ram-free%") >= 0)
-			str = str.replace("%ram-free%", Long.toString(runtime.freeMemory() / 1048576L));
+		if (str.indexOf("%ram-free%") != -1)
+			str = str.replace("%ram-free%", Long.toString(runtime.freeMemory() / MB));
 
-		if (str.indexOf("%player-uuid%") >= 0)
+		if (str.indexOf("%player-uuid%") != -1)
 			str = str.replace("%player-uuid%", p.getUniqueId().toString());
 
-		if (str.indexOf("%player-language%") >= 0 || str.indexOf("%player-country%") >= 0) {
+		if (str.indexOf("%player-language%") != -1 || str.indexOf("%player-country%") != -1) {
 			java.util.Locale locale = p.getLocale();
 
 			str = str.replace("%player-language%", locale == null ? "unknown" : locale.getDisplayLanguage());

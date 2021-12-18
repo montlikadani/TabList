@@ -5,26 +5,26 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
-import java.util.regex.Pattern;
 
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
+import hu.montlikadani.tablist.logicalOperators.LogicalNode;
+import hu.montlikadani.tablist.logicalOperators.OperatorNodes;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.api.TabListAPI;
 import hu.montlikadani.tablist.utils.PluginUtils;
 import hu.montlikadani.tablist.utils.ServerVersion;
-import hu.montlikadani.tablist.utils.operators.ExpressionNode;
-import hu.montlikadani.tablist.utils.operators.OperatorNodes;
+import hu.montlikadani.tablist.utils.operators.OverriddenOperatorNodes;
 import me.clip.placeholderapi.PlaceholderAPI;
 
 public final class Variables {
 
 	private final TabList plugin;
 
-	private final List<ExpressionNode> nodes = new ArrayList<>();
+	private final List<LogicalNode> nodes = new ArrayList<>();
 	private final java.util.Set<Variable> variables = new java.util.HashSet<>(8);
 
 	public Variables(TabList plugin) {
@@ -41,8 +41,7 @@ public final class Variables {
 					continue;
 				}
 
-				ExpressionNode node = new OperatorNodes(OperatorNodes.NodeType.PING);
-				node.setParseExpression(f);
+				LogicalNode node = new OverriddenOperatorNodes(LogicalNode.NodeType.getPing()).parseInput(f);
 
 				if (node.getCondition() != null) {
 					nodes.add(node);
@@ -56,8 +55,7 @@ public final class Variables {
 					continue;
 				}
 
-				ExpressionNode node = new OperatorNodes(OperatorNodes.NodeType.TPS);
-				node.setParseExpression(f);
+				LogicalNode node = new OverriddenOperatorNodes(LogicalNode.NodeType.getTps()).parseInput(f);
 
 				if (node.getCondition() != null) {
 					nodes.add(node);
@@ -65,26 +63,7 @@ public final class Variables {
 			}
 		}
 
-		int size = nodes.size();
-
-		// Sort
-		// ping in descending order
-		// tps in ascending order
-		for (int i = 0; i < size; i++) {
-			for (int j = size - 1; j > i; j--) {
-				ExpressionNode node = nodes.get(i), node2 = nodes.get(j);
-
-				boolean firstPing = node.getType() == OperatorNodes.NodeType.PING;
-
-				if ((firstPing && node2.getType() == OperatorNodes.NodeType.PING
-						&& node.getCondition().getSecondCondition() < node2.getCondition().getSecondCondition())
-						|| (firstPing && node2.getType() == OperatorNodes.NodeType.TPS && node.getCondition()
-								.getSecondCondition() > node2.getCondition().getSecondCondition())) {
-					nodes.set(i, node2);
-					nodes.set(j, node);
-				}
-			}
-		}
+		OperatorNodes.reverseOrderOfArray(nodes);
 
 		if (ConfigValues.getDateFormat() != null) {
 			variables.add(new Variable("date", 3).setVariable((v, str) -> str = str.replace(v.fullName,
@@ -236,7 +215,9 @@ public final class Variables {
 
 		if (str.indexOf("%tps%") != -1) {
 			double tps = TabListAPI.getTPS();
-			str = str.replace("%tps%", (tps > 20.0 ? "*" : "") + tpsDot(tps > 20.0 ? 20D : tps));
+			boolean isGreater = tps > 20.0;
+
+			str = str.replace("%tps%", (isGreater ? "*" : "") + tpsDot(isGreater ? 20.0 : tps));
 		}
 
 		// Don't use here colors because of some issues with hex
@@ -320,10 +301,10 @@ public final class Variables {
 
 	private String tpsDot(double d) {
 		if (!ConfigValues.isTpsFormatEnabled() || nodes.isEmpty()) {
-			return "" + d;
+			return Double.toString(d);
 		}
 
-		String ds = parseExpression(d, OperatorNodes.NodeType.TPS);
+		String ds = OperatorNodes.parseCondition(d, LogicalNode.NodeType.getLastTps(), nodes);
 		int index = ds.indexOf('.');
 
 		if (index >= 0) {
@@ -339,30 +320,10 @@ public final class Variables {
 
 	private String formatPing(int ping) {
 		if (!ConfigValues.isPingFormatEnabled() || nodes.isEmpty()) {
-			return "" + ping;
+			return Integer.toString(ping);
 		}
 
-		return parseExpression(ping, OperatorNodes.NodeType.PING);
-	}
-
-	private final Pattern colorVariablePattern = Pattern.compile("%tps%|%tps-overflow%|%ping%");
-
-	private String parseExpression(double value, int type) {
-		String color = "";
-
-		for (ExpressionNode node : nodes) {
-			if (node.getType() == type && node.parse(value)) {
-				color = node.getCondition().getColor();
-			}
-		}
-
-		StringBuilder builder = new StringBuilder();
-
-		if (!color.isEmpty()) {
-			builder.append(colorVariablePattern.matcher(color).replaceAll("").replace('&', '\u00a7'));
-		}
-
-		return (type == OperatorNodes.NodeType.PING ? builder.append((int) value) : builder.append(value)).toString();
+		return OperatorNodes.parseCondition(ping, LogicalNode.NodeType.getLastPing(), nodes);
 	}
 
 	private String getTimeAsString(DateTimeFormatter formatterPattern) {

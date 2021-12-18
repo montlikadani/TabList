@@ -10,8 +10,16 @@ placeholder-format:
     # Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
     # Format of %time% placeholder.
     time-format: "mm:HH"
+
     # Format of %date% placeholder.
     date-format: "dd/MM/yyyy"
+
+  # Ping color format for %ping% placeholder
+  # https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting
+  ping-formatting:
+  - "&a%ping% <= 200"
+  - "&6%ping% >= 200"
+  - "&c%ping% > 500"
 
 # Custom variables that will be replaced in tablist.
 # This is useful when creating a lot of lines with the same content.
@@ -160,4 +168,4 @@ messages:
   - "&8&l-----------"
 
 # DO NOT CHANGE THIS!
-config-version: 7
+config-version: 8

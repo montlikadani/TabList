@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.utils.operators;
+package hu.montlikadani.tablist.logicalOperators;
 
 public class Condition {
 
@@ -12,16 +12,20 @@ public class Condition {
 		this.operator = operator;
 		this.parseable = parseable;
 
-		if (parseable.length > 1) {
-			try {
-				secondCondition = Double.parseDouble(
-						parseable[(parseable[0].indexOf("%tps%") != -1 || parseable[0].indexOf("%tps-overflow%") != -1
-								|| parseable[0].indexOf("%ping%") != -1) ? 1 : 0]);
-			} catch (NumberFormatException e) {
-			}
-
-			color = (parseable[1].matches("&|#") ? parseable[1] : parseable[0]).trim();
+		if (parseable.length < 2) {
+			return;
 		}
+
+		String first = parseable[0];
+		String second = parseable[1];
+
+		try {
+			secondCondition = Double.parseDouble((first.indexOf("%ping%") != -1 || first.indexOf("%tps%") != -1
+					|| first.indexOf("%tps-overflow%") != -1) ? second : first);
+		} catch (NumberFormatException e) {
+		}
+
+		color = (second.matches("&|#") ? second : first).trim();
 	}
 
 	public String[] getParseable() {

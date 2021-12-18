@@ -5,6 +5,8 @@ import hu.montlikadani.tablist.tablist.groups.GroupPlayer;
 
 public interface TabListUser {
 
+	String getScoreName();
+
 	org.bukkit.entity.Player getPlayer();
 
 	boolean isHidden();

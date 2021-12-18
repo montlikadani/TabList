@@ -5,6 +5,7 @@ import hu.montlikadani.tablist.tablist.TabHandler;
 import hu.montlikadani.tablist.tablist.groups.GroupPlayer;
 import hu.montlikadani.tablist.tablist.playerlist.HidePlayers;
 import hu.montlikadani.tablist.tablist.playerlist.PlayerList;
+import hu.montlikadani.tablist.utils.ServerVersion;
 
 import java.util.UUID;
 
@@ -14,6 +15,8 @@ public class TabListPlayer implements TabListUser {
 
 	private final TabList plugin;
 	private final UUID uniqueId;
+
+	private String scoreName = "";
 
 	private final GroupPlayer groupPlayer;
 	private final TabHandler tabHandler;
@@ -25,8 +28,27 @@ public class TabListPlayer implements TabListUser {
 		this.plugin = plugin;
 		this.uniqueId = uniqueId;
 
+		String entry = plugin.getServer().getOfflinePlayer(uniqueId).getName();
+
+		if (entry != null) {
+			if (ServerVersion.isCurrentLower(ServerVersion.v1_18_R1)) {
+				if (entry.length() > 40) {
+					entry = entry.substring(0, 40);
+				}
+			} else if (entry.length() > Short.MAX_VALUE) {
+				entry = entry.substring(0, Short.MAX_VALUE);
+			}
+
+			scoreName = entry;
+		}
+
 		tabHandler = new TabHandler(plugin, this);
 		groupPlayer = new GroupPlayer(plugin, this);
+	}
+
+	@Override
+	public String getScoreName() {
+		return scoreName;
 	}
 
 	@Override
