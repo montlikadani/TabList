@@ -80,7 +80,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 			if (isHelp) {
 				if (!isPlayer || sender.hasPermission(proc.permission().permission)) {
-					String params = proc.params().isEmpty() ? "" : " " + proc.params();
+					String params = proc.params().isEmpty() ? "" : ' ' + proc.params();
 					sendMsg(sender, colorText("&7/" + label + " " + proc.name() + params + " -&6 " + proc.desc()));
 				}
 

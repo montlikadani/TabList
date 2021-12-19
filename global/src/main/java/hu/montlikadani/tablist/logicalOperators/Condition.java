@@ -2,13 +2,13 @@ package hu.montlikadani.tablist.logicalOperators;
 
 public class Condition {
 
-	private final String operator;
+	private final RelationalOperators operator;
 	private final String[] parseable;
 
 	private String color = "";
 	private double secondCondition = 0D;
 
-	public Condition(String operator, String[] parseable) {
+	public Condition(RelationalOperators operator, String[] parseable) {
 		this.operator = operator;
 		this.parseable = parseable;
 
@@ -32,7 +32,7 @@ public class Condition {
 		return parseable;
 	}
 
-	public String getOperator() {
+	public RelationalOperators getOperator() {
 		return operator;
 	}
 
@@ -42,5 +42,29 @@ public class Condition {
 
 	public String getColor() {
 		return color;
+	}
+
+	public enum RelationalOperators {
+
+		GREATER_THAN(">"), GREATER_THAN_OR_EQUAL(">="), LESS_THAN("<"), LESS_THAN_OR_EQUAL("<="), EQUAL("=="),
+		NOT_EQUAL("!=");
+
+		public final String operator;
+
+		RelationalOperators(String operator) {
+			this.operator = operator;
+		}
+
+		public static RelationalOperators getByOperator(String operator) {
+			if (!operator.isEmpty()) {
+				for (RelationalOperators one : RelationalOperators.values()) {
+					if (one.operator.equals(operator)) {
+						return one;
+					}
+				}
+			}
+
+			return null;
+		}
 	}
 }

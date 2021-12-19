@@ -5,13 +5,13 @@ import hu.montlikadani.tablist.logicalOperators.LogicalNode;
 
 public class OverriddenOperatorNodes extends hu.montlikadani.tablist.logicalOperators.OperatorNodes {
 
-	public OverriddenOperatorNodes(int type) {
+	public OverriddenOperatorNodes(LogicalNode.NodeType type) {
 		super(type);
 	}
 
 	@Override
 	public boolean parse(double leftCond) {
-		if (type == LogicalNode.NodeType.getLastTps()) {
+		if (type == LogicalNode.NodeType.TPS) {
 			if (leftCond < 0.0)
 				return false;
 
@@ -30,17 +30,17 @@ public class OverriddenOperatorNodes extends hu.montlikadani.tablist.logicalOper
 			}
 
 			switch (condition.getOperator()) {
-			case ">":
+			case GREATER_THAN:
 				return leftCond > secondCondition;
-			case ">=":
+			case GREATER_THAN_OR_EQUAL:
 				return leftCond >= secondCondition;
-			case "<":
+			case LESS_THAN:
 				return leftCond < secondCondition;
-			case "<=":
+			case LESS_THAN_OR_EQUAL:
 				return leftCond <= secondCondition;
-			case "==":
+			case EQUAL:
 				return leftCond == secondCondition;
-			case "!=":
+			case NOT_EQUAL:
 				return leftCond != secondCondition;
 			default:
 				return false;

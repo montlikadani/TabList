@@ -108,7 +108,7 @@ placeholder-format:
 
     # How many numbers do you want to display after "." in %tps% placeholder?
     # The number should be higher than 0.
-    # Example: 3 = 20.14
+    # Example: 3 = 19.14
     size: 2
 
   # Memory bar settings for %memory_bar% variable

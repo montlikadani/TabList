@@ -149,17 +149,17 @@ public final class JsonComponent {
 				int closeIndex = -1;
 				int fromIndex = i + 6;
 
-				if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) >= 0) {
+				if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
 					font = NamespacedKey.minecraft(text.substring(fromIndex, closeIndex)).toString();
 				} else if (text.regionMatches(true, i, "{/font", 0, 6)
-						&& (closeIndex = text.indexOf('}', fromIndex)) >= 0) {
+						&& (closeIndex = text.indexOf('}', fromIndex)) != -1) {
 					if (defaultFontNamespacedKey == null)
 						defaultFontNamespacedKey = NamespacedKey.minecraft("default").toString();
 
 					font = defaultFontNamespacedKey;
 				}
 
-				if (closeIndex >= 0) {
+				if (closeIndex != -1) {
 					if (builder.length() > 0) {
 						obj.addProperty("text", builder.toString());
 						jsonList.add(obj);

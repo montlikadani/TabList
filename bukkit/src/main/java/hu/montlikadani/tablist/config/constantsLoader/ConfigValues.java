@@ -90,7 +90,7 @@ public class ConfigValues {
 				"https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
 		c.addComment("placeholder-format.tps.size",
 				"How many numbers do you want to display after \".\" in %tps% placeholder?",
-				"The number should be higher than 0.", "Example: 3 = 20.14");
+				"The number should be higher than 0.", "Example: 3 = 19.14");
 		c.addComment("placeholder-format.memory-bar", "Memory bar settings for %memory_bar% variable");
 		c.addComment("placeholder-format.memory-bar.colors.allocation", "When the server memory less than 80");
 		c.addComment("placeholder-format.memory-bar.colors.released",

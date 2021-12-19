@@ -32,7 +32,7 @@ public final class Global {
 		int i = -1;
 
 		for (String symbol : Symbols.SYMBOLS) {
-			s = s.replace("<" + ++i + ">", symbol);
+			s = s.replace('<' + Integer.toString(++i) + '>', symbol);
 		}
 
 		return s;

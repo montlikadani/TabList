@@ -5,15 +5,15 @@ import java.util.regex.Pattern;
 
 public class OperatorNodes implements LogicalNode {
 
-	protected final int type;
+	protected final NodeType type;
 	protected Condition condition;
 
-	public OperatorNodes(int type) {
+	public OperatorNodes(NodeType type) {
 		this.type = type;
 	}
 
 	@Override
-	public int getType() {
+	public NodeType getType() {
 		return type;
 	}
 
@@ -29,26 +29,28 @@ public class OperatorNodes implements LogicalNode {
 	}
 
 	private Condition makeConditionFromInput(String str) {
-		String operator = "";
+		String strOperator = "";
 
 		for (String logicalOperator : new String[] { ">", ">=", "<", "<=", "==", "!=" }) {
 			String s = str.replaceAll("[^" + logicalOperator + "]", "");
 
 			if (s.equals(logicalOperator)) {
-				operator = s;
+				strOperator = s;
 			}
 		}
 
-		if (operator.isEmpty()) {
+		Condition.RelationalOperators operator = Condition.RelationalOperators.getByOperator(strOperator);
+		if (operator == null) {
 			return null;
 		}
 
-		return new Condition(operator, String.valueOf(str.trim().replace(operator, ";").toCharArray()).split(";", 2));
+		return new Condition(operator,
+				String.valueOf(str.trim().replace(strOperator, ";").toCharArray()).split(";", 2));
 	}
 
 	@Override
 	public boolean parse(double leftCond) {
-		if (type == NodeType.getLastPing()) {
+		if (type == NodeType.PING) {
 			int secondCondition = (int) condition.getSecondCondition();
 			if (secondCondition < 0)
 				return false;
@@ -58,17 +60,17 @@ public class OperatorNodes implements LogicalNode {
 				return false;
 
 			switch (condition.getOperator()) {
-			case ">":
+			case GREATER_THAN:
 				return firstCondition > secondCondition;
-			case ">=":
+			case GREATER_THAN_OR_EQUAL:
 				return firstCondition >= secondCondition;
-			case "<":
+			case LESS_THAN:
 				return firstCondition < secondCondition;
-			case "<=":
+			case LESS_THAN_OR_EQUAL:
 				return firstCondition <= secondCondition;
-			case "==":
+			case EQUAL:
 				return firstCondition == secondCondition;
-			case "!=":
+			case NOT_EQUAL:
 				return firstCondition != secondCondition;
 			default:
 				return false;
@@ -80,7 +82,7 @@ public class OperatorNodes implements LogicalNode {
 
 	private static final Pattern VARIABLE_PATTERN = Pattern.compile("%tps%|%tps-overflow%|%ping%");
 
-	public static String parseCondition(double value, int type, List<LogicalNode> nodes) {
+	public static String parseCondition(double value, NodeType type, List<LogicalNode> nodes) {
 		String color = "";
 
 		for (LogicalNode node : nodes) {
@@ -95,7 +97,7 @@ public class OperatorNodes implements LogicalNode {
 			builder.append(VARIABLE_PATTERN.matcher(color).replaceAll("").replace('&', '\u00a7'));
 		}
 
-		return (type == NodeType.getLastPing() ? builder.append((int) value) : builder.append(value)).toString();
+		return (type == NodeType.PING ? builder.append((int) value) : builder.append(value)).toString();
 	}
 
 	public static void reverseOrderOfArray(List<LogicalNode> nodes) {
@@ -109,11 +111,11 @@ public class OperatorNodes implements LogicalNode {
 			for (int j = start; j > i; j--) {
 				LogicalNode node = nodes.get(i), node2 = nodes.get(j);
 
-				boolean firstPing = node.getType() == NodeType.getLastPing();
+				boolean firstPing = node.getType() == NodeType.PING;
 
-				if ((firstPing && node2.getType() == NodeType.getLastPing()
+				if ((firstPing && node2.getType() == NodeType.PING
 						&& node.getCondition().getSecondCondition() < node2.getCondition().getSecondCondition())
-						|| (firstPing && node2.getType() == NodeType.getLastTps() && node.getCondition()
+						|| (firstPing && node2.getType() == NodeType.TPS && node.getCondition()
 								.getSecondCondition() > node2.getCondition().getSecondCondition())) {
 					nodes.set(i, node2);
 					nodes.set(j, node);

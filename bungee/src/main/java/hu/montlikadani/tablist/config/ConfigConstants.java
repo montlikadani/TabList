@@ -114,7 +114,7 @@ public final class ConfigConstants {
 				continue;
 			}
 
-			LogicalNode node = new OperatorNodes(LogicalNode.NodeType.getPing()).parseInput(f);
+			LogicalNode node = new OperatorNodes(LogicalNode.NodeType.PING).parseInput(f);
 
 			if (node.getCondition() != null) {
 				LOGICAL_NODES.add(node);
@@ -129,7 +129,7 @@ public final class ConfigConstants {
 			return Integer.toString(ping);
 		}
 
-		return OperatorNodes.parseCondition(ping, LogicalNode.NodeType.getLastPing(), LOGICAL_NODES);
+		return OperatorNodes.parseCondition(ping, LogicalNode.NodeType.PING, LOGICAL_NODES);
 	}
 
 	public static final class GroupSettings {

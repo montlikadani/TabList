@@ -41,7 +41,7 @@ public final class Variables {
 					continue;
 				}
 
-				LogicalNode node = new OverriddenOperatorNodes(LogicalNode.NodeType.getPing()).parseInput(f);
+				LogicalNode node = new OperatorNodes(LogicalNode.NodeType.PING).parseInput(f);
 
 				if (node.getCondition() != null) {
 					nodes.add(node);
@@ -55,7 +55,7 @@ public final class Variables {
 					continue;
 				}
 
-				LogicalNode node = new OverriddenOperatorNodes(LogicalNode.NodeType.getTps()).parseInput(f);
+				LogicalNode node = new OverriddenOperatorNodes(LogicalNode.NodeType.TPS).parseInput(f);
 
 				if (node.getCondition() != null) {
 					nodes.add(node);
@@ -217,7 +217,7 @@ public final class Variables {
 			double tps = TabListAPI.getTPS();
 			boolean isGreater = tps > 20.0;
 
-			str = str.replace("%tps%", (isGreater ? "*" : "") + tpsDot(isGreater ? 20.0 : tps));
+			str = str.replace("%tps%", (isGreater ? '*' : "") + tpsDot(isGreater ? 20.0 : tps));
 		}
 
 		// Don't use here colors because of some issues with hex
@@ -304,10 +304,10 @@ public final class Variables {
 			return Double.toString(d);
 		}
 
-		String ds = OperatorNodes.parseCondition(d, LogicalNode.NodeType.getLastTps(), nodes);
+		String ds = OperatorNodes.parseCondition(d, LogicalNode.NodeType.TPS, nodes);
 		int index = ds.indexOf('.');
 
-		if (index >= 0) {
+		if (index != -1) {
 			int tpsSize = ConfigValues.getTpsSize();
 			int size = (tpsSize == 1 ? 3 : index) + (tpsSize < 1 ? 2 : tpsSize);
 			int length = ds.length();
@@ -323,7 +323,7 @@ public final class Variables {
 			return Integer.toString(ping);
 		}
 
-		return OperatorNodes.parseCondition(ping, LogicalNode.NodeType.getLastPing(), nodes);
+		return OperatorNodes.parseCondition(ping, LogicalNode.NodeType.PING, nodes);
 	}
 
 	private String getTimeAsString(DateTimeFormatter formatterPattern) {
