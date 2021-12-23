@@ -24,10 +24,25 @@ public final class TabListAPI {
 	private static java.lang.reflect.Field pingField, recentTpsField;
 	private static java.lang.reflect.Method serverMethod;
 
+	private static boolean isTpsMethodExists = false;
+	private static boolean isPingMethodExists = false;
+
 	static {
 		try {
 			(serverMethod = Bukkit.getServer().getClass().getDeclaredMethod("getServer")).setAccessible(true);
 		} catch (NoSuchMethodException ex) {
+		}
+
+		try {
+			Bukkit.getServer().getTPS();
+			isTpsMethodExists = true;
+		} catch (NoSuchMethodError e) {
+		}
+
+		try {
+			Player.class.getDeclaredMethod("getPing");
+			isPingMethodExists = true;
+		} catch (NoSuchMethodException e) {
 		}
 	}
 
@@ -126,20 +141,20 @@ public final class TabListAPI {
 	 * @return the current amount of ping of the given player
 	 */
 	public static int getPing(Player player) {
-		try {
+		if (isPingMethodExists) {
 			return player.getPing();
-		} catch (NoSuchMethodError e) {
-			try {
-				Object entityPlayer = ReflectionUtils.getPlayerHandle(player);
+		}
 
-				if (pingField == null) {
-					(pingField = entityPlayer.getClass().getField("ping")).setAccessible(true);
-				}
+		try {
+			Object entityPlayer = ReflectionUtils.getPlayerHandle(player);
 
-				return pingField.getInt(entityPlayer);
-			} catch (Exception ex) {
-				ex.printStackTrace();
+			if (pingField == null) {
+				(pingField = entityPlayer.getClass().getField("ping")).setAccessible(true);
 			}
+
+			return pingField.getInt(entityPlayer);
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 
 		return 0;
@@ -152,19 +167,19 @@ public final class TabListAPI {
 	 *         {@link org.bukkit.Server#getTPS()}
 	 */
 	public static double getTPS() {
-		try {
+		if (isTpsMethodExists) {
 			return Bukkit.getServer().getTPS()[0];
-		} catch (NoSuchMethodError e) {
-			try {
-				Object server = serverMethod.invoke(Bukkit.getServer());
+		}
 
-				if (recentTpsField == null) {
-					(recentTpsField = server.getClass().getField("recentTps")).setAccessible(true);
-				}
+		try {
+			Object server = serverMethod.invoke(Bukkit.getServer());
 
-				return ((double[]) recentTpsField.get(server))[0];
-			} catch (Exception ex) {
+			if (recentTpsField == null) {
+				(recentTpsField = server.getClass().getField("recentTps")).setAccessible(true);
 			}
+
+			return ((double[]) recentTpsField.get(server))[0];
+		} catch (Exception ex) {
 		}
 
 		return 0.0;

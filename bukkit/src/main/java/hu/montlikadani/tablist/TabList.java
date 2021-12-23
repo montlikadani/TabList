@@ -309,7 +309,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		updateAll(p, false);
 	}
 
-	void updateAll(final Player player, boolean reload) {
+	void updateAll(Player player, boolean reload) {
 		TabListUser user = getUser(player.getUniqueId()).orElseGet(() -> {
 			TabListUser tlu = new TabListPlayer(this, player.getUniqueId());
 			users.add(tlu);

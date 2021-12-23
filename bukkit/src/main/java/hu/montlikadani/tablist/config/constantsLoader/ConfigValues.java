@@ -36,6 +36,13 @@ public class ConfigValues {
 	public static void loadValues(CommentedConfig c) {
 		c.options().copyDefaults(true);
 
+		// We use reflection until Paper does not merges upstream changes
+		try {
+			c.options().getClass().getDeclaredMethod("parseComments", boolean.class).invoke(c.options(), false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		PER_WORLD_LIST_NAMES.clear();
 
 		c.addComment("hook.placeholderapi", "Hook to PlaceholderAPI to use custom placeholders.");

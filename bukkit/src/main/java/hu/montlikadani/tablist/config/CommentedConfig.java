@@ -45,38 +45,26 @@ public class CommentedConfig extends YamlConfiguration {
 	}
 
 	@Override
-	public void save(String file) throws IOException {
-		save(new File(file));
-	}
-
-	@Override
 	public void save(File file) throws IOException {
-		com.google.common.io.Files.createParentDirs(file);
-
-		String saveToString = saveToString();
-		if (saveToString.isEmpty()) {
-			return;
-		}
-
 		try (PrintWriter writer = new PrintWriter(file, StandardCharsets.UTF_8.name())) {
-			writer.write(insertComments(saveToString));
+			writer.write(insertComments(saveToString()));
 			writer.flush();
 		}
 	}
 
-	private String insertComments(String yaml) {
+	private String insertComments(String content) {
 		if (comments.isEmpty()) {
-			return yaml;
+			return content;
 		}
 
 		StringBuilder newContents = new StringBuilder(), currentPath = new StringBuilder();
 		boolean commentedPath = false, node = false;
 		int depth = 0;
 
-		String[] split = yaml.split('[' + System.lineSeparator() + ']');
+		String[] split = content.split('[' + System.lineSeparator() + ']');
 
 		for (int s = 0; s < split.length; s++) {
-			final String line = split[s];
+			String line = split[s];
 
 			if (line.isEmpty()) {
 				newContents.append(System.lineSeparator());
