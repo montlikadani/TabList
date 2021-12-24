@@ -34,9 +34,4 @@ public final class Complement1 implements Complement {
 			RenderType renderType) {
 		return board.registerNewObjective(name, criteria, displayName, renderType);
 	}
-
-	@Override
-	public String getPlayerListName(Player player) {
-		return player.getPlayerListName();
-	}
 }

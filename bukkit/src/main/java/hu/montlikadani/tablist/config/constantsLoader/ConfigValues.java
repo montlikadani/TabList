@@ -40,7 +40,6 @@ public class ConfigValues {
 		try {
 			c.options().getClass().getDeclaredMethod("parseComments", boolean.class).invoke(c.options(), false);
 		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
 		PER_WORLD_LIST_NAMES.clear();

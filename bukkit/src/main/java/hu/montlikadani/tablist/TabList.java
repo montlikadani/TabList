@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
-import org.bukkit.scoreboard.Scoreboard;
 
 import hu.montlikadani.tablist.commands.Commands;
 import hu.montlikadani.tablist.config.CommentedConfig;
@@ -123,11 +122,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				}
 
 				for (TabListUser user : users) {
-					Player player = user.getPlayer();
-
-					if (player != null) {
-						objects.unregisterObjective(player.getScoreboard().getObjective(t.getObjectName()));
-					}
+					objects.unregisterObjective(t, user);
 				}
 			}
 		}
@@ -316,12 +311,15 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			return tlu;
 		});
 
+		if (reload) { // Reset player score for integer objectives
+			user.getPlayerScore().setLastScore(-1);
+		}
+
 		switch (ConfigValues.getObjectType()) {
 		case PING:
 		case CUSTOM:
 			if (reload) {
-				objects.unregisterObjective(
-						player.getScoreboard().getObjective(Objects.ObjectTypes.HEALTH.getObjectName()));
+				objects.unregisterHealthObjective(player);
 			}
 
 			if (objects.isCancelled()) {
@@ -331,10 +329,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			break;
 		case HEALTH:
 			if (reload) {
-				Scoreboard board = player.getScoreboard();
-
-				objects.unregisterObjective(board.getObjective(Objects.ObjectTypes.PING.getObjectName()));
-				objects.unregisterObjective(board.getObjective(Objects.ObjectTypes.CUSTOM.getObjectName()));
+				objects.unregisterObjective(Objects.ObjectTypes.PING, user);
+				objects.unregisterObjective(Objects.ObjectTypes.CUSTOM, user);
 			} else {
 				objects.registerHealthTab(player);
 			}
@@ -342,11 +338,9 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			break;
 		default:
 			if (reload) {
-				Scoreboard board = player.getScoreboard();
-
 				for (Objects.ObjectTypes type : Objects.ObjectTypes.values()) {
 					if (type != Objects.ObjectTypes.NONE) {
-						objects.unregisterObjective(board.getObjective(type.getObjectName()));
+						objects.unregisterObjective(type, user);
 					}
 				}
 			}
@@ -396,10 +390,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				user.getTabHandler().sendEmptyTab(player);
 				groups.removePlayerGroup(user);
 
-				Scoreboard board = player.getScoreboard();
-
-				objects.unregisterObjective(board.getObjective(Objects.ObjectTypes.PING.getObjectName()));
-				objects.unregisterObjective(board.getObjective(Objects.ObjectTypes.CUSTOM.getObjectName()));
+				objects.unregisterObjective(Objects.ObjectTypes.PING, user);
+				objects.unregisterObjective(Objects.ObjectTypes.CUSTOM, user);
 
 				iterator.remove();
 				break;

@@ -1,11 +1,6 @@
 package hu.montlikadani.tablist.user;
 
-import hu.montlikadani.tablist.tablist.TabHandler;
-import hu.montlikadani.tablist.tablist.groups.GroupPlayer;
-
 public interface TabListUser {
-
-	String getScoreName();
 
 	org.bukkit.entity.Player getPlayer();
 
@@ -21,8 +16,10 @@ public interface TabListUser {
 
 	java.util.UUID getUniqueId();
 
-	GroupPlayer getGroupPlayer();
+	hu.montlikadani.tablist.tablist.groups.GroupPlayer getGroupPlayer();
 
-	TabHandler getTabHandler();
+	hu.montlikadani.tablist.tablist.TabHandler getTabHandler();
+
+	PlayerScore getPlayerScore();
 
 }

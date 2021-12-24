@@ -41,7 +41,7 @@ public final class Variables {
 					continue;
 				}
 
-				LogicalNode node = new OperatorNodes(LogicalNode.NodeType.PING).parseInput(f);
+				LogicalNode node = LogicalNode.newNode(LogicalNode.NodeType.PING).parseInput(f);
 
 				if (node.getCondition() != null) {
 					nodes.add(node);

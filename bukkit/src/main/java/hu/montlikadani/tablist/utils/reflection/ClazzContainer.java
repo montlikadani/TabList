@@ -10,21 +10,28 @@ public final class ClazzContainer {
 
 	private static Field infoList, scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamPrefix,
 			scoreboardTeamSuffix, scoreboardTeamNames, scoreboardTeamMode, scoreboardPlayers, nameTagVisibility,
-			playerInfoDataProfileField, playerInfoDataPing, playerInfoDataGameMode, nameTagVisibilityNameField;
+			playerInfoDataProfileField, playerInfoDataPing, playerInfoDataGameMode, nameTagVisibilityNameField,
+			scoreboardObjectiveMethod, packetPlayOutScoreboardObjectiveNameField,
+			packetPlayOutScoreboardObjectiveDisplayNameField, packetPlayOutScoreboardObjectiveRenderType;
 
 	private static Class<?> iChatBaseComponent, packet, packetPlayOutPlayerInfo, enumPlayerInfoAction,
 			entityPlayerClass, enumGameMode, playerInfoData, minecraftServer, packetPlayOutScoreboardTeam,
-			scoreboardNameTagVisibility, scoreboardTeamClass, scoreboardClass;
+			scoreboardNameTagVisibility, scoreboardTeamClass, scoreboardClass,
+			scoreboardObjective;
 
 	private static Object gameModeNotSet, gameModeSpectator, gameModeSurvival, addPlayer, removePlayer, updateGameMode,
-			updateLatency, updateDisplayName;
+			updateLatency, updateDisplayName, enumScoreboardHealthDisplayInteger, enumScoreboardActionChange,
+			enumScoreboardActionRemove, iScoreboardCriteriaDummy;
 
 	private static Method scoreboardTeamSetPrefix, scoreboardTeamSetSuffix, scoreboardTeamSetNameTagVisibility,
 			scoreboardTeamSetDisplayName, packetScoreboardTeamRemove, packetScoreboardTeamUpdateCreate,
-			packetScoreboardTeamEntries, playerInfoDataProfileMethod, playerNameSetMethod;
+			packetScoreboardTeamEntries, playerInfoDataProfileMethod, playerNameSetMethod, setScoreboardScoreMethod;
 
 	private static Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstructor, scoreboardConstructor,
-			scoreboardTeamConstructor, packetPlayOutScoreboardTeamConstructor;
+			scoreboardTeamConstructor, packetPlayOutScoreboardTeamConstructor, packetPlayOutScoreboardScoreConstructor,
+			packetPlayOutScoreboardObjectiveConstructor, firstScoreboardObjectiveConstructor,
+			packetPlayOutScoreboardDisplayObjectiveConstructor, scoreboardScoreConstructor,
+			packetPlayOutScoreboardScoreSbScoreConstructor;
 
 	private static Constructor<?>[] playerInfoDataConstructors;
 
@@ -74,13 +81,13 @@ public final class ClazzContainer {
 				removePlayer = enumPlayerInfoAction.getDeclaredField("e").get(enumPlayerInfoAction);
 			}
 
+			scoreboardClass = classByName("net.minecraft.world.scores", "Scoreboard");
+			scoreboardConstructor = scoreboardClass.getConstructor();
+
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
 				scoreboardNameTagVisibility = classByName("net.minecraft.world.scores",
 						"ScoreboardTeamBase$EnumNameTagVisibility");
-				scoreboardClass = classByName("net.minecraft.world.scores", "Scoreboard");
 				scoreboardTeamClass = classByName("net.minecraft.world.scores", "ScoreboardTeam");
-
-				scoreboardConstructor = scoreboardClass.getConstructor();
 
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_18_R1)) {
 					scoreboardTeamSetPrefix = scoreboardTeamClass.getMethod("b", iChatBaseComponent);
@@ -152,6 +159,108 @@ public final class ClazzContainer {
 								.setAccessible(true);
 			}
 
+			// Objectives
+			Class<?> packetPlayOutScoreboardDisplayObjective = classByName("net.minecraft.network.protocol.game",
+					"PacketPlayOutScoreboardDisplayObjective");
+			scoreboardObjective = classByName("net.minecraft.world.scores", "ScoreboardObjective");
+
+			packetPlayOutScoreboardDisplayObjectiveConstructor = packetPlayOutScoreboardDisplayObjective
+					.getConstructor(int.class, scoreboardObjective);
+
+			Class<?> enumScoreboardHealthDisplay;
+			try {
+				enumScoreboardHealthDisplay = classByName("net.minecraft.world.scores.criteria",
+						"IScoreboardCriteria$EnumScoreboardHealthDisplay");
+			} catch (ClassNotFoundException e) {
+				enumScoreboardHealthDisplay = classByName("net.minecraft.world.scores.criteria",
+						"EnumScoreboardHealthDisplay");
+			}
+
+			Class<?> packetPlayOutScoreboardObjective = classByName("net.minecraft.network.protocol.game",
+					"PacketPlayOutScoreboardObjective");
+			Class<?> packetPlayOutScoreboardScore = classByName("net.minecraft.network.protocol.game",
+					"PacketPlayOutScoreboardScore");
+
+			Class<?> iScoreboardCriteria = classByName("net.minecraft.world.scores.criteria", "IScoreboardCriteria");
+
+			iScoreboardCriteriaDummy = getFieldByType(iScoreboardCriteria, iScoreboardCriteria, null)
+					.get(iScoreboardCriteria);
+			/*try {
+				iScoreboardCriteriaDummy = iScoreboardCriteria.getDeclaredField("b").get(iScoreboardCriteria);
+			} catch (NoSuchFieldException e) {
+				try {
+					iScoreboardCriteriaDummy = iScoreboardCriteria.getDeclaredField("a").get(iScoreboardCriteria);
+				} catch (NoSuchFieldException ex) {
+					iScoreboardCriteriaDummy = iScoreboardCriteria.getDeclaredField("DUMMY").get(iScoreboardCriteria);
+				}
+			}*/
+
+			try {
+				enumScoreboardHealthDisplayInteger = enumScoreboardHealthDisplay.getDeclaredField("a")
+						.get(enumScoreboardHealthDisplay);
+			} catch (NoSuchFieldException e) {
+				enumScoreboardHealthDisplayInteger = enumScoreboardHealthDisplay.getDeclaredField("INTEGER")
+						.get(enumScoreboardHealthDisplay);
+			}
+
+			firstScoreboardObjectiveConstructor = scoreboardObjective.getConstructors()[0];
+
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+				Class<?> enumScoreboardAction;
+
+				try {
+					enumScoreboardAction = classByName("net.minecraft.server", "ScoreboardServer$Action");
+				} catch (ClassNotFoundException e) {
+					try {
+						enumScoreboardAction = classByName("net.minecraft.server",
+								"PacketPlayOutScoreboardScore$EnumScoreboardAction");
+					} catch (ClassNotFoundException ex) {
+						enumScoreboardAction = classByName("net.minecraft.server", "EnumScoreboardAction");
+					}
+				}
+
+				try {
+					enumScoreboardActionChange = enumScoreboardAction.getDeclaredField("a").get(enumScoreboardAction);
+					enumScoreboardActionRemove = enumScoreboardAction.getDeclaredField("b").get(enumScoreboardAction);
+				} catch (NoSuchFieldException e) {
+					enumScoreboardActionChange = enumScoreboardAction.getDeclaredField("CHANGE")
+							.get(enumScoreboardAction);
+					enumScoreboardActionRemove = enumScoreboardAction.getDeclaredField("REMOVE")
+							.get(enumScoreboardAction);
+				}
+
+				packetPlayOutScoreboardObjectiveConstructor = packetPlayOutScoreboardObjective
+						.getConstructor(scoreboardObjective, int.class);
+				packetPlayOutScoreboardScoreConstructor = packetPlayOutScoreboardScore
+						.getConstructor(enumScoreboardAction, String.class, String.class, int.class);
+			}/* else {
+				Class<?> scoreboardScore = classByName("net.minecraft.world.scores", "ScoreboardScore");
+				scoreboardScoreConstructor = scoreboardScore.getConstructor(scoreboardClass, scoreboardObjective,
+						String.class);
+
+				try {
+					setScoreboardScoreMethod = scoreboardScore.getDeclaredMethod("setScore", int.class);
+				} catch (NoSuchMethodException e) {
+					setScoreboardScoreMethod = scoreboardScore.getDeclaredMethod("b", int.class);
+				}
+
+				packetPlayOutScoreboardObjectiveConstructor = packetPlayOutScoreboardObjective.getConstructor();
+				packetPlayOutScoreboardScoreConstructor = packetPlayOutScoreboardScore.getConstructor(String.class);
+				packetPlayOutScoreboardScoreSbScoreConstructor = packetPlayOutScoreboardScore
+						.getConstructor(scoreboardScore);
+
+				scoreboardObjectiveMethod = getFieldByType(packetPlayOutScoreboardObjective, int.class,
+						field -> !java.lang.reflect.Modifier.isStatic(field.getModifiers()));
+
+				packetPlayOutScoreboardObjectiveNameField = getFieldByType(packetPlayOutScoreboardObjective,
+						String.class, null);
+				packetPlayOutScoreboardObjectiveDisplayNameField = getFieldsByType(packetPlayOutScoreboardObjective,
+						String.class).get(1);
+				packetPlayOutScoreboardObjectiveRenderType = getFieldByType(packetPlayOutScoreboardObjective,
+						enumScoreboardHealthDisplay, null);
+			}*/
+
+			// PlayerInfoData
 			(infoList = packetPlayOutPlayerInfo.getDeclaredField("b")).setAccessible(true);
 
 			try {
@@ -221,6 +330,31 @@ public final class ClazzContainer {
 
 		return Class.forName(newPackageName + "." + name);
 	}
+
+	private static Field getFieldByType(Class<?> from, Class<?> type, java.util.function.Predicate<Field> predicate) {
+		for (Field field : from.getDeclaredFields()) {
+			if (field.getType() == type && (predicate == null || predicate.test(field))) {
+				field.setAccessible(true);
+				return field;
+			}
+		}
+
+		return null;
+	}
+
+	/*private static java.util.List<Field> getFieldsByType(Class<?> from, Class<?> type) {
+		Field[] declaredFields = from.getDeclaredFields();
+		java.util.List<Field> fields = new java.util.ArrayList<>(declaredFields.length);
+
+		for (Field field : declaredFields) {
+			if (field.getType() == type) {
+				field.setAccessible(true);
+				fields.add(field);
+			}
+		}
+
+		return fields;
+	}*/
 
 	public static Object scoreboardTeamPacketByAction(Object scoreboardTeam, int action) throws Exception {
 		switch (action) {
@@ -425,5 +559,69 @@ public final class ClazzContainer {
 
 	public static Field getNameTagVisibilityNameField() {
 		return nameTagVisibilityNameField;
+	}
+
+	public static Constructor<?> getPacketPlayOutScoreboardScoreConstructor() {
+		return packetPlayOutScoreboardScoreConstructor;
+	}
+
+	public static Constructor<?> getPacketPlayOutScoreboardObjectiveConstructor() {
+		return packetPlayOutScoreboardObjectiveConstructor;
+	}
+
+	public static Class<?> getScoreboardObjective() {
+		return scoreboardObjective;
+	}
+
+	public static Constructor<?> getFirstScoreboardObjectiveConstructor() {
+		return firstScoreboardObjectiveConstructor;
+	}
+
+	public static Object getEnumScoreboardHealthDisplayInteger() {
+		return enumScoreboardHealthDisplayInteger;
+	}
+
+	public static Constructor<?> getPacketPlayOutScoreboardDisplayObjectiveConstructor() {
+		return packetPlayOutScoreboardDisplayObjectiveConstructor;
+	}
+
+	public static Object getEnumScoreboardActionChange() {
+		return enumScoreboardActionChange;
+	}
+
+	public static Object getEnumScoreboardActionRemove() {
+		return enumScoreboardActionRemove;
+	}
+
+	public static Object getiScoreboardCriteriaDummy() {
+		return iScoreboardCriteriaDummy;
+	}
+
+	public static Field getPacketPlayOutScoreboardObjectiveNameField() {
+		return packetPlayOutScoreboardObjectiveNameField;
+	}
+
+	public static Field getScoreboardObjectiveMethod() {
+		return scoreboardObjectiveMethod;
+	}
+
+	public static Field getPacketPlayOutScoreboardObjectiveDisplayNameField() {
+		return packetPlayOutScoreboardObjectiveDisplayNameField;
+	}
+
+	public static Field getPacketPlayOutScoreboardObjectiveRenderType() {
+		return packetPlayOutScoreboardObjectiveRenderType;
+	}
+
+	public static Constructor<?> getScoreboardScoreConstructor() {
+		return scoreboardScoreConstructor;
+	}
+
+	public static Method getSetScoreboardScoreMethod() {
+		return setScoreboardScoreMethod;
+	}
+
+	public static Constructor<?> getPacketPlayOutScoreboardScoreSbScoreConstructor() {
+		return packetPlayOutScoreboardScoreSbScoreConstructor;
 	}
 }

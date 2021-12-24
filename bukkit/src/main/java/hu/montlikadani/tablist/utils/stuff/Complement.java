@@ -9,8 +9,6 @@ public interface Complement {
 
 	void setPlayerListName(Player player, String text);
 
-	String getPlayerListName(Player player);
-
 	String getDisplayName(Player player);
 
 	String getMotd();

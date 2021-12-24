@@ -45,9 +45,4 @@ public class Complement2 implements Complement {
 			RenderType renderType) {
 		return board.registerNewObjective(name, criteria, deserialize(displayName), renderType);
 	}
-
-	@Override
-	public String getPlayerListName(Player player) {
-		return serialize(player.playerListName());
-	}
 }

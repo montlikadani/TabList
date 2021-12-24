@@ -14,6 +14,8 @@ import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.StrUtil;
+import hu.montlikadani.tablist.utils.reflection.ClazzContainer;
+import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 import hu.montlikadani.tablist.utils.task.Tasks;
 import hu.montlikadani.tablist.utils.variables.simplePlaceholder.SimplePluginPlaceholder;
 
@@ -32,7 +34,7 @@ public final class Objects {
 	void registerHealthTab(Player pl) {
 		if (ConfigValues.getObjectsDisabledWorlds().contains(pl.getWorld().getName())
 				|| ConfigValues.getHealthObjectRestricted().contains(pl.getName())) {
-			unregisterObjective(pl.getScoreboard().getObjective(ConfigValues.getObjectType().objectName));
+			unregisterHealthObjective(pl);
 			return;
 		}
 
@@ -77,7 +79,7 @@ public final class Objects {
 			}
 
 			for (TabListUser user : plugin.getUsers()) {
-				if (user.getScoreName().isEmpty()) {
+				if (user.getPlayerScore().getScoreName().isEmpty()) {
 					continue;
 				}
 
@@ -88,26 +90,61 @@ public final class Objects {
 				}
 
 				ObjectTypes type = ConfigValues.getObjectType();
-				Scoreboard board = player.getScoreboard();
-				Objective object = board.getObjective(type.objectName);
 
-				if (object == null) {
-					if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-						object = plugin.getComplement().registerNewObjective(board, type.objectName, "dummy",
-								type.objectName, RenderType.INTEGER);
-					} else {
-						object = board.registerNewObjective(type.objectName, "dummy");
+				if (!user.getPlayerScore().isObjectiveCreated()) {
+					try {
+						if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+							Object objectiveInstance = ClazzContainer.getFirstScoreboardObjectiveConstructor()
+									.newInstance(null, type.objectName, ClazzContainer.getiScoreboardCriteriaDummy(),
+											ReflectionUtils.getAsIChatBaseComponent(type.objectName),
+											ClazzContainer.getEnumScoreboardHealthDisplayInteger());
+
+							// Create objective
+							ReflectionUtils.sendPacket(player,
+									ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
+											.newInstance(objectiveInstance, 0));
+
+							// Where to display, 0 - PlayerList
+							ReflectionUtils.sendPacket(player,
+									ClazzContainer.getPacketPlayOutScoreboardDisplayObjectiveConstructor()
+											.newInstance(0, objectiveInstance));
+						} else {
+							Scoreboard board = player.getScoreboard();
+							Objective object = board.getObjective(type.objectName);
+
+							if (object == null) {
+								object = board.registerNewObjective(type.objectName, "dummy");
+							}
+
+							object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+
+							if (type == ObjectTypes.PING) {
+								object.setDisplayName("ms");
+							}
+
+							/*Object packet = ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
+									.newInstance();
+
+							ClazzContainer.getPacketPlayOutScoreboardObjectiveNameField().set(packet, type.objectName);
+							ClazzContainer.getPacketPlayOutScoreboardObjectiveDisplayNameField().set(packet,
+									type.objectName);
+							ClazzContainer.getPacketPlayOutScoreboardObjectiveRenderType().set(packet,
+									ClazzContainer.getEnumScoreboardHealthDisplayInteger());
+							ClazzContainer.getScoreboardObjectiveMethod().set(packet, 1);
+
+							ReflectionUtils.sendPacket(player, packet);
+
+							ReflectionUtils.sendPacket(player,
+									ClazzContainer.getPacketPlayOutScoreboardDisplayObjectiveConstructor().newInstance(
+											0, ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
+													type.objectName, ClazzContainer.getiScoreboardCriteriaDummy())));*/
+						}
+					} catch (Exception e) {
+						e.printStackTrace();
+						return;
 					}
 
-					object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-
-					if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-						object.setRenderType(RenderType.INTEGER);
-					}
-
-					if (type == ObjectTypes.PING) {
-						plugin.getComplement().setDisplayName(object, "ms");
-					}
+					user.getPlayerScore().setObjectiveCreated();
 				}
 
 				if (type == ObjectTypes.PING) {
@@ -116,16 +153,49 @@ public final class Objects {
 					objectScore.set(getValue(player, ConfigValues.getCustomObjectSetting()));
 				}
 
-				if (object.getScore(user.getScoreName()).getScore() != objectScore.get()) {
+				// Update objective value
+
+				int lastScore = objectScore.get();
+
+				if (lastScore != user.getPlayerScore().getLastScore()) {
+					user.getPlayerScore().setLastScore(lastScore);
+
 					for (TabListUser us : plugin.getUsers()) {
 						Player pl = us.getPlayer();
 
-						if (pl != null) {
-							Objective objective = pl.getScoreboard().getObjective(type.objectName);
+						if (pl == null) {
+							continue;
+						}
 
-							if (objective != null) {
-								objective.getScore(user.getScoreName()).setScore(objectScore.get());
+						try {
+							if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+								ReflectionUtils.sendPacket(pl,
+										ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
+												ClazzContainer.getEnumScoreboardActionChange(), type.objectName,
+												user.getPlayerScore().getScoreName(), lastScore));
+							} else {
+								// Packets does not really want to work for old versions so we uses that the API provided
+
+								Objective objective = pl.getScoreboard().getObjective(type.objectName);
+
+								if (objective != null) {
+									objective.getScore(user.getPlayerScore().getScoreName()).setScore(lastScore);
+								}
+
+								/*Object scoreObject = ClazzContainer.getScoreboardScoreConstructor().newInstance(
+										ClazzContainer.getScoreboardConstructor().newInstance(),
+										ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
+												type.objectName, ClazzContainer.getiScoreboardCriteriaDummy()),
+										user.getPlayerScore().getScoreName());
+
+								ClazzContainer.getSetScoreboardScoreMethod().invoke(scoreObject, lastScore);
+
+								ReflectionUtils.sendPacket(pl, ClazzContainer
+										.getPacketPlayOutScoreboardScoreSbScoreConstructor().newInstance(scoreObject));*/
 							}
+						} catch (Exception e) {
+							e.printStackTrace();
+							return;
 						}
 					}
 				}
@@ -180,9 +250,61 @@ public final class Objects {
 		return task == null;
 	}
 
-	public void unregisterObjective(Objective obj) {
+	public void unregisterHealthObjective(Player player) {
+		Objective obj = player.getScoreboard().getObjective(ObjectTypes.HEALTH.objectName);
+
 		if (obj != null) {
 			obj.unregister();
+		}
+	}
+
+	public void unregisterObjective(ObjectTypes type, TabListUser source) {
+		Player player = source.getPlayer();
+
+		if (player == null) {
+			return;
+		}
+
+		if (type == ObjectTypes.HEALTH) {
+			unregisterHealthObjective(player);
+			return;
+		}
+
+		if (!source.getPlayerScore().isObjectiveCreated()) {
+			return;
+		}
+
+		source.getPlayerScore().setObjectiveCreated();
+
+		try {
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+
+				// Send remove action
+				ReflectionUtils.sendPacket(player,
+						ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
+								ClazzContainer.getEnumScoreboardActionRemove(), type.objectName,
+								source.getPlayerScore().getScoreName(), 0));
+
+				// Unregister objective
+				ReflectionUtils.sendPacket(player,
+						ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
+								.newInstance(ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
+										type.objectName, ClazzContainer.getiScoreboardCriteriaDummy(),
+										ReflectionUtils.getAsIChatBaseComponent(type.objectName),
+										ClazzContainer.getEnumScoreboardHealthDisplayInteger()), 1));
+			} else {
+				/*ReflectionUtils.sendPacket(player, ClazzContainer.getPacketPlayOutScoreboardScoreConstructor()
+						.newInstance(source.getPlayerScore().getScoreName()));*/
+
+				Objective object = player.getScoreboard().getObjective(type.objectName);
+
+				if (object != null) {
+					object.unregister();
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			return;
 		}
 	}
 

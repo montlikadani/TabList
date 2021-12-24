@@ -1,6 +1,7 @@
 package hu.montlikadani.tablist.user;
 
 import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.tablist.TabHandler;
 import hu.montlikadani.tablist.tablist.groups.GroupPlayer;
 import hu.montlikadani.tablist.tablist.playerlist.HidePlayers;
@@ -16,10 +17,9 @@ public class TabListPlayer implements TabListUser {
 	private final TabList plugin;
 	private final UUID uniqueId;
 
-	private String scoreName = "";
-
 	private final GroupPlayer groupPlayer;
 	private final TabHandler tabHandler;
+	private final PlayerScore playerScore;
 
 	private HidePlayers hidePlayers;
 	private PlayerList playerList;
@@ -28,27 +28,27 @@ public class TabListPlayer implements TabListUser {
 		this.plugin = plugin;
 		this.uniqueId = uniqueId;
 
-		String entry = plugin.getServer().getOfflinePlayer(uniqueId).getName();
+		String scoreName = "";
 
-		if (entry != null) {
-			if (ServerVersion.isCurrentLower(ServerVersion.v1_18_R1)) {
-				if (entry.length() > 40) {
-					entry = entry.substring(0, 40);
+		if (ConfigValues.getObjectType() != hu.montlikadani.tablist.Objects.ObjectTypes.NONE) {
+			String entry = plugin.getServer().getOfflinePlayer(uniqueId).getName();
+
+			if (entry != null) {
+				if (ServerVersion.isCurrentLower(ServerVersion.v1_18_R1)) {
+					if (entry.length() > 40) {
+						entry = entry.substring(0, 40);
+					}
+				} else if (entry.length() > Short.MAX_VALUE) {
+					entry = entry.substring(0, Short.MAX_VALUE);
 				}
-			} else if (entry.length() > Short.MAX_VALUE) {
-				entry = entry.substring(0, Short.MAX_VALUE);
-			}
 
-			scoreName = entry;
+				scoreName = entry;
+			}
 		}
 
+		playerScore = new PlayerScore(scoreName);
 		tabHandler = new TabHandler(plugin, this);
 		groupPlayer = new GroupPlayer(plugin, this);
-	}
-
-	@Override
-	public String getScoreName() {
-		return scoreName;
 	}
 
 	@Override
@@ -122,5 +122,10 @@ public class TabListPlayer implements TabListUser {
 
 	public PlayerList getPlayerList() {
 		return playerList;
+	}
+
+	@Override
+	public PlayerScore getPlayerScore() {
+		return playerScore;
 	}
 }
