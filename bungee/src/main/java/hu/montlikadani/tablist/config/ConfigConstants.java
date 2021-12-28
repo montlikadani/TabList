@@ -114,7 +114,7 @@ public final class ConfigConstants {
 				continue;
 			}
 
-			LogicalNode node = new OperatorNodes(LogicalNode.NodeType.PING).parseInput(f);
+			LogicalNode node = LogicalNode.newNode(LogicalNode.NodeType.PING).parseInput(f);
 
 			if (node.getCondition() != null) {
 				LOGICAL_NODES.add(node);

@@ -12,14 +12,13 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import hu.montlikadani.tablist.TabList;
-import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 
 public abstract class UpdateDownloader {
 
 	public static void checkFromGithub(TabList tabList) {
 		deleteDirectory(tabList);
 
-		if (!ConfigValues.isCheckUpdate()) {
+		if (!tabList.getConfig().getBoolean("check-update", true)) {
 			return;
 		}
 
@@ -56,7 +55,9 @@ public abstract class UpdateDownloader {
 				tabList.getLogger().log(Level.INFO,
 						"Your version: " + tabList.getDescription().getVersion() + ", New version " + versionString);
 
-				if (!ConfigValues.isDownloadUpdates()) {
+				boolean downloadUpdates = tabList.getConfig().getBoolean("download-updates", false);
+
+				if (!downloadUpdates) {
 					tabList.getLogger().log(Level.INFO, "Download: https://www.spigotmc.org/resources/46229/");
 					tabList.getLogger().log(Level.INFO, "");
 					tabList.getLogger().log(Level.INFO,
@@ -68,7 +69,7 @@ public abstract class UpdateDownloader {
 						"To disable update checking, go to the config file (not recommended)");
 				tabList.getLogger().log(Level.INFO, "-------------");
 
-				if (!ConfigValues.isDownloadUpdates()) {
+				if (!downloadUpdates) {
 					return false;
 				}
 

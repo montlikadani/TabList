@@ -94,20 +94,18 @@ public final class Objects {
 				if (!user.getPlayerScore().isObjectiveCreated()) {
 					try {
 						if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-							Object objectiveInstance = ClazzContainer.getFirstScoreboardObjectiveConstructor()
-									.newInstance(null, type.objectName, ClazzContainer.getiScoreboardCriteriaDummy(),
-											ReflectionUtils.getAsIChatBaseComponent(type.objectName),
-											ClazzContainer.getEnumScoreboardHealthDisplayInteger());
+							Object objectiveInstance = ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
+									type.objectName, ClazzContainer.getiScoreboardCriteriaDummy(),
+									ReflectionUtils.getAsIChatBaseComponent(type.objectName),
+									ClazzContainer.getEnumScoreboardHealthDisplayInteger());
 
 							// Create objective
-							ReflectionUtils.sendPacket(player,
-									ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
-											.newInstance(objectiveInstance, 0));
+							ReflectionUtils.sendPacket(player, ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
+									.newInstance(objectiveInstance, 0));
 
 							// Where to display, 0 - PlayerList
-							ReflectionUtils.sendPacket(player,
-									ClazzContainer.getPacketPlayOutScoreboardDisplayObjectiveConstructor()
-											.newInstance(0, objectiveInstance));
+							ReflectionUtils.sendPacket(player, ClazzContainer
+									.getPacketPlayOutScoreboardDisplayObjectiveConstructor().newInstance(0, objectiveInstance));
 						} else {
 							Scoreboard board = player.getScoreboard();
 							Objective object = board.getObjective(type.objectName);
@@ -174,7 +172,8 @@ public final class Objects {
 												ClazzContainer.getEnumScoreboardActionChange(), type.objectName,
 												user.getPlayerScore().getScoreName(), lastScore));
 							} else {
-								// Packets does not really want to work for old versions so we uses that the API provided
+								// Packets does not really want to work for old versions so we uses that the API
+								// provided
 
 								Objective objective = pl.getScoreboard().getObjective(type.objectName);
 
@@ -230,8 +229,8 @@ public final class Objects {
 			try {
 				return Integer.parseInt(result);
 			} catch (NumberFormatException e) {
-				hu.montlikadani.tablist.utils.Util.logConsole(
-						"Invalid custom objective with " + ConfigValues.getCustomObjectSetting() + " value.");
+				hu.montlikadani.tablist.utils.Util
+						.logConsole("Invalid custom objective with " + ConfigValues.getCustomObjectSetting() + " value.");
 			}
 		}
 
@@ -304,7 +303,6 @@ public final class Objects {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return;
 		}
 	}
 

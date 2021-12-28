@@ -11,12 +11,11 @@ import hu.montlikadani.tablist.config.CommentedConfig;
 
 public class ConfigValues {
 
-	private static boolean checkUpdate, downloadUpdates, logConsole = true, placeholderAPI, perWorldPlayerList,
-			fakePlayers, countFakePlayersToOnlinePlayers, removeGrayColorFromTabInSpec, ignoreVanishedPlayers,
-			countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled,
-			afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone, pingFormatEnabled,
-			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish,
-			hideGroupWhenAfk, preferPrimaryVaultGroup, assignGlobalGroup;
+	private static boolean logConsole = true, placeholderAPI, perWorldPlayerList, fakePlayers, countFakePlayersToOnlinePlayers,
+			removeGrayColorFromTabInSpec, ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab,
+			afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone,
+			pingFormatEnabled, tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups,
+			hideGroupInVanish, hideGroupWhenAfk, preferPrimaryVaultGroup, assignGlobalGroup;
 
 	private static String afkFormatYes, afkFormatNo, timeZone, customObjectSetting, memoryBarChar, memoryBarUsedColor,
 			memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
@@ -66,12 +65,10 @@ public class ConfigValues {
 				"will be restored if this option is disabled.",
 				"Requires ProtocolLib to fix view distance issue! (https://github.com/montlikadani/TabList/issues/147)");
 		c.addComment("per-world-player-list", "Different player list in different world.");
-		c.addComment("per-world-player-list.world-groups",
-				"You can specify worlds, which will share the same list of players");
+		c.addComment("per-world-player-list.world-groups", "You can specify worlds, which will share the same list of players");
 		c.addComment("per-world-player-list.world-groups.example1", "The key name, can be anything");
 		c.addComment("placeholder-format", "Placeholders formatting");
-		c.addComment("placeholder-format.afk-status",
-				"When the player changes the AFK status, change his tablist name format?");
+		c.addComment("placeholder-format.afk-status", "When the player changes the AFK status, change his tablist name format?");
 		c.addComment("placeholder-format.afk-status.show-in-right-or-left-side",
 				"Should the AFK format display in right or left side?", "true - displays in right side",
 				"false - displays in left side");
@@ -82,20 +79,16 @@ public class ConfigValues {
 		c.addComment("placeholder-format.time.time-zone",
 				"Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/",
 				"Or google it: \"what is my time zone\"");
-		c.addComment("placeholder-format.time.use-system-zone",
-				"Use system default time zone instead of searching for that?");
+		c.addComment("placeholder-format.time.use-system-zone", "Use system default time zone instead of searching for that?");
 		c.addComment("placeholder-format.time.time-format",
 				"Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html",
 				"Format of %server-time% placeholder.");
 		c.addComment("placeholder-format.time.date-format", "Format of %date% placeholder.");
 		c.addComment("placeholder-format.ping", "Ping color format for %ping% placeholder.");
-		c.addComment("placeholder-format.ping.formats",
-				"https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
+		c.addComment("placeholder-format.ping.formats", "https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
 		c.addComment("placeholder-format.tps", "TPS color format for %tps% placeholder.");
-		c.addComment("placeholder-format.tps.formats",
-				"https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
-		c.addComment("placeholder-format.tps.size",
-				"How many numbers do you want to display after \".\" in %tps% placeholder?",
+		c.addComment("placeholder-format.tps.formats", "https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
+		c.addComment("placeholder-format.tps.size", "How many numbers do you want to display after \".\" in %tps% placeholder?",
 				"The number should be higher than 0.", "Example: 3 = 19.14");
 		c.addComment("placeholder-format.memory-bar", "Memory bar settings for %memory_bar% variable");
 		c.addComment("placeholder-format.memory-bar.colors.allocation", "When the server memory less than 80");
@@ -116,8 +109,8 @@ public class ConfigValues {
 		c.addComment("change-prefix-suffix-in-tablist.hide-group-when-player-afk",
 				"Hide player's group in player list when the player is AFK?", "Requires Essentials or CMI plugin!");
 		c.addComment("change-prefix-suffix-in-tablist.assign-global-group-to-normal",
-				"Do you want to assign global group to normal groups?",
-				"true - \"globalGroupPrefix + normalGroupPrefix\"", "false - \"normalGroupPrefix\"");
+				"Do you want to assign global group to normal groups?", "true - \"globalGroupPrefix + normalGroupPrefix\"",
+				"false - \"normalGroupPrefix\"");
 		c.addComment("change-prefix-suffix-in-tablist.prefer-primary-vault-group",
 				"Prefer player's primary Vault group when assigning tablist group from groups.yml?",
 				"true - player will be assigned their primary vault group where possible",
@@ -130,8 +123,7 @@ public class ConfigValues {
 		c.addComment("tablist-object-type.refresh-interval", "Interval for objects refreshing in seconds.");
 		c.addComment("tablist-object-type.disabled-worlds", "In these worlds the objects will not be displayed");
 		c.addComment("tablist-object-type.object-settings", "Objective settings");
-		c.addComment("tablist-object-type.object-settings.health",
-				"The player's health - displayed after the player's name.");
+		c.addComment("tablist-object-type.object-settings.health", "The player's health - displayed after the player's name.");
 		c.addComment("tablist-object-type.object-settings.health.restricted-players",
 				"For these players the health will not be displayed");
 		c.addComment("tablist-object-type.object-settings.custom",
@@ -141,7 +133,7 @@ public class ConfigValues {
 				"This only works if the \"check-update\" is true.");
 		c.addComment("logconsole", "Log plugin messages to console?");
 
-		placeholderAPI = c.get("hook.placeholderapi", false);
+		placeholderAPI = c.get("hook.placeholderapi", true);
 		fakePlayers = c.get("fake-players.enabled", c.getBoolean("enable-fake-players"));
 		countFakePlayersToOnlinePlayers = c.get("fake-players.count-fake-players-to-online-players", false);
 		removeGrayColorFromTabInSpec = c.get("remove-gray-color-from-tab-in-spectator", false);
@@ -154,13 +146,12 @@ public class ConfigValues {
 		ConfigurationSection section = c.getConfigurationSection("per-world-player-list.world-groups");
 
 		if (section == null) {
-			section = c.createSection("per-world-player-list.world-groups",
-					new java.util.HashMap<String, List<String>>() {
-						{
-							put("exampleGroup2", Arrays.asList("exampleWorld2", "exampleAnotherWorld2"));
-							put("example1", Arrays.asList("exampleWorld", "exampleAnotherWorld"));
-						}
-					});
+			section = c.createSection("per-world-player-list.world-groups", new java.util.HashMap<String, List<String>>() {
+				{
+					put("exampleGroup2", Arrays.asList("exampleWorld2", "exampleAnotherWorld2"));
+					put("example1", Arrays.asList("exampleWorld", "exampleAnotherWorld"));
+				}
+			});
 		} else {
 			c.set(section.getCurrentPath(), section);
 		}
@@ -250,14 +241,12 @@ public class ConfigValues {
 				Arrays.asList("&a%ping% <= 200", "&6%ping% >= 200", "&c%ping% > 500"));
 		for (String f : pingColorFormats) { // TODO remove in the future
 			if (!f.contains("%ping%")) {
-				c.set("placeholder-format.ping.formats",
-						Arrays.asList("&a%ping% <= 200", "&6%ping% >= 200", "&c%ping% > 500"));
+				c.set("placeholder-format.ping.formats", Arrays.asList("&a%ping% <= 200", "&6%ping% >= 200", "&c%ping% > 500"));
 				break;
 			}
 		}
 
-		groupsDisabledWorlds = c.get("change-prefix-suffix-in-tablist.disabled-worlds.list",
-				Arrays.asList("myWorldWithUpper"));
+		groupsDisabledWorlds = c.get("change-prefix-suffix-in-tablist.disabled-worlds.list", Arrays.asList("myWorldWithUpper"));
 		healthObjectRestricted = c.get("tablist-object-type.object-settings.health.restricted-players",
 				Arrays.asList("exampleplayer", "players"));
 		objectsDisabledWorlds = c.get("tablist-object-type.disabled-worlds", Arrays.asList("testingWorld"));
@@ -267,8 +256,10 @@ public class ConfigValues {
 		groupsRefreshInterval = c.get("change-prefix-suffix-in-tablist.refresh-interval", 30);
 		objectRefreshInterval = c.get("tablist-object-type.refresh-interval", 3) * 20;
 
-		checkUpdate = c.get("check-update", true);
-		downloadUpdates = c.get("download-updates", true);
+		// Just set if missing
+		c.get("check-update", true);
+		c.get("download-updates", false);
+
 		logConsole = c.get("logconsole", true);
 
 		c.save();
@@ -454,13 +445,5 @@ public class ConfigValues {
 
 	public static boolean isAssignGlobalGroup() {
 		return assignGlobalGroup;
-	}
-
-	public static boolean isCheckUpdate() {
-		return checkUpdate;
-	}
-
-	public static boolean isDownloadUpdates() {
-		return downloadUpdates;
 	}
 }

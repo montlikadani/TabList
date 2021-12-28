@@ -51,8 +51,7 @@ public class ProtocolPackets extends PacketAdapter {
 			PacketContainer packet = event.getPacket().shallowClone();
 			EnumWrappers.PlayerInfoAction action = packet.getPlayerInfoAction().read(0);
 
-			if (action == EnumWrappers.PlayerInfoAction.UPDATE_GAME_MODE
-					|| action == EnumWrappers.PlayerInfoAction.ADD_PLAYER) {
+			if (action == EnumWrappers.PlayerInfoAction.UPDATE_GAME_MODE || action == EnumWrappers.PlayerInfoAction.ADD_PLAYER) {
 				java.util.List<PlayerInfoData> dataList = packet.getPlayerInfoDataLists().read(0);
 				java.util.ListIterator<PlayerInfoData> dataListIt = dataList.listIterator();
 				java.util.UUID playerId = event.getPlayer().getUniqueId();

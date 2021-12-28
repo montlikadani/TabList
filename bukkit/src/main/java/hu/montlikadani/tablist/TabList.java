@@ -85,8 +85,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		conf.loadFiles();
 		variables.load();
 
-		if (ConfigValues.isPlaceholderAPI()
-				&& (papi = getServer().getPluginManager().getPlugin("PlaceholderAPI")) != null && papi.isEnabled()) {
+		if (ConfigValues.isPlaceholderAPI() && (papi = getServer().getPluginManager().getPlugin("PlaceholderAPI")) != null
+				&& papi.isEnabled()) {
 			logConsole("Hooked " + papi.getName() + " version: " + papi.getDescription().getVersion());
 		}
 
@@ -175,20 +175,19 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		} catch (NoSuchMethodException | ClassNotFoundException e) {
 		}
 
-		complement = (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R3) && kyoriSupported)
-				? new Complement2()
+		complement = (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R3) && kyoriSupported) ? new Complement2()
 				: new Complement1();
 	}
 
 	private void beginDataCollection() {
 		Metrics metrics = new Metrics(this, 1479);
 
-		metrics.addCustomChart(new org.bstats.charts.SimplePie("using_placeholderapi",
-				() -> Boolean.toString(ConfigValues.isPlaceholderAPI())));
+		metrics.addCustomChart(
+				new org.bstats.charts.SimplePie("using_placeholderapi", () -> Boolean.toString(ConfigValues.isPlaceholderAPI())));
 
 		if (TabConfigValues.isEnabled()) {
-			metrics.addCustomChart(new org.bstats.charts.SimplePie("tab_interval",
-					() -> Integer.toString(TabConfigValues.getUpdateInterval())));
+			metrics.addCustomChart(
+					new org.bstats.charts.SimplePie("tab_interval", () -> Integer.toString(TabConfigValues.getUpdateInterval())));
 		}
 
 		metrics.addCustomChart(
@@ -199,11 +198,11 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 					new org.bstats.charts.SimplePie("object_type", () -> ConfigValues.getObjectType().loweredName));
 		}
 
-		metrics.addCustomChart(new org.bstats.charts.SimplePie("enable_fake_players",
-				() -> Boolean.toString(ConfigValues.isFakePlayers())));
+		metrics.addCustomChart(
+				new org.bstats.charts.SimplePie("enable_fake_players", () -> Boolean.toString(ConfigValues.isFakePlayers())));
 
-		metrics.addCustomChart(new org.bstats.charts.SimplePie("enable_groups",
-				() -> Boolean.toString(ConfigValues.isPrefixSuffixEnabled())));
+		metrics.addCustomChart(
+				new org.bstats.charts.SimplePie("enable_groups", () -> Boolean.toString(ConfigValues.isPrefixSuffixEnabled())));
 	}
 
 	private void registerCommands() {
@@ -257,8 +256,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	private void loadAnimations() {
 		animations.clear();
 
-		org.bukkit.configuration.ConfigurationSection section = conf.getAnimCreator()
-				.getConfigurationSection("animations");
+		org.bukkit.configuration.ConfigurationSection section = conf.getAnimCreator().getConfigurationSection("animations");
 		if (section == null) {
 			return;
 		}

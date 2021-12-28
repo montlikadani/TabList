@@ -66,13 +66,8 @@ public class CommentedConfig extends YamlConfiguration {
 		for (int s = 0; s < split.length; s++) {
 			String line = split[s];
 
-			if (line.isEmpty()) {
-				newContents.append(System.lineSeparator());
-				continue;
-			}
-
-			if (line.charAt(0) == '#') {
-				continue; // Ignore comments
+			if (line.isEmpty() || line.charAt(0) == '#') {
+				continue; // Ignore comments and empty lines
 			}
 
 			int length = line.length();

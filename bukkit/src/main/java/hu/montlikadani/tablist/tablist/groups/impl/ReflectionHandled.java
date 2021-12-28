@@ -80,10 +80,6 @@ public class ReflectionHandled implements ITabScoreboard {
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1)) {
 					Team.OptionStatus optionStatus = team.getOption(Team.Option.NAME_TAG_VISIBILITY);
 
-					if (optionStatus == Team.OptionStatus.ALWAYS) {
-						continue;
-					}
-
 					switch (optionStatus) {
 					case FOR_OTHER_TEAMS:
 						optionName = "hideForOtherTeams";
@@ -98,10 +94,6 @@ public class ReflectionHandled implements ITabScoreboard {
 				} else {
 					NameTagVisibility visibility = team.getNameTagVisibility();
 
-					if (visibility == NameTagVisibility.ALWAYS) {
-						continue;
-					}
-
 					switch (visibility) {
 					case HIDE_FOR_OTHER_TEAMS:
 						optionName = "hideForOtherTeams";
@@ -114,15 +106,12 @@ public class ReflectionHandled implements ITabScoreboard {
 						break;
 					}
 				}
-
-				break;
 			}
 
 			if (optionName != null) {
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
 					for (Object f : ClazzContainer.getScoreboardNameTagVisibilityEnumConstants()) {
-						if (optionName
-								.equalsIgnoreCase((String) ClazzContainer.getNameTagVisibilityNameField().get(f))) {
+						if (optionName.equalsIgnoreCase((String) ClazzContainer.getNameTagVisibilityNameField().get(f))) {
 							ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(scoreTeam, f);
 							break;
 						}
@@ -167,10 +156,9 @@ public class ReflectionHandled implements ITabScoreboard {
 			Object oldTeamPacket;
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-				oldTeamPacket = ClazzContainer
-						.scoreboardTeamPacketByAction(ClazzContainer.getScoreboardTeamConstructor().newInstance(
-								ClazzContainer.getScoreboardConstructor().newInstance(),
-								groupPlayer.getFullGroupTeamName()), 1);
+				oldTeamPacket = ClazzContainer.scoreboardTeamPacketByAction(ClazzContainer.getScoreboardTeamConstructor()
+						.newInstance(ClazzContainer.getScoreboardConstructor().newInstance(), groupPlayer.getFullGroupTeamName()),
+						1);
 			} else {
 				oldTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
 
