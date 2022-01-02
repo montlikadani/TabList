@@ -82,33 +82,48 @@ public class PlayerList {
 
 			Player pls = user.getPlayer();
 
-			if (pls == null) {
-				continue;
-			}
-
-			org.bukkit.World playerWorld = pls.getWorld();
-
-			if (worldId.equals(playerWorld.getUID())) {
+			if (pls != null && worldId.equals(pls.getWorld().getUID())) {
 				show(player, pls);
 				show(pls, player);
-				continue;
+			}
+		}
+
+		String playerWorldName = player.getWorld().getName();
+		boolean isInPlayerWorld = false;
+
+		for (List<String> keys : ConfigValues.PER_WORLD_LIST_NAMES) {
+
+			// Find the proper player's world in the keys list
+			for (String name : keys) {
+				isInPlayerWorld = playerWorldName.equalsIgnoreCase(name);
+
+				if (isInPlayerWorld) {
+					break;
+				}
 			}
 
-			if (ConfigValues.PER_WORLD_LIST_NAMES.isEmpty()) {
-				continue;
+			if (!isInPlayerWorld) {
+				continue; // If the player world not exist in the first list, continue
 			}
 
-			String worldName = playerWorld.getName();
+			for (String name : keys) {
+				if (playerWorldName.equalsIgnoreCase(name)) {
+					continue; // The other players already visible in the player's world
+				}
 
-			for (List<String> keys : ConfigValues.PER_WORLD_LIST_NAMES) {
-				for (String name : keys) {
-					if (name.equalsIgnoreCase(worldName)) {
-						show(pls, player);
-						show(player, pls);
-						break;
+				org.bukkit.World world = plugin.getServer().getWorld(name);
+
+				if (world != null) {
+					for (Player worldPlayer : world.getPlayers()) {
+						show(worldPlayer, player);
+						show(player, worldPlayer);
 					}
 				}
 			}
+
+			// Break iteration, the other players in another world is now visible to the
+			// source player
+			break;
 		}
 	}
 

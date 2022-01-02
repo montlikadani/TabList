@@ -55,8 +55,8 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			sendMsg(sender, colorText("&5Version:&a " + plugin.getDescription().getVersion()));
 			sendMsg(sender, colorText("&5Author, created by:&a montlikadani"));
 			sendMsg(sender, colorText("&5Commands:&8 /&7" + label + "&a help"));
-			sendMsg(sender, colorText(
-					"&4If you find a bug, make issue here:&e &nhttps://github.com/montlikadani/TabList/issues"));
+			sendMsg(sender,
+					colorText("&4If you find a bug, make issue here:&e &nhttps://github.com/montlikadani/TabList/issues"));
 			return true;
 		}
 
@@ -64,8 +64,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 		boolean isHelp;
 		if ((isHelp = args[0].equalsIgnoreCase("help")) && isPlayer && !sender.hasPermission(Perm.HELP.permission)) {
-			sendMsg(sender,
-					ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.HELP.permission));
+			sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.HELP.permission));
 			return true;
 		}
 
@@ -95,14 +94,13 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			found = true;
 
 			if (proc.playerOnly() && !isPlayer) {
-				sendMsg(sender,
-						ConfigMessages.get(ConfigMessages.MessageKeys.NO_CONSOLE, "%command%", label + " " + args[0]));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_CONSOLE, "%command%", label + " " + args[0]));
 				return true;
 			}
 
 			if (isPlayer && !sender.hasPermission(proc.permission().permission)) {
-				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%",
-						proc.permission().permission));
+				sendMsg(sender,
+						ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", proc.permission().permission));
 				return true;
 			}
 
@@ -129,8 +127,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			break;
 		case 2:
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
-				for (String c : new String[] { "add", "remove", "list", "setskin", "setping", "setdisplayname",
-						"rename" }) {
+				for (String c : new String[] { "add", "remove", "list", "setskin", "setping", "setdisplayname", "rename" }) {
 					cmds.add(c);
 				}
 			} else if (args[0].equalsIgnoreCase("toggle")) {
@@ -139,12 +136,14 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 			break;
 		case 3:
-			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")
-					&& !args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("list")) {
+			String first = args[0];
+
+			if (ConfigValues.isFakePlayers() && first.equalsIgnoreCase("fakeplayers") && !args[1].equalsIgnoreCase("add")
+					&& !args[1].equalsIgnoreCase("list")) {
 				for (IFakePlayers fp : plugin.getFakePlayerHandler().getFakePlayers()) {
 					cmds.add(fp.getName());
 				}
-			} else if (args[0].equalsIgnoreCase("group") || args[0].equalsIgnoreCase("player")) {
+			} else if (first.equalsIgnoreCase("group") || first.equalsIgnoreCase("player")) {
 				for (ContextArguments ca : values) {
 					cmds.add(ca.loweredName);
 				}
