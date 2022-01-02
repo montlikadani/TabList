@@ -11,7 +11,7 @@
 
 	<artifactId>bungee</artifactId>
 	<name>TabList-bungee</name>
-	<version>2.2.6</version>
+	<version>2.2.7</version>
 
 	<build>
 		<finalName>${project.name}-v${project.version}</finalName>

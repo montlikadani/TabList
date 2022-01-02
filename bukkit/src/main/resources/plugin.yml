@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.tablist.TabList
-version: 5.6.0
+version: 5.6.1
 author: montlikadani
 description: An ultimate animated tablist
 softdepend:
