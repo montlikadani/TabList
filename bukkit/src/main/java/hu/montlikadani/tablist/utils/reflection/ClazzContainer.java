@@ -37,6 +37,8 @@ public final class ClazzContainer {
 
 	private static Object[] scoreboardNameTagVisibilityEnumConstants;
 
+	private static boolean isTeamOptionStatusEnumExist = false;
+
 	static {
 		try {
 			iChatBaseComponent = classByName("net.minecraft.network.chat", "IChatBaseComponent");
@@ -45,6 +47,13 @@ public final class ClazzContainer {
 			entityPlayerClass = classByName("net.minecraft.server.level", "EntityPlayer");
 			packetPlayOutScoreboardTeam = classByName("net.minecraft.network.protocol.game",
 					"PacketPlayOutScoreboardTeam");
+
+			// Somehow the 1.8.8 server realizes that Team.OptionStatus enum class is exists
+			try {
+				Class.forName("org.bukkit.scoreboard.Team$OptionStatus");
+				isTeamOptionStatusEnumExist = true;
+			} catch (ClassNotFoundException e) {
+			}
 
 			try {
 				minecraftServer = classByName("net.minecraft.server", "MinecraftServer");
@@ -367,6 +376,10 @@ public final class ClazzContainer {
 		default:
 			return null;
 		}
+	}
+
+	public static boolean isTeamOptionStatusEnumExist() {
+		return isTeamOptionStatusEnumExist;
 	}
 
 	public static Class<?> getPacket() {

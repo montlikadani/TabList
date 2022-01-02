@@ -77,7 +77,7 @@ public class ReflectionHandled implements ITabScoreboard {
 			String optionName = null;
 
 			for (Team team : player.getScoreboard().getTeams()) {
-				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1)) {
+				if (ClazzContainer.isTeamOptionStatusEnumExist()) {
 					Team.OptionStatus optionStatus = team.getOption(Team.Option.NAME_TAG_VISIBILITY);
 
 					switch (optionStatus) {
