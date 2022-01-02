@@ -43,7 +43,7 @@ public class PlayerTab {
 	}
 
 	private BaseComponent[] getNextHeader(ProxiedPlayer source) {
-		if (header.length == 0) {
+		if (header == null || header.length == 0) {
 			return Misc.EMPTY_COMPONENT_ARRAY;
 		}
 
@@ -67,7 +67,7 @@ public class PlayerTab {
 	}
 
 	private BaseComponent[] getNextFooter(ProxiedPlayer source) {
-		if (footer.length == 0) {
+		if (footer == null || footer.length == 0) {
 			return Misc.EMPTY_COMPONENT_ARRAY;
 		}
 
@@ -162,8 +162,7 @@ public class PlayerTab {
 		final Configuration conf = plugin.getConf();
 
 		if (header == null)
-			header = fill(header,
-					conf.getStringList("tablist.per-server." + server + ".per-player." + pName + ".header"));
+			header = fill(header, conf.getStringList("tablist.per-server." + server + ".per-player." + pName + ".header"));
 
 		if (header == null)
 			header = fill(header, conf.getStringList("tablist.per-server." + server + ".header"));
@@ -175,8 +174,7 @@ public class PlayerTab {
 			header = fill(header, ConfigConstants.getDefaultHeader());
 
 		if (footer == null)
-			footer = fill(footer,
-					conf.getStringList("tablist.per-server." + server + ".per-player." + pName + ".footer"));
+			footer = fill(footer, conf.getStringList("tablist.per-server." + server + ".per-player." + pName + ".footer"));
 
 		if (footer == null)
 			footer = fill(footer, conf.getStringList("tablist.per-server." + server + ".footer"));
@@ -201,6 +199,10 @@ public class PlayerTab {
 	}
 
 	public void update() {
+		if (header == null && footer == null) {
+			return;
+		}
+
 		final ProxiedPlayer player = getPlayer();
 
 		if (player == null) {

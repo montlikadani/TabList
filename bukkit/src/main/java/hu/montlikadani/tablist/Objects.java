@@ -95,8 +95,7 @@ public final class Objects {
 					try {
 						if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
 							Object objectiveInstance = ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
-									type.objectName, ClazzContainer.getiScoreboardCriteriaDummy(),
-									ReflectionUtils.getAsIChatBaseComponent(type.objectName),
+									type.objectName, ClazzContainer.getiScoreboardCriteriaDummy(), type.chatBaseComponent,
 									ClazzContainer.getEnumScoreboardHealthDisplayInteger());
 
 							// Create objective
@@ -258,6 +257,10 @@ public final class Objects {
 	}
 
 	public void unregisterObjective(ObjectTypes type, TabListUser source) {
+		if (type != ObjectTypes.HEALTH && !source.getPlayerScore().isObjectiveCreated()) {
+			return;
+		}
+
 		Player player = source.getPlayer();
 
 		if (player == null) {
@@ -266,10 +269,6 @@ public final class Objects {
 
 		if (type == ObjectTypes.HEALTH) {
 			unregisterHealthObjective(player);
-			return;
-		}
-
-		if (!source.getPlayerScore().isObjectiveCreated()) {
 			return;
 		}
 
@@ -288,8 +287,7 @@ public final class Objects {
 				ReflectionUtils.sendPacket(player,
 						ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
 								.newInstance(ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
-										type.objectName, ClazzContainer.getiScoreboardCriteriaDummy(),
-										ReflectionUtils.getAsIChatBaseComponent(type.objectName),
+										type.objectName, ClazzContainer.getiScoreboardCriteriaDummy(), type.chatBaseComponent,
 										ClazzContainer.getEnumScoreboardHealthDisplayInteger()), 1));
 			} else {
 				/*ReflectionUtils.sendPacket(player, ClazzContainer.getPacketPlayOutScoreboardScoreConstructor()
@@ -307,17 +305,25 @@ public final class Objects {
 	}
 
 	public enum ObjectTypes {
-		HEALTH("showhealth"), PING("PingTab"), CUSTOM("customObj"), NONE("");
+		HEALTH("showhealth", false), PING("PingTab", true), CUSTOM("customObj", true), NONE("", false);
 
 		public final String loweredName;
 
 		private final String objectName;
+		private Object chatBaseComponent;
 
-		ObjectTypes(String objectName) {
+		ObjectTypes(String objectName, boolean needChatBaseComponent) {
 			if (!objectName.isEmpty()) {
 				loweredName = name().toLowerCase(java.util.Locale.ENGLISH);
 			} else {
 				loweredName = "";
+			}
+
+			if (needChatBaseComponent) {
+				try {
+					chatBaseComponent = ReflectionUtils.getAsIChatBaseComponent(objectName);
+				} catch (Exception e) {
+				}
 			}
 
 			this.objectName = objectName;

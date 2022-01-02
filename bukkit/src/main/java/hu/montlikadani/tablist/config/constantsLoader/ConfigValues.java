@@ -33,12 +33,12 @@ public class ConfigValues {
 
 	@SuppressWarnings("serial")
 	public static void loadValues(CommentedConfig c) {
-		c.options().copyDefaults(true);
+		org.bukkit.configuration.file.YamlConfigurationOptions options = c.options();
+		options.copyDefaults(true);
 
-		// We use reflection until Paper does not merges upstream changes
 		try {
-			c.options().getClass().getDeclaredMethod("parseComments", boolean.class).invoke(c.options(), false);
-		} catch (Exception e) {
+			options.parseComments(false);
+		} catch (NoSuchMethodError e) {
 		}
 
 		PER_WORLD_LIST_NAMES.clear();
