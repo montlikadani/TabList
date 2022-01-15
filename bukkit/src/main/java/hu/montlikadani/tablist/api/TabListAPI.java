@@ -10,8 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.tablist.TabTitle;
 import hu.montlikadani.tablist.tablist.TabToggleBase;
-import hu.montlikadani.tablist.tablist.fakeplayers.FakePlayers;
-import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayers;
+import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 
 /**
@@ -124,14 +123,13 @@ public final class TabListAPI {
 	 * Creates a new fake player that only appear in tablist.
 	 * 
 	 * @param name the fake player name
-	 * @return {@link IFakePlayers}
-	 * @see IFakePlayers#createFakePlayer(String, int)
+	 * @return {@link IFakePlayer}
+	 * @deprecated Use {@link IFakePlayer#builder()}
+	 * @see IFakePlayer#builder()
 	 */
-	public static IFakePlayers createFakePlayer(String name) {
-		IFakePlayers fp = new FakePlayers();
-		fp.setName(name);
-		fp.createFakePlayer("", -1);
-		return fp;
+	@Deprecated
+	public static IFakePlayer createFakePlayer(String name) {
+		return new hu.montlikadani.tablist.tablist.fakeplayers.FakePlayer(name, name, "", -1);
 	}
 
 	/**

@@ -15,7 +15,7 @@ public final class ClazzContainer {
 			packetPlayOutScoreboardObjectiveDisplayNameField, packetPlayOutScoreboardObjectiveRenderType;
 
 	private static Class<?> iChatBaseComponent, packet, packetPlayOutPlayerInfo, enumPlayerInfoAction,
-			entityPlayerClass, enumGameMode, playerInfoData, minecraftServer, packetPlayOutScoreboardTeam,
+			enumGameMode, playerInfoData, packetPlayOutScoreboardTeam,
 			scoreboardNameTagVisibility, scoreboardTeamClass, scoreboardClass,
 			scoreboardObjective;
 
@@ -44,7 +44,6 @@ public final class ClazzContainer {
 			iChatBaseComponent = classByName("net.minecraft.network.chat", "IChatBaseComponent");
 			packet = classByName("net.minecraft.network.protocol", "Packet");
 			packetPlayOutPlayerInfo = classByName("net.minecraft.network.protocol.game", "PacketPlayOutPlayerInfo");
-			entityPlayerClass = classByName("net.minecraft.server.level", "EntityPlayer");
 			packetPlayOutScoreboardTeam = classByName("net.minecraft.network.protocol.game",
 					"PacketPlayOutScoreboardTeam");
 
@@ -53,15 +52,6 @@ public final class ClazzContainer {
 				Class.forName("org.bukkit.scoreboard.Team$OptionStatus");
 				isTeamOptionStatusEnumExist = true;
 			} catch (ClassNotFoundException e) {
-			}
-
-			try {
-				minecraftServer = classByName("net.minecraft.server", "MinecraftServer");
-			} catch (ClassNotFoundException c) {
-				try {
-					minecraftServer = classByName("net.minecraft.server.dedicated", "DedicatedServer");
-				} catch (ClassNotFoundException e) {
-				}
 			}
 
 			try {
@@ -299,7 +289,8 @@ public final class ClazzContainer {
 			}
 
 			(playOutPlayerInfoConstructor = packetPlayOutPlayerInfo.getDeclaredConstructor(enumPlayerInfoAction,
-					java.lang.reflect.Array.newInstance(entityPlayerClass, 0).getClass())).setAccessible(true);
+					java.lang.reflect.Array.newInstance(classByName("net.minecraft.server.level", "EntityPlayer"), 0).getClass()))
+							.setAccessible(true);
 
 			try {
 				enumGameMode = classByName("net.minecraft.world.level", "EnumGamemode");
@@ -332,7 +323,7 @@ public final class ClazzContainer {
 	}
 
 	// In ReflectionUtils static clause calls this class again which causes NPE
-	private static Class<?> classByName(String newPackageName, String name) throws ClassNotFoundException {
+	protected static Class<?> classByName(String newPackageName, String name) throws ClassNotFoundException {
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
 			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
 		}
@@ -422,10 +413,6 @@ public final class ClazzContainer {
 		return enumPlayerInfoAction;
 	}
 
-	public static Class<?> getEntityPlayerClass() {
-		return entityPlayerClass;
-	}
-
 	public static Class<?> getEnumGameMode() {
 		return enumGameMode;
 	}
@@ -468,10 +455,6 @@ public final class ClazzContainer {
 
 	public static Object getUpdateDisplayName() {
 		return updateDisplayName;
-	}
-
-	public static Class<?> getMinecraftServer() {
-		return minecraftServer;
 	}
 
 	public static Class<?> getIChatBaseComponent() {

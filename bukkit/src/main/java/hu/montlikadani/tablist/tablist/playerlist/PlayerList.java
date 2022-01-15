@@ -95,9 +95,8 @@ public class PlayerList {
 
 			// Find the proper player's world in the keys list
 			for (String name : keys) {
-				isInPlayerWorld = playerWorldName.equalsIgnoreCase(name);
-
-				if (isInPlayerWorld) {
+				if (playerWorldName.equalsIgnoreCase(name)) {
+					isInPlayerWorld = true;
 					break;
 				}
 			}

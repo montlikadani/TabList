@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.utils.reflection;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -8,6 +9,8 @@ import org.bukkit.entity.Player;
 import hu.montlikadani.tablist.utils.ServerVersion;
 
 public final class ReflectionUtils {
+
+	public static final Object EMPTY_COMPONENT;
 
 	public static Method jsonComponentMethod;
 
@@ -25,9 +28,21 @@ public final class ReflectionUtils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		EMPTY_COMPONENT = emptyComponent();
 	}
 
 	private ReflectionUtils() {
+	}
+
+	private static Object emptyComponent() {
+		try {
+			return getAsIChatBaseComponent("");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	public static JsonComponent getJsonComponent() {
@@ -52,20 +67,12 @@ public final class ReflectionUtils {
 		}
 
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
-			Class<?> chatSerializer = getPacketClass(null, "ChatSerializer");
-			return ClazzContainer.getIChatBaseComponent().cast(
-					chatSerializer.getMethod("a", String.class).invoke(chatSerializer, "{\"text\":\"" + text + "\"}"));
+			Class<?> chatSerializer = Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".ChatSerializer");
+			return ClazzContainer.getIChatBaseComponent()
+					.cast(chatSerializer.getMethod("a", String.class).invoke(chatSerializer, "{\"text\":\"" + text + "\"}"));
 		}
 
 		return jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(), "{\"text\":\"" + text + "\"}");
-	}
-
-	public static Class<?> getPacketClass(String newPackageName, String name) throws ClassNotFoundException {
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
-			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
-		}
-
-		return Class.forName(newPackageName + "." + name);
 	}
 
 	public static Class<?> getCraftClass(String className) throws ClassNotFoundException {
@@ -98,35 +105,67 @@ public final class ReflectionUtils {
 		}
 	}
 
+	private static Class<?> minecraftServer, interactManager;
+	private static Method getHandleWorldMethod;
+	private static Constructor<?> entityPlayerConstructor, interactManagerConstructor;
+
 	public static Object getNewEntityPlayer(Object profile) {
-		Object serverIns = getServer(ClazzContainer.getMinecraftServer());
+		if (minecraftServer == null) {
+			try {
+				minecraftServer = ClazzContainer.classByName("net.minecraft.server", "MinecraftServer");
+			} catch (ClassNotFoundException c) {
+				try {
+					minecraftServer = ClazzContainer.classByName("net.minecraft.server.dedicated", "DedicatedServer");
+				} catch (ClassNotFoundException e) {
+				}
+			}
+		}
 
 		try {
 			// Only get the first world
 			org.bukkit.World world = org.bukkit.Bukkit.getServer().getWorlds().get(0);
-			Object worldServer = world.getClass().getDeclaredMethod("getHandle").invoke(world);
+
+			if (getHandleWorldMethod == null) {
+				getHandleWorldMethod = world.getClass().getDeclaredMethod("getHandle");
+			}
+
+			Object worldServer = getHandleWorldMethod.invoke(world);
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-				return ClazzContainer.getEntityPlayerClass()
-						.getConstructor(ClazzContainer.getMinecraftServer(), worldServer.getClass(), profile.getClass())
-						.newInstance(serverIns, worldServer, profile);
+				if (entityPlayerConstructor == null) {
+					entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer")
+							.getConstructor(minecraftServer, worldServer.getClass(), profile.getClass());
+				}
+
+				return entityPlayerConstructor.newInstance(getServer(minecraftServer), worldServer, profile);
 			}
 
-			Class<?> interactManager = getPacketClass("net.minecraft.server.level", "PlayerInteractManager");
-			Object managerIns = null;
+			if (interactManager == null) {
+				interactManager = ClazzContainer.classByName("net.minecraft.server.level", "PlayerInteractManager");
+			}
+
+			Object managerIns;
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
-				managerIns = interactManager.getConstructor(worldServer.getClass()).newInstance(worldServer);
+				if (interactManagerConstructor == null) {
+					interactManagerConstructor = interactManager.getConstructor(worldServer.getClass());
+				}
+
+				managerIns = interactManagerConstructor.newInstance(worldServer);
+			} else {
+				if (interactManagerConstructor == null) {
+					interactManagerConstructor = interactManager.getConstructors()[0];
+				}
+
+				managerIns = interactManagerConstructor.newInstance(worldServer);
 			}
 
-			if (managerIns == null) {
-				managerIns = interactManager.getConstructors()[0].newInstance(worldServer);
+			if (entityPlayerConstructor == null) {
+				entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer")
+						.getConstructor(minecraftServer, worldServer.getClass(), profile.getClass(), interactManager);
 			}
 
-			return ClazzContainer
-					.getEntityPlayerClass().getConstructor(ClazzContainer.getMinecraftServer(), worldServer.getClass(),
-							profile.getClass(), interactManager)
-					.newInstance(serverIns, worldServer, profile, managerIns);
+			return entityPlayerConstructor.newInstance(getServer(minecraftServer), worldServer, profile, managerIns);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -134,13 +173,27 @@ public final class ReflectionUtils {
 		return null;
 	}
 
+	private static Method getServerMethod;
+	private static Class<?> craftServerClass;
+
 	private static Object getServer(Class<?> server) {
+		if (getServerMethod == null) {
+			try {
+				getServerMethod = server.getMethod("getServer");
+			} catch (NoSuchMethodException e) {
+				return null;
+			}
+		}
+
 		try {
-			return server.getMethod("getServer")
-					.invoke(getCraftClass("CraftServer").cast(org.bukkit.Bukkit.getServer()));
+			if (craftServerClass == null) {
+				craftServerClass = getCraftClass("CraftServer");
+			}
+
+			return getServerMethod.invoke(craftServerClass.cast(org.bukkit.Bukkit.getServer()));
 		} catch (Exception x) {
 			try {
-				return server.getMethod("getServer").invoke(server);
+				return getServerMethod.invoke(server);
 			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}

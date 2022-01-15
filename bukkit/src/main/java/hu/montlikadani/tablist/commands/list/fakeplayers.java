@@ -17,7 +17,7 @@ import hu.montlikadani.tablist.config.ConfigMessages;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.tablist.fakeplayers.FakePlayerHandler;
 import hu.montlikadani.tablist.tablist.fakeplayers.FakePlayerHandler.EditingResult;
-import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayers;
+import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
 import hu.montlikadani.tablist.utils.Util;
 
 @CommandProcessor(
@@ -113,17 +113,17 @@ public final class fakeplayers implements ICommand {
 
 			break;
 		case LIST:
-			Set<IFakePlayers> list = handler.getFakePlayers();
+			Set<IFakePlayer> list = handler.getFakePlayers();
 
 			if (list.isEmpty()) {
 				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NO_FAKE_PLAYER));
 				return true;
 			}
 
-			Collections.sort(list.stream().map(IFakePlayers::getName).collect(Collectors.toList()));
+			Collections.sort(list.stream().map(IFakePlayer::getName).collect(Collectors.toList()));
 
 			String msg = "";
-			for (IFakePlayers one : list) {
+			for (IFakePlayer one : list) {
 				if (!msg.isEmpty()) {
 					msg += "&r, ";
 				}

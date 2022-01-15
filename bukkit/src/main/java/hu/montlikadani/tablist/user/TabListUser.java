@@ -1,5 +1,7 @@
 package hu.montlikadani.tablist.user;
 
+import hu.montlikadani.tablist.tablist.fakeplayers.FakePlayer;
+
 public interface TabListUser {
 
 	org.bukkit.entity.Player getPlayer();
@@ -21,5 +23,11 @@ public interface TabListUser {
 	hu.montlikadani.tablist.tablist.TabHandler getTabHandler();
 
 	PlayerScore getPlayerScore();
+
+	boolean isFakePlayerVisible(FakePlayer fakePlayer);
+
+	void setCanSeeFakePlayer(FakePlayer fakePlayer);
+
+	void removeAllVisibleFakePlayer();
 
 }

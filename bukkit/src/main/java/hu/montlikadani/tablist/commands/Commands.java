@@ -15,7 +15,7 @@ import hu.montlikadani.tablist.Perm;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.ConfigMessages;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
-import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayers;
+import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
 
 import static hu.montlikadani.tablist.utils.Util.colorText;
 import static hu.montlikadani.tablist.utils.Util.sendMsg;
@@ -115,7 +115,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 		return true;
 	}
 
-	private final ContextArguments[] values = ContextArguments.values();
+	private static final ContextArguments[] VALUES = ContextArguments.values();
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -140,11 +140,11 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 			if (ConfigValues.isFakePlayers() && first.equalsIgnoreCase("fakeplayers") && !args[1].equalsIgnoreCase("add")
 					&& !args[1].equalsIgnoreCase("list")) {
-				for (IFakePlayers fp : plugin.getFakePlayerHandler().getFakePlayers()) {
+				for (IFakePlayer fp : plugin.getFakePlayerHandler().getFakePlayers()) {
 					cmds.add(fp.getName());
 				}
 			} else if (first.equalsIgnoreCase("group") || first.equalsIgnoreCase("player")) {
-				for (ContextArguments ca : values) {
+				for (ContextArguments ca : VALUES) {
 					cmds.add(ca.loweredName);
 				}
 			}

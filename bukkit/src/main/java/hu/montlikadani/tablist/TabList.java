@@ -79,7 +79,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		// Load static references in any way
 		// This includes ReflectionUtils, ClazzContainer
-		Object h = hu.montlikadani.tablist.tablist.TabTitle.EMPTY_TAB_HEADER;
+		hu.montlikadani.tablist.tablist.TabTitle.h();
 		hu.montlikadani.tablist.api.TabListAPI.getTPS();
 
 		conf.loadFiles();
@@ -263,12 +263,9 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		for (String name : section.getKeys(false)) {
 			List<String> list = section.getStringList(name + ".texts");
-			int size = list.size();
 
-			if (size > 0) {
-				for (int i = 0; i < size; i++) {
-					list.set(i, Global.setSymbols(list.get(i)));
-				}
+			if (!list.isEmpty()) {
+				list.replaceAll(Global::setSymbols);
 
 				animations.add(new TextAnimation(name, list, section.getInt(name + ".interval", 200),
 						section.getBoolean(name + ".random")));
@@ -386,6 +383,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 			if (playerId.equals(user.getUniqueId())) {
 				user.getTabHandler().sendEmptyTab(player);
+				user.removeAllVisibleFakePlayer();
+
 				groups.removePlayerGroup(user);
 
 				objects.unregisterObjective(Objects.ObjectTypes.PING, user);

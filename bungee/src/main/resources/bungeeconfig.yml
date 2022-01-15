@@ -60,7 +60,7 @@ groups:
     - "&a[&cAdmin&a]&c %player-name%"
     - "&a[&cAdmin&a]&b %player-name%"
     - "&a[&cAdmin&a]&9 %player-name%"
-    permission: groups.admin # any permission name is accepted
+    permission: tl.admin # any permission name is accepted
   default:
     name: "&7 %player-name%"
     permission: tablist.default

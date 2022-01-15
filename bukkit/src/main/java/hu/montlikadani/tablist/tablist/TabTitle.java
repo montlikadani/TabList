@@ -14,15 +14,13 @@ public abstract class TabTitle {
 	private static java.lang.reflect.Constructor<?> playerListHeaderFooterConstructor;
 	private static Field headerField, footerField;
 
-	public static final Object EMPTY_TAB_HEADER = emptyComponent();
-	public static final Object EMPTY_TAB_FOOTER = emptyComponent();
-
 	static {
+		ReflectionUtils.getJsonComponent();
+
 		Class<?> playerListHeaderFooter = null;
 
 		try {
-			playerListHeaderFooter = ReflectionUtils.getPacketClass("net.minecraft.network.protocol.game",
-					"PacketPlayOutPlayerListHeaderFooter");
+			playerListHeaderFooter = getPacketClass("net.minecraft.network.protocol.game", "PacketPlayOutPlayerListHeaderFooter");
 		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -32,8 +30,8 @@ public abstract class TabTitle {
 				playerListHeaderFooterConstructor = playerListHeaderFooter.getConstructor();
 			} catch (NoSuchMethodException s) {
 				try {
-					playerListHeaderFooterConstructor = playerListHeaderFooter.getConstructor(
-							ClazzContainer.getIChatBaseComponent(), ClazzContainer.getIChatBaseComponent());
+					playerListHeaderFooterConstructor = playerListHeaderFooter
+							.getConstructor(ClazzContainer.getIChatBaseComponent(), ClazzContainer.getIChatBaseComponent());
 				} catch (NoSuchMethodException e) {
 					try {
 						playerListHeaderFooterConstructor = playerListHeaderFooter
@@ -46,19 +44,20 @@ public abstract class TabTitle {
 		}
 	}
 
-	private static Object emptyComponent() {
-		try {
-			return ReflectionUtils.getAsIChatBaseComponent("");
-		} catch (Exception e) {
-			e.printStackTrace();
+	private static Class<?> getPacketClass(String newPackageName, String name) throws ClassNotFoundException {
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
+			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
 		}
 
-		return null;
+		return Class.forName(newPackageName + "." + name);
+	}
+
+	public static void h() {
 	}
 
 	public static void sendTabTitle(Player player, String header, String footer) {
-		Object tabHeader = EMPTY_TAB_HEADER;
-		Object tabFooter = EMPTY_TAB_FOOTER;
+		Object tabHeader = ReflectionUtils.EMPTY_COMPONENT;
+		Object tabFooter = ReflectionUtils.EMPTY_COMPONENT;
 
 		if (!header.isEmpty()) {
 			if (ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2)) {

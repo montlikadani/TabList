@@ -14,23 +14,23 @@ import hu.montlikadani.tablist.utils.Util;
 
 public final class FakePlayerHandler {
 
-	private final TabList plugin;
-	private final Set<IFakePlayers> fakePlayers = new java.util.HashSet<>();
+	protected final TabList plugin;
+	private final Set<IFakePlayer> fakePlayers = new java.util.HashSet<>();
 
 	public FakePlayerHandler(TabList plugin) {
 		this.plugin = plugin;
 	}
 
-	public Set<IFakePlayers> getFakePlayers() {
+	public Set<IFakePlayer> getFakePlayers() {
 		return fakePlayers;
 	}
 
-	public Optional<IFakePlayers> getFakePlayerByName(String name) {
+	public Optional<IFakePlayer> getFakePlayerByName(String name) {
 		if (name.isEmpty()) {
-			throw new IllegalArgumentException("The fake player name can't be empty");
+			throw new IllegalArgumentException("The fake player name can not be empty");
 		}
 
-		for (IFakePlayers fp : fakePlayers) {
+		for (IFakePlayer fp : fakePlayers) {
 			if (fp.getName().equalsIgnoreCase(name)) {
 				return Optional.of(fp);
 			}
@@ -52,14 +52,9 @@ public final class FakePlayerHandler {
 		}
 
 		for (String name : cs.getKeys(false)) {
-			final String headUUID = cs.getString(name + ".headuuid", "");
-			final int ping = cs.getInt(name + ".ping", -1);
-
-			final FakePlayers fp = new FakePlayers(plugin);
-			fp.displayName = cs.getString(name + ".displayname", "");
-			fp.setName(name);
-
-			fp.createFakePlayer(headUUID, ping);
+			FakePlayer fp = new FakePlayer(plugin, name, cs.getString(name + ".displayname", ""),
+					cs.getString(name + ".headuuid", ""), cs.getInt(name + ".ping", -1));
+			fp.show();
 			fakePlayers.add(fp);
 		}
 
@@ -73,8 +68,8 @@ public final class FakePlayerHandler {
 	}
 
 	public void display() {
-		for (IFakePlayers fp : fakePlayers) {
-			fp.createFakePlayer(fp.getHeadId(), fp.getPingLatency());
+		for (IFakePlayer fp : fakePlayers) {
+			fp.show();
 		}
 	}
 
@@ -106,21 +101,19 @@ public final class FakePlayerHandler {
 			return EditingResult.UNKNOWN;
 		}
 
-		IFakePlayers fp = new FakePlayers(plugin);
-		fp.setName(name);
-		fp.setDisplayName(displayName);
-		fp.createFakePlayer(headUUID, ping);
+		IFakePlayer fp = new FakePlayer(plugin, name, displayName, headUUID, ping);
+		fp.show();
 		fakePlayers.add(fp);
 		return EditingResult.OK;
 	}
 
 	public void removeAllFakePlayer() {
-		fakePlayers.forEach(IFakePlayers::removeFakePlayer);
+		fakePlayers.forEach(IFakePlayer::remove);
 		fakePlayers.clear();
 	}
 
 	public EditingResult removePlayer(String name) {
-		Optional<IFakePlayers> fp = getFakePlayerByName(name);
+		Optional<IFakePlayer> fp = getFakePlayerByName(name);
 
 		if (!fp.isPresent()) {
 			return EditingResult.NOT_EXIST;
@@ -146,15 +139,15 @@ public final class FakePlayerHandler {
 			}
 		}
 
-		IFakePlayers fpl = fp.get();
+		IFakePlayer fpl = fp.get();
 
-		fpl.removeFakePlayer();
+		fpl.remove();
 		fakePlayers.remove(fpl);
 		return EditingResult.OK;
 	}
 
 	public EditingResult renamePlayer(final String oldName, final String newName) {
-		Optional<IFakePlayers> fp = getFakePlayerByName(oldName);
+		Optional<IFakePlayer> fp = getFakePlayerByName(oldName);
 
 		if (!fp.isPresent()) {
 			return EditingResult.NOT_EXIST;
@@ -181,7 +174,7 @@ public final class FakePlayerHandler {
 	}
 
 	public EditingResult setSkin(String name, String uuid) {
-		Optional<IFakePlayers> fp = getFakePlayerByName(name);
+		Optional<IFakePlayer> fp = getFakePlayerByName(name);
 
 		if (!fp.isPresent()) {
 			return EditingResult.NOT_EXIST;
@@ -210,7 +203,7 @@ public final class FakePlayerHandler {
 			return EditingResult.PING_AMOUNT;
 		}
 
-		Optional<IFakePlayers> fp = getFakePlayerByName(name);
+		Optional<IFakePlayer> fp = getFakePlayerByName(name);
 
 		if (!fp.isPresent()) {
 			return EditingResult.NOT_EXIST;
@@ -230,7 +223,7 @@ public final class FakePlayerHandler {
 	}
 
 	public EditingResult setDisplayName(String name, String displayName) {
-		Optional<IFakePlayers> fp = getFakePlayerByName(name);
+		Optional<IFakePlayer> fp = getFakePlayerByName(name);
 
 		if (!fp.isPresent()) {
 			return EditingResult.NOT_EXIST;

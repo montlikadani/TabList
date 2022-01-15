@@ -61,11 +61,7 @@ public class CommentedConfig extends YamlConfiguration {
 		boolean commentedPath = false, node = false;
 		int depth = 0;
 
-		String[] split = content.split('[' + System.lineSeparator() + ']');
-
-		for (int s = 0; s < split.length; s++) {
-			String line = split[s];
-
+		for (String line : content.split('[' + System.lineSeparator() + ']')) {
 			if (line.isEmpty() || line.charAt(0) == '#') {
 				continue; // Ignore comments and empty lines
 			}
