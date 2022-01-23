@@ -8,6 +8,7 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 import org.bukkit.ChatColor;
@@ -52,7 +53,7 @@ public final class Groups {
 	 * 
 	 * @param name Team name
 	 * @return {@link TeamHandler} if present, otherwise {@link Optional#empty()}
-	 * @throws NullPointerException if the specified name is null
+	 * @throws NullPointerException     if the specified name is null
 	 * @throws IllegalArgumentException if the specified name is empty
 	 */
 	public Optional<TeamHandler> getTeam(String name) {
@@ -155,8 +156,7 @@ public final class Groups {
 					perm = cs.getString(g + ".permission", "");
 			int priority = cs.getInt(g + ".sort-priority", last + 1);
 
-			TeamHandler th = new TeamHandler(g, Global.setSymbols(prefix), Global.setSymbols(suffix), perm,
-					last = priority);
+			TeamHandler th = new TeamHandler(g, Global.setSymbols(prefix), Global.setSymbols(suffix), perm, last = priority);
 
 			th.setTabName(Global.setSymbols(cs.getString(g + ".tabname", "")));
 			groupsList.add(th);
@@ -164,8 +164,8 @@ public final class Groups {
 
 		// Sort groups by priority to match the lowest priority firstly (highest
 		// priority is on the top of other)
-		List<TeamHandler> newSortedList = groupsList.stream()
-				.sorted(Comparator.comparingInt(TeamHandler::getPriority).reversed()).collect(Collectors.toList());
+		List<TeamHandler> newSortedList = groupsList.stream().sorted(Comparator.comparingInt(TeamHandler::getPriority).reversed())
+				.collect(Collectors.toList());
 		groupsList.clear();
 		groupsList.addAll(newSortedList);
 
@@ -290,15 +290,30 @@ public final class Groups {
 		sortPlayers();
 	}
 
+	private final ReentrantLock lock = new ReentrantLock();
+
 	/**
 	 * This method is used to sort and update players' groups. Includes sorting of
 	 * AFK players. If there is no need to change the places of groups, they will
 	 * only be updated in the custom name, prefix, suffix and others.
 	 */
 	private void sortPlayers() {
-		// TODO get rid from streams
-		List<GroupPlayer> playerGroups = sortedPlayers.stream()
-				.sorted(Comparator.comparingInt(GroupPlayer::getPriority)).collect(Collectors.toList());
+
+		// Pauses the current thread until the stream unlocks.
+		//
+		// This was implemented to fix a less reproducible and undetectable exception.
+		// This lock was needed for the stream collect, so it pauses the current thread
+		// until the stream ends and unlocks the thread.
+		// Without this lock some of data will be lost.
+		lock.lock();
+
+		List<GroupPlayer> playerGroups;
+		try {
+			playerGroups = sortedPlayers.stream().sorted(Comparator.comparingInt(GroupPlayer::getPriority))
+					.collect(Collectors.toList());
+		} finally {
+			lock.unlock();
+		}
 
 		sortedPlayers.clear();
 		sortedPlayers.addAll(playerGroups);
