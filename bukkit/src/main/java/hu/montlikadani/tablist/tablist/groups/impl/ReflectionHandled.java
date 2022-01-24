@@ -155,6 +155,12 @@ public class ReflectionHandled implements ITabScoreboard {
 		try {
 			Object oldTeamPacket;
 
+			// Received packet for unknown team a02: team action: REMOVE, player action:
+			// null
+			// This means that the client cannot find the team with the name a02 and tries
+			// to remove it but cannot find it.
+			// This is not a bug, it can be ignored.
+
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
 				oldTeamPacket = ClazzContainer.scoreboardTeamPacketByAction(ClazzContainer.getScoreboardTeamConstructor()
 						.newInstance(ClazzContainer.getScoreboardConstructor().newInstance(), groupPlayer.getFullGroupTeamName()),

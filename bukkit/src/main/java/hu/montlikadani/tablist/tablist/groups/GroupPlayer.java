@@ -88,8 +88,7 @@ public final class GroupPlayer {
 	}
 
 	public int getPriority() {
-		return customPriority == Integer.MIN_VALUE ? group == null ? Integer.MAX_VALUE : group.getPriority()
-				: customPriority;
+		return customPriority == Integer.MIN_VALUE ? group == null ? Integer.MAX_VALUE : group.getPriority() : customPriority;
 	}
 
 	public boolean update() {
@@ -116,15 +115,16 @@ public final class GroupPlayer {
 		boolean update = false;
 		Groups groups = tl.getGroups();
 		String playerName = player.getName();
+		java.util.List<TeamHandler> teams = groups.getGroupsList();
 
 		// Search for player' name
-		for (TeamHandler team : groups.getGroupsList()) {
+		for (TeamHandler team : teams) {
 			if (playerName.equalsIgnoreCase(team.getTeam())) {
 
 				// Player can have two groups assigned
 				// globalGroup + normalGroup
 				if (!team.isGlobal()) {
-					for (TeamHandler t : groups.getGroupsList()) {
+					for (TeamHandler t : teams) {
 						if (t.isGlobal() && globalGroup != t) {
 							globalGroup = t;
 							groups.setToSort(true);
@@ -160,7 +160,7 @@ public final class GroupPlayer {
 			}
 		}
 
-		for (TeamHandler team : groups.getGroupsList()) {
+		for (TeamHandler team : teams) {
 
 			// Primary group found
 			if (playerVaultGroup != null && playerVaultGroup.equalsIgnoreCase(team.getTeam())) {
@@ -168,7 +168,7 @@ public final class GroupPlayer {
 				// Search for global group and cache if exists to allow assigning multiple
 				// prefixes for primary group
 				if (!team.isGlobal()) {
-					for (TeamHandler t : groups.getGroupsList()) {
+					for (TeamHandler t : teams) {
 						if (t.isGlobal() && globalGroup != t) {
 							groups.setToSort(true);
 							globalGroup = t;
@@ -188,6 +188,12 @@ public final class GroupPlayer {
 			if (team.isGlobal() && globalGroup != team) {
 				globalGroup = team;
 				groups.setToSort(true);
+
+				// Users can also display the global group without any other group specified
+				if (teams.size() == 1) {
+					update = true;
+				}
+
 				continue;
 			}
 
@@ -209,7 +215,7 @@ public final class GroupPlayer {
 						// Search for global group and cache if exists to allow assigning multiple
 						// prefixes for this group
 						if (!team.isGlobal()) {
-							for (TeamHandler t : groups.getGroupsList()) {
+							for (TeamHandler t : teams) {
 								if (t.isGlobal() && globalGroup != t) {
 									groups.setToSort(true);
 									globalGroup = t;
@@ -238,8 +244,7 @@ public final class GroupPlayer {
 	}
 
 	private boolean isPlayerCanSeeGroup(Player player) {
-		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowPlayerGroup()
-				&& PluginUtils.isAfk(player)) {
+		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowPlayerGroup() && PluginUtils.isAfk(player)) {
 			return false;
 		}
 
@@ -270,8 +275,7 @@ public final class GroupPlayer {
 		Player player = tabListUser.getPlayer();
 
 		if (player != null && ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			prefix = (PluginUtils.isAfk(player) ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo())
-					+ prefix;
+			prefix = (PluginUtils.isAfk(player) ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo()) + prefix;
 		}
 
 		return prefix.isEmpty() ? prefix : tl.getPlaceholders().replaceVariables(player, tl.makeAnim(prefix));
