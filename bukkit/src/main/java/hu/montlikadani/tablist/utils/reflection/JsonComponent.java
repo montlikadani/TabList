@@ -22,8 +22,7 @@ public final class JsonComponent {
 	protected JsonComponent() {
 	}
 
-	// Lock until this method is not exited to prevent NPE from client
-	synchronized Object parseProperty(String text) throws Exception {
+	Object parseProperty(String text) throws Exception {
 		jsonList.clear();
 
 		JsonObject obj = new JsonObject();
@@ -151,8 +150,7 @@ public final class JsonComponent {
 
 				if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
 					font = NamespacedKey.minecraft(text.substring(fromIndex, closeIndex)).toString();
-				} else if (text.regionMatches(true, i, "{/font", 0, 6)
-						&& (closeIndex = text.indexOf('}', fromIndex)) != -1) {
+				} else if (text.regionMatches(true, i, "{/font", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
 					if (defaultFontNamespacedKey == null)
 						defaultFontNamespacedKey = NamespacedKey.minecraft("default").toString();
 
@@ -218,10 +216,7 @@ public final class JsonComponent {
 					json = new JsonParser().parse(decodedValue).getAsJsonObject();
 				}
 
-				String texture = json.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url")
-						.getAsString();
-
-				map.put(value, texture);
+				map.put(value, json.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString());
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}

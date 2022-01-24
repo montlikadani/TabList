@@ -3,6 +3,7 @@ package hu.montlikadani.tablist.utils.reflection;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.concurrent.locks.ReentrantLock;
 
 import org.bukkit.entity.Player;
 
@@ -18,6 +19,8 @@ public final class ReflectionUtils {
 	private static Method playerHandleMethod, sendPacketMethod;
 	private static Field playerConnectionField;
 
+	private static ReentrantLock LOCK;
+
 	static {
 		try {
 			Class<?>[] declaredClasses = ClazzContainer.getIChatBaseComponent().getDeclaredClasses();
@@ -30,6 +33,10 @@ public final class ReflectionUtils {
 		}
 
 		EMPTY_COMPONENT = emptyComponent();
+
+		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1)) {
+			LOCK = new ReentrantLock();
+		}
 	}
 
 	private ReflectionUtils() {
@@ -62,12 +69,27 @@ public final class ReflectionUtils {
 	}
 
 	public static Object getAsIChatBaseComponent(final String text) throws Exception {
-		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1)) {
-			return getJsonComponent().parseProperty(text);
+		if (LOCK != null) {
+
+			// JsonComponent#parseProperty takes a bit longer time than expected and in some
+			// circumstances it can cause ThreadDeath (deadlock) because of the synchronized
+			// method. With this lock now the current thread will be paused until the thread
+			// unlocks this lock. So multiple thread can await for it to be done.
+			LOCK.lock();
+
+			Object component;
+			try {
+				component = getJsonComponent().parseProperty(text);
+			} finally {
+				LOCK.unlock();
+			}
+
+			return component;
 		}
 
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
-			Class<?> chatSerializer = Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".ChatSerializer");
+			Class<?> chatSerializer = Class
+					.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".ChatSerializer");
 			return ClazzContainer.getIChatBaseComponent()
 					.cast(chatSerializer.getMethod("a", String.class).invoke(chatSerializer, "{\"text\":\"" + text + "\"}"));
 		}
