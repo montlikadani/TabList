@@ -170,6 +170,19 @@ public final class Objects {
 										ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
 												ClazzContainer.getEnumScoreboardActionChange(), type.objectName,
 												user.getPlayerScore().getScoreName(), lastScore));
+
+								// Remove objective from fake players
+								// This is a workaround that does not seem to work still
+								// There is no proper way to remove a score from specific players/fake player
+								for (hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer fp : plugin.getFakePlayerHandler()
+										.getFakePlayers()) {
+
+									// Only send remove action
+									ReflectionUtils.sendPacket(pl,
+											ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
+													ClazzContainer.getEnumScoreboardActionRemove(), type.objectName, fp.getName(),
+													0));
+								}
 							} else {
 								// Packets does not really want to work for old versions so we uses that the API
 								// provided

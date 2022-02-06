@@ -22,8 +22,8 @@ public final class Misc {
 	private static final String MAX_PLAYERS;
 
 	static {
-		java.util.Collection<net.md_5.bungee.api.config.ListenerInfo> coll = ProxyServer.getInstance()
-				.getConfigurationAdapter().getListeners();
+		java.util.Collection<net.md_5.bungee.api.config.ListenerInfo> coll = ProxyServer.getInstance().getConfigurationAdapter()
+				.getListeners();
 
 		MAX_PLAYERS = coll.isEmpty() ? "0" : Integer.toString(coll.iterator().next().getMaxPlayers());
 	}
@@ -70,7 +70,6 @@ public final class Misc {
 
 		if (info != null) {
 			str = str.replace("%server%", info.getName());
-			str = str.replace("%server-online%", Integer.toString(info.getPlayers().size()));
 			str = str.replace("%bungee-motd%", info.getMotd());
 		}
 
@@ -84,14 +83,17 @@ public final class Misc {
 				sAddress = p.getSocketAddress();
 			}
 
-			str = str.replace("%ip%", address != null ? address.getAddress().getHostAddress()
-					: sAddress != null ? sAddress.toString() : "");
+			str = str.replace("%ip%",
+					address != null ? address.getAddress().getHostAddress() : sAddress != null ? sAddress.toString() : "");
 		}
 
 		str = str.replace("%max-players%", MAX_PLAYERS);
 		str = str.replace("%player-name%", p.getName());
 		str = str.replace("%display-name%", p.getDisplayName());
-		str = str.replace("%bungee-online%", Integer.toString(ProxyServer.getInstance().getOnlineCount()));
+
+		String onlineCount = Integer.toString(ProxyServer.getInstance().getOnlineCount());
+		str = str.replace("%server-online%", onlineCount); // Deprecated
+		str = str.replace("%bungee-online%", onlineCount);
 
 		if (str.indexOf("%ping%") != -1)
 			str = str.replace("%ping%", ConfigConstants.formatPing(p.getPing()));

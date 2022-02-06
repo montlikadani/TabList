@@ -299,6 +299,11 @@ public final class Groups {
 	 */
 	private void sortPlayers() {
 
+		// Skip this method to sort players until the current thread is locked
+		if (lock.isLocked()) {
+			return;
+		}
+
 		// Pauses the current thread until the stream unlocks.
 		//
 		// This was implemented to fix a less reproducible and undetectable exception.

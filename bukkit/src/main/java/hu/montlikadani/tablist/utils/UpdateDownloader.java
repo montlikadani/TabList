@@ -32,7 +32,7 @@ public abstract class UpdateDownloader {
 					String s;
 
 					while ((s = br.readLine()) != null) {
-						if (s.contains("version")) {
+						if (s.indexOf("version") != -1) {
 							lineWithVersion = s;
 							break;
 						}
@@ -65,8 +65,7 @@ public abstract class UpdateDownloader {
 				}
 
 				tabList.getLogger().log(Level.INFO, "");
-				tabList.getLogger().log(Level.INFO,
-						"To disable update checking, go to the config file (not recommended)");
+				tabList.getLogger().log(Level.INFO, "To disable update checking, go to the config file (not recommended)");
 				tabList.getLogger().log(Level.INFO, "-------------");
 
 				if (!downloadUpdates) {
@@ -88,8 +87,7 @@ public abstract class UpdateDownloader {
 				Util.logConsole("Downloading new version of TabList...");
 
 				try (java.io.InputStream in = new URL(
-						"https://github.com/montlikadani/TabList/releases/latest/download/" + name + ".jar")
-								.openStream()) {
+						"https://github.com/montlikadani/TabList/releases/latest/download/" + name + ".jar").openStream()) {
 					Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
 				}
 
@@ -102,8 +100,7 @@ public abstract class UpdateDownloader {
 			return false;
 		}).thenAccept(success -> {
 			if (success) {
-				Util.logConsole(
-						"The new TabList has been downloaded to " + tabList.getServer().getUpdateFolder() + " folder.");
+				Util.logConsole("The new TabList has been downloaded to " + tabList.getServer().getUpdateFolder() + " folder.");
 			}
 		});
 	}

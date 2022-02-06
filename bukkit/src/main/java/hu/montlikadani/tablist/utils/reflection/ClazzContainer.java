@@ -184,6 +184,7 @@ public final class ClazzContainer {
 
 			iScoreboardCriteriaDummy = getFieldByType(iScoreboardCriteria, iScoreboardCriteria, null)
 					.get(iScoreboardCriteria);
+
 			/*try {
 				iScoreboardCriteriaDummy = iScoreboardCriteria.getDeclaredField("b").get(iScoreboardCriteria);
 			} catch (NoSuchFieldException e) {
