@@ -33,18 +33,6 @@ public final class TextAnimation {
 		return name;
 	}
 
-	public String[] getTexts() {
-		return texts;
-	}
-
-	public boolean isRandom() {
-		return isRandom;
-	}
-
-	public int getTime() {
-		return time;
-	}
-
 	public String getText() {
 		if (time < 1) {
 			return firstElement;

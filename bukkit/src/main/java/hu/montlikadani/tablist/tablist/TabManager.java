@@ -23,10 +23,6 @@ public final class TabManager {
 		return toggleBase;
 	}
 
-	public BukkitTask getTask() {
-		return task;
-	}
-
 	public void cancelTask() {
 		if (task != null) {
 			task.cancel();

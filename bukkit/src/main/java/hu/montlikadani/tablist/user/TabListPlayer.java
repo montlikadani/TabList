@@ -3,7 +3,7 @@ package hu.montlikadani.tablist.user;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.tablist.TabHandler;
-import hu.montlikadani.tablist.tablist.fakeplayers.FakePlayer;
+import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
 import hu.montlikadani.tablist.tablist.groups.GroupPlayer;
 import hu.montlikadani.tablist.tablist.playerlist.HidePlayers;
 import hu.montlikadani.tablist.tablist.playerlist.PlayerList;
@@ -134,12 +134,12 @@ public class TabListPlayer implements TabListUser {
 	}
 
 	@Override
-	public boolean isFakePlayerVisible(FakePlayer fakePlayer) {
+	public boolean isFakePlayerVisible(IFakePlayer fakePlayer) {
 		return visibleFakePlayers.contains(fakePlayer.getProfile().getId());
 	}
 
 	@Override
-	public void setCanSeeFakePlayer(FakePlayer fakePlayer) {
+	public void setCanSeeFakePlayer(IFakePlayer fakePlayer) {
 		UUID profileId = fakePlayer.getProfile().getId();
 
 		if (!visibleFakePlayers.remove(profileId)) {

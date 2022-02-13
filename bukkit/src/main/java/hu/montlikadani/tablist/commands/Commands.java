@@ -61,9 +61,10 @@ public final class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		boolean isPlayer = sender instanceof Player;
+		String first = args[0];
 
 		boolean isHelp;
-		if ((isHelp = args[0].equalsIgnoreCase("help")) && isPlayer && !sender.hasPermission(Perm.HELP.permission)) {
+		if ((isHelp = first.equalsIgnoreCase("help")) && isPlayer && !sender.hasPermission(Perm.HELP.permission)) {
 			sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.HELP.permission));
 			return true;
 		}
@@ -87,14 +88,14 @@ public final class Commands implements CommandExecutor, TabCompleter {
 				continue;
 			}
 
-			if (!proc.name().equalsIgnoreCase(args[0])) {
+			if (!proc.name().equalsIgnoreCase(first)) {
 				continue;
 			}
 
 			found = true;
 
 			if (proc.playerOnly() && !isPlayer) {
-				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_CONSOLE, "%command%", label + " " + args[0]));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_CONSOLE, "%command%", label + " " + first));
 				return true;
 			}
 
@@ -109,7 +110,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		if (!found) {
-			sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.UNKNOWN_SUB_COMMAND, "%subcmd%", args[0]));
+			sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.UNKNOWN_SUB_COMMAND, "%subcmd%", first));
 		}
 
 		return true;

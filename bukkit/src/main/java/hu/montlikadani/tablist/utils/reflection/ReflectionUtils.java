@@ -25,7 +25,7 @@ public final class ReflectionUtils {
 		try {
 			Class<?>[] declaredClasses = ClazzContainer.getIChatBaseComponent().getDeclaredClasses();
 
-			if (declaredClasses.length > 0) {
+			if (declaredClasses.length != 0) {
 				jsonComponentMethod = declaredClasses[0].getMethod("a", String.class);
 			}
 		} catch (Exception e) {

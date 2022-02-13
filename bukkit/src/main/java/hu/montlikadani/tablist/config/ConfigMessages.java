@@ -95,7 +95,7 @@ public final class ConfigMessages {
 	public static String get(MessageKeys key, Object... variables) {
 		String text = key.<String>get();
 
-		if (variables.length > 0 && !text.isEmpty()) {
+		if (variables.length != 0 && !text.isEmpty()) {
 			for (int i = 0; i < variables.length; i += 2) {
 				text = text.replace(String.valueOf(variables[i]), String.valueOf(variables[i + 1]));
 			}

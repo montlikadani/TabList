@@ -1,6 +1,6 @@
 package hu.montlikadani.tablist.user;
 
-import hu.montlikadani.tablist.tablist.fakeplayers.FakePlayer;
+import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
 
 public interface TabListUser {
 
@@ -24,9 +24,9 @@ public interface TabListUser {
 
 	PlayerScore getPlayerScore();
 
-	boolean isFakePlayerVisible(FakePlayer fakePlayer);
+	boolean isFakePlayerVisible(IFakePlayer fakePlayer);
 
-	void setCanSeeFakePlayer(FakePlayer fakePlayer);
+	void setCanSeeFakePlayer(IFakePlayer fakePlayer);
 
 	void removeAllVisibleFakePlayer();
 

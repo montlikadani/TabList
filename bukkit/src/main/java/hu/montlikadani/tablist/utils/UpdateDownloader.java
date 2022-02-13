@@ -65,7 +65,7 @@ public abstract class UpdateDownloader {
 				}
 
 				tabList.getLogger().log(Level.INFO, "");
-				tabList.getLogger().log(Level.INFO, "To disable update checking, go to the config file (not recommended)");
+				tabList.getLogger().log(Level.INFO, "To disable update checking, go to the config file");
 				tabList.getLogger().log(Level.INFO, "-------------");
 
 				if (!downloadUpdates) {

@@ -2,6 +2,7 @@ package hu.montlikadani.tablist.tablist.playerlist;
 
 import java.util.List;
 
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.TabList;
@@ -19,11 +20,6 @@ public class PlayerList {
 		this.user = user;
 	}
 
-	public void hideShow() {
-		hide();
-		displayInWorld();
-	}
-
 	public void hide() {
 		Player player = user.getPlayer();
 
@@ -31,7 +27,14 @@ public class PlayerList {
 			return;
 		}
 
+		boolean checked = false;
+
 		for (TabListUser user : plugin.getUsers()) {
+			if (!checked && user.getUniqueId().equals(this.user.getUniqueId())) {
+				checked = true;
+				continue; // Only hide other players
+			}
+
 			Player pl = user.getPlayer();
 
 			if (pl == null) {
@@ -50,7 +53,14 @@ public class PlayerList {
 			return;
 		}
 
+		boolean checked = false;
+
 		for (TabListUser user : plugin.getUsers()) {
+			if (!checked && user.getUniqueId().equals(this.user.getUniqueId())) {
+				checked = true;
+				continue; // Only hide other players
+			}
+
 			Player pls = user.getPlayer();
 
 			if (pls == null) {
@@ -70,14 +80,15 @@ public class PlayerList {
 		}
 
 		boolean checked = false;
-		java.util.UUID worldId = player.getWorld().getUID();
+		World playerWorld = player.getWorld();
+		java.util.UUID worldId = playerWorld.getUID();
 
 		for (TabListUser user : plugin.getUsers()) {
 			if (!checked && user.getUniqueId().equals(this.user.getUniqueId())) {
-				show(player, player);
-				show(player, player);
+				// show(player, player);
+				// show(player, player);
 				checked = true;
-				continue;
+				continue; // Only show other players
 			}
 
 			Player pls = user.getPlayer();
@@ -88,8 +99,9 @@ public class PlayerList {
 			}
 		}
 
-		String playerWorldName = player.getWorld().getName();
+		String playerWorldName = playerWorld.getName();
 		boolean isInPlayerWorld = false;
+		checked = false;
 
 		for (List<String> keys : ConfigValues.PER_WORLD_LIST_NAMES) {
 
@@ -110,10 +122,15 @@ public class PlayerList {
 					continue; // The other players already visible in the player's world
 				}
 
-				org.bukkit.World world = plugin.getServer().getWorld(name);
+				World world = plugin.getServer().getWorld(name);
 
 				if (world != null) {
 					for (Player worldPlayer : world.getPlayers()) {
+						if (!checked && worldPlayer.getUniqueId().equals(this.user.getUniqueId())) {
+							checked = true;
+							continue;
+						}
+
 						show(worldPlayer, player);
 						show(player, worldPlayer);
 					}
@@ -127,7 +144,7 @@ public class PlayerList {
 	}
 
 	@SuppressWarnings("deprecation")
-	public final void hide(Player to, Player pls) {
+	private void hide(Player to, Player pls) {
 		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_R1)) {
 			to.hidePlayer(plugin, pls);
 		} else {
@@ -136,7 +153,7 @@ public class PlayerList {
 	}
 
 	@SuppressWarnings("deprecation")
-	public final void show(Player to, Player pls) {
+	private void show(Player to, Player pls) {
 		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_R1)) {
 			to.showPlayer(plugin, pls);
 		} else {

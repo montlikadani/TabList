@@ -173,18 +173,14 @@ public final class Groups {
 	}
 
 	/**
-	 * Sets the player prefix, suffix, tab name, and position on tablist, except if
-	 * the player is hidden.
+	 * Sets the player prefix, suffix, tab name, and position on tablist
 	 * 
 	 * @param groupPlayer  {@link GroupPlayer}
 	 * @param safePriority Safe priority value. Should be between 0 and 999999999.
 	 */
 	public void setPlayerTeam(GroupPlayer groupPlayer, int safePriority) {
 		groupPlayer.setSafePriority(safePriority);
-
-		if (!groupPlayer.getUser().isHidden()) {
-			groupPlayer.getTabTeam().setTeam(groupPlayer);
-		}
+		groupPlayer.getTabTeam().setTeam(groupPlayer);
 	}
 
 	/**
