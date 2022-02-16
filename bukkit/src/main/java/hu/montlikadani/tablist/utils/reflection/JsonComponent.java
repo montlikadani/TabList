@@ -70,7 +70,7 @@ public final class JsonComponent {
 						continue;
 					}
 
-					if (builder.length() > 0) {
+					if (builder.length() != 0) {
 						obj.addProperty("text", builder.toString());
 						jsonList.add(obj);
 
@@ -134,7 +134,7 @@ public final class JsonComponent {
 						builder.append(charAt);
 					}
 				} else {
-					if (builder.length() > 0) {
+					if (builder.length() != 0) {
 						obj.addProperty("text", builder.toString());
 						jsonList.add(obj);
 						builder = new StringBuilder();
@@ -158,7 +158,7 @@ public final class JsonComponent {
 				}
 
 				if (closeIndex != -1) {
-					if (builder.length() > 0) {
+					if (builder.length() != 0) {
 						obj.addProperty("text", builder.toString());
 						jsonList.add(obj);
 						builder = new StringBuilder();

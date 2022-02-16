@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.bukkit.configuration.ConfigurationSection;
 
+import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.Objects;
 import hu.montlikadani.tablist.config.CommentedConfig;
 
@@ -181,8 +182,8 @@ public class ConfigValues {
 		assignGlobalGroup = c.get("change-prefix-suffix-in-tablist.assign-global-group-to-normal", false);
 		preferPrimaryVaultGroup = c.get("change-prefix-suffix-in-tablist.prefer-primary-vault-group", true);
 
-		afkFormatYes = c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r ");
-		afkFormatNo = c.get("placeholder-format.afk-status.format-no", "");
+		afkFormatYes = Global.setSymbols(c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r "));
+		afkFormatNo = Global.setSymbols(c.get("placeholder-format.afk-status.format-no", ""));
 		timeZone = c.get("placeholder-format.time.time-zone", "GMT0");
 
 		String old = "placeholder-format.time.time-format.format";

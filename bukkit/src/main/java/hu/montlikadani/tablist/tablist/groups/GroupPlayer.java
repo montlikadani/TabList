@@ -244,7 +244,10 @@ public final class GroupPlayer {
 	}
 
 	private boolean isPlayerCanSeeGroup(Player player) {
-		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowPlayerGroup() && PluginUtils.isAfk(player)) {
+		Boolean isAfk = null;
+
+		if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowPlayerGroup()
+				&& (isAfk = PluginUtils.isAfk(player))) {
 			return false;
 		}
 
@@ -256,7 +259,7 @@ public final class GroupPlayer {
 		}
 
 		if ((ConfigValues.isHideGroupInVanish() && PluginUtils.isVanished(player))
-				|| (ConfigValues.isHideGroupWhenAfk() && PluginUtils.isAfk(player))) {
+				|| (ConfigValues.isHideGroupWhenAfk() && (isAfk != null ? isAfk : PluginUtils.isAfk(player)))) {
 			tabTeam.unregisterTeam(this);
 			return false;
 		}

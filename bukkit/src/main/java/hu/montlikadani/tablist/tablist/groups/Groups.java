@@ -176,7 +176,7 @@ public final class Groups {
 	 * Sets the player prefix, suffix, tab name, and position on tablist
 	 * 
 	 * @param groupPlayer  {@link GroupPlayer}
-	 * @param safePriority Safe priority value. Should be between 0 and 999999999.
+	 * @param safePriority Safe priority value. The value should be between 0 and 98.
 	 */
 	public void setPlayerTeam(GroupPlayer groupPlayer, int safePriority) {
 		groupPlayer.setSafePriority(safePriority);

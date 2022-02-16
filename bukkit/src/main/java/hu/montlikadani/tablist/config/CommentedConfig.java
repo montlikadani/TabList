@@ -123,7 +123,7 @@ public class CommentedConfig extends YamlConfiguration {
 						}
 
 						int lastIndex = currentPath.lastIndexOf(".");
-						if (lastIndex < 0) {
+						if (lastIndex == -1) {
 							currentPath = new StringBuilder();
 						} else {
 							currentPath.replace(lastIndex, currentPath.length(), "").append('.');
@@ -134,7 +134,7 @@ public class CommentedConfig extends YamlConfiguration {
 					} else {
 						int lastIndex = currentPath.lastIndexOf(".");
 
-						if (lastIndex < 0) {
+						if (lastIndex == -1) {
 							currentPath = new StringBuilder();
 						} else {
 							currentPath.replace(lastIndex, currentPath.length(), "").append('.');

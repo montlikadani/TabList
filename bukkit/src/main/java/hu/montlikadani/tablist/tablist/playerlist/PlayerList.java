@@ -85,8 +85,6 @@ public class PlayerList {
 
 		for (TabListUser user : plugin.getUsers()) {
 			if (!checked && user.getUniqueId().equals(this.user.getUniqueId())) {
-				// show(player, player);
-				// show(player, player);
 				checked = true;
 				continue; // Only show other players
 			}

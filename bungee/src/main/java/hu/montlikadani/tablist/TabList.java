@@ -100,7 +100,7 @@ public final class TabList extends Plugin implements Listener {
 		getProxy().getPluginManager().registerCommand(this, new Command("tablist", "tablist.help", "tl") {
 			@Override
 			public void execute(final CommandSender sender, final String[] args) {
-				if (args.length < 1) {
+				if (args.length == 0) {
 					if (sender instanceof ProxiedPlayer && !sender.hasPermission("tablist.help")) {
 						Misc.sendMessage(sender, ConfigConstants.MessageKeys.NO_PERMISSION);
 						return;

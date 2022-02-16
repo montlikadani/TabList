@@ -1,13 +1,13 @@
 # TabList [![GitHub release](https://img.shields.io/github/release/montlikadani/TabList.svg)](https://github.com/montlikadani/TabList/releases) [![Github All Releases](https://img.shields.io/github/downloads/montlikadani/TabList/total.svg)](https://github.com/montlikadani/TabList/releases) [![GitHub issues](https://img.shields.io/github/issues/montlikadani/TabList.svg)](https://github.com/montlikadani/TabList/issues)
 
-[![bStats](https://img.shields.io/badge/bStats-1.8-brightgreen)](https://bstats.org/plugin/bukkit/TabList/1479)
+[![bStats](https://img.shields.io/badge/bStats-3.0.0-brightgreen)](https://bstats.org/plugin/bukkit/TabList/1479)
 
 ***
 
-A configurable plugin that allows all online players that are one the server to get an animated tablist with header/footer.
+A plugin that allows all online players that are one the server to get an animated tablist with header/footer.
 
 - More detailed documentation can be found on [wiki](https://github.com/montlikadani/TabList/wiki) page.
-- Download the latest build from [actions](https://github.com/montlikadani/TabList/actions) page. You'll need github account to download.
+- Download the latest build from [actions](https://github.com/montlikadani/TabList/actions) page. You will need github account to download.
 - For general questions and support, join our discord server: https://discord.gg/XsfT5cJ
 
 ## Link

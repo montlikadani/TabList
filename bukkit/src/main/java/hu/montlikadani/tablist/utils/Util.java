@@ -34,7 +34,7 @@ public final class Util {
 
 		String[] split = s.split("\n");
 
-		if (split.length > 0) {
+		if (split.length != 0) {
 			for (String msg : split) {
 				sender.sendMessage(msg);
 			}

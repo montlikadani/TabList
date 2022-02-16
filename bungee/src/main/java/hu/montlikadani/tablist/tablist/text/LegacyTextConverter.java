@@ -37,7 +37,7 @@ public final class LegacyTextConverter {
 				char nextChar = legacyText.charAt(i + 1);
 
 				if (Global.isValidColourCharacter(nextChar)) {
-					if (builder.length() > 0) {
+					if (builder.length() != 0) {
 						TextComponent old = component;
 						component = new TextComponent(old);
 
@@ -92,7 +92,7 @@ public final class LegacyTextConverter {
 						builder.append(c);
 					}
 				} else {
-					if (builder.length() > 0) {
+					if (builder.length() != 0) {
 						TextComponent old = component;
 						component = new TextComponent(old);
 
@@ -135,7 +135,7 @@ public final class LegacyTextConverter {
 				char nextChar = text.charAt(i + 1);
 
 				if (Global.isValidColourCharacter(nextChar)) {
-					if (builder.length() > 0) {
+					if (builder.length() != 0) {
 						object.addProperty("text", builder.toString());
 						JSON_OBJECTS.add(object);
 
@@ -185,7 +185,7 @@ public final class LegacyTextConverter {
 						builder.append(charAt);
 					}
 				} else {
-					if (builder.length() > 0) {
+					if (builder.length() != 0) {
 						object.addProperty("text", builder.toString());
 						JSON_OBJECTS.add(object);
 						builder = new StringBuilder();
