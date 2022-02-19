@@ -175,11 +175,9 @@ public class ReflectionHandled implements ITabScoreboard {
 			for (TabListUser user : tl.getUsers()) {
 				ReflectionUtils.sendPacket(user.getPlayer(), oldTeamPacket);
 			}
-		} catch (Exception exception) {
-			exception.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-
-		packetPlayOutPlayerInfo = null;
 	}
 
 	private void updateName(GroupPlayer groupPlayer) {

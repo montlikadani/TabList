@@ -19,20 +19,10 @@ public class OperatorNodes implements LogicalNode {
 
 	@Override
 	public LogicalNode parseInput(String input) {
-		condition = makeConditionFromInput(input);
-		return this;
-	}
-
-	@Override
-	public Condition getCondition() {
-		return condition;
-	}
-
-	private Condition makeConditionFromInput(String str) {
 		String strOperator = "";
 
 		for (String logicalOperator : new String[] { ">", ">=", "<", "<=", "==", "!=" }) {
-			String s = str.replaceAll("[^" + logicalOperator + "]", "");
+			String s = input.replaceAll("[^" + logicalOperator + "]", "");
 
 			if (s.equals(logicalOperator)) {
 				strOperator = s;
@@ -40,12 +30,18 @@ public class OperatorNodes implements LogicalNode {
 		}
 
 		Condition.RelationalOperators operator = Condition.RelationalOperators.getByOperator(strOperator);
-		if (operator == null) {
-			return null;
+
+		if (operator != null) {
+			condition = new Condition(operator,
+					String.valueOf(input.trim().replace(strOperator, ";").toCharArray()).split(";", 2));
 		}
 
-		return new Condition(operator,
-				String.valueOf(str.trim().replace(strOperator, ";").toCharArray()).split(";", 2));
+		return this;
+	}
+
+	@Override
+	public Condition getCondition() {
+		return condition;
 	}
 
 	@Override
@@ -115,8 +111,8 @@ public class OperatorNodes implements LogicalNode {
 
 				if ((firstPing && node2.getType() == NodeType.PING
 						&& node.getCondition().getSecondCondition() < node2.getCondition().getSecondCondition())
-						|| (firstPing && node2.getType() == NodeType.TPS && node.getCondition()
-								.getSecondCondition() > node2.getCondition().getSecondCondition())) {
+						|| (firstPing && node2.getType() == NodeType.TPS
+								&& node.getCondition().getSecondCondition() > node2.getCondition().getSecondCondition())) {
 					nodes.set(i, node2);
 					nodes.set(j, node);
 				}
