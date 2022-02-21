@@ -22,6 +22,7 @@ import hu.montlikadani.tablist.config.CommentedConfig;
 import hu.montlikadani.tablist.config.Configuration;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
+import hu.montlikadani.tablist.listeners.HidePlayerListener;
 import hu.montlikadani.tablist.listeners.Listeners;
 import hu.montlikadani.tablist.listeners.plugins.CMIAfkStatus;
 import hu.montlikadani.tablist.listeners.plugins.EssAfkStatus;
@@ -218,6 +219,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		HandlerList.unregisterAll(this);
 
 		getServer().getPluginManager().registerEvents(new Listeners(this), this);
+
+		if (ConfigValues.isHidePlayersFromTab()) {
+			getServer().getPluginManager().registerEvents(new HidePlayerListener(this), this);
+		}
 
 		if (isPluginEnabled("Essentials")) {
 			getServer().getPluginManager().registerEvents(new EssAfkStatus(), this);
