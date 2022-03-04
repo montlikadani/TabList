@@ -63,7 +63,7 @@ public final class TabToggleBase {
 			}
 
 			for (String uuid : section.getKeys(false)) {
-				if (!section.getBoolean(uuid)) {
+				if (!section.getBoolean(uuid, false)) {
 					continue;
 				}
 

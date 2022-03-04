@@ -172,12 +172,11 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		try {
 			Class.forName("net.kyori.adventure.text.Component");
 			Player.class.getDeclaredMethod("displayName");
-			kyoriSupported = true;
+			kyoriSupported = ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R3);
 		} catch (NoSuchMethodException | ClassNotFoundException e) {
 		}
 
-		complement = (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R3) && kyoriSupported) ? new Complement2()
-				: new Complement1();
+		complement = kyoriSupported ? new Complement2() : new Complement1();
 	}
 
 	private void beginDataCollection() {
@@ -287,7 +286,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			return name;
 		}
 
-		int a = 0; // Make sure we're not generates infinite loop
+		int a = 0; // Avoid infinite loop
 
 		while (a < 100 && name.indexOf("%anim:") != -1) { // when using multiple animations
 			for (TextAnimation ac : animations) {

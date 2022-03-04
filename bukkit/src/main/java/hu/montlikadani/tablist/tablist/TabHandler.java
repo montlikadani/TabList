@@ -64,21 +64,21 @@ public class TabHandler {
 		final FileConfiguration c = plugin.getConf().getTablist();
 		String path = "";
 
-		if (c.contains("per-world")) {
-			if (c.contains("per-world." + world + ".per-player." + pName)) {
+		if (c.get("per-world") != null) {
+			if (c.get("per-world." + world + ".per-player." + pName) != null) {
 				path = "per-world." + world + ".per-player." + pName + ".";
 				worldEnabled = true;
 			} else {
 				t: for (String s : TabConfigValues.getPerWorldkeys()) {
 					for (String split : StrUtil.getCommaSpaceSeparatedPattern().split(s)) {
 						if (world.equals(split)) {
-							if (plugin.hasVault() && c.contains("per-world." + s + ".per-group")) {
+							if (plugin.hasVault() && c.get("per-world." + s + ".per-group") != null) {
 								String group = plugin.getVaultPerm().getPrimaryGroup(split, player);
 
 								if (group != null) {
 									group = group.toLowerCase();
 
-									if (c.contains("per-world." + s + ".per-group." + group)) {
+									if (c.get("per-world." + s + ".per-group." + group) != null) {
 										path = "per-world." + s + ".per-group." + group + ".";
 										worldEnabled = true;
 									}
@@ -95,19 +95,19 @@ public class TabHandler {
 					}
 				}
 
-				if (worldList.isEmpty() && c.contains("per-world." + world)) {
+				if (worldList.isEmpty() && c.get("per-world." + world) != null) {
 					path = "per-world." + world + ".";
 					worldEnabled = true;
 				}
 			}
 
-			if (plugin.hasVault() && c.contains("per-world." + world + ".per-group")) {
+			if (plugin.hasVault() && c.get("per-world." + world + ".per-group") != null) {
 				String group = plugin.getVaultPerm().getPrimaryGroup(world, player);
 
 				if (group != null) {
 					group = group.toLowerCase();
 
-					if (c.contains("per-world." + world + ".per-group." + group)) {
+					if (c.get("per-world." + world + ".per-group." + group) != null) {
 						path = "per-world." + world + ".per-group." + group + ".";
 						worldEnabled = true;
 					}
@@ -135,17 +135,17 @@ public class TabHandler {
 			}
 		}
 
-		if (c.contains("per-player." + pName)) {
+		if (c.get("per-player." + pName) != null) {
 			path = "per-player." + pName + ".";
 		}
 
-		if (plugin.hasVault() && c.contains("per-group")) {
+		if (plugin.hasVault() && c.get("per-group") != null) {
 			String group = plugin.getVaultPerm().getPrimaryGroup(player);
 
 			if (group != null) {
 				group = group.toLowerCase();
 
-				if (c.contains("per-group." + group)) {
+				if (c.get("per-group." + group) != null) {
 					path = "per-group." + group + ".";
 				}
 			}
