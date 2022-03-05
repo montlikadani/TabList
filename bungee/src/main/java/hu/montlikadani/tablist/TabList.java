@@ -88,8 +88,8 @@ public final class TabList extends Plugin implements Listener {
 
 			if (configVersion != newConfigVersion) {
 				getLogger().log(java.util.logging.Level.WARNING,
-						"Found outdated configuration (bungeeconfig.yml)! (Your version: " + configVersion
-								+ " | Newest version: " + newConfigVersion + ")");
+						"Found outdated configuration (bungeeconfig.yml)! (Your version: " + configVersion + " | Newest version: "
+								+ newConfigVersion + ")");
 			}
 		} catch (java.io.IOException e) {
 			e.printStackTrace();
@@ -106,12 +106,13 @@ public final class TabList extends Plugin implements Listener {
 						return;
 					}
 
-					ConfigConstants.getMessageList(ConfigConstants.MessageKeys.CHAT_MESSAGES)
-							.forEach(sender::sendMessage);
+					ConfigConstants.getMessageList(ConfigConstants.MessageKeys.CHAT_MESSAGES).forEach(sender::sendMessage);
 					return;
 				}
 
-				if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")) {
+				String first = args[0];
+
+				if (first.equalsIgnoreCase("reload") || first.equalsIgnoreCase("rl")) {
 					if (sender instanceof ProxiedPlayer && !sender.hasPermission("tablist.reload")) {
 						Misc.sendMessage(sender, ConfigConstants.MessageKeys.NO_PERMISSION);
 						return;
@@ -122,7 +123,7 @@ public final class TabList extends Plugin implements Listener {
 					return;
 				}
 
-				if (args[0].equalsIgnoreCase("toggle")) {
+				if (first.equalsIgnoreCase("toggle")) {
 					boolean isPlayer = sender instanceof ProxiedPlayer;
 
 					if (isPlayer && !sender.hasPermission("tablist.toggle")) {
@@ -135,28 +136,32 @@ public final class TabList extends Plugin implements Listener {
 						return;
 					}
 
-					if (args.length > 1 && args[1].equalsIgnoreCase("all")) {
-						if (getProxy().getOnlineCount() == 0) {
-							Misc.sendMessage(sender, ConfigConstants.MessageKeys.TOGGLE_NO_PLAYERS_AVAILABLE);
+					ProxiedPlayer target = null;
+
+					if (args.length != 1) {
+						String sec = args[1];
+
+						if (sec.equalsIgnoreCase("all")) {
+							if (getProxy().getOnlineCount() == 0) {
+								Misc.sendMessage(sender, ConfigConstants.MessageKeys.TOGGLE_NO_PLAYERS_AVAILABLE);
+								return;
+							}
+
+							for (ProxiedPlayer pl : getProxy().getPlayers()) {
+								java.util.UUID playerId = pl.getUniqueId();
+
+								if (!tab.getTabToggle().remove(playerId)) {
+									tab.getTabToggle().add(playerId);
+								}
+							}
+
 							return;
 						}
 
-						for (ProxiedPlayer pl : getProxy().getPlayers()) {
-							java.util.UUID playerId = pl.getUniqueId();
-
-							if (!tab.getTabToggle().remove(playerId)) {
-								tab.getTabToggle().add(playerId);
-							}
+						if ((target = getProxy().getPlayer(sec)) == null) {
+							Misc.sendMessage(sender, ConfigConstants.MessageKeys.TOGGLE_NO_PLAYER);
+							return;
 						}
-
-						return;
-					}
-
-					ProxiedPlayer target = null;
-
-					if (args.length > 1 && (target = getProxy().getPlayer(args[1])) == null) {
-						Misc.sendMessage(sender, ConfigConstants.MessageKeys.TOGGLE_NO_PLAYER);
-						return;
 					}
 
 					if (isPlayer && target == null) {
@@ -167,7 +172,7 @@ public final class TabList extends Plugin implements Listener {
 						return;
 					}
 
-					boolean enabled = false;
+					boolean enabled;
 					java.util.UUID playerId = target.getUniqueId();
 
 					if (!tab.getTabToggle().remove(playerId)) {
@@ -176,8 +181,8 @@ public final class TabList extends Plugin implements Listener {
 						enabled = true;
 					}
 
-					Misc.sendMessage(sender, enabled ? ConfigConstants.MessageKeys.TOGGLE_ENABLED
-							: ConfigConstants.MessageKeys.TOGGLE_DISABLED);
+					Misc.sendMessage(sender,
+							enabled ? ConfigConstants.MessageKeys.TOGGLE_ENABLED : ConfigConstants.MessageKeys.TOGGLE_DISABLED);
 				}
 			}
 		});
