@@ -1,0 +1,50 @@
+buildscript {
+    repositories {
+        gradlePluginPortal()
+    }
+    dependencies {
+        classpath 'gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0'
+    }
+}
+
+plugins {
+    id 'hu.montlikadani.java-conventions'
+	id 'com.github.johnrengelman.shadow' version '7.0.0'
+	id 'java'
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'java'
+
+dependencies {
+    implementation project(':global')
+    implementation 'com.github.xtomyserrax:StaffFacilities:5.0.6.0'
+    implementation 'com.comphenix.protocol:ProtocolLib:4.8.0'
+    implementation 'org.bstats:bstats-bukkit:3.0.0'
+    compileOnly 'com.mojang:authlib:3.3.39'
+    compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
+    compileOnly 'net.essentialsx:EssentialsX:2.19.4-SNAPSHOT'
+    compileOnly 'me.clip:placeholderapi:2.11.1'
+    compileOnly 'com.github.MilkBowl:VaultAPI:1.7.1'
+    compileOnly 'com.github.LeonMangler:SuperVanish:6.2.6-4'
+	compileOnly files("lib/CMI9.0.0.0API.jar", "lib/PermissionsEx-1.23.4.jar")
+}
+
+description = 'TabList-bukkit'
+version = '5.6.2'
+
+tasks.shadowJar {
+	archiveFileName = 'TabList-bukkit-' + version + '.jar'
+
+	relocate 'org.bstats', 'hu.montlikadani.tablist.bstats'
+	relocate 'com.comphenix.protocol', 'hu.montlikadani.tablist.protocol'
+
+	exclude 'META-INF/**'
+	exclude 'com/**'
+
+	minimize()
+}
+
+artifacts {
+    archives shadowJar
+}

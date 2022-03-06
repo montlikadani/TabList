@@ -1,18 +1,10 @@
 # Build files
 target/
 bin/
+.gradle/
+build/
 
 # IDE files
-bungee/.project
-bungee/.classpath
-bungee/.settings
-bungee/target
-
-bukkit/.project
-bukkit/.classpath
-bukkit/.settings
-bukkit/target
-
 .project
 .classpath
 .settings

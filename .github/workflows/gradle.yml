@@ -1,0 +1,31 @@
+name: Build TabList
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build-1:
+    runs-on: Ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v3.0.0
+    - name: Set up JDK
+      uses: actions/setup-java@v3.0.0
+      with:
+        java-version: 17
+        distribution: 'temurin'
+
+    - name: Build all
+      run: ./gradlew clean build
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3.0.0
+      with:
+        name: tablist-dev
+        path: |
+          ${{ github.workspace }}/bukkit/build/libs/TabList*.jar
+          ${{ github.workspace }}/bungee/build/libs/TabList*.jar
+          ${{ github.workspace }}/sponge7/build/libs/tablist-sponge7*.jar
+          ${{ github.workspace }}/sponge8/build/libs/tablist-sponge8*.jar

@@ -1,0 +1,30 @@
+{
+  "loader": {
+    "name": "java_plain",
+    "version": "1.0"
+  },
+  "license": "NO_LICENSE",
+  "global": {
+      "contributors": [
+          {
+              "name": "montlikadani",
+              "description": "Developer"
+          }
+      ],
+      "dependencies": [
+          {
+              "id": "spongeapi",
+              "version": "8.0.0"
+          }
+      ]
+  },
+  "plugins": [
+    {
+      "id": "tablist",
+      "name": "TabList",
+      "version": "1.0.5",
+      "entrypoint": "hu.montlikadani.tablist.TabList",
+      "description": "A tablist plugin"
+    }
+  ]
+}
