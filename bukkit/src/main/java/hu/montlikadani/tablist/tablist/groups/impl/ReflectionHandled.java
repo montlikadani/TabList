@@ -88,7 +88,10 @@ public class ReflectionHandled implements ITabScoreboard {
 						optionName = "hideForOwnTeam";
 						break;
 					default:
-						optionName = optionStatus.name().toLowerCase(Locale.ENGLISH);
+						if (optionStatus != Team.OptionStatus.ALWAYS) {
+							optionName = optionStatus.name().toLowerCase(Locale.ENGLISH);
+						}
+
 						break;
 					}
 				} else {
@@ -102,7 +105,10 @@ public class ReflectionHandled implements ITabScoreboard {
 						optionName = "hideForOwnTeam";
 						break;
 					default:
-						optionName = visibility.name().toLowerCase(Locale.ENGLISH);
+						if (visibility != NameTagVisibility.ALWAYS) {
+							optionName = visibility.name().toLowerCase(Locale.ENGLISH);
+						}
+
 						break;
 					}
 				}

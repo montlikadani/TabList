@@ -2,6 +2,8 @@ package hu.montlikadani.tablist;
 
 import java.util.regex.Pattern;
 
+import net.kyori.adventure.text.format.TextColor;
+
 public final class Global {
 
 	private Global() {
@@ -16,8 +18,16 @@ public final class Global {
 			String group = matcher.group(0);
 
 			try {
-				s = s.replace(group, net.md_5.bungee.api.ChatColor.of(group).toString());
-			} catch (IllegalArgumentException e) {
+				TextColor hex = TextColor.fromHexString(group);
+
+				if (hex != null) {
+					s = s.replace(group, hex.asHexString());
+				}
+			} catch (Error er) {
+				try {
+					s = s.replace(group, net.md_5.bungee.api.ChatColor.of(group).toString());
+				} catch (IllegalArgumentException e) {
+				}
 			}
 		}
 
@@ -39,8 +49,7 @@ public final class Global {
 	}
 
 	public static boolean isValidColourCharacter(char ch) {
-		return ((ch >= 'a' && ch <= 'f')
-				|| (ch == 'k' || ch == 'l' || ch == 'm' || ch == 'n' || ch == 'o' || ch == 'r'))
+		return ((ch >= 'a' && ch <= 'f') || (ch == 'k' || ch == 'l' || ch == 'm' || ch == 'n' || ch == 'o' || ch == 'r'))
 				|| Character.isDigit(ch);
 	}
 
