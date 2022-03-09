@@ -267,58 +267,47 @@ public final class GroupPlayer {
 		return true;
 	}
 
-	public String getPrefix() {
-		String prefix = customPrefix == null ? group == null ? "" : group.getPrefix() : customPrefix;
-
-		if ((ConfigValues.isAssignGlobalGroup() && globalGroup != null && !prefix.isEmpty())
-				|| (globalGroup != null && prefix.isEmpty())) {
-			prefix = globalGroup.getPrefix() + prefix;
-		}
-
-		Player player = tabListUser.getPlayer();
-
-		if (player != null && ConfigValues.isAfkStatusEnabled() && !ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			prefix = (PluginUtils.isAfk(player) ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo()) + prefix;
-		}
-
-		return prefix.isEmpty() ? prefix : tl.getPlaceholders().replaceVariables(player, tl.makeAnim(prefix));
-	}
-
-	public String getSuffix() {
-		String suffix = customSuffix == null ? group == null ? "" : group.getSuffix() : customSuffix;
-
-		if ((ConfigValues.isAssignGlobalGroup() && globalGroup != null && !suffix.isEmpty())
-				|| (globalGroup != null && suffix.isEmpty())) {
-			suffix += globalGroup.getSuffix();
-		}
-
-		Player player = tabListUser.getPlayer();
-
-		if (player != null && ConfigValues.isAfkStatusEnabled() && ConfigValues.isAfkStatusShowInRightLeftSide()) {
-			suffix += PluginUtils.isAfk(player) ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo();
-		}
-
-		return suffix.isEmpty() ? suffix : tl.getPlaceholders().replaceVariables(player, tl.makeAnim(suffix));
-	}
-
 	public String getTabNameWithPrefixSuffix() {
 		Player player = tabListUser.getPlayer();
 		String tabName = player != null ? player.getName() : "";
 
 		// Assigning global group
 		if (ConfigValues.isAssignGlobalGroup() && globalGroup != null && !globalGroup.getTabName().isEmpty()) {
-			String tn = globalGroup.getTabName();
+			tabName = globalGroup.getTabName();
 
 			// Assigning both global and normal
 			if (group != null && !group.getTabName().isEmpty()) {
-				tn = group.getTabName() + tn;
+				tabName = group.getTabName() + tabName;
 			}
-
-			tabName = tl.getPlaceholders().replaceVariables(player, tl.makeAnim(tn));
 		} else if (group != null && !group.getTabName().isEmpty()) {
-			tabName = tl.getPlaceholders().replaceVariables(player, tl.makeAnim(group.getTabName()));
+			tabName = group.getTabName();
 		}
 
-		return getPrefix() + tabName + getSuffix();
+		String prefix = customPrefix == null ? group == null ? "" : group.getPrefix() : customPrefix;
+		String suffix = customSuffix == null ? group == null ? "" : group.getSuffix() : customSuffix;
+
+		// Assign global group prefix/suffix
+
+		if (globalGroup != null) {
+			if (ConfigValues.isAssignGlobalGroup()) {
+				prefix = globalGroup.getPrefix() + prefix;
+				suffix += globalGroup.getSuffix();
+			} else if (prefix.isEmpty() && suffix.isEmpty()) { // Assign global group if both prefix/suffix is empty
+				prefix = globalGroup.getPrefix();
+				suffix = globalGroup.getSuffix();
+			}
+		}
+
+		// AFK status
+
+		if (player != null && ConfigValues.isAfkStatusEnabled()) {
+			if (!ConfigValues.isAfkStatusShowInRightLeftSide()) {
+				prefix = (PluginUtils.isAfk(player) ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo()) + prefix;
+			} else {
+				suffix += PluginUtils.isAfk(player) ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo();
+			}
+		}
+
+		return tl.getPlaceholders().replaceVariables(player, tl.makeAnim(prefix + tabName + suffix));
 	}
 }

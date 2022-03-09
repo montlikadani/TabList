@@ -77,8 +77,8 @@ public abstract class UpdateDownloader {
 					return false;
 				}
 
-				final String name = "TabList-bukkit-" + versionString;
-				final File jar = new File(updateFolder, name + ".jar");
+				final String name = "TabList-bukkit-" + versionString + ".jar";
+				final File jar = new File(updateFolder, name);
 
 				if (jar.exists()) {
 					return false; // Do not attempt to download the file again, when it is already downloaded
@@ -86,8 +86,8 @@ public abstract class UpdateDownloader {
 
 				Util.logConsole("Downloading new version of TabList...");
 
-				try (java.io.InputStream in = new URL(
-						"https://github.com/montlikadani/TabList/releases/latest/download/" + name + ".jar").openStream()) {
+				try (java.io.InputStream in = new URL("https://github.com/montlikadani/TabList/releases/latest/download/" + name)
+						.openStream()) {
 					Files.copy(in, jar.toPath(), StandardCopyOption.REPLACE_EXISTING);
 				}
 
