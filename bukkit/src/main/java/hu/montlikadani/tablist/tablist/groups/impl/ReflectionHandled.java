@@ -220,8 +220,6 @@ public class ReflectionHandled implements ITabScoreboard {
 				if (playerInfoDataConstr.getParameterCount() == 5) {
 					infoPacket = playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
 							nameComponent);
-				} else if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-					infoPacket = playerInfoDataConstr.newInstance(profile, ping, gameMode, nameComponent);
 				} else {
 					infoPacket = playerInfoDataConstr.newInstance(profile, ping, gameMode, nameComponent);
 				}

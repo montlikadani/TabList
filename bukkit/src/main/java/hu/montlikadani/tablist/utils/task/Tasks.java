@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.utils.task;
 
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Supplier;
 
@@ -12,8 +13,7 @@ public final class Tasks {
 	private Tasks() {
 	}
 
-	private static final org.bukkit.plugin.Plugin TL = org.bukkit.plugin.java.JavaPlugin
-			.getProvidingPlugin(TabList.class);
+	private static final org.bukkit.plugin.Plugin TL = org.bukkit.plugin.java.JavaPlugin.getProvidingPlugin(TabList.class);
 
 	public static BukkitTask submitAsync(Runnable task, long delay, long period) {
 		return TL.getServer().getScheduler().runTaskTimerAsynchronously(TL, task, delay, period);
@@ -25,6 +25,8 @@ public final class Tasks {
 				return TL.getServer().getScheduler().callSyncMethod(TL, sup::get).get();
 			} catch (InterruptedException | ExecutionException e) {
 				e.printStackTrace();
+			} catch (CancellationException e) { // Does not really have other proper solution
+				return null;
 			}
 		}
 

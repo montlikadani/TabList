@@ -90,14 +90,14 @@ public final class Variables {
 					v.setAndGetRemainingValue(vanishedPlayers == 0 ? "0" : Integer.toString(vanishedPlayers)));
 		}));
 
-		variables.add(new Variable("servertype", -1).setVariable(
-				(v, str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getServer().getName()))));
+		variables.add(new Variable("servertype", -1)
+				.setVariable((v, str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getServer().getName()))));
 
-		variables.add(new Variable("mc-version", -1).setVariable((v, str) -> str = str.replace(v.fullName,
-				v.setAndGetRemainingValue(plugin.getServer().getBukkitVersion()))));
+		variables.add(new Variable("mc-version", -1).setVariable(
+				(v, str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getServer().getBukkitVersion()))));
 
-		variables.add(new Variable("motd", 10).setVariable((v,
-				str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getComplement().getMotd()))));
+		variables.add(new Variable("motd", 10).setVariable(
+				(v, str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getComplement().getMotd()))));
 
 		variables.add(new Variable("fake-players", 3).setVariable((v, str) -> {
 			int pls = plugin.getFakePlayerHandler().getFakePlayers().size();
@@ -136,16 +136,14 @@ public final class Variables {
 			StringBuilder builder = new StringBuilder();
 
 			int barSize = ConfigValues.getMemoryBarSize(), totalMemory = (int) (runtime.totalMemory() / MB),
-					usedMemory = totalMemory - (int) (runtime.freeMemory() / MB),
-					maxMemory = (int) (runtime.maxMemory() / MB);
+					usedMemory = totalMemory - (int) (runtime.freeMemory() / MB), maxMemory = (int) (runtime.maxMemory() / MB);
 
 			float usedMem = (float) usedMemory / maxMemory;
 			float totalMem = (float) totalMemory / maxMemory;
 
 			String barChar = ConfigValues.getMemoryBarChar();
 
-			builder.append(
-					usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
+			builder.append(usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
 
 			int totalBarSize = (int) (barSize * usedMem);
 			for (int i = 0; i < totalBarSize; i++) {
@@ -215,12 +213,10 @@ public final class Variables {
 
 		if (str.indexOf("%tps%") != -1) {
 			double tps = TabListAPI.getTPS();
-			boolean isGreater = tps > 20.0;
 
-			str = str.replace("%tps%", (isGreater ? '*' : "") + tpsDot(isGreater ? 20.0 : tps));
+			str = str.replace("%tps%", tps > 20.0 ? '*' + tpsDot(20.0) : tpsDot(tps));
 		}
 
-		// Don't use here colors because of some issues with hex
 		return str;
 	}
 
@@ -230,15 +226,10 @@ public final class Variables {
 		// one-time check for placeholders at load time.
 
 		if (plugin.hasPapi()) {
-			if (s.indexOf("server_total_chunks%") != -1 || s.indexOf("server_total_living_entities%") != -1
-					|| s.indexOf("server_total_entities%") != -1 || s.indexOf("%sync:") != -1) {
-				s = s.replace("sync:", "");
+			final String str = s;
 
-				final String str = s;
-
-				s = hu.montlikadani.tablist.utils.task.Tasks.submitSync(() -> PlaceholderAPI.setPlaceholders(p, str));
-			} else {
-				s = PlaceholderAPI.setPlaceholders(p, s);
+			if ((s = hu.montlikadani.tablist.utils.task.Tasks.submitSync(() -> PlaceholderAPI.setPlaceholders(p, str))) == null) {
+				s = str;
 			}
 		}
 
@@ -259,8 +250,7 @@ public final class Variables {
 			if (ServerVersion.isCurrentLower(ServerVersion.v1_9_R1)) {
 				s = s.replace("%player-max-health%", Double.toString(p.getMaxHealth()));
 			} else {
-				org.bukkit.attribute.AttributeInstance attr = p
-						.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
+				org.bukkit.attribute.AttributeInstance attr = p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
 
 				if (attr != null) {
 					s = s.replace("%player-max-health%", Double.toString(attr.getDefaultValue()));

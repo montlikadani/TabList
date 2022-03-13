@@ -116,7 +116,7 @@ public final class Variables {
 
 	public Component replaceVariables(ServerPlayer player, String str) {
 		if (str.isEmpty()) {
-			return Component.text(str);
+			return Component.empty();
 		}
 
 		str = str.replace("%player%", player.name());
