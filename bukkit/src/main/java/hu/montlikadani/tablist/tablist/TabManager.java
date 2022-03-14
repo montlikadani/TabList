@@ -56,12 +56,4 @@ public final class TabManager {
 			}, refreshTime, refreshTime);
 		}
 	}
-
-	public void removeAll() {
-		cancelTask();
-
-		for (TabListUser user : plugin.getUsers()) {
-			user.getTabHandler().sendEmptyTab(user.getPlayer());
-		}
-	}
 }

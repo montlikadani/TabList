@@ -240,7 +240,15 @@ public final class Groups {
 	 */
 	public void cancelUpdate() {
 		cancelTask();
-		plugin.getUsers().forEach(this::removePlayerGroup);
+
+		sortedPlayers.clear();
+
+		for (TabListUser user : plugin.getUsers()) {
+			GroupPlayer groupPlayer = user.getGroupPlayer();
+
+			groupPlayer.getTabTeam().unregisterTeam(groupPlayer);
+			groupPlayer.removeGroup();
+		}
 	}
 
 	public void cancelTask() {

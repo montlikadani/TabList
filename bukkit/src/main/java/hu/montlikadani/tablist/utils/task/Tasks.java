@@ -20,7 +20,7 @@ public final class Tasks {
 	}
 
 	public static <V> V submitSync(Supplier<V> sup) {
-		if (!TL.getServer().isPrimaryThread()) { // Check if current thread is async
+		if (TL.isEnabled() && !TL.getServer().isPrimaryThread()) { // Check if current thread is async
 			try {
 				return TL.getServer().getScheduler().callSyncMethod(TL, sup::get).get();
 			} catch (InterruptedException | ExecutionException e) {

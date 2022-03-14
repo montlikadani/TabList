@@ -269,7 +269,7 @@ public final class GroupPlayer {
 
 	public String getTabNameWithPrefixSuffix() {
 		Player player = tabListUser.getPlayer();
-		String tabName = player != null ? player.getName() : "";
+		String tabName = null;
 
 		// Assigning global group
 		if (ConfigValues.isAssignGlobalGroup() && globalGroup != null && !globalGroup.getTabName().isEmpty()) {
@@ -281,6 +281,10 @@ public final class GroupPlayer {
 			}
 		} else if (group != null && !group.getTabName().isEmpty()) {
 			tabName = group.getTabName();
+		}
+
+		if (tabName == null) {
+			tabName = player != null ? player.getName() : "";
 		}
 
 		String prefix = customPrefix == null ? group == null ? "" : group.getPrefix() : customPrefix;

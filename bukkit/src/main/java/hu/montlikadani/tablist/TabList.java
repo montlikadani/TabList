@@ -129,11 +129,14 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		}
 
 		tabManager.getToggleBase().saveToggledTabs();
-		tabManager.removeAll();
+		tabManager.cancelTask();
 
 		fakePlayerHandler.removeAllFakePlayer();
 
-		users.forEach(tlu -> tlu.setHidden(false));
+		users.forEach(tlu -> {
+			tlu.getTabHandler().sendEmptyTab(tlu.getPlayer());
+			tlu.setHidden(false);
+		});
 
 		conf.deleteEmptyFiles();
 
@@ -237,7 +240,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	}
 
 	public void reload() {
-		tabManager.removeAll();
+		tabManager.cancelTask();
+
+		users.forEach(user -> user.getTabHandler().sendEmptyTab(user.getPlayer()));
+
 		groups.cancelUpdate();
 		fakePlayerHandler.removeAllFakePlayer();
 

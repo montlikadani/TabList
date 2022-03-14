@@ -26,7 +26,7 @@ public class TabListManager {
 
 	private Random random;
 
-	private final List<String> worldList = new java.util.ArrayList<>();
+	private final List<ResourceKey> worldList = new java.util.ArrayList<>();
 
 	private final static Pattern SEPARATED_WORLD_NAMES = Pattern.compile(", ");
 
@@ -105,7 +105,7 @@ public class TabListManager {
 					footer = new String[] { h.getString("") };
 				}
 
-				worldList.add(split);
+				worldList.add(ResourceKey.minecraft(split));
 				break t;
 			}
 		}
@@ -190,7 +190,7 @@ public class TabListManager {
 			final Variables v = tl.getVariables();
 
 			if (!worldList.isEmpty()) {
-				worldList.forEach(worldName -> Sponge.game().server().worldManager().world(ResourceKey.minecraft(worldName))
+				worldList.forEach(worldKey -> Sponge.game().server().worldManager().world(worldKey)
 						.ifPresent(world -> world.players().forEach(pl -> sendTabList(pl, v.replaceVariables(pl, resultHeader),
 								v.replaceVariables(pl, resultFooter)))));
 

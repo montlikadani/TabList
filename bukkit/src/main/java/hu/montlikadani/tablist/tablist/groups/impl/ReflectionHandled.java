@@ -47,7 +47,7 @@ public class ReflectionHandled implements ITabScoreboard {
 			}
 
 			String teamName = groupPlayer.getFullGroupTeamName();
-			Object newTeamPacket, scoreTeam = null;
+			Object newTeamPacket = null, scoreTeam = null;
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
 				scoreTeam = ClazzContainer.getScoreboardTeamConstructor()
@@ -61,7 +61,6 @@ public class ReflectionHandled implements ITabScoreboard {
 
 				ClazzContainer.getScoreboardTeamSetDisplayName().invoke(scoreTeam,
 						ReflectionUtils.getAsIChatBaseComponent(teamName));
-				newTeamPacket = ClazzContainer.scoreboardTeamPacketByAction(scoreTeam, 0);
 			} else {
 				newTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
 
@@ -115,7 +114,7 @@ public class ReflectionHandled implements ITabScoreboard {
 			}
 
 			if (optionName != null) {
-				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+				if (scoreTeam != null) {
 					for (Object f : ClazzContainer.getScoreboardNameTagVisibilityEnumConstants()) {
 						if (optionName.equalsIgnoreCase((String) ClazzContainer.getNameTagVisibilityNameField().get(f))) {
 							ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(scoreTeam, f);
@@ -125,6 +124,10 @@ public class ReflectionHandled implements ITabScoreboard {
 				} else {
 					ClazzContainer.getNameTagVisibility().set(newTeamPacket, optionName);
 				}
+			}
+
+			if (newTeamPacket == null) {
+				newTeamPacket = ClazzContainer.scoreboardTeamPacketByAction(scoreTeam, 0);
 			}
 
 			Object handle = ReflectionUtils.getPlayerHandle(player);
