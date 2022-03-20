@@ -347,7 +347,7 @@ public final class Groups {
 			setPlayerTeam(groupPlayer, priority--);
 		}
 
-		if (!ConfigValues.isHideGroupWhenAfk() && ConfigValues.isAfkSortLast()) {
+		if (!ConfigValues.isHideGroupWhenAfk() && ConfigValues.isAfkSortLast() && !afkPlayersCache.isEmpty()) {
 			int size = sortedPlayers.size();
 
 			for (GroupPlayer afk : afkPlayersCache) {
