@@ -4,17 +4,17 @@ version: 5.6.2
 author: montlikadani
 description: An ultimate animated tablist
 softdepend:
-- PlaceholderAPI
-- Essentials
 - Vault
+- LuckPerms
+- PermissionsEx
+- CMI
+- Essentials
 - SuperVanish
 - PremiumVanish
+- StaffFacilities
+- PlaceholderAPI
 - Multiverse-Core # Load this plugin before tablist to prevent issues
 - ProtocolLib
-- PermissionsEx
-- StaffFacilities
-- CMI
-- LuckPerms
 api-version: 1.13
 # DO NOT EDIT ANYTHING ABOVE THIS LINE!
 

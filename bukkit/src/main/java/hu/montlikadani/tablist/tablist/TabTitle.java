@@ -45,7 +45,7 @@ public abstract class TabTitle {
 	}
 
 	private static Class<?> getPacketClass(String newPackageName, String name) throws ClassNotFoundException {
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1)) {
 			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
 		}
 
