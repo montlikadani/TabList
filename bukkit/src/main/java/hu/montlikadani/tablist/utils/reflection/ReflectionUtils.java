@@ -166,20 +166,12 @@ public final class ReflectionUtils {
 				interactManager = ClazzContainer.classByName("net.minecraft.server.level", "PlayerInteractManager");
 			}
 
-			Object managerIns;
-
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
 				if (interactManagerConstructor == null) {
 					interactManagerConstructor = interactManager.getConstructor(worldServer.getClass());
 				}
-
-				managerIns = interactManagerConstructor.newInstance(worldServer);
-			} else {
-				if (interactManagerConstructor == null) {
-					interactManagerConstructor = interactManager.getConstructors()[0];
-				}
-
-				managerIns = interactManagerConstructor.newInstance(worldServer);
+			} else if (interactManagerConstructor == null) {
+				interactManagerConstructor = interactManager.getConstructors()[0];
 			}
 
 			if (entityPlayerConstructor == null) {
@@ -187,7 +179,8 @@ public final class ReflectionUtils {
 						.getConstructor(minecraftServer, worldServer.getClass(), profile.getClass(), interactManager);
 			}
 
-			return entityPlayerConstructor.newInstance(getServer(minecraftServer), worldServer, profile, managerIns);
+			return entityPlayerConstructor.newInstance(getServer(minecraftServer), worldServer, profile,
+					interactManagerConstructor.newInstance(worldServer));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

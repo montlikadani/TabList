@@ -9,7 +9,6 @@ import java.util.TimeZone;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
-import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.logicalOperators.LogicalNode;
 import hu.montlikadani.tablist.logicalOperators.OperatorNodes;
 import hu.montlikadani.tablist.user.TabListUser;
@@ -130,9 +129,8 @@ public final class Variables {
 			return str;
 		}
 
-		Runtime runtime = Runtime.getRuntime();
-
 		if (!ConfigValues.getMemoryBarChar().isEmpty() && str.indexOf("%memory_bar%") != -1) {
+			Runtime runtime = Runtime.getRuntime();
 			StringBuilder builder = new StringBuilder();
 
 			int barSize = ConfigValues.getMemoryBarSize(), totalMemory = (int) (runtime.totalMemory() / MB),
@@ -145,31 +143,27 @@ public final class Variables {
 
 			builder.append(usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
 
+			int i = 0;
 			int totalBarSize = (int) (barSize * usedMem);
-			for (int i = 0; i < totalBarSize; i++) {
+			for (; i < totalBarSize; i++) {
 				builder.append(barChar);
 			}
 
 			builder.append(ConfigValues.getMemoryBarFreeColor());
 
 			totalBarSize = (int) (barSize * (totalMem - usedMem));
-			for (int i = 0; i < totalBarSize; i++) {
+			for (i = 0; i < totalBarSize; i++) {
 				builder.append(barChar);
 			}
 
 			builder.append(ConfigValues.getMemoryBarReleasedColor());
 
 			totalBarSize = (int) (barSize * (1 - totalMem));
-			for (int i = 0; i < totalBarSize; i++) {
+			for (i = 0; i < totalBarSize; i++) {
 				builder.append(barChar);
 			}
 
 			str = str.replace("%memory_bar%", builder.toString());
-		}
-
-		// TODO Remove or make more customisable variables
-		for (java.util.Map.Entry<String, String> map : TabConfigValues.CUSTOM_VARIABLES.entrySet()) {
-			str = str.replace(map.getKey(), map.getValue());
 		}
 
 		if (pl != null) {
@@ -196,14 +190,16 @@ public final class Variables {
 		}
 
 		if (str.indexOf("%server-ram-free%") != -1) {
-			str = str.replace("%server-ram-free%", Long.toString(runtime.freeMemory() / MB));
+			str = str.replace("%server-ram-free%", Long.toString(Runtime.getRuntime().freeMemory() / MB));
 		}
 
 		if (str.indexOf("%server-ram-max%") != -1) {
-			str = str.replace("%server-ram-max%", Long.toString(runtime.maxMemory() / MB));
+			str = str.replace("%server-ram-max%", Long.toString(Runtime.getRuntime().maxMemory() / MB));
 		}
 
 		if (str.indexOf("%server-ram-used%") != -1) {
+			Runtime runtime = Runtime.getRuntime();
+
 			str = str.replace("%server-ram-used%", Long.toString((runtime.totalMemory() - runtime.freeMemory()) / MB));
 		}
 

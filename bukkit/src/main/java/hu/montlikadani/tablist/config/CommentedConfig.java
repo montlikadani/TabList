@@ -202,15 +202,6 @@ public class CommentedConfig extends YamlConfiguration {
 		comments.put(path, comment.toString());
 	}
 
-	public void cleanUp() {
-		// Get rid of removed options by cleaning the file content
-		try (PrintWriter writer = new PrintWriter(file)) {
-			writer.write("");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public boolean get(String path, boolean def) {
 		boolean value = getBoolean(path, def);
 

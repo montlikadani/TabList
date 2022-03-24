@@ -17,7 +17,7 @@ import hu.montlikadani.tablist.utils.StrUtil;
 import hu.montlikadani.tablist.utils.reflection.ClazzContainer;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 import hu.montlikadani.tablist.utils.task.Tasks;
-import hu.montlikadani.tablist.utils.variables.simplePlaceholder.SimplePluginPlaceholder;
+import hu.montlikadani.tablist.utils.variables.simplePlaceholder.PluginPlaceholders;
 
 @SuppressWarnings("deprecation")
 public final class Objects {
@@ -63,13 +63,19 @@ public final class Objects {
 		});
 	}
 
-	private SimplePluginPlaceholder customPlaceholder;
+	private PluginPlaceholders customPlaceholder;
+	private static final PluginPlaceholders[] VALUES = PluginPlaceholders.values();
 
 	void startTask() {
 		cancelTask();
 
 		if (ConfigValues.getObjectType() == ObjectTypes.CUSTOM) {
-			customPlaceholder = SimplePluginPlaceholder.findOne(ConfigValues.getCustomObjectSetting());
+			for (PluginPlaceholders placeholder : VALUES) {
+				if (ConfigValues.getCustomObjectSetting().indexOf(placeholder.name) != -1) {
+					customPlaceholder = placeholder;
+					break;
+				}
+			}
 		}
 
 		task = Tasks.submitAsync(() -> {
@@ -219,7 +225,7 @@ public final class Objects {
 			return parsePapi(player, text);
 		}
 
-		switch (customPlaceholder.placeholder) {
+		switch (customPlaceholder) {
 		case EXP_TO_LEVEL:
 			return player.getExpToLevel();
 		case LEVEL:

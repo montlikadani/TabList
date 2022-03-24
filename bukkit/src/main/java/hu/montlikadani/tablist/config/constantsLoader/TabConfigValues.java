@@ -21,10 +21,7 @@ public final class TabConfigValues {
 	private static final Set<String> perWorldKeys = new HashSet<>();
 	private static final Map<String, String> permissionKeys = new HashMap<>();
 
-	public static final Map<String, String> CUSTOM_VARIABLES = new HashMap<>();
-
 	public static void loadValues(FileConfiguration c) {
-		CUSTOM_VARIABLES.clear();
 		perWorldKeys.clear();
 		permissionKeys.clear();
 
@@ -47,12 +44,6 @@ public final class TabConfigValues {
 		if ((section = c.getConfigurationSection("permissions")) != null) {
 			for (String key : section.getKeys(false)) {
 				permissionKeys.put(key, section.getString(key + ".name", "tablist.permissionName"));
-			}
-		}
-
-		if ((section = c.getConfigurationSection("custom-variables")) != null) {
-			for (String name : section.getKeys(true)) {
-				CUSTOM_VARIABLES.put(name, section.getString(name, ""));
 			}
 		}
 	}

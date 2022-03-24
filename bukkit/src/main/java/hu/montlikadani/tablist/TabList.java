@@ -80,7 +80,11 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		// Load static references in any way
 		// This includes ReflectionUtils, ClazzContainer
-		hu.montlikadani.tablist.tablist.TabTitle.h();
+		try {
+			Class.forName("hu.montlikadani.tablist.tablist.TabTitle");
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 		hu.montlikadani.tablist.api.TabListAPI.getTPS();
 
 		conf.loadFiles();
@@ -91,7 +95,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			logConsole("Hooked " + papi.getName() + " version: " + papi.getDescription().getVersion());
 		}
 
-		hasVault = initVaultPerm();
+		hasVault = isPluginEnabled("Vault") && (vaultPermission = new VaultPermission()).getPermission() != null;
 
 		fakePlayerHandler.load();
 		loadAnimations();
@@ -281,10 +285,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 						section.getBoolean(name + ".random", false)));
 			}
 		}
-	}
-
-	private boolean initVaultPerm() {
-		return isPluginEnabled("Vault") && (vaultPermission = new VaultPermission()).getPermission() != null;
 	}
 
 	public String makeAnim(String name) {

@@ -52,9 +52,6 @@ public abstract class TabTitle {
 		return Class.forName(newPackageName + "." + name);
 	}
 
-	public static void h() {
-	}
-
 	public static void sendTabTitle(Player player, String header, String footer) {
 		Object tabHeader = ReflectionUtils.EMPTY_COMPONENT;
 		Object tabFooter = ReflectionUtils.EMPTY_COMPONENT;

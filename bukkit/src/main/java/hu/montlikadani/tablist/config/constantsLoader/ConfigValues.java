@@ -16,7 +16,7 @@ public class ConfigValues {
 			removeGrayColorFromTabInSpec, ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab,
 			afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone,
 			pingFormatEnabled, tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups,
-			hideGroupInVanish, hideGroupWhenAfk, preferPrimaryVaultGroup, assignGlobalGroup;
+			hideGroupInVanish, preferPrimaryVaultGroup, assignGlobalGroup;
 
 	private static String afkFormatYes, afkFormatNo, timeZone, customObjectSetting, memoryBarChar, memoryBarUsedColor,
 			memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
@@ -107,8 +107,6 @@ public class ConfigValues {
 		c.addComment("change-prefix-suffix-in-tablist.hide-group-when-player-vanished",
 				"Hide player's group in player list when the player is vanished?",
 				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!");
-		c.addComment("change-prefix-suffix-in-tablist.hide-group-when-player-afk",
-				"Hide player's group in player list when the player is AFK?", "Requires Essentials or CMI plugin!");
 		c.addComment("change-prefix-suffix-in-tablist.assign-global-group-to-normal",
 				"Do you want to assign global group to normal groups?", "true - \"globalGroupPrefix + normalGroupPrefix\"",
 				"false - \"normalGroupPrefix\"");
@@ -178,7 +176,6 @@ public class ConfigValues {
 		useDisabledWorldsAsWhiteList = c.get("change-prefix-suffix-in-tablist.disabled-worlds.use-as-whitelist", false);
 		syncPluginsGroups = c.get("change-prefix-suffix-in-tablist.sync-plugins-groups-with-tablist", true);
 		hideGroupInVanish = c.get("change-prefix-suffix-in-tablist.hide-group-when-player-vanished", false);
-		hideGroupWhenAfk = c.get("change-prefix-suffix-in-tablist.hide-group-when-player-afk", false);
 		assignGlobalGroup = c.get("change-prefix-suffix-in-tablist.assign-global-group-to-normal", false);
 		preferPrimaryVaultGroup = c.get("change-prefix-suffix-in-tablist.prefer-primary-vault-group", true);
 
@@ -263,8 +260,9 @@ public class ConfigValues {
 
 		logConsole = c.get("logconsole", true);
 
-		c.save();
-		c.cleanUp();
+		// Here comes the options that removed
+		c.set("change-prefix-suffix-in-tablist.hide-group-when-player-afk", null);
+
 		c.save();
 	}
 
@@ -398,10 +396,6 @@ public class ConfigValues {
 
 	public static boolean isHideGroupInVanish() {
 		return hideGroupInVanish;
-	}
-
-	public static boolean isHideGroupWhenAfk() {
-		return hideGroupWhenAfk;
 	}
 
 	public static boolean isPreferPrimaryVaultGroup() {

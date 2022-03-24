@@ -147,10 +147,6 @@ change-prefix-suffix-in-tablist:
   # Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!
   hide-group-when-player-vanished: false
 
-  # Hide player's group in player list when the player is AFK?
-  # Requires Essentials or CMI plugin!
-  hide-group-when-player-afk: false
-
   # Do you want to assign global group to normal groups?
   # true - "globalGroupPrefix + normalGroupPrefix"
   # false - "normalGroupPrefix"

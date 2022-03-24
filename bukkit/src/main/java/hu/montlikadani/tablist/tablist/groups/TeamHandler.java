@@ -6,7 +6,7 @@ public class TeamHandler {
 
 	private boolean global = false;
 
-	private int priority = 0;
+	private int priority = 0, afkSortPriority = -1;
 
 	public TeamHandler() {
 	}
@@ -50,6 +50,12 @@ public class TeamHandler {
 		this.priority = priority;
 	}
 
+	public void setAfkSortPriority(int afkSortPriority) {
+		if (afkSortPriority >= 0) {
+			this.afkSortPriority = afkSortPriority;
+		}
+	}
+
 	public void setGlobal(boolean global) {
 		this.global = global;
 	}
@@ -80,5 +86,9 @@ public class TeamHandler {
 
 	public int getPriority() {
 		return priority;
+	}
+
+	public int getAfkSortPriority() {
+		return afkSortPriority;
 	}
 }

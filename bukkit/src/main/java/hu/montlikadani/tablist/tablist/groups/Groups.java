@@ -147,6 +147,7 @@ public final class Groups {
 		}
 
 		int last = 0;
+
 		for (String g : keys) {
 			if (g.equals("exampleGroup") || g.equals("PlayerName")) {
 				continue;
@@ -154,10 +155,12 @@ public final class Groups {
 
 			String prefix = cs.getString(g + ".prefix", ""), suffix = cs.getString(g + ".suffix", ""),
 					perm = cs.getString(g + ".permission", "");
+
 			int priority = cs.getInt(g + ".sort-priority", last + 1);
 
 			TeamHandler th = new TeamHandler(g, Global.setSymbols(prefix), Global.setSymbols(suffix), perm, last = priority);
 
+			th.setAfkSortPriority(cs.getInt(g + ".afk-sort-priority", -1));
 			th.setTabName(Global.setSymbols(cs.getString(g + ".tabname", "")));
 			groupsList.add(th);
 		}
@@ -186,9 +189,8 @@ public final class Groups {
 	/**
 	 * Adds a new player to groups.
 	 * <p>
-	 * After adding/or the player existing, their groups will get updated once to
-	 * retrieve the approximately group and sets the prefix/suffix to be shown in
-	 * player list.
+	 * After adding/or the player existing, their groups will get updated once to retrieve the approximately group and
+	 * sets the prefix/suffix to be shown in player list.
 	 * 
 	 * @param player {@link Player}
 	 * @return {@link GroupPlayer} if ever exists or not
@@ -297,9 +299,8 @@ public final class Groups {
 	private final ReentrantLock lock = new ReentrantLock();
 
 	/**
-	 * This method is used to sort and update players' groups. Includes sorting of
-	 * AFK players. If there is no need to change the places of groups, they will
-	 * only be updated in the custom name, prefix, suffix and others.
+	 * This method is used to sort and update players' groups. Includes sorting of AFK players. If there is no need to
+	 * change the places of groups, they will only be updated in the custom name, prefix, suffix and others.
 	 */
 	private void sortPlayers() {
 
@@ -327,10 +328,11 @@ public final class Groups {
 		sortedPlayers.clear();
 		sortedPlayers.addAll(playerGroups);
 
-		int priority = sortedPlayers.size();
+		int priority = playerGroups.size();
 
 		for (GroupPlayer groupPlayer : sortedPlayers) {
-			if (ConfigValues.isAfkStatusEnabled() && ConfigValues.isAfkSortLast()) {
+			if (ConfigValues.isAfkStatusEnabled() && (ConfigValues.isAfkSortLast()
+					|| (groupPlayer.getGroup() != null && groupPlayer.getGroup().getAfkSortPriority() != -1))) {
 				if (PluginUtils.isAfk(groupPlayer.getUser().getPlayer())) {
 					if (afkPlayersCache.add(groupPlayer)) {
 						setToSort(true);
@@ -347,11 +349,13 @@ public final class Groups {
 			setPlayerTeam(groupPlayer, priority--);
 		}
 
-		if (!ConfigValues.isHideGroupWhenAfk() && ConfigValues.isAfkSortLast() && !afkPlayersCache.isEmpty()) {
-			int size = sortedPlayers.size();
+		if (!afkPlayersCache.isEmpty()) {
+			int size = playerGroups.size();
 
 			for (GroupPlayer afk : afkPlayersCache) {
-				setPlayerTeam(afk, size++);
+				priority = afk.getGroup() == null ? -1 : afk.getGroup().getAfkSortPriority();
+
+				setPlayerTeam(afk, priority == -1 ? size++ : priority);
 			}
 		}
 

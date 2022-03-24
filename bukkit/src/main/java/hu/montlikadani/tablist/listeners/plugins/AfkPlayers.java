@@ -14,12 +14,7 @@ abstract class AfkPlayers {
 	protected void goAfk(Player player, boolean value) {
 		if (ConfigValues.isHidePlayerFromTabAfk()) {
 			plugin.getUser(player).ifPresent(user -> user.setHidden(value));
-		} else if (ConfigValues.isAfkStatusEnabled()) {
-			if (!ConfigValues.isAfkStatusShowPlayerGroup()) {
-				plugin.getUser(player).ifPresent(user -> plugin.getGroups().removePlayerGroup(user));
-				plugin.getGroups().setToSort(false);
-			}
-
+		} else if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isPrefixSuffixEnabled()) {
 			String prop = value ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo();
 
 			plugin.getComplement().setPlayerListName(player, Util.colorText(
