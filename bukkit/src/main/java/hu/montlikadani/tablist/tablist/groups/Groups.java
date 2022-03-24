@@ -218,7 +218,9 @@ public final class Groups {
 	 */
 	public void removePlayerGroup(TabListUser user) {
 		GroupPlayer groupPlayer = user.getGroupPlayer();
+
 		sortedPlayers.remove(groupPlayer);
+		afkPlayersCache.remove(groupPlayer);
 
 		if (!sortedPlayers.isEmpty()) {
 			sortPlayers();
@@ -244,6 +246,7 @@ public final class Groups {
 		cancelTask();
 
 		sortedPlayers.clear();
+		afkPlayersCache.clear();
 
 		for (TabListUser user : plugin.getUsers()) {
 			GroupPlayer groupPlayer = user.getGroupPlayer();

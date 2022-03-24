@@ -50,7 +50,7 @@ public final class fakeplayers implements ICommand {
 			return true;
 		}
 
-		if (args.length < 2) {
+		if (args.length == 1) {
 			sendList(label, sender);
 			return true;
 		}
