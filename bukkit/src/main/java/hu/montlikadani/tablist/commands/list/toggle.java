@@ -18,7 +18,7 @@ import hu.montlikadani.tablist.user.TabListUser;
 @CommandProcessor(
 	name = "toggle",
 	params = "[player/all]",
-	desc = "Toggles on/off the tab for player(s)",
+	desc = "Toggles the tab visibility for player(s)",
 	permission = Perm.TOGGLE)
 public final class toggle implements ICommand {
 
@@ -48,9 +48,13 @@ public final class toggle implements ICommand {
 					return false;
 				}
 
-				if (!(TabToggleBase.globallySwitched = !TabToggleBase.globallySwitched) && TabConfigValues.isEnabled()) {
+				if (!(TabToggleBase.globallySwitched = !TabToggleBase.globallySwitched)) {
 					for (TabListUser user : plugin.getUsers()) {
-						user.getTabHandler().loadTabComponents();
+						if (TabConfigValues.isEnabled()) {
+							user.getTabHandler().loadTabComponents();
+						} else {
+							user.getTabHandler().sendEmptyTab(user.getPlayer());
+						}
 					}
 				}
 

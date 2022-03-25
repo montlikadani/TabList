@@ -203,8 +203,7 @@ public class TabHandler {
 		}
 
 		if (TabToggleBase.isDisabled(user.getUniqueId())
-				|| (TabConfigValues.isHideTabWhenPlayerVanished() && PluginUtils.isVanished(player))
-				|| TabConfigValues.getDisabledWorlds().contains(player.getWorld().getName())) {
+				|| (TabConfigValues.isHideTabWhenPlayerVanished() && PluginUtils.isVanished(player))) {
 			if (!tabEmpty) { // Only send it once to allow other plugins to overwrite tablist
 				sendEmptyTab(player);
 				tabEmpty = true;
