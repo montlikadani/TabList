@@ -71,6 +71,7 @@ public final class Misc {
 		if (info != null) {
 			str = str.replace("%server%", info.getName());
 			str = str.replace("%bungee-motd%", info.getMotd());
+			str = str.replace("%player-server-online%", Integer.toString(info.getPlayers().size()));
 		}
 
 		if (str.indexOf("%ip%") != -1) {

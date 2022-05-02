@@ -217,8 +217,8 @@ public final class GroupPlayer {
 						if (!team.isGlobal()) {
 							for (TeamHandler t : teams) {
 								if (t.isGlobal() && globalGroup != t) {
-									groups.setToSort(true);
 									globalGroup = t;
+									groups.setToSort(true);
 									break;
 								}
 							}

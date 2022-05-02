@@ -362,6 +362,8 @@ public final class Groups {
 			}
 		}
 
-		setToSort(false);
+		if (toSort) {
+			setToSort(false);
+		}
 	}
 }
