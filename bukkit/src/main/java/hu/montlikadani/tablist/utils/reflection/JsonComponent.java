@@ -1,12 +1,13 @@
 package hu.montlikadani.tablist.utils.reflection;
 
-import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.NavigableMap;
 import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.NamespacedKey;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
@@ -14,15 +15,25 @@ import hu.montlikadani.tablist.Global;
 
 public final class JsonComponent {
 
-	private final com.google.gson.Gson gson = new com.google.gson.GsonBuilder().disableHtmlEscaping().create();
-	private final java.util.List<JsonObject> jsonList = new java.util.ArrayList<>(10);
+	public static final com.google.gson.Gson GSON = new com.google.gson.GsonBuilder().disableHtmlEscaping().create();
+
+	private final List<JsonObject> jsonList = new java.util.ArrayList<>(10);
 
 	private String defaultFontNamespacedKey;
+	private Object emptyJson;
 
 	protected JsonComponent() {
 	}
 
-	Object parseProperty(String text) throws Exception {
+	Object parseProperty(String text, List<JsonElement> existingJson) throws Exception {
+		if (text.isEmpty()) {
+			if (emptyJson == null) {
+				emptyJson = ReflectionUtils.jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(), GSON.toJson(""));
+			}
+
+			return emptyJson;
+		}
+
 		jsonList.clear();
 
 		JsonObject obj = new JsonObject();
@@ -32,20 +43,40 @@ public final class JsonComponent {
 		text = text.replace("&#", "#");
 		text = text.replace("&x", "#");
 
-		int length = text.length();
+		int length = text.length(), index = 0;
 		String font = "";
+		char charAt;
 
 		for (int i = 0; i < length; i++) {
-			if (i >= length) {
-				break;
+			charAt = text.charAt(i);
+
+			if (charAt == '[' && existingJson != null && index < existingJson.size() && text.charAt(i + 1) == '"'
+					&& text.charAt(i + 2) == '"' && text.charAt(i + 3) == ',' && text.charAt(i + 4) == '{') {
+				if (obj.size() == 0 || !obj.has("text")) {
+					obj.addProperty("text", builder.toString());
+				}
+
+				JsonElement element = existingJson.get(index);
+				obj.add("extra", element);
+
+				jsonList.add(obj);
+
+				// GSON is escaping unicode characters \u258b to the actual char instead of leaving it as-is
+				// This means that the formatting will break and also the last 4 or more json text is displayed
+				// as the length of the json was changed
+				// we need to avoid using unicode characters or a temporary solution
+				// https://stackoverflow.com/questions/43091804/gson-unicode-characters-conversion-to-unicode-character-codes
+				i += element.toString().length() - 1;
+				obj = new JsonObject();
+
+				index++;
+				continue;
 			}
 
-			char charAt = text.charAt(i);
-
 			if (charAt == '&') {
-				char nextChar = text.charAt(i + 1);
+				char code = text.charAt(i + 1);
 
-				if (Global.isValidColourCharacter(nextChar)) {
+				if (Global.isValidColourCharacter(code)) {
 					int current = i + 2;
 
 					// Finds hex colours that may be coming from essentials (&x&f ..) and removes
@@ -78,7 +109,7 @@ public final class JsonComponent {
 						builder = new StringBuilder();
 					}
 
-					switch (nextChar) {
+					switch (code) {
 					case 'k':
 						obj.addProperty("obfuscated", true);
 						break;
@@ -98,7 +129,7 @@ public final class JsonComponent {
 						obj.addProperty("color", "white");
 						break;
 					default:
-						org.bukkit.ChatColor colorChar = org.bukkit.ChatColor.getByChar(nextChar);
+						org.bukkit.ChatColor colorChar = org.bukkit.ChatColor.getByChar(code);
 
 						if (colorChar != null) {
 							obj.addProperty("color", colorChar.name().toLowerCase(java.util.Locale.ENGLISH));
@@ -180,7 +211,7 @@ public final class JsonComponent {
 		// Minecraft JSON is weird, it must begin with ["", to actually return the
 		// expected format
 		return ReflectionUtils.jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(),
-				"[\"\"," + Global.replaceFrom(gson.toJson(jsonList), 0, "[", "", 1));
+				"[\"\"," + Global.replaceFrom(GSON.toJson(jsonList), 0, "[", "", 1));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -188,12 +219,9 @@ public final class JsonComponent {
 		return CompletableFuture.supplyAsync(() -> {
 			NavigableMap<String, String> map = new java.util.TreeMap<>();
 
-			try (InputStreamReader content = getContent(
-					"https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unasigned=false")) {
-				if (content == null) {
-					return map;
-				}
-
+			try (InputStreamReader content = new InputStreamReader(
+					new java.net.URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unasigned=false")
+							.openStream())) {
 				JsonObject json;
 
 				try {
@@ -217,21 +245,11 @@ public final class JsonComponent {
 				}
 
 				map.put(value, json.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString());
-			} catch (IOException e1) {
+			} catch (java.io.IOException e1) {
 				e1.printStackTrace();
 			}
 
 			return map;
 		});
-	}
-
-	private InputStreamReader getContent(String link) {
-		try {
-			return new InputStreamReader(new java.net.URL(link).openStream());
-		} catch (java.io.IOException e) {
-			e.printStackTrace();
-		}
-
-		return null;
 	}
 }

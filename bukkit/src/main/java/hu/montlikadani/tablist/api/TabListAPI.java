@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.tablist.TabTitle;
 import hu.montlikadani.tablist.tablist.TabToggleBase;
 import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
@@ -61,7 +62,7 @@ public final class TabListAPI {
 	 * @return true if toggled
 	 */
 	public static boolean isTabListToggled(Player player) {
-		Validate.notNull(player, "Player can't be null");
+		Validate.notNull(player, "Player can not be null");
 
 		return isTabListToggled(player.getUniqueId());
 	}
@@ -79,43 +80,28 @@ public final class TabListAPI {
 	/**
 	 * Sends the tab header and footer to the given player
 	 * 
-	 * @param p      Player
-	 * @param string Header
-	 * @param string Footer
+	 * @param p      {@link Player}
+	 * @param header the header to display
+	 * @param footer the footer to display
 	 */
 	public static void sendTabList(Player p, String header, String footer) {
-		if (p == null) {
-			return;
+		if (p != null) {
+			TabTitle.sendTabTitle(p, TabText.parseFromText(header), TabText.parseFromText(footer));
 		}
-
-		if (header == null) {
-			header = "";
-		}
-
-		if (footer == null) {
-			footer = "";
-		}
-
-		TabTitle.sendTabTitle(p, header, footer);
 	}
 
 	/**
 	 * Sends the tab header and footer to all online players
 	 * 
-	 * @param string Header
-	 * @param string Footer
+	 * @param header the header to display
+	 * @param footer the footer to display
 	 */
 	public static void sendTabList(String header, String footer) {
-		if (header == null) {
-			header = "";
-		}
-
-		if (footer == null) {
-			footer = "";
-		}
+		TabText head = TabText.parseFromText(header);
+		TabText foot = TabText.parseFromText(footer);
 
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			TabTitle.sendTabTitle(player, header, footer);
+			TabTitle.sendTabTitle(player, head, foot);
 		}
 	}
 
@@ -161,8 +147,7 @@ public final class TabListAPI {
 	/**
 	 * Returns the current TPS (ticks per second) value of the server.
 	 * 
-	 * @return The first value of TPS array according to
-	 *         {@link org.bukkit.Server#getTPS()}
+	 * @return The first value of TPS array according to {@link org.bukkit.Server#getTPS()}
 	 */
 	public static double getTPS() {
 		if (isTpsMethodExists) {

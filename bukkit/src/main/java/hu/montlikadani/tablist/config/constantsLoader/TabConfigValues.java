@@ -8,6 +8,8 @@ import java.util.Set;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
+import hu.montlikadani.tablist.tablist.TabText;
+
 public final class TabConfigValues {
 
 	private static boolean enabled, rememberToggledTablistToFile, hideTabWhenPlayerVanished, random;
@@ -16,7 +18,7 @@ public final class TabConfigValues {
 
 	private static List<String> disabledWorlds, blackListedPlayers;
 
-	private static String[] defaultHeader, defaultFooter;
+	private static TabText[] defaultHeader, defaultFooter;
 
 	private static final Set<String> perWorldKeys = new HashSet<>();
 	private static final Map<String, String> permissionKeys = new HashMap<>();
@@ -33,8 +35,8 @@ public final class TabConfigValues {
 		disabledWorlds = c.getStringList("disabled-worlds");
 		blackListedPlayers = c.getStringList("blacklisted-players");
 
-		defaultHeader = stringToArrayConversion(c.get("header", null));
-		defaultFooter = stringToArrayConversion(c.get("footer", null));
+		defaultHeader = objectToArrayConversion(c.get("header", null));
+		defaultFooter = objectToArrayConversion(c.get("footer", null));
 
 		org.bukkit.configuration.ConfigurationSection section = c.getConfigurationSection("per-world");
 		if (section != null) {
@@ -48,13 +50,25 @@ public final class TabConfigValues {
 		}
 	}
 
-	public static String[] stringToArrayConversion(Object obj) {
+	public static TabText[] objectToArrayConversion(Object obj) {
 		if (obj instanceof List) {
-			return ((List<?>) obj).toArray(new String[0]);
+			String[] array = ((List<?>) obj).toArray(new String[0]);
+			TabText[] tt = new TabText[array.length];
+
+			for (int i = 0; i < array.length; i++) {
+				TabText text = new TabText();
+				text.setPlainText(array[i]);
+				tt[i] = text;
+			}
+
+			return tt;
 		}
 
 		if (obj instanceof String) {
-			return new String[] { (String) obj };
+			TabText text = new TabText();
+			text.setPlainText((String) obj);
+
+			return new TabText[] { text };
 		}
 
 		return null;
@@ -88,11 +102,11 @@ public final class TabConfigValues {
 		return blackListedPlayers;
 	}
 
-	public static String[] getDefaultHeader() {
+	public static TabText[] getDefaultHeader() {
 		return defaultHeader;
 	}
 
-	public static String[] getDefaultFooter() {
+	public static TabText[] getDefaultFooter() {
 		return defaultFooter;
 	}
 

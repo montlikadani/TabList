@@ -7,6 +7,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import org.bukkit.entity.Player;
 
+import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.utils.ServerVersion;
 
 public final class ReflectionUtils {
@@ -16,8 +17,9 @@ public final class ReflectionUtils {
 	public static Method jsonComponentMethod;
 
 	private static JsonComponent jsonComponent;
-	private static Method playerHandleMethod, sendPacketMethod;
+	private static Method playerHandleMethod, sendPacketMethod, chatSerializerMethodA;
 	private static Field playerConnectionField;
+	private static Class<?> chatSerializer;
 
 	private static ReentrantLock LOCK;
 
@@ -68,6 +70,35 @@ public final class ReflectionUtils {
 		return playerHandleMethod.invoke(player);
 	}
 
+	public static Object getAsIChatBaseComponent(TabText text) throws Exception {
+		if (!text.getJsonElements().isEmpty()) {
+			if (LOCK != null) {
+				LOCK.lock();
+
+				Object component;
+				try {
+					component = getJsonComponent().parseProperty(text.getPlainText(), text.getJsonElements());
+				} finally {
+					LOCK.unlock();
+				}
+
+				return component;
+			}
+
+			// TODO need more work on legacy versions
+			String element = text.getJsonElements().get(0).toString();
+			String json = "{\"text\":\"" + text.getPlainText().replace(element, "") + "\",\"extra\":[{" + element + "}";
+
+			if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
+				return asChatSerializer(json);
+			}
+
+			return jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(), json);
+		}
+
+		return getAsIChatBaseComponent(text.getPlainText());
+	}
+
 	public static Object getAsIChatBaseComponent(final String text) throws Exception {
 		if (LOCK != null) {
 
@@ -79,7 +110,7 @@ public final class ReflectionUtils {
 
 			Object component;
 			try {
-				component = getJsonComponent().parseProperty(text);
+				component = getJsonComponent().parseProperty(text, null);
 			} finally {
 				LOCK.unlock();
 			}
@@ -88,13 +119,22 @@ public final class ReflectionUtils {
 		}
 
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
-			Class<?> chatSerializer = Class
-					.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".ChatSerializer");
-			return ClazzContainer.getIChatBaseComponent()
-					.cast(chatSerializer.getMethod("a", String.class).invoke(chatSerializer, "{\"text\":\"" + text + "\"}"));
+			return asChatSerializer("{\"text\":\"" + text + "\"}");
 		}
 
 		return jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(), "{\"text\":\"" + text + "\"}");
+	}
+
+	private static Object asChatSerializer(String json) throws Exception {
+		if (chatSerializer == null) {
+			chatSerializer = Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".ChatSerializer");
+		}
+
+		if (chatSerializerMethodA == null) {
+			chatSerializerMethodA = chatSerializer.getMethod("a", String.class);
+		}
+
+		return ClazzContainer.getIChatBaseComponent().cast(chatSerializerMethodA.invoke(chatSerializer, json));
 	}
 
 	public static Class<?> getCraftClass(String className) throws ClassNotFoundException {

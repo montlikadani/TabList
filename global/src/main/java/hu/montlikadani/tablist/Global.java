@@ -18,11 +18,12 @@ public final class Global {
 			String group = matcher.group(0);
 
 			try {
-				TextColor hex = TextColor.fromHexString(group);
+				TextColor hex = TextColor.color(Integer.parseInt(group.substring(1), 16));
 
 				if (hex != null) {
 					s = s.replace(group, hex.asHexString());
 				}
+			} catch (NumberFormatException e) {
 			} catch (Error er) {
 				try {
 					s = s.replace(group, net.md_5.bungee.api.ChatColor.of(group).toString());

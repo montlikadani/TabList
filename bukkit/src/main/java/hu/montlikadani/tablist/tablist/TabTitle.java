@@ -5,7 +5,6 @@ import java.lang.reflect.Field;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.utils.ServerVersion;
-import hu.montlikadani.tablist.utils.Util;
 import hu.montlikadani.tablist.utils.reflection.ClazzContainer;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 
@@ -52,28 +51,20 @@ public abstract class TabTitle {
 		return Class.forName(newPackageName + "." + name);
 	}
 
-	public static void sendTabTitle(Player player, String header, String footer) {
+	public static void sendTabTitle(Player player, TabText header, TabText footer) {
 		Object tabHeader = ReflectionUtils.EMPTY_COMPONENT;
 		Object tabFooter = ReflectionUtils.EMPTY_COMPONENT;
 
-		if (!header.isEmpty()) {
-			if (ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2)) {
-				header = Util.colorText(header);
-			}
-
+		if (header != null) {
 			try {
 				tabHeader = ReflectionUtils.getAsIChatBaseComponent(header);
-			} catch (Exception e1) {
-				e1.printStackTrace();
+			} catch (Exception ex) {
+				ex.printStackTrace();
 				return;
 			}
 		}
 
-		if (!footer.isEmpty()) {
-			if (ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2)) {
-				footer = Util.colorText(footer);
-			}
-
+		if (footer != null) {
 			try {
 				tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);
 			} catch (Exception e1) {

@@ -25,8 +25,8 @@ public class TabHandler {
 	private final java.util.List<String> worldList = new java.util.ArrayList<>();
 
 	private Random random;
-	private String[] header, footer;
-	private String linedHeader, linedFooter;
+	private TabText[] header, footer;
+	private TabText linedHeader, linedFooter;
 
 	public TabHandler(TabList plugin, TabListUser user) {
 		this.plugin = plugin;
@@ -86,7 +86,7 @@ public class TabHandler {
 							}
 
 							if (path.isEmpty()) {
-								path = "per-world." + s + ".";
+								path = "per-world." + s + '.';
 								worldEnabled = worldList.add(split);
 							}
 
@@ -96,7 +96,7 @@ public class TabHandler {
 				}
 
 				if (worldList.isEmpty() && c.get("per-world." + world) != null) {
-					path = "per-world." + world + ".";
+					path = "per-world." + world + '.';
 					worldEnabled = true;
 				}
 			}
@@ -130,7 +130,7 @@ public class TabHandler {
 			}
 
 			if (PluginUtils.hasPermission(player, perm.getName())) {
-				path = "permissions." + map.getKey() + ".";
+				path = "permissions." + map.getKey() + '.';
 				break;
 			}
 		}
@@ -152,8 +152,8 @@ public class TabHandler {
 		}
 
 		if (!path.isEmpty()) {
-			header = TabConfigValues.stringToArrayConversion(c.get(path + "header", null));
-			footer = TabConfigValues.stringToArrayConversion(c.get(path + "footer", null));
+			header = TabConfigValues.objectToArrayConversion(c.get(path + "header", null));
+			footer = TabConfigValues.objectToArrayConversion(c.get(path + "footer", null));
 		}
 
 		if ((header == null || header.length == 0) && (footer == null || footer.length == 0)) {
@@ -162,34 +162,48 @@ public class TabHandler {
 		}
 
 		if (header != null) {
-			linedHeader = "";
+			linedHeader = new TabText();
+			String lh = "", r;
+			TabText tt;
 
 			for (int a = 0; a < header.length; a++) {
-				if (a + 1 > 1) {
-					linedHeader += "\n\u00a7r";
+				if (a != 0) {
+					lh += "\n\u00a7r";
 				}
 
-				header[a] = Global.setSymbols(header[a]);
-				linedHeader += header[a];
+				tt = header[a];
+				lh += (r = Global.setSymbols(tt.plainText));
+				tt.plainText = r;
+				header[a] = tt;
 			}
+
+			linedHeader.findJsonInText(lh);
+			linedHeader.plainText = lh;
 		}
 
 		if (footer != null) {
-			linedFooter = "";
+			linedFooter = new TabText();
+			String lf = "", r;
+			TabText tt;
 
 			for (int a = 0; a < footer.length; a++) {
-				if (a + 1 > 1) {
-					linedFooter += "\n\u00a7r";
+				if (a != 0) {
+					lf += "\n\u00a7r";
 				}
 
-				footer[a] = Global.setSymbols(footer[a]);
-				linedFooter += footer[a];
+				tt = footer[a];
+				lf += (r = Global.setSymbols(tt.plainText));
+				tt.plainText = r;
+				footer[a] = tt;
 			}
+
+			linedFooter.findJsonInText(lf);
+			linedFooter.plainText = lf;
 		}
 	}
 
 	public void sendEmptyTab(Player player) {
-		TabTitle.sendTabTitle(player, "", "");
+		TabTitle.sendTabTitle(player, TabText.EMPTY, TabText.EMPTY);
 	}
 
 	protected void sendTab() {
@@ -216,8 +230,8 @@ public class TabHandler {
 			return;
 		}
 
-		String he = "";
-		String fo = "";
+		TabText he = null;
+		TabText fo = null;
 
 		if (TabConfigValues.isRandom()) {
 			if (random == null) {
@@ -231,22 +245,33 @@ public class TabHandler {
 				fo = footer[footer.length == 1 ? 0 : random.nextInt(footer.length)];
 		}
 
-		if (linedHeader != null && he.isEmpty()) {
+		if (linedHeader != null && he == null) {
 			he = linedHeader;
 		}
 
-		if (linedFooter != null && fo.isEmpty()) {
+		if (linedFooter != null && fo == null) {
 			fo = linedFooter;
 		}
 
-		if (he.isEmpty() && fo.isEmpty()) {
+		if (he == null && fo == null) {
 			return;
 		}
 
-		tabEmpty = false;
+		if (tabEmpty) {
+			tabEmpty = false;
+		}
 
-		he = plugin.makeAnim(he);
-		fo = plugin.makeAnim(fo);
+		if (he != null) {
+			TabText tt = new TabText(he);
+			tt.plainText = plugin.makeAnim(tt.plainText);
+			he = tt;
+		}
+
+		if (fo != null) {
+			TabText tt = new TabText(fo);
+			tt.plainText = plugin.makeAnim(tt.plainText);
+			fo = tt;
+		}
 
 		final Variables v = plugin.getPlaceholders();
 

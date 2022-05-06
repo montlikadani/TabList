@@ -11,11 +11,13 @@ import org.bukkit.entity.Player;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.logicalOperators.LogicalNode;
 import hu.montlikadani.tablist.logicalOperators.OperatorNodes;
+import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.api.TabListAPI;
 import hu.montlikadani.tablist.utils.PluginUtils;
 import hu.montlikadani.tablist.utils.ServerVersion;
+import hu.montlikadani.tablist.utils.Util;
 import hu.montlikadani.tablist.utils.operators.OverriddenOperatorNodes;
 import me.clip.placeholderapi.PlaceholderAPI;
 
@@ -123,6 +125,20 @@ public final class Variables {
 	}
 
 	private final long MB = 1024 * 1024;
+
+	public TabText replaceVariables(Player pl, TabText text) {
+		if (text != null) {
+			String t = replaceVariables(pl, text.getPlainText());
+
+			if (ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2)) {
+				t = Util.colorText(t);
+			}
+
+			text.updateText(t);
+		}
+
+		return text;
+	}
 
 	public String replaceVariables(Player pl, String str) {
 		if (str.isEmpty()) {
