@@ -2,8 +2,8 @@ name: Delete old workflow runs
 
 on:
   schedule:
-    - cron: '0 0 * * 0'
-    # Run weekly, at 00:00 at sunday, https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
+    - cron: '0 13 * * 0'
+    # Run weekly, at 13:00 UTC on sunday, https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
 
 jobs:
   del_runs:
