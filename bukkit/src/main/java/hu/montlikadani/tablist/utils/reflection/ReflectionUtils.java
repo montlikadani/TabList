@@ -71,32 +71,61 @@ public final class ReflectionUtils {
 	}
 
 	public static Object getAsIChatBaseComponent(TabText text) throws Exception {
-		if (!text.getJsonElements().isEmpty()) {
-			if (LOCK != null) {
-				LOCK.lock();
-
-				Object component;
-				try {
-					component = getJsonComponent().parseProperty(text.getPlainText(), text.getJsonElements());
-				} finally {
-					LOCK.unlock();
-				}
-
-				return component;
-			}
-
-			// TODO need more work on legacy versions
-			String element = text.getJsonElements().get(0).toString();
-			String json = "{\"text\":\"" + text.getPlainText().replace(element, "") + "\",\"extra\":[{" + element + "}";
-
-			if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
-				return asChatSerializer(json);
-			}
-
-			return jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(), json);
+		if (text.getJsonElements().isEmpty()) {
+			return getAsIChatBaseComponent(text.getPlainText());
 		}
 
-		return getAsIChatBaseComponent(text.getPlainText());
+		if (LOCK != null) {
+			LOCK.lock();
+
+			Object component;
+			try {
+				component = getJsonComponent().parseProperty(text.getPlainText(), text.getJsonElements());
+			} finally {
+				LOCK.unlock();
+			}
+
+			return component;
+		}
+
+		// A bit complicated way to split json and texts from each other
+		String result = "", strJson = text.getJsonElements().get(0).toString(), plainText = text.getPlainText();
+		int jsonIndex, textLength = -1, from = 0, index = 0;
+
+		while ((jsonIndex = plainText.indexOf(strJson, from)) != -1) {
+			result += "{\"text\":\"" + plainText.substring(from, jsonIndex) + "\",\"extra\":[{" + strJson + "}";
+
+			if (textLength == -1) {
+				textLength = plainText.length();
+			}
+
+			int length = strJson.length();
+			int lastJsonLength = jsonIndex + length;
+			if (lastJsonLength > textLength) {
+				lastJsonLength = length;
+			}
+
+			from = lastJsonLength;
+
+			if (index++ >= text.getJsonElements().size()) {
+				break;
+			}
+
+			strJson = text.getJsonElements().get(index).toString();
+		}
+
+		// The remaining text after last json
+		if (from != 0) {
+			result += "{\"text\":\"" + plainText.substring(from) + "}";
+		} else {
+			result = "{\"text\":\"" + plainText + "}";
+		}
+
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
+			return asChatSerializer(result);
+		}
+
+		return jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(), result);
 	}
 
 	public static Object getAsIChatBaseComponent(final String text) throws Exception {
