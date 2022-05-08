@@ -5,6 +5,18 @@ on:
     - cron: '0 10 * * 0'
     # Run weekly, at 10:00 UTC on sunday, https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#schedule
 
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      days:
+        description: 'Number of days.'
+        required: true
+        default: 5
+      minimum_runs:
+        description: 'The minimum runs to keep for each workflow.'
+        required: true
+        default: 3
+
 jobs:
   del_runs:
     runs-on: ubuntu-latest
@@ -12,5 +24,5 @@ jobs:
       - name: Delete workflow runs
         uses: Mattraks/delete-workflow-runs@v2
         with:
-          retain_days: 5
-          keep_minimum_runs: 3
+          retain_days: ${{ github.event.inputs.days }}
+          keep_minimum_runs: ${{ github.event.inputs.minimum_runs }}
