@@ -17,6 +17,9 @@ on:
         required: true
         default: 3
 
+# Grant permission for everything for this job
+permissions: write-all
+
 jobs:
   del_runs:
     runs-on: ubuntu-latest
