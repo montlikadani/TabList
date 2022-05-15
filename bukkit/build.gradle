@@ -21,7 +21,7 @@ dependencies {
     implementation 'com.github.xtomyserrax:StaffFacilities:5.0.6.0'
     implementation 'org.bstats:bstats-bukkit:3.0.0'
     compileOnly 'com.comphenix.protocol:ProtocolLib:4.8.0'
-    compileOnly 'com.mojang:authlib:3.4.40'
+    compileOnly 'com.mojang:authlib:3.5.41'
     compileOnly 'io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT'
     compileOnly 'net.essentialsx:EssentialsX:2.19.4-SNAPSHOT'
     compileOnly 'me.clip:placeholderapi:2.11.1'

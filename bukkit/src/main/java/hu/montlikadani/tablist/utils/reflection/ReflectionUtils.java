@@ -76,6 +76,11 @@ public final class ReflectionUtils {
 		}
 
 		if (LOCK != null) {
+
+			// JsonComponent#parseProperty takes a bit longer time than expected and in some
+			// circumstances it can cause ThreadDeath (deadlock) because of the synchronized
+			// method. With this lock now the current thread will be paused until the thread
+			// unlocks this lock. So multiple thread can await for it to be done.
 			LOCK.lock();
 
 			Object component;
@@ -100,12 +105,10 @@ public final class ReflectionUtils {
 			}
 
 			int length = strJson.length();
-			int lastJsonLength = jsonIndex + length;
-			if (lastJsonLength > textLength) {
-				lastJsonLength = length;
-			}
 
-			from = lastJsonLength;
+			if ((from = jsonIndex + length) > textLength) {
+				from = length;
+			}
 
 			if (index++ >= text.getJsonElements().size()) {
 				break;
@@ -130,11 +133,6 @@ public final class ReflectionUtils {
 
 	public static Object getAsIChatBaseComponent(final String text) throws Exception {
 		if (LOCK != null) {
-
-			// JsonComponent#parseProperty takes a bit longer time than expected and in some
-			// circumstances it can cause ThreadDeath (deadlock) because of the synchronized
-			// method. With this lock now the current thread will be paused until the thread
-			// unlocks this lock. So multiple thread can await for it to be done.
 			LOCK.lock();
 
 			Object component;

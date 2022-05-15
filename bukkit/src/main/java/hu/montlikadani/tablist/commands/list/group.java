@@ -16,13 +16,13 @@ import hu.montlikadani.tablist.commands.ICommand;
 import hu.montlikadani.tablist.commands.Commands.ContextArguments;
 import hu.montlikadani.tablist.config.ConfigMessages;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.tablist.groups.TeamHandler;
 
-@CommandProcessor(
-	name = "group",
-	params = "<name> prefix/suffix/tabname <displayTag>",
-	desc = "Sets the given group's prefix/suffix or tabname",
-	permission = Perm.GROUP_META)
+@CommandProcessor(name = "group",
+		params = "<name> prefix/suffix/tabname <displayTag>",
+		desc = "Sets the given group's prefix/suffix or tabname",
+		permission = Perm.GROUP_META)
 public final class group implements ICommand {
 
 	@Override
@@ -124,12 +124,12 @@ public final class group implements ICommand {
 			for (int i = 0; i < teams.size(); i++) {
 				TeamHandler t = teams.get(i);
 
-				if (t.getTeam().equalsIgnoreCase(target)) {
-					t.setTeam(target);
-					t.setPrefix(Global.setSymbols(prefix));
-					t.setTabName(Global.setSymbols(tabName));
-					t.setSuffix(Global.setSymbols(suffix));
-					t.setPriority(priority);
+				if (t.team.equalsIgnoreCase(target)) {
+					t.team = target;
+					t.prefix = TabText.parseFromText(Global.setSymbols(prefix));
+					t.tabName = TabText.parseFromText(Global.setSymbols(tabName));
+					t.suffix = TabText.parseFromText(Global.setSymbols(suffix));
+					t.priority = priority;
 
 					teams.set(i, t);
 					team = t;
@@ -140,17 +140,17 @@ public final class group implements ICommand {
 			if (team == null) {
 				team = new TeamHandler();
 
-				team.setTeam(target);
-				team.setPrefix(Global.setSymbols(prefix));
-				team.setTabName(Global.setSymbols(tabName));
-				team.setSuffix(Global.setSymbols(suffix));
-				team.setPriority(priority);
+				team.team = target;
+				team.prefix = TabText.parseFromText(Global.setSymbols(prefix));
+				team.tabName = TabText.parseFromText(Global.setSymbols(tabName));
+				team.suffix = TabText.parseFromText(Global.setSymbols(suffix));
+				team.priority = priority;
 
 				teams.add(team);
 			}
 
-			sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_SET, "%team%", target,
-					"%meta%", prefix + tabName + suffix));
+			sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_SET, "%team%", target, "%meta%",
+					prefix + tabName + suffix));
 		}
 
 		return true;

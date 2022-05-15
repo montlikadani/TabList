@@ -1,47 +1,25 @@
 hook:
-  # Hook to PlaceholderAPI to use custom placeholders.
   placeholderapi: true
 
-# Fake players that can be added to the player list.
 fake-players:
   enabled: false
 
-  # Do we count the added fake players to the %online-players% placeholder?
   count-fake-players-to-online-players: false
 
-# If enabled, the gray color will not appear to other players when the player's game mode is spectator.
-# The gray color will only show for the spectator player.
-# Requires ProtocolLib!
 remove-gray-color-from-tab-in-spectator: false
 
-# true - does not count vanished players in %online-players% placeholder.
-# Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!
 ignore-vanished-players-in-online-players: false
 
-# true - count vanished staff in %staff-online% placeholder,
-# but they need to have "tablist.onlinestaff" permission set.
-# false - does not count vanished staff in the %staff-online% placeholder
-# Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!
 count-vanished-staffs: true
 
-# Hide player from player list when a player is AFK?
-# Requires Essentials or CMI plugin!
 hide-player-from-tab-when-afk: false
 
-# Hide all players from the player list?
-# This removes all players from the player list, but the player that has the
-# group set is retained as it is not changed during removal, so your group
-# will be restored if this option is disabled.
-# Requires ProtocolLib to fix view distance issue! (https://github.com/montlikadani/TabList/issues/147)
 hide-players-from-tablist: false
 
-# Different player list in different world.
 per-world-player-list:
   enabled: false
 
-  # You can specify worlds, which will share the same list of players
   world-groups:
-    # The key name, can be anything
     example1:
     - exampleWorld
     - exampleAnotherWorld
@@ -50,151 +28,92 @@ per-world-player-list:
     - exampleWorld2
     - exampleAnotherWorld2
 
-# Placeholders formatting
 placeholder-format:
-  # When the player changes the AFK status, change his tablist name format?
   afk-status:
     enable: false
 
-    # Should the AFK format display in right or left side?
-    # true - displays in right side
-    # false - displays in left side
     show-in-right-or-left-side: true
 
-    # Show player's group if the player is AFK?
     show-player-group: true
 
-    # Format when the player is AFK.
     format-yes: "&7 [AFK]&r "
-    # Format when the player is not AFK.
     format-no: ""
 
-    # Sort AFK players to the bottom of the player list?
     sort-last: false
 
   time:
-    # Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/
-    # Or google it: "what is my time zone"
     time-zone: "GMT0"
 
-    # Use system default time zone instead of searching for that?
     use-system-zone: false
 
-    # Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html
-    # Format of %server-time% placeholder.
     time-format: "mm:HH"
 
-    # Format of %date% placeholder.
     date-format: "dd/MM/yyyy"
 
-  # Ping color format for %ping% placeholder.
   ping:
     enable: true
-    # https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting
     formats:
     - "&a%ping% <= 200"
     - "&6%ping% >= 200"
     - "&c%ping% > 500"
 
-  # TPS color format for %tps% placeholder.
   tps:
     enable: true
 
-    # https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting
     formats:
     - '&a%tps% > 18.0'
     - '&6%tps% == 16.0'
     - '&c%tps% < 16.0'
 
-    # How many numbers do you want to display after "." in %tps% placeholder?
-    # The number should be higher than 0.
-    # Example: 3 = 19.14
     size: 2
 
-  # Memory bar settings for %memory_bar% variable
   memory-bar:
     char: "|"
     size: 80
     colors:
       used: "&c"
       free: "&a"
-      # When the server memory less than 80
       allocation: "&e"
-      # When the server memory is on critical level (less than 40) and some resource need memory to run.
       released: "&6"
 
-# Enable changing of prefix & suffix in player list?
 change-prefix-suffix-in-tablist:
   enable: true
 
-  # Refresh interval in server ticks.
-  # Set to 0 if you don't want to refresh the groups.
-  # If 0, then you will need to execute the /tl reload command to refresh the groups.
   refresh-interval: 4
 
-  # Disable groups in these worlds.
   disabled-worlds:
-    # Use the list as whitelist?
     use-as-whitelist: false
     list:
     - myWorldWithUpper
 
-  # Automatically add groups from another plugins to the tablist groups.yml on every reload?
-  # If a plugin does not support Vault, it will not be added.
   sync-plugins-groups-with-tablist: true
 
-  # Hide player's group in player list when the player is vanished?
-  # Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!
   hide-group-when-player-vanished: false
 
-  # Do you want to assign global group to normal groups?
-  # true - "globalGroupPrefix + normalGroupPrefix"
-  # false - "normalGroupPrefix"
   assign-global-group-to-normal: false
 
-  # Prefer player's primary Vault group when assigning tablist group from groups.yml?
-  # true - player will be assigned their primary vault group where possible
-  # false - applies the group that has the higher priority in the permission plugin
   prefer-primary-vault-group: true
 
-# Tablist objective types
-# Shows your current health (with life indicator), your current ping or any NUMBER placeholder
-# after the player's name (before the ping indicator).
 tablist-object-type:
 
-  # Types:
-  # none - disables tablist objects
-  # ping - player's ping
-  # health - player's health
-  # custom - custom placeholder
   type: ping
 
-  # Interval for objects refreshing in seconds.
   refresh-interval: 3
 
-  # In these worlds the objects will not be displayed
   disabled-worlds:
   - testingWorld
 
-  # Objective settings
   object-settings:
-    # The player's health - displayed after the player's name.
     health:
-      # For these players the health will not be displayed
       restricted-players:
       - exampleplayer
       - players
 
-    # Custom placeholder - accepts only number-ending placeholders, like %level%
     custom:
       value: "%level%"
 
-# Check for updates?
 check-update: true
 
-# Download new releases to "releases" folder?
-# This only works if the "check-update" is true.
 download-updates: false
 
-# Log plugin messages to console?
 logconsole: true

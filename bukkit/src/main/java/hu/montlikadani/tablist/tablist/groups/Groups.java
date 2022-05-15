@@ -19,6 +19,7 @@ import org.bukkit.scheduler.BukkitTask;
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.PluginUtils;
 import hu.montlikadani.tablist.utils.task.Tasks;
@@ -62,7 +63,7 @@ public final class Groups {
 		}
 
 		for (TeamHandler handler : groupsList) {
-			if (handler.getTeam().equalsIgnoreCase(name)) {
+			if (handler.team.equalsIgnoreCase(name)) {
 				return Optional.of(handler);
 			}
 		}
@@ -92,10 +93,11 @@ public final class Groups {
 		String globTabName = gr.getString("globalGroup.tabname", "");
 
 		if (!globTabName.isEmpty() || !globPrefix.isEmpty() || !globSuffix.isEmpty()) {
-			TeamHandler team = new TeamHandler("global", Global.setSymbols(globPrefix), Global.setSymbols(globSuffix));
+			TeamHandler team = new TeamHandler("global", TabText.parseFromText(Global.setSymbols(globPrefix)),
+					TabText.parseFromText(Global.setSymbols(globSuffix)));
 
-			team.setGlobal(true);
-			team.setTabName(Global.setSymbols(globTabName));
+			team.global = true;
+			team.tabName = TabText.parseFromText(Global.setSymbols(globTabName));
 
 			groupsList.add(team);
 		}
@@ -153,22 +155,22 @@ public final class Groups {
 				continue;
 			}
 
-			String prefix = cs.getString(g + ".prefix", ""), suffix = cs.getString(g + ".suffix", ""),
-					perm = cs.getString(g + ".permission", "");
+			TabText prefix = TabText.parseFromText(Global.setSymbols(cs.getString(g + ".prefix", "")));
+			TabText suffix = TabText.parseFromText(Global.setSymbols(cs.getString(g + ".suffix", "")));
 
-			int priority = cs.getInt(g + ".sort-priority", last + 1);
-
-			TeamHandler th = new TeamHandler(g, Global.setSymbols(prefix), Global.setSymbols(suffix), perm, last = priority);
+			TeamHandler th = new TeamHandler(g, prefix, suffix, cs.getString(g + ".permission", ""),
+					last = cs.getInt(g + ".sort-priority", last + 1));
 
 			th.setAfkSortPriority(cs.getInt(g + ".afk-sort-priority", -1));
-			th.setTabName(Global.setSymbols(cs.getString(g + ".tabname", "")));
+			th.tabName = TabText.parseFromText(Global.setSymbols(cs.getString(g + ".tabname", "")));
+
 			groupsList.add(th);
 		}
 
 		// Sort groups by priority to match the lowest priority firstly (highest
 		// priority is on the top of other)
-		List<TeamHandler> newSortedList = groupsList.stream().sorted(Comparator.comparingInt(TeamHandler::getPriority).reversed())
-				.collect(Collectors.toList());
+		List<TeamHandler> newSortedList = groupsList.stream()
+				.sorted(Comparator.comparingInt(t -> ((TeamHandler) t).priority).reversed()).collect(Collectors.toList());
 		groupsList.clear();
 		groupsList.addAll(newSortedList);
 

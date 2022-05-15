@@ -12,7 +12,6 @@ import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.tablist.groups.GroupPlayer;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.ServerVersion;
-import hu.montlikadani.tablist.utils.Util;
 import hu.montlikadani.tablist.utils.reflection.ClazzContainer;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 import org.bukkit.entity.Player;
@@ -208,13 +207,7 @@ public class ReflectionHandled implements ITabScoreboard {
 					continue;
 				}
 
-				String name = groupPlayer.getTabNameWithPrefixSuffix();
-
-				if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {
-					name = Util.colorText(name);
-				}
-
-				Object nameComponent = ReflectionUtils.getAsIChatBaseComponent(name);
+				Object nameComponent = ReflectionUtils.getAsIChatBaseComponent(groupPlayer.getTabNameWithPrefixSuffix());
 				Constructor<?> playerInfoDataConstr = ClazzContainer.getPlayerInfoDataConstructor();
 				Object gameMode = ClazzContainer.getPlayerInfoDataGameMode().get(infoData);
 				int ping = (int) ClazzContainer.getPlayerInfoDataPing().get(infoData);
