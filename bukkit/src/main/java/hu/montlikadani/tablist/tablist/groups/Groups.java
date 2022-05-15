@@ -289,8 +289,10 @@ public final class Groups {
 	}
 
 	private void updatePlayers() {
+		GroupPlayer gp;
+
 		for (TabListUser user : plugin.getUsers()) {
-			GroupPlayer gp = user.getGroupPlayer();
+			gp = user.getGroupPlayer();
 
 			if (gp.update()) {
 				sortedPlayers.remove(gp);

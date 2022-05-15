@@ -55,7 +55,7 @@ public abstract class TabTitle {
 		Object tabHeader = ReflectionUtils.EMPTY_COMPONENT;
 		Object tabFooter = ReflectionUtils.EMPTY_COMPONENT;
 
-		if (header != null) {
+		if (header != null && header != TabText.EMPTY) {
 			try {
 				tabHeader = ReflectionUtils.getAsIChatBaseComponent(header);
 			} catch (Exception ex) {
@@ -64,7 +64,7 @@ public abstract class TabTitle {
 			}
 		}
 
-		if (footer != null) {
+		if (footer != null && footer != TabText.EMPTY) {
 			try {
 				tabFooter = ReflectionUtils.getAsIChatBaseComponent(footer);
 			} catch (Exception e1) {

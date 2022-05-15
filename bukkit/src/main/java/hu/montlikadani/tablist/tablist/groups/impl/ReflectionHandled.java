@@ -194,9 +194,9 @@ public class ReflectionHandled implements ITabScoreboard {
 		}
 
 		try {
-			for (Object infoData : infoList) {
-				GameProfile profile;
+			GameProfile profile;
 
+			for (Object infoData : infoList) {
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
 					profile = (GameProfile) ClazzContainer.getPlayerInfoDataProfileField().get(infoData);
 				} else {

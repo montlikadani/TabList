@@ -387,9 +387,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	public void onPlayerQuit(Player player) {
 		java.util.Iterator<TabListUser> iterator = users.iterator();
 		UUID playerId = player.getUniqueId();
+		TabListUser user;
 
 		while (iterator.hasNext()) {
-			TabListUser user = iterator.next();
+			user = iterator.next();
 
 			if (playerId.equals(user.getUniqueId())) {
 				user.getTabHandler().sendEmptyTab(player);

@@ -70,11 +70,10 @@ public final class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		boolean found = false;
+		CommandProcessor proc;
 
 		for (ICommand command : cmds) {
-			CommandProcessor proc = command.getClass().getAnnotation(CommandProcessor.class);
-
-			if (proc == null) {
+			if ((proc = command.getClass().getAnnotation(CommandProcessor.class)) == null) {
 				continue;
 			}
 
