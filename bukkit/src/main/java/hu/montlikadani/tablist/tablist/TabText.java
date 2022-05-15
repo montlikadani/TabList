@@ -62,8 +62,14 @@ public final class TabText {
 		int length = text.length();
 
 		while ((start = text.indexOf("[\"\",{", end)) != -1) {
-			if ((end = text.indexOf("}]", start)) == -1) {
-				continue;
+
+			// JSON may contain "raw translate with" array, we should check this also
+			if ((end = text.indexOf("]}]", start)) == -1) {
+				if ((end = text.indexOf("}]", start)) == -1) {
+					break;
+				}
+			} else {
+				end++;
 			}
 
 			end += 2;

@@ -91,7 +91,7 @@ public final class JsonComponent {
 							&& ((current = i + 8) >= length || text.charAt(current) == '&')
 							&& ((current = i + 10) >= length || text.charAt(current) == '&')) {
 						text = Global.replaceFrom(text, i, "&", "", 6); // Replace "&" character 6 times
-						length = text.length(); // Text length is changed
+						length = text.length();
 
 						int k = i - 2;
 						if (k >= 0) { // It may be negative
