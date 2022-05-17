@@ -224,9 +224,10 @@ public final class Groups {
 		sortedPlayers.remove(groupPlayer);
 		afkPlayersCache.remove(groupPlayer);
 
-		if (!sortedPlayers.isEmpty()) {
+		// Is this even required?
+		/*if (!sortedPlayers.isEmpty()) {
 			sortPlayers();
-		}
+		}*/
 
 		groupPlayer.getTabTeam().unregisterTeam(groupPlayer);
 		groupPlayer.removeGroup();

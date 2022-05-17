@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
@@ -238,11 +239,35 @@ public final class Variables {
 		// one-time check for placeholders at load time.
 
 		if (plugin.hasPapi()) {
-			final String str = s;
 
-			if ((s = hu.montlikadani.tablist.utils.task.Tasks.submitSync(() -> PlaceholderAPI.setPlaceholders(p, str))) == null) {
-				s = str;
+			// Some PAPI placeholders which does not supports async threads
+			int stc = s.indexOf("%server_total_chunks%");
+			int ste = s.indexOf("%server_total_entities%");
+			int stl = s.indexOf("%server_total_living_entities%");
+
+			if (stc != -1 || ste != -1 || stl != -1) {
+				final String st = s;
+
+				s = hu.montlikadani.tablist.utils.task.Tasks.submitSync(() -> {
+					String str = st;
+
+					if (stc != -1) {
+						str = str.replace("%server_total_chunks%", Integer.toString(getChunks()));
+					}
+
+					if (stl != -1) {
+						str = str.replace("%server_total_living_entities%", Integer.toString(getLivingEntities()));
+					}
+
+					if (ste != -1) {
+						str = str.replace("%server_total_entities%", Integer.toString(getTotalEntities()));
+					}
+
+					return str;
+				});
 			}
+
+			s = PlaceholderAPI.setPlaceholders(p, s);
 		}
 
 		s = s.replace("%player%", p.getName());
@@ -334,5 +359,35 @@ public final class Variables {
 		LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
 
 		return now.format(formatterPattern);
+	}
+
+	private int getChunks() {
+		int loadedChunks = 0;
+
+		for (World world : plugin.getServer().getWorlds()) {
+			loadedChunks += world.getLoadedChunks().length;
+		}
+
+		return loadedChunks;
+	}
+
+	private int getLivingEntities() {
+		int livingEntities = 0;
+
+		for (World world : plugin.getServer().getWorlds()) {
+			livingEntities += world.getLivingEntities().size();
+		}
+
+		return livingEntities;
+	}
+
+	private int getTotalEntities() {
+		int allEntities = 0;
+
+		for (World world : plugin.getServer().getWorlds()) {
+			allEntities += world.getEntities().size();
+		}
+
+		return allEntities;
 	}
 }
