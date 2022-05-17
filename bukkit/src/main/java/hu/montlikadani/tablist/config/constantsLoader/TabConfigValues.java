@@ -54,9 +54,10 @@ public final class TabConfigValues {
 		if (obj instanceof List) {
 			String[] array = ((List<?>) obj).toArray(new String[0]);
 			TabText[] tt = new TabText[array.length];
+			TabText text;
 
 			for (int i = 0; i < array.length; i++) {
-				TabText text = new TabText();
+				text = new TabText();
 				text.setPlainText(array[i]);
 				tt[i] = text;
 			}

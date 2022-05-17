@@ -7,11 +7,11 @@ import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.NamespacedKey;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import hu.montlikadani.tablist.Global;
+import hu.montlikadani.tablist.tablist.TabText;
 
 public final class JsonComponent {
 
@@ -25,7 +25,7 @@ public final class JsonComponent {
 	protected JsonComponent() {
 	}
 
-	Object parseProperty(String text, List<JsonElement> existingJson) throws Exception {
+	Object parseProperty(String text, List<TabText.JsonElementData> existingJson) throws Exception {
 		if (text.isEmpty()) {
 			if (emptyJson == null) {
 				emptyJson = ReflectionUtils.jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(), GSON.toJson(""));
@@ -56,8 +56,8 @@ public final class JsonComponent {
 					obj.addProperty("text", builder.toString());
 				}
 
-				JsonElement element = existingJson.get(index);
-				obj.add("extra", element);
+				TabText.JsonElementData data = existingJson.get(index);
+				obj.add("extra", data.element);
 
 				jsonList.add(obj);
 
@@ -66,7 +66,7 @@ public final class JsonComponent {
 				// as the length of the json was changed
 				// we need to avoid using unicode characters or a temporary solution
 				// https://stackoverflow.com/questions/43091804/gson-unicode-characters-conversion-to-unicode-character-codes
-				i += element.toString().length() - 1;
+				i += data.plainJson.length() - 1;
 				obj = new JsonObject();
 
 				index++;
@@ -211,7 +211,7 @@ public final class JsonComponent {
 		// Minecraft JSON is weird, it must begin with ["", to actually return the
 		// expected format
 		return ReflectionUtils.jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(),
-				"[\"\"," + Global.replaceFrom(GSON.toJson(jsonList), 0, "[", "", 1));
+				"[\"\"," + Global.replaceFrom(GSON.toJson(jsonList, List.class), 0, "[", "", 1));
 	}
 
 	@SuppressWarnings("deprecation")

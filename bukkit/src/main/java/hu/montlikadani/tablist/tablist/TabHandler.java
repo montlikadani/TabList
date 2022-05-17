@@ -64,21 +64,21 @@ public class TabHandler {
 		final FileConfiguration c = plugin.getConf().getTablist();
 		String path = "";
 
-		if (c.get("per-world") != null) {
-			if (c.get("per-world." + world + ".per-player." + pName) != null) {
+		if (c.get("per-world", null) != null) {
+			if (c.get("per-world." + world + ".per-player." + pName, null) != null) {
 				path = "per-world." + world + ".per-player." + pName + ".";
 				worldEnabled = true;
 			} else {
 				t: for (String s : TabConfigValues.getPerWorldkeys()) {
 					for (String split : StrUtil.getCommaSpaceSeparatedPattern().split(s)) {
 						if (world.equals(split)) {
-							if (plugin.hasVault() && c.get("per-world." + s + ".per-group") != null) {
+							if (plugin.hasVault() && c.get("per-world." + s + ".per-group", null) != null) {
 								String group = plugin.getVaultPerm().getPrimaryGroup(split, player);
 
 								if (group != null) {
 									group = group.toLowerCase();
 
-									if (c.get("per-world." + s + ".per-group." + group) != null) {
+									if (c.get("per-world." + s + ".per-group." + group, null) != null) {
 										path = "per-world." + s + ".per-group." + group + ".";
 										worldEnabled = true;
 									}
@@ -95,19 +95,19 @@ public class TabHandler {
 					}
 				}
 
-				if (worldList.isEmpty() && c.get("per-world." + world) != null) {
+				if (worldList.isEmpty() && c.get("per-world." + world, null) != null) {
 					path = "per-world." + world + '.';
 					worldEnabled = true;
 				}
 			}
 
-			if (plugin.hasVault() && c.get("per-world." + world + ".per-group") != null) {
+			if (plugin.hasVault() && c.get("per-world." + world + ".per-group", null) != null) {
 				String group = plugin.getVaultPerm().getPrimaryGroup(world, player);
 
 				if (group != null) {
 					group = group.toLowerCase();
 
-					if (c.get("per-world." + world + ".per-group." + group) != null) {
+					if (c.get("per-world." + world + ".per-group." + group, null) != null) {
 						path = "per-world." + world + ".per-group." + group + ".";
 						worldEnabled = true;
 					}
@@ -135,17 +135,17 @@ public class TabHandler {
 			}
 		}
 
-		if (c.get("per-player." + pName) != null) {
+		if (c.get("per-player." + pName, null) != null) {
 			path = "per-player." + pName + ".";
 		}
 
-		if (plugin.hasVault() && c.get("per-group") != null) {
+		if (plugin.hasVault() && c.get("per-group", null) != null) {
 			String group = plugin.getVaultPerm().getPrimaryGroup(player);
 
 			if (group != null) {
 				group = group.toLowerCase();
 
-				if (c.get("per-group." + group) != null) {
+				if (c.get("per-group." + group, null) != null) {
 					path = "per-group." + group + ".";
 				}
 			}
@@ -288,10 +288,10 @@ public class TabHandler {
 			return;
 		}
 
-		for (String l : worldList) {
-			org.bukkit.World world = plugin.getServer().getWorld(l);
+		org.bukkit.World world;
 
-			if (world != null) {
+		for (String l : worldList) {
+			if ((world = plugin.getServer().getWorld(l)) != null) {
 				for (Player all : world.getPlayers()) {
 					TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));
 				}

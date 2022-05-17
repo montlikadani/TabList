@@ -1,6 +1,7 @@
 package hu.montlikadani.tablist.tablist;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.google.gson.JsonElement;
@@ -16,7 +17,7 @@ public final class TabText {
 	// This holds both the original and the updated text in separated instances
 	protected String plainText = "";
 
-	private List<JsonElement> jsonElements = new java.util.ArrayList<>();
+	private List<JsonElementData> jsonElements = new ArrayList<>();
 
 	public TabText() {
 	}
@@ -34,7 +35,7 @@ public final class TabText {
 		this.plainText = plainText;
 	}
 
-	public List<JsonElement> getJsonElements() {
+	public List<JsonElementData> getJsonElements() {
 		return jsonElements;
 	}
 
@@ -51,11 +52,12 @@ public final class TabText {
 	}
 
 	public void updateText(String plainText) {
-		jsonElements.clear();
-
 		this.plainText = plainText;
 		findJsonInText(plainText);
 	}
+
+	// Caching jsons to avoid recreating continuously
+	private final List<JsonElementData> skippedDatas = new ArrayList<>();
 
 	public void findJsonInText(String text) {
 		int start, end = 0;
@@ -83,13 +85,42 @@ public final class TabText {
 	}
 
 	public void addJson(String str) {
+		for (JsonElementData jsonElementData : jsonElements) {
+			if (skippedDatas.indexOf(jsonElementData) != -1) {
+				return;
+			}
+
+			if (jsonElementData.plainJson.equals(str)) {
+				skippedDatas.add(jsonElementData);
+				return;
+			}
+		}
+
+		if (!skippedDatas.isEmpty()) {
+			jsonElements.clear();
+			jsonElements.addAll(skippedDatas);
+			skippedDatas.clear();
+		}
+
 		try {
 			JsonElement element = JsonComponent.GSON.fromJson(new StringReader(str), JsonElement.class);
 
 			if (element != null) {
-				jsonElements.add(element);
+				JsonElementData data = new JsonElementData();
+
+				data.element = element;
+				data.plainJson = str;
+
+				jsonElements.add(data);
 			}
 		} catch (JsonSyntaxException | JsonIOException e) {
 		}
+	}
+
+	public class JsonElementData {
+
+		public JsonElement element;
+		public String plainJson;
+
 	}
 }
