@@ -106,10 +106,8 @@ public final class TabText {
 			JsonElement element = JsonComponent.GSON.fromJson(new StringReader(str), JsonElement.class);
 
 			if (element != null) {
-				JsonElementData data = new JsonElementData();
-
+				JsonElementData data = new JsonElementData(str);
 				data.element = element;
-				data.plainJson = str;
 
 				jsonElements.add(data);
 			}
@@ -120,7 +118,13 @@ public final class TabText {
 	public class JsonElementData {
 
 		public JsonElement element;
-		public String plainJson;
 
+		public final String plainJson;
+		public final int length;
+
+		public JsonElementData(String plainJson) {
+			this.plainJson = plainJson;
+			length = plainJson.length();
+		}
 	}
 }

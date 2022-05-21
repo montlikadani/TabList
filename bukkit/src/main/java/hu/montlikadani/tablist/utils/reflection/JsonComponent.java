@@ -45,10 +45,9 @@ public final class JsonComponent {
 
 		int length = text.length(), index = 0;
 		String font = "";
-		char charAt;
 
 		for (int i = 0; i < length; i++) {
-			charAt = text.charAt(i);
+			char charAt = text.charAt(i);
 
 			if (charAt == '[' && existingJson != null && index < existingJson.size() && text.charAt(i + 1) == '"'
 					&& text.charAt(i + 2) == '"' && text.charAt(i + 3) == ',' && text.charAt(i + 4) == '{') {
@@ -66,7 +65,7 @@ public final class JsonComponent {
 				// as the length of the json was changed
 				// we need to avoid using unicode characters or a temporary solution
 				// https://stackoverflow.com/questions/43091804/gson-unicode-characters-conversion-to-unicode-character-codes
-				i += data.plainJson.length() - 1;
+				i += data.length - 1;
 				obj = new JsonObject();
 
 				index++;
