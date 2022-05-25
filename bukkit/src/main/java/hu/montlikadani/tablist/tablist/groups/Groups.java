@@ -170,7 +170,7 @@ public final class Groups {
 		// Sort groups by priority to match the lowest priority firstly (highest
 		// priority is on the top of other)
 		List<TeamHandler> newSortedList = groupsList.stream()
-				.sorted(Comparator.comparingInt(t -> ((TeamHandler) t).priority).reversed()).collect(Collectors.toList());
+				.sorted(Comparator.<TeamHandler>comparingInt(t -> t.priority).reversed()).collect(Collectors.toList());
 		groupsList.clear();
 		groupsList.addAll(newSortedList);
 

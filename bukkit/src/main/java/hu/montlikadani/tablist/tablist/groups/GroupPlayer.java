@@ -146,6 +146,7 @@ public final class GroupPlayer {
 		if (tl.hasVault()) {
 			boolean found = false;
 
+			// Avoiding verbose spam
 			if (playerVaultGroup != null) {
 				for (String g : tl.getVaultPerm().getPlayerGroups(player)) {
 					if (playerVaultGroup.equalsIgnoreCase(g)) {
@@ -155,7 +156,6 @@ public final class GroupPlayer {
 				}
 			}
 
-			// Avoiding verbose spam
 			if (!found && ConfigValues.isPreferPrimaryVaultGroup()) {
 				playerVaultGroup = tl.getVaultPerm().getPrimaryGroup(player);
 			}
@@ -230,13 +230,9 @@ public final class GroupPlayer {
 							setGroup(team);
 						}
 
-						// Player group found so break loop
-						break;
+						// Player group found
+						return update;
 					}
-				}
-
-				if (group == team) {
-					break; // Proper group been set so break loop
 				}
 			}
 		}
