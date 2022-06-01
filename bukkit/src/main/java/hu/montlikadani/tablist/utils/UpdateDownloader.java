@@ -24,11 +24,11 @@ public abstract class UpdateDownloader {
 
 		CompletableFuture.supplyAsync(() -> {
 			try {
-				URL githubUrl = new URL(
-						"https://raw.githubusercontent.com/montlikadani/TabList/master/bukkit/src/main/resources/plugin.yml");
 				String lineWithVersion = "";
 
-				try (BufferedReader br = new BufferedReader(new InputStreamReader(githubUrl.openStream()))) {
+				try (BufferedReader br = new BufferedReader(new InputStreamReader(new URL(
+						"https://raw.githubusercontent.com/montlikadani/TabList/master/bukkit/src/main/resources/plugin.yml")
+								.openStream()))) {
 					String s;
 
 					while ((s = br.readLine()) != null) {

@@ -55,7 +55,7 @@ public final class JsonComponent {
 					obj.addProperty("text", builder.toString());
 				}
 
-				TabText.JsonElementData data = existingJson.get(index);
+				TabText.JsonElementDataNew data = (TabText.JsonElementDataNew) existingJson.get(index);
 				obj.add("extra", data.element);
 
 				jsonList.add(obj);

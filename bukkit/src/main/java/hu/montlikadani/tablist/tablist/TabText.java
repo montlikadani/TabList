@@ -4,10 +4,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonSyntaxException;
-
 import hu.montlikadani.tablist.utils.reflection.JsonComponent;
 
 public final class TabText {
@@ -103,21 +99,41 @@ public final class TabText {
 		}
 
 		try {
-			JsonElement element = JsonComponent.GSON.fromJson(new StringReader(str), JsonElement.class);
+			com.google.gson.JsonElement element = null;
+
+			try {
+				element = JsonComponent.GSON.fromJson(new StringReader(str), com.google.gson.JsonElement.class);
+			} catch (Exception e) { // Compiler fails to understand JsonSyntaxException for legacy versions
+			}
 
 			if (element != null) {
-				JsonElementData data = new JsonElementData(str);
+				JsonElementDataNew data = new JsonElementDataNew(str);
 				data.element = element;
 
 				jsonElements.add(data);
 			}
-		} catch (JsonSyntaxException | JsonIOException e) {
+		} catch (Throwable noc) { // For legacy versions
+			jsonElements.add(new JsonElementDataOld(str));
+		}
+	}
+
+	public final class JsonElementDataNew extends JsonElementData {
+
+		public com.google.gson.JsonElement element;
+
+		public JsonElementDataNew(String plainJson) {
+			super(plainJson);
+		}
+	}
+
+	public final class JsonElementDataOld extends JsonElementData {
+
+		public JsonElementDataOld(String plainJson) {
+			super(plainJson);
 		}
 	}
 
 	public class JsonElementData {
-
-		public JsonElement element;
 
 		public final String plainJson;
 		public final int length;

@@ -56,7 +56,10 @@ public final class ReflectionUtils {
 
 	public static JsonComponent getJsonComponent() {
 		if (jsonComponent == null) {
-			jsonComponent = new JsonComponent();
+			try {
+				jsonComponent = new JsonComponent();
+			} catch (NoClassDefFoundError e) {
+			}
 		}
 
 		return jsonComponent;
@@ -94,41 +97,57 @@ public final class ReflectionUtils {
 		}
 
 		// A bit complicated way to split json and texts from each other
-		String result = "", strJson = text.getJsonElements().get(0).toString(), plainText = text.getPlainText();
-		int jsonIndex, textLength = -1, from = 0, index = 0;
+		StringBuilder result = new StringBuilder();
+		String strJson = text.getJsonElements().get(0).plainJson, plainText = text.getPlainText();
+		int textLength = -1, from = 0, index = 0;
 
-		while ((jsonIndex = plainText.indexOf(strJson, from)) != -1) {
-			result += "{\"text\":\"" + plainText.substring(from, jsonIndex) + "\",\"extra\":[{" + strJson + "}";
+		int jsonIndex = plainText.indexOf(strJson, from);
 
+		if (jsonIndex != -1) {
+			result.append(
+					"{\"text\":\"" + plainText.substring(from, jsonIndex) + "\",\"extra\":" + strJson.replace("}]}]", "}]}"));
+		}
+
+		while (jsonIndex != -1) {
 			if (textLength == -1) {
 				textLength = plainText.length();
 			}
 
 			int length = strJson.length();
 
-			if ((from = jsonIndex + length) > textLength) {
+			if ((from = jsonIndex + length) >= textLength) {
 				from = length;
 			}
 
-			if (index++ >= text.getJsonElements().size()) {
+			result.append(",");
+			index++;
+
+			if (index >= text.getJsonElements().size()) {
 				break;
 			}
 
-			strJson = text.getJsonElements().get(index).toString();
+			strJson = text.getJsonElements().get(index).plainJson;
+
+			if ((jsonIndex = plainText.indexOf(strJson, from)) == -1) {
+				break;
+			}
+
+			result.append("{\"text\":\"" + plainText.substring(from, jsonIndex) + "\",\"extra\":" + strJson + "}");
 		}
 
 		// The remaining text after last json
 		if (from != 0) {
-			result += "{\"text\":\"" + plainText.substring(from) + "}";
+			result.append("{\"text\":\"" + plainText.substring(from) + "\"}]}");
 		} else {
-			result = "{\"text\":\"" + plainText + "}";
+			result.setLength(0);
+			result.append("{\"text\":\"" + plainText + "\"}");
 		}
 
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
-			return asChatSerializer(result);
+			return asChatSerializer(result.toString());
 		}
 
-		return jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(), result);
+		return jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(), result.toString());
 	}
 
 	public static Object getAsIChatBaseComponent(final String text) throws Exception {
