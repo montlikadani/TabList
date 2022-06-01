@@ -16,6 +16,10 @@ plugins {
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
 
+java {
+    disableAutoTargetJvm()
+}
+
 dependencies {
     implementation project(':global')
     implementation 'com.github.xtomyserrax:StaffFacilities:5.0.6.0'

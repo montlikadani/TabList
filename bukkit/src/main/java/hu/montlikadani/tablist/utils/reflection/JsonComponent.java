@@ -64,7 +64,7 @@ public final class JsonComponent {
 				// This means that the formatting will break and also the last 4 or more json text is displayed
 				// as the length of the json was changed
 				// we need to avoid using unicode characters or a temporary solution
-				// https://stackoverflow.com/questions/43091804/gson-unicode-characters-conversion-to-unicode-character-codes
+				// https://stackoverflow.com/questions/43091804/
 				i += data.length - 1;
 				obj = new JsonObject();
 

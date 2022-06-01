@@ -6,6 +6,13 @@
 
 plugins {
     id 'hu.montlikadani.java-conventions'
+    id 'java'
+}
+
+apply plugin: 'java'
+
+java {
+    disableAutoTargetJvm()
 }
 
 dependencies {
