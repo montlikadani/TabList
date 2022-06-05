@@ -245,15 +245,15 @@ public final class GroupPlayer {
 			return false;
 		}
 
-		boolean containsWorld = ConfigValues.getGroupsDisabledWorlds().contains(player.getWorld().getName());
-
-		if (((ConfigValues.isUseDisabledWorldsAsWhiteList() && !containsWorld)
-				|| (!ConfigValues.isUseDisabledWorldsAsWhiteList() && containsWorld))) {
+		if (ConfigValues.isHideGroupInVanish() && PluginUtils.isVanished(player)) {
+			tabTeam.unregisterTeam(this);
 			return false;
 		}
 
-		if (ConfigValues.isHideGroupInVanish() && PluginUtils.isVanished(player)) {
-			tabTeam.unregisterTeam(this);
+		boolean containsWorld = ConfigValues.getGroupsDisabledWorlds().indexOf(player.getWorld().getName()) != -1;
+
+		if (((ConfigValues.isUseDisabledWorldsAsWhiteList() && !containsWorld)
+				|| (!ConfigValues.isUseDisabledWorldsAsWhiteList() && containsWorld))) {
 			return false;
 		}
 

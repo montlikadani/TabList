@@ -1,6 +1,7 @@
 package hu.montlikadani.tablist.utils.reflection;
 
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NavigableMap;
 import java.util.concurrent.CompletableFuture;
@@ -17,7 +18,7 @@ public final class JsonComponent {
 
 	public static final com.google.gson.Gson GSON = new com.google.gson.GsonBuilder().disableHtmlEscaping().create();
 
-	private final List<JsonObject> jsonList = new java.util.ArrayList<>(10);
+	private final ArrayList<JsonObject> jsonList = new ArrayList<>(10);
 	private final java.util.Map<String, String> fonts = new java.util.HashMap<>(1);
 
 	private Object emptyJson;
@@ -35,6 +36,7 @@ public final class JsonComponent {
 		}
 
 		jsonList.clear();
+		jsonList.trimToSize();
 
 		JsonObject obj = new JsonObject();
 		StringBuilder builder = new StringBuilder();
