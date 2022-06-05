@@ -4,7 +4,7 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
+    mavenCentral()
     maven {
         url = uri('https://repo.maven.apache.org/maven2/')
     }
@@ -48,6 +48,7 @@ repositories {
     maven {
         url = uri('https://repo.spongepowered.org/repository/maven-public/')
     }
+    mavenLocal()
 }
 
 group = 'hu.montlikadani'

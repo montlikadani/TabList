@@ -9,6 +9,8 @@ updates:
     directory: "/bukkit"
     schedule:
       interval: "weekly"
+    ignore:
+    - dependency-name: com.mojang:authlib
 
   - package-ecosystem: "gradle"
     directory: "/bungee"

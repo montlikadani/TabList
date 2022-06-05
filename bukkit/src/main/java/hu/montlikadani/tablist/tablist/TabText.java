@@ -19,8 +19,10 @@ public final class TabText {
 	}
 
 	public TabText(TabText another) {
-		jsonElements = another.jsonElements;
-		plainText = another.plainText;
+		if (another != null) {
+			jsonElements = another.jsonElements;
+			plainText = another.plainText;
+		}
 	}
 
 	public String getPlainText() {

@@ -356,9 +356,8 @@ public final class Variables {
 	private String getTimeAsString(DateTimeFormatter formatterPattern) {
 		TimeZone zone = ConfigValues.isUseSystemZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
 				: TimeZone.getTimeZone(ConfigValues.getTimeZone());
-		LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
 
-		return now.format(formatterPattern);
+		return (zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId())).format(formatterPattern);
 	}
 
 	private int getChunks() {

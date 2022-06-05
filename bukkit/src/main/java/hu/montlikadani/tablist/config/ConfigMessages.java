@@ -93,7 +93,7 @@ public final class ConfigMessages {
 	}
 
 	public static String get(MessageKeys key, Object... variables) {
-		String text = key.<String>get();
+		String text = (String) key.value;
 
 		if (variables.length != 0 && !text.isEmpty()) {
 			for (int i = 0; i < variables.length; i += 2) {
@@ -107,7 +107,7 @@ public final class ConfigMessages {
 	}
 
 	public static List<String> getList(MessageKeys key, Object... variables) {
-		String[] array = key.<String[]>get();
+		String[] array = (String[]) key.value;
 		List<String> list = new java.util.ArrayList<>(array.length);
 
 		for (int i = 0; i < array.length; i++) {
@@ -181,11 +181,6 @@ public final class ConfigMessages {
 
 			path = hu.montlikadani.tablist.Global.replaceFrom(path, 0, "_", "", 1).replace('_', '-')
 					.toLowerCase(java.util.Locale.ENGLISH);
-		}
-
-		@SuppressWarnings("unchecked")
-		public <T> T get() {
-			return (T) value;
 		}
 	}
 }

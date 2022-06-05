@@ -245,11 +245,11 @@ public class TabHandler {
 				fo = footer[footer.length == 1 ? 0 : random.nextInt(footer.length)];
 		}
 
-		if (linedHeader != null && he == null) {
+		if (he == null) {
 			he = linedHeader;
 		}
 
-		if (linedFooter != null && fo == null) {
+		if (fo == null) {
 			fo = linedFooter;
 		}
 
@@ -282,7 +282,7 @@ public class TabHandler {
 
 		if (worldList.isEmpty()) {
 			for (Player all : player.getWorld().getPlayers()) {
-				TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));
+				TabTitle.sendTabTitle(all, v.replaceVariables(all, new TabText(he)), v.replaceVariables(all, new TabText(fo)));
 			}
 
 			return;
@@ -293,7 +293,8 @@ public class TabHandler {
 		for (String l : worldList) {
 			if ((world = plugin.getServer().getWorld(l)) != null) {
 				for (Player all : world.getPlayers()) {
-					TabTitle.sendTabTitle(all, v.replaceVariables(all, he), v.replaceVariables(all, fo));
+					TabTitle.sendTabTitle(all, v.replaceVariables(all, new TabText(he)),
+							v.replaceVariables(all, new TabText(fo)));
 				}
 			}
 		}

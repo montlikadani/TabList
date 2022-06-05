@@ -11,10 +11,19 @@ plugins {
     id 'hu.montlikadani.java-conventions'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
     id 'java'
+    id 'eclipse'
 }
 
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'java'
+apply plugin: 'eclipse'
+
+eclipse {
+    classpath {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
 
 java {
     disableAutoTargetJvm()

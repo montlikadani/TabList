@@ -18,8 +18,8 @@ public final class JsonComponent {
 	public static final com.google.gson.Gson GSON = new com.google.gson.GsonBuilder().disableHtmlEscaping().create();
 
 	private final List<JsonObject> jsonList = new java.util.ArrayList<>(10);
+	private final java.util.Map<String, String> fonts = new java.util.HashMap<>(1);
 
-	private String defaultFontNamespacedKey;
 	private Object emptyJson;
 
 	protected JsonComponent() {
@@ -179,12 +179,23 @@ public final class JsonComponent {
 				int fromIndex = i + 6;
 
 				if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
-					font = NamespacedKey.minecraft(text.substring(fromIndex, closeIndex)).toString();
-				} else if (text.regionMatches(true, i, "{/font", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
-					if (defaultFontNamespacedKey == null)
-						defaultFontNamespacedKey = NamespacedKey.minecraft("default").toString();
+					final String key = text.substring(fromIndex, closeIndex);
 
-					font = defaultFontNamespacedKey;
+					String res = fonts.computeIfAbsent(key, s -> {
+						try {
+							return NamespacedKey.minecraft(key).toString();
+						} catch (IllegalArgumentException ie) {
+							org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, ie.getMessage());
+						}
+
+						return null;
+					});
+
+					if (res != null) {
+						font = res;
+					}
+				} else if (text.regionMatches(true, i, "{/font", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
+					font = fonts.computeIfAbsent("default", s -> NamespacedKey.minecraft("default").toString());
 				}
 
 				if (closeIndex != -1) {

@@ -44,8 +44,7 @@ public final class ClazzContainer {
 			iChatBaseComponent = classByName("net.minecraft.network.chat", "IChatBaseComponent");
 			packet = classByName("net.minecraft.network.protocol", "Packet");
 			packetPlayOutPlayerInfo = classByName("net.minecraft.network.protocol.game", "PacketPlayOutPlayerInfo");
-			packetPlayOutScoreboardTeam = classByName("net.minecraft.network.protocol.game",
-					"PacketPlayOutScoreboardTeam");
+			packetPlayOutScoreboardTeam = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardTeam");
 
 			// Somehow the 1.8.8 server realizes that Team.OptionStatus enum class is exists
 			try {
@@ -69,8 +68,7 @@ public final class ClazzContainer {
 				addPlayer = enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction);
 				updateGameMode = enumPlayerInfoAction.getDeclaredField("UPDATE_GAME_MODE").get(enumPlayerInfoAction);
 				updateLatency = enumPlayerInfoAction.getDeclaredField("UPDATE_LATENCY").get(enumPlayerInfoAction);
-				updateDisplayName = enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME")
-						.get(enumPlayerInfoAction);
+				updateDisplayName = enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME").get(enumPlayerInfoAction);
 				removePlayer = enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER").get(enumPlayerInfoAction);
 			} catch (NoSuchFieldException ex) {
 				addPlayer = enumPlayerInfoAction.getDeclaredField("a").get(enumPlayerInfoAction);
@@ -92,8 +90,7 @@ public final class ClazzContainer {
 					scoreboardTeamSetPrefix = scoreboardTeamClass.getMethod("b", iChatBaseComponent);
 					scoreboardTeamSetSuffix = scoreboardTeamClass.getMethod("c", iChatBaseComponent);
 					scoreboardTeamSetDisplayName = scoreboardTeamClass.getMethod("a", iChatBaseComponent);
-					scoreboardTeamSetNameTagVisibility = scoreboardTeamClass.getMethod("a",
-							scoreboardNameTagVisibility);
+					scoreboardTeamSetNameTagVisibility = scoreboardTeamClass.getMethod("a", scoreboardNameTagVisibility);
 					playerNameSetMethod = scoreboardTeamClass.getMethod("g"); // getPlayers
 					(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("e")).setAccessible(true); // players
 				} else {
@@ -107,14 +104,10 @@ public final class ClazzContainer {
 				}
 
 				packetScoreboardTeamRemove = packetPlayOutScoreboardTeam.getMethod("a", scoreboardTeamClass);
-				packetScoreboardTeamUpdateCreate = packetPlayOutScoreboardTeam.getMethod("a", scoreboardTeamClass,
-						boolean.class);
+				packetScoreboardTeamUpdateCreate = packetPlayOutScoreboardTeam.getMethod("a", scoreboardTeamClass, boolean.class);
 
-				Class<?> packetPlayOutScoreboardTeam$a = classByName("net.minecraft.network.protocol.game",
-						"PacketPlayOutScoreboardTeam$a");
-
-				packetScoreboardTeamEntries = packetPlayOutScoreboardTeam.getMethod("a", scoreboardTeamClass,
-						String.class, packetPlayOutScoreboardTeam$a);
+				packetScoreboardTeamEntries = packetPlayOutScoreboardTeam.getMethod("a", scoreboardTeamClass, String.class,
+						classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardTeam$a"));
 
 				scoreboardNameTagVisibilityEnumConstants = scoreboardNameTagVisibility.getEnumConstants();
 
@@ -135,8 +128,8 @@ public final class ClazzContainer {
 				try {
 					packetPlayOutScoreboardTeamConstructor = packetPlayOutScoreboardTeam.getDeclaredConstructor();
 				} catch (NoSuchMethodException e) {
-					packetPlayOutScoreboardTeamConstructor = packetPlayOutScoreboardTeam.getDeclaredConstructor(
-							scoreboardTeamClass = classByName(null, "ScoreboardTeam"), int.class);
+					packetPlayOutScoreboardTeamConstructor = packetPlayOutScoreboardTeam
+							.getDeclaredConstructor(scoreboardTeamClass = classByName(null, "ScoreboardTeam"), int.class);
 				}
 
 				packetPlayOutScoreboardTeamConstructor.setAccessible(true);
@@ -163,16 +156,15 @@ public final class ClazzContainer {
 					"PacketPlayOutScoreboardDisplayObjective");
 			scoreboardObjective = classByName("net.minecraft.world.scores", "ScoreboardObjective");
 
-			packetPlayOutScoreboardDisplayObjectiveConstructor = packetPlayOutScoreboardDisplayObjective
-					.getConstructor(int.class, scoreboardObjective);
+			packetPlayOutScoreboardDisplayObjectiveConstructor = packetPlayOutScoreboardDisplayObjective.getConstructor(int.class,
+					scoreboardObjective);
 
 			Class<?> enumScoreboardHealthDisplay;
 			try {
 				enumScoreboardHealthDisplay = classByName("net.minecraft.world.scores.criteria",
 						"IScoreboardCriteria$EnumScoreboardHealthDisplay");
 			} catch (ClassNotFoundException e) {
-				enumScoreboardHealthDisplay = classByName("net.minecraft.world.scores.criteria",
-						"EnumScoreboardHealthDisplay");
+				enumScoreboardHealthDisplay = classByName("net.minecraft.world.scores.criteria", "EnumScoreboardHealthDisplay");
 			}
 
 			Class<?> packetPlayOutScoreboardObjective = classByName("net.minecraft.network.protocol.game",
@@ -182,8 +174,7 @@ public final class ClazzContainer {
 
 			Class<?> iScoreboardCriteria = classByName("net.minecraft.world.scores.criteria", "IScoreboardCriteria");
 
-			iScoreboardCriteriaDummy = getFieldByType(iScoreboardCriteria, iScoreboardCriteria, null)
-					.get(iScoreboardCriteria);
+			iScoreboardCriteriaDummy = getFieldByType(iScoreboardCriteria, iScoreboardCriteria, null).get(iScoreboardCriteria);
 
 			/*try {
 				iScoreboardCriteriaDummy = iScoreboardCriteria.getDeclaredField("b").get(iScoreboardCriteria);
@@ -223,16 +214,14 @@ public final class ClazzContainer {
 					enumScoreboardActionChange = enumScoreboardAction.getDeclaredField("a").get(enumScoreboardAction);
 					enumScoreboardActionRemove = enumScoreboardAction.getDeclaredField("b").get(enumScoreboardAction);
 				} catch (NoSuchFieldException e) {
-					enumScoreboardActionChange = enumScoreboardAction.getDeclaredField("CHANGE")
-							.get(enumScoreboardAction);
-					enumScoreboardActionRemove = enumScoreboardAction.getDeclaredField("REMOVE")
-							.get(enumScoreboardAction);
+					enumScoreboardActionChange = enumScoreboardAction.getDeclaredField("CHANGE").get(enumScoreboardAction);
+					enumScoreboardActionRemove = enumScoreboardAction.getDeclaredField("REMOVE").get(enumScoreboardAction);
 				}
 
-				packetPlayOutScoreboardObjectiveConstructor = packetPlayOutScoreboardObjective
-						.getConstructor(scoreboardObjective, int.class);
-				packetPlayOutScoreboardScoreConstructor = packetPlayOutScoreboardScore
-						.getConstructor(enumScoreboardAction, String.class, String.class, int.class);
+				packetPlayOutScoreboardObjectiveConstructor = packetPlayOutScoreboardObjective.getConstructor(scoreboardObjective,
+						int.class);
+				packetPlayOutScoreboardScoreConstructor = packetPlayOutScoreboardScore.getConstructor(enumScoreboardAction,
+						String.class, String.class, int.class);
 			}/* else {
 				Class<?> scoreboardScore = classByName("net.minecraft.world.scores", "ScoreboardScore");
 				scoreboardScoreConstructor = scoreboardScore.getConstructor(scoreboardClass, scoreboardObjective,
@@ -264,8 +253,7 @@ public final class ClazzContainer {
 			(infoList = packetPlayOutPlayerInfo.getDeclaredField("b")).setAccessible(true);
 
 			try {
-				playerInfoData = classByName("net.minecraft.network.protocol.game",
-						"PacketPlayOutPlayerInfo$PlayerInfoData");
+				playerInfoData = classByName("net.minecraft.network.protocol.game", "PacketPlayOutPlayerInfo$PlayerInfoData");
 			} catch (ClassNotFoundException e) {
 				playerInfoData = classByName(null, "PlayerInfoData");
 			}
