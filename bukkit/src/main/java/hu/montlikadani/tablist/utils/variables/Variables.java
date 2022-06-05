@@ -317,8 +317,16 @@ public final class Variables {
 		if (s.indexOf("%ip-address%") != -1) {
 			java.net.InetSocketAddress address = p.getAddress();
 
-			if (address != null && address.getAddress() != null) {
-				s = s.replace("%ip-address%", address.getAddress().toString().replace("/", ""));
+			if (address != null) {
+				java.net.InetAddress inetAddress = address.getAddress();
+
+				if (inetAddress != null) {
+					String hostAddress = inetAddress.getHostAddress();
+
+					if (hostAddress != null) {
+						s = s.replace("%ip-address%", hostAddress);
+					}
+				}
 			}
 		}
 
