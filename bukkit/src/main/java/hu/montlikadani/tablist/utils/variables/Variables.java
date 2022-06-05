@@ -271,7 +271,6 @@ public final class Variables {
 		}
 
 		s = s.replace("%player%", p.getName());
-		s = s.replace("%player-uuid%", p.getUniqueId().toString());
 		s = s.replace("%world%", p.getWorld().getName());
 		s = s.replace("%player-gamemode%", p.getGameMode().name());
 
