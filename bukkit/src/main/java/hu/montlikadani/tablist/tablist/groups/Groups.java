@@ -284,16 +284,17 @@ public final class Groups {
 					return;
 				}
 
-				updatePlayers();
+				// Skip method execution to sort players until the current thread is locked
+				if (!lock.isLocked()) {
+					updatePlayers();
+				}
 			}, refreshInt, refreshInt);
 		}
 	}
 
 	private void updatePlayers() {
-		GroupPlayer gp;
-
 		for (TabListUser user : plugin.getUsers()) {
-			gp = user.getGroupPlayer();
+			GroupPlayer gp = user.getGroupPlayer();
 
 			if (gp.update()) {
 				sortedPlayers.remove(gp);
@@ -311,12 +312,6 @@ public final class Groups {
 	 * change the places of groups, they will only be updated in the custom name, prefix, suffix and others.
 	 */
 	private void sortPlayers() {
-
-		// Skip this method to sort players until the current thread is locked
-		if (lock.isLocked()) {
-			return;
-		}
-
 		// Pauses the current thread until the stream unlocks.
 		//
 		// This was implemented to fix a less reproducible and undetectable exception.
@@ -342,14 +337,14 @@ public final class Groups {
 			if (ConfigValues.isAfkStatusEnabled() && (ConfigValues.isAfkSortLast()
 					|| (groupPlayer.getGroup() != null && groupPlayer.getGroup().getAfkSortPriority() != -1))) {
 				if (PluginUtils.isAfk(groupPlayer.getUser().getPlayer())) {
-					if (afkPlayersCache.add(groupPlayer)) {
+					if (afkPlayersCache.add(groupPlayer) && !toSort) {
 						setToSort(true);
 					}
 
 					continue;
 				}
 
-				if (afkPlayersCache.remove(groupPlayer)) {
+				if (afkPlayersCache.remove(groupPlayer) && !toSort) {
 					setToSort(true);
 				}
 			}
@@ -361,9 +356,8 @@ public final class Groups {
 			int size = playerGroups.size();
 
 			for (GroupPlayer afk : afkPlayersCache) {
-				priority = afk.getGroup() == null ? -1 : afk.getGroup().getAfkSortPriority();
-
-				setPlayerTeam(afk, priority == -1 ? size++ : priority);
+				setPlayerTeam(afk, (afk.getGroup() == null || afk.getGroup().getAfkSortPriority() == -1) ? size++
+						: afk.getGroup().getAfkSortPriority());
 			}
 		}
 

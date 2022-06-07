@@ -260,6 +260,8 @@ public final class GroupPlayer {
 		return true;
 	}
 
+	private TabText fullName;
+
 	public TabText getTabNameWithPrefixSuffix() {
 		String tabName = null;
 
@@ -306,6 +308,12 @@ public final class GroupPlayer {
 			}
 		}
 
-		return TabText.parseFromText(tl.getPlaceholders().replaceVariables(player, tl.makeAnim(prefix + tabName + suffix)));
+		if (fullName == null) {
+			fullName = TabText.parseFromText(tl.getPlaceholders().replaceVariables(player, tl.makeAnim(prefix + tabName + suffix)));
+		} else {
+			fullName.updateText(tl.getPlaceholders().replaceVariables(player, tl.makeAnim(prefix + tabName + suffix)));
+		}
+
+		return fullName;
 	}
 }

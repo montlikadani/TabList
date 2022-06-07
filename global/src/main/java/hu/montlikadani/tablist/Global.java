@@ -55,7 +55,7 @@ public final class Global {
 	}
 
 	public static String replaceFrom(String text, int start, String search, String replacement, int max) {
-		int index = text.indexOf(search, start);
+		int index = start == 0 ? text.indexOf(search) : text.indexOf(search, start);
 
 		if (index == -1) {
 			return text;

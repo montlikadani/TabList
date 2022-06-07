@@ -101,7 +101,7 @@ public final class ReflectionUtils {
 		String strJson = text.getJsonElements().get(0).plainJson, plainText = text.getPlainText();
 		int textLength = -1, from = 0, index = 0;
 
-		int jsonIndex = plainText.indexOf(strJson, from);
+		int jsonIndex = plainText.indexOf(strJson);
 
 		if (jsonIndex != -1) {
 			result.append(

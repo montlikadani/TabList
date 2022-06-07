@@ -43,9 +43,7 @@ public final class TabText {
 		}
 
 		TabText tabText = new TabText();
-		tabText.plainText = from;
-
-		tabText.findJsonInText(from);
+		tabText.updateText(from);
 		return tabText;
 	}
 
@@ -61,7 +59,7 @@ public final class TabText {
 		int start, end = 0;
 		int length = text.length();
 
-		while ((start = text.indexOf("[\"\",{", end)) != -1) {
+		while ((start = (end == 0 ? text.indexOf("[\"\",{") : text.indexOf("[\"\",{", end))) != -1) {
 
 			// JSON may contain "raw translate with" array, we should check this also
 			if ((end = text.indexOf("]}]", start)) == -1) {
@@ -138,11 +136,11 @@ public final class TabText {
 	public class JsonElementData {
 
 		public final String plainJson;
-		public final int length;
+		public final int jsonLength;
 
 		public JsonElementData(String plainJson) {
 			this.plainJson = plainJson;
-			length = plainJson.length();
+			jsonLength = plainJson.length();
 		}
 	}
 }

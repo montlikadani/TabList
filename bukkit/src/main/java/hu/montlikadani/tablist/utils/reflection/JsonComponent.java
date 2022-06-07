@@ -67,7 +67,7 @@ public final class JsonComponent {
 				// as the length of the json was changed
 				// we need to avoid using unicode characters or a temporary solution
 				// https://stackoverflow.com/questions/43091804/
-				i += data.length - 1;
+				i += data.jsonLength - 1;
 				obj = new JsonObject();
 
 				index++;
@@ -126,10 +126,14 @@ public final class JsonComponent {
 					case 'l':
 						obj.addProperty("bold", true);
 						break;
-					case 'r':
-						obj.addProperty("color", "white");
-						break;
+					//case 'r':
+						//obj.addProperty("color", "white");
+						//break;
 					default:
+						if (code == 'f' || code == 'r') {
+							break;
+						}
+
 						org.bukkit.ChatColor colorChar = org.bukkit.ChatColor.getByChar(code);
 
 						if (colorChar != null) {
@@ -181,9 +185,7 @@ public final class JsonComponent {
 				int fromIndex = i + 6;
 
 				if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
-					final String key = text.substring(fromIndex, closeIndex);
-
-					String res = fonts.computeIfAbsent(key, s -> {
+					String res = fonts.computeIfAbsent(text.substring(fromIndex, closeIndex), key -> {
 						try {
 							return NamespacedKey.minecraft(key).toString();
 						} catch (IllegalArgumentException ie) {
@@ -220,8 +222,6 @@ public final class JsonComponent {
 		obj.addProperty("text", builder.toString());
 		jsonList.add(obj);
 
-		// Minecraft JSON is weird, it must begin with ["", to actually return the
-		// expected format
 		return ReflectionUtils.jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(),
 				"[\"\"," + Global.replaceFrom(GSON.toJson(jsonList, List.class), 0, "[", "", 1));
 	}
