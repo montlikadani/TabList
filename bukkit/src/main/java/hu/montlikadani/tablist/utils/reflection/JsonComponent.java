@@ -53,9 +53,14 @@ public final class JsonComponent {
 
 			if (charAt == '[' && existingJson != null && index < existingJson.size() && text.charAt(i + 1) == '"'
 					&& text.charAt(i + 2) == '"' && text.charAt(i + 3) == ',' && text.charAt(i + 4) == '{') {
-				if (obj.size() == 0 || !obj.has("text")) {
+				if (builder.length() != 0) {
 					obj.addProperty("text", builder.toString());
+					jsonList.add(obj);
+					builder = new StringBuilder();
 				}
+
+				obj = new JsonObject();
+				obj.addProperty("text", "");
 
 				TabText.JsonElementDataNew data = (TabText.JsonElementDataNew) existingJson.get(index);
 				obj.add("extra", data.element);
@@ -102,12 +107,24 @@ public final class JsonComponent {
 						continue;
 					}
 
+					boolean isTextEmpty = false;
+
 					if (builder.length() != 0) {
-						obj.addProperty("text", builder.toString());
+						String resText = builder.toString();
+
+						isTextEmpty = resText.isEmpty();
+
+						obj.addProperty("text", resText);
 						jsonList.add(obj);
 
 						obj = new JsonObject();
 						builder = new StringBuilder();
+					}
+
+					// Skip adding formatting to empty texts
+					if (isTextEmpty) {
+						i++;
+						continue;
 					}
 
 					switch (code) {
@@ -126,12 +143,9 @@ public final class JsonComponent {
 					case 'l':
 						obj.addProperty("bold", true);
 						break;
-					//case 'r':
-						//obj.addProperty("color", "white");
-						//break;
 					default:
 						if (code == 'f' || code == 'r') {
-							break;
+							break; // We don't need these formatting as the default colour is white
 						}
 
 						org.bukkit.ChatColor colorChar = org.bukkit.ChatColor.getByChar(code);
@@ -200,6 +214,9 @@ public final class JsonComponent {
 					}
 				} else if (text.regionMatches(true, i, "{/font", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
 					font = fonts.computeIfAbsent("default", s -> NamespacedKey.minecraft("default").toString());
+				} else {
+					builder.append(charAt);
+					continue;
 				}
 
 				if (closeIndex != -1) {
