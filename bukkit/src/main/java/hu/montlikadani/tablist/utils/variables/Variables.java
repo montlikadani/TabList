@@ -148,7 +148,6 @@ public final class Variables {
 
 		if (!ConfigValues.getMemoryBarChar().isEmpty() && str.indexOf("%memory_bar%") != -1) {
 			Runtime runtime = Runtime.getRuntime();
-			StringBuilder builder = new StringBuilder();
 
 			int barSize = ConfigValues.getMemoryBarSize(), totalMemory = (int) (runtime.totalMemory() / MB),
 					usedMemory = totalMemory - (int) (runtime.freeMemory() / MB), maxMemory = (int) (runtime.maxMemory() / MB);
@@ -157,8 +156,7 @@ public final class Variables {
 			float totalMem = (float) totalMemory / maxMemory;
 
 			String barChar = ConfigValues.getMemoryBarChar();
-
-			builder.append(usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
+			StringBuilder builder = new StringBuilder(usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
 
 			int i = 0;
 			int totalBarSize = (int) (barSize * usedMem);

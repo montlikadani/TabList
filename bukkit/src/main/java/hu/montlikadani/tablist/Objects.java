@@ -1,7 +1,5 @@
 package hu.montlikadani.tablist;
 
-import java.util.concurrent.atomic.AtomicInteger;
-
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -23,7 +21,6 @@ import hu.montlikadani.tablist.utils.variables.simplePlaceholder.PluginPlacehold
 public final class Objects {
 
 	private final TabList plugin;
-	private final AtomicInteger objectScore = new AtomicInteger();
 
 	private BukkitTask task;
 
@@ -150,15 +147,15 @@ public final class Objects {
 					user.getPlayerScore().setObjectiveCreated();
 				}
 
+				int lastScore = 0;
+
 				if (type == ObjectTypes.PING) {
-					objectScore.set(TabListAPI.getPing(player));
+					lastScore = TabListAPI.getPing(player);
 				} else if (type == ObjectTypes.CUSTOM) {
-					objectScore.set(getValue(player, ConfigValues.getCustomObjectSetting()));
+					lastScore = getValue(player, ConfigValues.getCustomObjectSetting());
 				}
 
 				// Update objective value
-
-				int lastScore = objectScore.get();
 
 				if (lastScore != user.getPlayerScore().getLastScore()) {
 					user.getPlayerScore().setLastScore(lastScore);

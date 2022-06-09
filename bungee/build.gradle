@@ -18,8 +18,8 @@ apply plugin: 'java'
 
 dependencies {
     implementation project(':global')
-    compileOnly 'net.md-5:bungeecord-api:1.18-R0.1-SNAPSHOT'
-    compileOnly 'net.md-5:bungeecord-chat:1.18-R0.1-SNAPSHOT'
+    compileOnly 'net.md-5:bungeecord-api:1.19-R0.1-SNAPSHOT'
+    compileOnly 'net.md-5:bungeecord-chat:1.19-R0.1-SNAPSHOT'
 }
 
 description = 'TabList-bungee'
