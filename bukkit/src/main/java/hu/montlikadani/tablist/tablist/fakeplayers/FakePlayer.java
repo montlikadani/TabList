@@ -241,23 +241,31 @@ public final class FakePlayer implements IFakePlayer {
 				profile = (GameProfile) ClazzContainer.getPlayerInfoDataProfileMethod().invoke(infoData);
 			}
 
-			if (profile.getId().equals(this.profile.getId())) {
-				Constructor<?> playerInfoDataConstr = ClazzContainer.getPlayerInfoDataConstructor();
-				Object gameMode = ClazzContainer.getPlayerInfoDataGameMode().get(infoData);
-				Object packet;
+			if (!profile.getId().equals(this.profile.getId())) {
+				continue;
+			}
 
-				if (playerInfoDataConstr.getParameterCount() == 5) {
+			Constructor<?> playerInfoDataConstr = ClazzContainer.getPlayerInfoDataConstructor();
+			Object gameMode = ClazzContainer.getPlayerInfoDataGameMode().get(infoData);
+			Object packet;
+
+			switch (playerInfoDataConstr.getParameterCount()) {
+			case 5:
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
+					packet = playerInfoDataConstr.newInstance(profile, ping, gameMode, chatBaseComponentName, null);
+				} else {
 					packet = playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
 							chatBaseComponentName);
-				} else if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-					packet = playerInfoDataConstr.newInstance(profile, ping, gameMode, chatBaseComponentName);
-				} else {
-					packet = playerInfoDataConstr.newInstance(profile, ping, gameMode, chatBaseComponentName);
 				}
 
-				ClazzContainer.getInfoList().set(packetPlayOutPlayerInfo, java.util.Collections.singletonList(packet));
+				break;
+			default:
+				packet = playerInfoDataConstr.newInstance(profile, ping, gameMode, chatBaseComponentName);
 				break;
 			}
+
+			ClazzContainer.getInfoList().set(packetPlayOutPlayerInfo, java.util.Collections.singletonList(packet));
+			break;
 		}
 	}
 

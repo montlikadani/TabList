@@ -241,8 +241,18 @@ public final class ReflectionUtils {
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
 				if (entityPlayerConstructor == null) {
-					entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer")
-							.getConstructor(minecraftServer, worldServer.getClass(), profile.getClass());
+					if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
+						entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer")
+								.getConstructor(minecraftServer, worldServer.getClass(), profile.getClass(),
+										ClazzContainer.classByName("net.minecraft.world.entity.player", "ProfilePublicKey"));
+					} else {
+						entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer")
+								.getConstructor(minecraftServer, worldServer.getClass(), profile.getClass());
+					}
+				}
+
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
+					return entityPlayerConstructor.newInstance(getServer(minecraftServer), worldServer, profile, null);
 				}
 
 				return entityPlayerConstructor.newInstance(getServer(minecraftServer), worldServer, profile);

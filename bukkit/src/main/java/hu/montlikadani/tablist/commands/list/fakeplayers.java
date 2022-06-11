@@ -97,6 +97,7 @@ public final class fakeplayers implements ICommand {
 			break;
 		case RENAME:
 			if (args.length < 4) {
+				sendList(label, sender);
 				return true;
 			}
 
@@ -134,6 +135,11 @@ public final class fakeplayers implements ICommand {
 					res.toString()).forEach(line -> sendMsg(sender, line));
 			break;
 		case SETSKIN:
+			if (args.length < 4) {
+				sendList(label, sender);
+				return true;
+			}
+
 			if ((output = handler.setSkin(args[2], args[3])) == EditingResult.NOT_EXIST) {
 				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
 				return true;
@@ -145,6 +151,11 @@ public final class fakeplayers implements ICommand {
 
 			break;
 		case SETPING:
+			if (args.length < 4) {
+				sendList(label, sender);
+				return true;
+			}
+
 			int amount = Util.tryParse(args[3]).orElse(-1);
 
 			if ((output = handler.setPing(args[2], amount)) == EditingResult.NOT_EXIST) {
