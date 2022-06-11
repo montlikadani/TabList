@@ -177,7 +177,7 @@ public class ConfigValues {
 		syncPluginsGroups = c.get("change-prefix-suffix-in-tablist.sync-plugins-groups-with-tablist", true);
 		hideGroupInVanish = c.get("change-prefix-suffix-in-tablist.hide-group-when-player-vanished", false);
 		assignGlobalGroup = c.get("change-prefix-suffix-in-tablist.assign-global-group-to-normal", false);
-		preferPrimaryVaultGroup = c.get("change-prefix-suffix-in-tablist.prefer-primary-vault-group", true);
+		preferPrimaryVaultGroup = c.get("change-prefix-suffix-in-tablist.prefer-primary-vault-group", false);
 
 		afkFormatYes = Global.setSymbols(c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r "));
 		afkFormatNo = Global.setSymbols(c.get("placeholder-format.afk-status.format-no", ""));

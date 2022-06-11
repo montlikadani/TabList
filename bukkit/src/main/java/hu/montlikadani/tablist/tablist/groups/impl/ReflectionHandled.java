@@ -208,16 +208,24 @@ public class ReflectionHandled implements ITabScoreboard {
 				}
 
 				Object nameComponent = ReflectionUtils.getAsIChatBaseComponent(groupPlayer.getTabNameWithPrefixSuffix());
-				Constructor<?> playerInfoDataConstr = ClazzContainer.getPlayerInfoDataConstructor();
-				Object gameMode = ClazzContainer.getPlayerInfoDataGameMode().get(infoData);
 				int ping = (int) ClazzContainer.getPlayerInfoDataPing().get(infoData);
+				Object gameMode = ClazzContainer.getPlayerInfoDataGameMode().get(infoData);
+				Constructor<?> playerInfoDataConstr = ClazzContainer.getPlayerInfoDataConstructor();
 				Object infoPacket;
 
-				if (playerInfoDataConstr.getParameterCount() == 5) {
-					infoPacket = playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
-							nameComponent);
-				} else {
+				switch (playerInfoDataConstr.getParameterCount()) {
+				case 5:
+					if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
+						infoPacket = playerInfoDataConstr.newInstance(profile, ping, gameMode, nameComponent, null);
+					} else {
+						infoPacket = playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
+								nameComponent);
+					}
+
+					break;
+				default:
 					infoPacket = playerInfoDataConstr.newInstance(profile, ping, gameMode, nameComponent);
+					break;
 				}
 
 				ClazzContainer.getInfoList().set(packetPlayOutPlayerInfo, Collections.singletonList(infoPacket));

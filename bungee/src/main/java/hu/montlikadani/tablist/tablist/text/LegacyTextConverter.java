@@ -1,7 +1,6 @@
 package hu.montlikadani.tablist.tablist.text;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import com.google.gson.JsonObject;
 
@@ -16,11 +15,12 @@ public final class LegacyTextConverter {
 
 	private static final com.google.gson.Gson GSON = new com.google.gson.GsonBuilder().disableHtmlEscaping().create();
 
-	private static final List<JsonObject> JSON_OBJECTS = new ArrayList<>(5);
-	private static final List<BaseComponent> COMPONENTS = new ArrayList<>(10);
+	private static final ArrayList<JsonObject> JSON_OBJECTS = new ArrayList<>(5);
+	private static final ArrayList<BaseComponent> COMPONENTS = new ArrayList<>(10);
 
 	public static synchronized BaseComponent[] toBaseComponent(String legacyText) {
 		COMPONENTS.clear();
+		COMPONENTS.trimToSize();
 
 		StringBuilder builder = new StringBuilder();
 		TextComponent component = new TextComponent();
@@ -118,6 +118,7 @@ public final class LegacyTextConverter {
 
 	public static synchronized String toJson(String text) {
 		JSON_OBJECTS.clear();
+		JSON_OBJECTS.trimToSize();
 
 		JsonObject object = new JsonObject();
 		StringBuilder builder = new StringBuilder();
@@ -159,10 +160,11 @@ public final class LegacyTextConverter {
 					case 'l':
 						object.addProperty("bold", true);
 						break;
-					case 'r':
-						object.addProperty("color", "white");
-						break;
 					default:
+						if (nextChar == 'r' || nextChar == 'f') {
+							break;
+						}
+
 						ChatColor colorChar = ChatColor.getByChar(nextChar);
 
 						if (colorChar != null) {

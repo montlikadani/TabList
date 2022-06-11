@@ -8,15 +8,14 @@ import hu.montlikadani.tablist.utils.ServerVersion;
 
 public final class ClazzContainer {
 
-	private static Field infoList, scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamPrefix,
-			scoreboardTeamSuffix, scoreboardTeamNames, scoreboardTeamMode, scoreboardPlayers, nameTagVisibility,
-			playerInfoDataProfileField, playerInfoDataPing, playerInfoDataGameMode, nameTagVisibilityNameField,
-			scoreboardObjectiveMethod, packetPlayOutScoreboardObjectiveNameField,
-			packetPlayOutScoreboardObjectiveDisplayNameField, packetPlayOutScoreboardObjectiveRenderType;
+	private static Field infoList, scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamPrefix, scoreboardTeamSuffix,
+			scoreboardTeamNames, scoreboardTeamMode, scoreboardPlayers, nameTagVisibility, playerInfoDataProfileField,
+			playerInfoDataPing, playerInfoDataGameMode, nameTagVisibilityNameField, scoreboardObjectiveMethod,
+			packetPlayOutScoreboardObjectiveNameField, packetPlayOutScoreboardObjectiveDisplayNameField,
+			packetPlayOutScoreboardObjectiveRenderType;
 
-	private static Class<?> iChatBaseComponent, packet, packetPlayOutPlayerInfo, enumPlayerInfoAction,
-			enumGameMode, playerInfoData, packetPlayOutScoreboardTeam,
-			scoreboardNameTagVisibility, scoreboardTeamClass, scoreboardClass,
+	private static Class<?> iChatBaseComponent, packet, packetPlayOutPlayerInfo, enumPlayerInfoAction, enumGameMode,
+			playerInfoData, packetPlayOutScoreboardTeam, scoreboardNameTagVisibility, scoreboardTeamClass, scoreboardClass,
 			scoreboardObjective;
 
 	private static Object gameModeNotSet, gameModeSpectator, gameModeSurvival, addPlayer, removePlayer, updateGameMode,
@@ -25,7 +24,8 @@ public final class ClazzContainer {
 
 	private static Method scoreboardTeamSetPrefix, scoreboardTeamSetSuffix, scoreboardTeamSetNameTagVisibility,
 			scoreboardTeamSetDisplayName, packetScoreboardTeamRemove, packetScoreboardTeamUpdateCreate,
-			packetScoreboardTeamEntries, playerInfoDataProfileMethod, playerNameSetMethod, setScoreboardScoreMethod;
+			packetScoreboardTeamEntries, playerInfoDataProfileMethod, playerNameSetMethod, setScoreboardScoreMethod
+			/*,profilePublicKeyMethod, profilePublicKey_aMethod*/;
 
 	private static Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstructor, scoreboardConstructor,
 			scoreboardTeamConstructor, packetPlayOutScoreboardTeamConstructor, packetPlayOutScoreboardScoreConstructor,
@@ -261,7 +261,9 @@ public final class ClazzContainer {
 			playerInfoDataConstructors = playerInfoData.getConstructors();
 
 			for (Constructor<?> constr : playerInfoDataConstructors) {
-				if (constr.getParameterCount() == 4 || constr.getParameterCount() == 5) {
+				int paramCount = constr.getParameterCount();
+
+				if (paramCount == 4 || paramCount == 5) {
 					(playerInfoDataConstr = constr).setAccessible(true);
 					break;
 				}
@@ -277,9 +279,17 @@ public final class ClazzContainer {
 				(playerInfoDataGameMode = playerInfoData.getDeclaredField("c")).setAccessible(true);
 			}
 
+			Class<?> entityPlayer = classByName("net.minecraft.server.level", "EntityPlayer");
+
 			(playOutPlayerInfoConstructor = packetPlayOutPlayerInfo.getDeclaredConstructor(enumPlayerInfoAction,
-					java.lang.reflect.Array.newInstance(classByName("net.minecraft.server.level", "EntityPlayer"), 0).getClass()))
-							.setAccessible(true);
+					java.lang.reflect.Array.newInstance(entityPlayer, 0).getClass())).setAccessible(true);
+
+			// Not needed, always returns null
+			/*if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
+				profilePublicKeyMethod = entityPlayer.getMethod("fA"); // getProfilePublicKey
+				profilePublicKey_aMethod = classByName("net.minecraft.world.entity.player", "ProfilePublicKey")
+						.getDeclaredMethod("b"); // data method
+			}*/
 
 			try {
 				enumGameMode = classByName("net.minecraft.world.level", "EnumGamemode");
