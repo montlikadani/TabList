@@ -53,7 +53,7 @@ public final class TabText {
 	}
 
 	// Caching jsons to avoid recreating continuously
-	private final List<JsonElementData> skippedDatas = new ArrayList<>();
+	private final List<JsonElementData> skippedDatas = new ArrayList<>(1);
 
 	public void findJsonInText(String text) {
 		int start, end = 0;
