@@ -23,7 +23,7 @@ dependencies {
 }
 
 description = 'TabList-bungee'
-version = '2.2.8'
+version = '2.2.9'
 
 tasks.shadowJar {
 	archiveFileName = 'TabList-bungee-' + version + '.jar'

@@ -44,7 +44,7 @@ dependencies {
 }
 
 description = 'TabList-bukkit'
-version = '5.6.2'
+version = '5.6.3'
 
 tasks.shadowJar {
 	archiveFileName = 'TabList-bukkit-' + version + '.jar'
