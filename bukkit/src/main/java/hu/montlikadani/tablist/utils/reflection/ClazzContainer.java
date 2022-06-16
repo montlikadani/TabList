@@ -24,8 +24,7 @@ public final class ClazzContainer {
 
 	private static Method scoreboardTeamSetPrefix, scoreboardTeamSetSuffix, scoreboardTeamSetNameTagVisibility,
 			scoreboardTeamSetDisplayName, packetScoreboardTeamRemove, packetScoreboardTeamUpdateCreate,
-			packetScoreboardTeamEntries, playerInfoDataProfileMethod, playerNameSetMethod, setScoreboardScoreMethod
-			/*,profilePublicKeyMethod, profilePublicKey_aMethod*/;
+			packetScoreboardTeamEntries, playerInfoDataProfileMethod, playerNameSetMethod, setScoreboardScoreMethod;
 
 	private static Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstructor, scoreboardConstructor,
 			scoreboardTeamConstructor, packetPlayOutScoreboardTeamConstructor, packetPlayOutScoreboardScoreConstructor,
@@ -47,10 +46,11 @@ public final class ClazzContainer {
 			packetPlayOutScoreboardTeam = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardTeam");
 
 			// Somehow the 1.8.8 server realizes that Team.OptionStatus enum class is exists
+			//Class.forName("org.bukkit.scoreboard.Team$OptionStatus");
 			try {
-				Class.forName("org.bukkit.scoreboard.Team$OptionStatus");
+				org.bukkit.scoreboard.Team.class.getDeclaredMethod("getOption");
 				isTeamOptionStatusEnumExist = true;
-			} catch (ClassNotFoundException e) {
+			} catch (NoSuchMethodException e) {
 			}
 
 			try {
@@ -279,17 +279,9 @@ public final class ClazzContainer {
 				(playerInfoDataGameMode = playerInfoData.getDeclaredField("c")).setAccessible(true);
 			}
 
-			Class<?> entityPlayer = classByName("net.minecraft.server.level", "EntityPlayer");
-
 			(playOutPlayerInfoConstructor = packetPlayOutPlayerInfo.getDeclaredConstructor(enumPlayerInfoAction,
-					java.lang.reflect.Array.newInstance(entityPlayer, 0).getClass())).setAccessible(true);
-
-			// Not needed, always returns null
-			/*if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
-				profilePublicKeyMethod = entityPlayer.getMethod("fA"); // getProfilePublicKey
-				profilePublicKey_aMethod = classByName("net.minecraft.world.entity.player", "ProfilePublicKey")
-						.getDeclaredMethod("b"); // data method
-			}*/
+					java.lang.reflect.Array.newInstance(classByName("net.minecraft.server.level", "EntityPlayer"), 0).getClass()))
+							.setAccessible(true);
 
 			try {
 				enumGameMode = classByName("net.minecraft.world.level", "EnumGamemode");
