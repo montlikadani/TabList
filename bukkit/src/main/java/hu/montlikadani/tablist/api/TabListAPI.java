@@ -106,19 +106,6 @@ public final class TabListAPI {
 	}
 
 	/**
-	 * Creates a new fake player that only appear in tablist.
-	 * 
-	 * @param name the fake player name
-	 * @return {@link IFakePlayer}
-	 * @deprecated Use {@link IFakePlayer#builder()}
-	 * @see IFakePlayer#builder()
-	 */
-	@Deprecated
-	public static IFakePlayer createFakePlayer(String name) {
-		return new hu.montlikadani.tablist.tablist.fakeplayers.FakePlayer(name, name, "", -1);
-	}
-
-	/**
 	 * Returns the amount of latency of the given player.
 	 * 
 	 * @param player Player
