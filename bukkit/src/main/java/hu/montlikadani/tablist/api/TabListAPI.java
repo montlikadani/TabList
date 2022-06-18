@@ -11,7 +11,6 @@ import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.tablist.TabTitle;
 import hu.montlikadani.tablist.tablist.TabToggleBase;
-import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 
 /**

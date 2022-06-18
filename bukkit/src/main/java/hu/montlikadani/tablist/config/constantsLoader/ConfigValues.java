@@ -16,7 +16,7 @@ public class ConfigValues {
 			removeGrayColorFromTabInSpec, ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab,
 			afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone,
 			pingFormatEnabled, tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups,
-			hideGroupInVanish, preferPrimaryVaultGroup, assignGlobalGroup;
+			hideGroupInVanish, preferPrimaryVaultGroup, assignGlobalGroup, followNameTagVisibility;
 
 	private static String afkFormatYes, afkFormatNo, timeZone, customObjectSetting, memoryBarChar, memoryBarUsedColor,
 			memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
@@ -65,9 +65,11 @@ public class ConfigValues {
 				"group set is retained as it is not changed during removal, so your group",
 				"will be restored if this option is disabled.",
 				"Requires ProtocolLib to fix view distance issue! (https://github.com/montlikadani/TabList/issues/147)");
+
 		c.addComment("per-world-player-list", "Different player list in different world.");
 		c.addComment("per-world-player-list.world-groups", "You can specify worlds, which will share the same list of players");
 		c.addComment("per-world-player-list.world-groups.example1", "The key name, can be anything");
+
 		c.addComment("placeholder-format", "Placeholders formatting");
 		c.addComment("placeholder-format.afk-status", "When the player changes the AFK status, change his tablist name format?");
 		c.addComment("placeholder-format.afk-status.show-in-right-or-left-side",
@@ -95,6 +97,7 @@ public class ConfigValues {
 		c.addComment("placeholder-format.memory-bar.colors.allocation", "When the server memory less than 80");
 		c.addComment("placeholder-format.memory-bar.colors.released",
 				"When the server memory is on critical level (less than 40) and some resource need memory to run.");
+
 		c.addComment("change-prefix-suffix-in-tablist", "Enable changing of prefix & suffix in player list?");
 		c.addComment("change-prefix-suffix-in-tablist.refresh-interval", "Refresh interval in server ticks.",
 				"Set to 0 if you don't want to refresh the groups.",
@@ -114,6 +117,12 @@ public class ConfigValues {
 				"Prefer player's primary Vault group when assigning tablist group from groups.yml?",
 				"true - player will be assigned their primary vault group where possible",
 				"false - applies the group that has the higher priority in the permission plugin");
+		c.addComment("change-prefix-suffix-in-tablist.followNameTagVisibility",
+				"Follow the name tag visibility for players to show the name tag above player or not,",
+				"depending if a scoreboard team with visibility 'hidden' is exist.",
+				"true - Follows the name tag visibility and hides if there is a scoreboard team created with visibility 'hidden'",
+				"false - Always shows the name tag above player");
+
 		c.addComment("tablist-object-type", "Tablist objective types",
 				"Shows your current health (with life indicator), your current ping or any NUMBER placeholder",
 				"after the player's name (before the ping indicator).");
@@ -127,6 +136,7 @@ public class ConfigValues {
 				"For these players the health will not be displayed");
 		c.addComment("tablist-object-type.object-settings.custom",
 				"Custom placeholder - accepts only number-ending placeholders, like %level%");
+
 		c.addComment("check-update", "Check for updates?");
 		c.addComment("download-updates", "Download new releases to \"releases\" folder?",
 				"This only works if the \"check-update\" is true.");
@@ -178,6 +188,7 @@ public class ConfigValues {
 		hideGroupInVanish = c.get("change-prefix-suffix-in-tablist.hide-group-when-player-vanished", false);
 		assignGlobalGroup = c.get("change-prefix-suffix-in-tablist.assign-global-group-to-normal", false);
 		preferPrimaryVaultGroup = c.get("change-prefix-suffix-in-tablist.prefer-primary-vault-group", false);
+		followNameTagVisibility = c.get("change-prefix-suffix-in-tablist.followNameTagVisibility", false);
 
 		afkFormatYes = Global.setSymbols(c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r "));
 		afkFormatNo = Global.setSymbols(c.get("placeholder-format.afk-status.format-no", ""));
@@ -440,5 +451,9 @@ public class ConfigValues {
 
 	public static boolean isAssignGlobalGroup() {
 		return assignGlobalGroup;
+	}
+
+	public static boolean isFollowNameTagVisibility() {
+		return followNameTagVisibility;
 	}
 }

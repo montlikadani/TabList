@@ -94,6 +94,8 @@ change-prefix-suffix-in-tablist:
 
   prefer-primary-vault-group: true
 
+  followNameTagVisibility: false
+
 tablist-object-type:
 
   type: ping

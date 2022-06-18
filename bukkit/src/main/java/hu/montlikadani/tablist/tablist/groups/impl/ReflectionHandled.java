@@ -9,6 +9,7 @@ import java.util.Locale;
 import com.mojang.authlib.GameProfile;
 
 import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.tablist.groups.GroupPlayer;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.ServerVersion;
@@ -72,56 +73,58 @@ public class ReflectionHandled implements ITabScoreboard {
 				ClazzContainer.getScoreboardTeamNames().set(newTeamPacket, Collections.singletonList(player.getName()));
 			}
 
-			String optionName = null;
+			if (ConfigValues.isFollowNameTagVisibility()) {
+				String optionName = null;
 
-			for (Team team : player.getScoreboard().getTeams()) {
-				if (ClazzContainer.isTeamOptionStatusEnumExist()) {
-					Team.OptionStatus optionStatus = team.getOption(Team.Option.NAME_TAG_VISIBILITY);
+				for (Team team : player.getScoreboard().getTeams()) {
+					if (ClazzContainer.isTeamOptionStatusEnumExist()) {
+						Team.OptionStatus optionStatus = team.getOption(Team.Option.NAME_TAG_VISIBILITY);
 
-					switch (optionStatus) {
-					case FOR_OTHER_TEAMS:
-						optionName = "hideForOtherTeams";
-						break;
-					case FOR_OWN_TEAM:
-						optionName = "hideForOwnTeam";
-						break;
-					default:
-						if (optionStatus != Team.OptionStatus.ALWAYS) {
-							optionName = optionStatus.name().toLowerCase(Locale.ENGLISH);
+						switch (optionStatus) {
+						case FOR_OTHER_TEAMS:
+							optionName = "hideForOtherTeams";
+							break;
+						case FOR_OWN_TEAM:
+							optionName = "hideForOwnTeam";
+							break;
+						default:
+							if (optionStatus != Team.OptionStatus.ALWAYS) {
+								optionName = optionStatus.name().toLowerCase(Locale.ENGLISH);
+							}
+
+							break;
 						}
+					} else {
+						NameTagVisibility visibility = team.getNameTagVisibility();
 
-						break;
-					}
-				} else {
-					NameTagVisibility visibility = team.getNameTagVisibility();
+						switch (visibility) {
+						case HIDE_FOR_OTHER_TEAMS:
+							optionName = "hideForOtherTeams";
+							break;
+						case HIDE_FOR_OWN_TEAM:
+							optionName = "hideForOwnTeam";
+							break;
+						default:
+							if (visibility != NameTagVisibility.ALWAYS) {
+								optionName = visibility.name().toLowerCase(Locale.ENGLISH);
+							}
 
-					switch (visibility) {
-					case HIDE_FOR_OTHER_TEAMS:
-						optionName = "hideForOtherTeams";
-						break;
-					case HIDE_FOR_OWN_TEAM:
-						optionName = "hideForOwnTeam";
-						break;
-					default:
-						if (visibility != NameTagVisibility.ALWAYS) {
-							optionName = visibility.name().toLowerCase(Locale.ENGLISH);
-						}
-
-						break;
-					}
-				}
-			}
-
-			if (optionName != null) {
-				if (scoreTeam != null) {
-					for (Object f : ClazzContainer.getScoreboardNameTagVisibilityEnumConstants()) {
-						if (optionName.equalsIgnoreCase((String) ClazzContainer.getNameTagVisibilityNameField().get(f))) {
-							ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(scoreTeam, f);
 							break;
 						}
 					}
-				} else {
-					ClazzContainer.getNameTagVisibility().set(newTeamPacket, optionName);
+				}
+
+				if (optionName != null) {
+					if (scoreTeam != null) {
+						for (Object f : ClazzContainer.getScoreboardNameTagVisibilityEnumConstants()) {
+							if (optionName.equalsIgnoreCase((String) ClazzContainer.getNameTagVisibilityNameField().get(f))) {
+								ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(scoreTeam, f);
+								break;
+							}
+						}
+					} else {
+						ClazzContainer.getNameTagVisibility().set(newTeamPacket, optionName);
+					}
 				}
 			}
 
