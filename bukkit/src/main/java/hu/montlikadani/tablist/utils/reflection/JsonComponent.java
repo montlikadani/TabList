@@ -22,7 +22,7 @@ public final class JsonComponent {
 	private final ArrayList<JsonObject> jsonList = new ArrayList<>(10);
 	private final java.util.Map<String, String> fonts = new java.util.HashMap<>(1);
 
-	private final Pattern colorRegexPattern = Pattern.compile("(&+([0-9a-fk-orA-FK-OR]{1})){6}");
+	private final Pattern colorRegexPattern = Pattern.compile("(&+([0-9a-fA-F]{1})){6}");
 
 	private Object emptyJson;
 
