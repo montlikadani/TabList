@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.NavigableMap;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Pattern;
 
 import org.bukkit.NamespacedKey;
 
@@ -20,6 +21,8 @@ public final class JsonComponent {
 
 	private final ArrayList<JsonObject> jsonList = new ArrayList<>(10);
 	private final java.util.Map<String, String> fonts = new java.util.HashMap<>(1);
+
+	private final Pattern colorRegexPattern = Pattern.compile("(&+([0-9a-fk-orA-FK-OR]{1})){6}");
 
 	private Object emptyJson;
 
@@ -44,6 +47,14 @@ public final class JsonComponent {
 		text = text.replace('\u00a7', '&');
 		text = text.replace("&#", "#");
 		text = text.replace("&x", "#");
+
+		// Finds hex colours that may be coming from essentials (&x&f ..) and removes
+		// the "&" character to match the TL hex colour
+		java.util.regex.Matcher matcher = colorRegexPattern.matcher(text);
+
+		while (matcher.find()) {
+			text = Global.replaceFrom(text, matcher.start(), "&", "", 6);
+		}
 
 		int length = text.length(), index = 0;
 		String font = "";
@@ -83,30 +94,6 @@ public final class JsonComponent {
 				char code = text.charAt(i + 1);
 
 				if (Global.isValidColourCharacter(code)) {
-					int current = i + 2;
-
-					// Finds hex colours that may be coming from essentials (&x&f ..) and removes
-					// the "&" character to match the TL hex colour
-					//
-					// This is a very expensive inspection and not ideal, it should be a more
-					// optimal one (and cleaner).
-					// The expected pattern would be: (?>&[0-9a-f]){5}
-					if (current < length && text.charAt(current) == '&'
-							&& ((current = i + 4) >= length || text.charAt(current) == '&')
-							&& ((current = i + 6) >= length || text.charAt(current) == '&')
-							&& ((current = i + 8) >= length || text.charAt(current) == '&')
-							&& ((current = i + 10) >= length || text.charAt(current) == '&')) {
-						text = Global.replaceFrom(text, i, "&", "", 6); // Replace "&" character 6 times
-						length = text.length();
-
-						int k = i - 2;
-						if (k >= 0) { // It may be negative
-							i = k; // Go back to the beginning of hex colour
-						}
-
-						continue;
-					}
-
 					boolean isTextEmpty = false;
 
 					if (builder.length() != 0) {

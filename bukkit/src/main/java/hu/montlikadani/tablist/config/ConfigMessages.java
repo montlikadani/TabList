@@ -17,14 +17,6 @@ public final class ConfigMessages {
 		file = new File(folder, "messages.yml");
 	}
 
-	public FileConfiguration getMessagesConfig() {
-		return messagesConfig;
-	}
-
-	public File getFile() {
-		return file;
-	}
-
 	@SuppressWarnings("unchecked")
 	public void createAndLoad() {
 		boolean fileWasExisted = file.exists();
