@@ -53,7 +53,7 @@ public final class TabManager {
 				for (TabListUser u : plugin.getUsers()) {
 					u.getTabHandler().sendTab();
 				}
-			}, refreshTime, refreshTime);
+			}, 0, refreshTime);
 		}
 	}
 }

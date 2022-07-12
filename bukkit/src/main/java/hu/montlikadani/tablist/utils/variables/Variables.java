@@ -27,7 +27,7 @@ public final class Variables {
 	private final TabList plugin;
 
 	private final List<LogicalNode> nodes = new ArrayList<>();
-	private final java.util.Set<Variable> variables = new java.util.HashSet<>(8);
+	private final java.util.Set<Variable> variables = new java.util.HashSet<>(6);
 
 	public Variables(TabList plugin) {
 		this.plugin = plugin;
@@ -92,12 +92,6 @@ public final class Variables {
 					v.setAndGetRemainingValue(vanishedPlayers == 0 ? "0" : Integer.toString(vanishedPlayers)));
 		}));
 
-		variables.add(new Variable("servertype", -1)
-				.setVariable((v, str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getServer().getName()))));
-
-		variables.add(new Variable("mc-version", -1).setVariable(
-				(v, str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getServer().getBukkitVersion()))));
-
 		variables.add(new Variable("motd", 10).setVariable(
 				(v, str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getComplement().getMotd()))));
 
@@ -125,7 +119,14 @@ public final class Variables {
 		}));
 	}
 
-	private final long MB = 1024 * 1024;
+	// These are the variables that will be replaced once
+	public String replaceMiscVariables(String str) {
+		str = str.replace("%servertype%", plugin.getServer().getName());
+		str = str.replace("%mc-version%", plugin.getServer().getBukkitVersion());
+		str = hu.montlikadani.tablist.Global.setSymbols(str);
+
+		return str;
+	}
 
 	public TabText replaceVariables(Player pl, TabText text) {
 		if (text != null) {
@@ -140,6 +141,8 @@ public final class Variables {
 
 		return text;
 	}
+
+	private final long MB = 1024 * 1024;
 
 	public String replaceVariables(Player pl, String str) {
 		if (str.isEmpty()) {
@@ -186,11 +189,6 @@ public final class Variables {
 		}
 
 		for (Variable variable : variables) {
-			if (variable.isReplacedBefore() && variable.getRemainingValue() != null) {
-				str = str.replace(variable.fullName, variable.getRemainingValue());
-				continue;
-			}
-
 			if (variable.canReplace(str)) {
 				variable.getReplacer().accept(variable, str);
 			}
@@ -341,7 +339,7 @@ public final class Variables {
 
 		if (index != -1) {
 			int tpsSize = ConfigValues.getTpsSize();
-			int size = (tpsSize == 1 ? 3 : index) + (tpsSize < 1 ? 2 : tpsSize);
+			int size = (tpsSize == 1 ? 3 : index) + tpsSize;
 			int length = ds.length();
 
 			ds = ds.substring(0, size > length ? length : size);

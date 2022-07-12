@@ -279,7 +279,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			List<String> list = section.getStringList(name + ".texts");
 
 			if (!list.isEmpty()) {
-				list.replaceAll(Global::setSymbols);
+				list.replaceAll(variables::replaceMiscVariables);
 
 				animations.add(new TextAnimation(name, list, section.getInt(name + ".interval", 200),
 						section.getBoolean(name + ".random", false)));

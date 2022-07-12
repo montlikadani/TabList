@@ -4,7 +4,7 @@
 
 ***
 
-A plugin that allows all online players that are one the server to get an animated tablist with header/footer.
+A plugin for Minecraft servers that allows to get an animated tablist with header/footer for players to replace the vanilla empty one.
 
 - More detailed documentation can be found on [wiki](https://github.com/montlikadani/TabList/wiki) page.
 - Download the latest build from [actions](https://github.com/montlikadani/TabList/actions) page. You will need github account to download.
@@ -16,4 +16,4 @@ A plugin that allows all online players that are one the server to get an animat
 * [Sponge](https://ore.spongepowered.org/montlikadani/%5BAnimated-Tab%5D---TabList)
 
 ### Bug report/feature request
-If you find a bug or you want a feature to be added about the plugin, please make an issue here: https://github.com/montlikadani/TabList/issues/new/choose
+If you find a bug or you want a feature to be added, please make an issue here: https://github.com/montlikadani/TabList/issues/new/choose

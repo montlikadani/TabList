@@ -134,10 +134,8 @@ public final class FakePlayer implements IFakePlayer {
 				Object entityPlayerArray = Array.newInstance(entityPlayerClass, 1);
 				Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
-				Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
-						.newInstance(ClazzContainer.getUpdateDisplayName(), entityPlayerArray);
-
-				ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
+				ReflectionUtils.sendPacket(player, ClazzContainer.getPlayOutPlayerInfoConstructor()
+						.newInstance(ClazzContainer.getUpdateDisplayName(), entityPlayerArray));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

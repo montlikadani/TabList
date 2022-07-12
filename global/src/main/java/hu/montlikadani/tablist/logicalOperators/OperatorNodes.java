@@ -1,7 +1,6 @@
 package hu.montlikadani.tablist.logicalOperators;
 
 import java.util.List;
-import java.util.regex.Pattern;
 
 public class OperatorNodes implements LogicalNode {
 
@@ -55,7 +54,7 @@ public class OperatorNodes implements LogicalNode {
 			if (firstCondition < 0)
 				return false;
 
-			switch (condition.getOperator()) {
+			switch (condition.operator) {
 			case GREATER_THAN:
 				return firstCondition > secondCondition;
 			case GREATER_THAN_OR_EQUAL:
@@ -76,8 +75,6 @@ public class OperatorNodes implements LogicalNode {
 		return false;
 	}
 
-	private static final Pattern VARIABLE_PATTERN = Pattern.compile("%tps%|%tps-overflow%|%ping%");
-
 	public static String parseCondition(double value, NodeType type, List<LogicalNode> nodes) {
 		String color = "";
 
@@ -90,7 +87,7 @@ public class OperatorNodes implements LogicalNode {
 		StringBuilder builder = new StringBuilder();
 
 		if (!color.isEmpty()) {
-			builder.append(VARIABLE_PATTERN.matcher(color).replaceAll("").replace('&', '\u00a7'));
+			builder.append(color);
 		}
 
 		return (type == NodeType.PING ? builder.append((int) value) : builder.append(value)).toString();

@@ -260,7 +260,10 @@ public class ConfigValues {
 				Arrays.asList("exampleplayer", "players"));
 		objectsDisabledWorlds = c.get("tablist-object-type.disabled-worlds", Arrays.asList("testingWorld"));
 
-		tpsSize = c.get("placeholder-format.tps.size", 2);
+		if ((tpsSize = c.get("placeholder-format.tps.size", 2)) < 1) {
+			tpsSize = 2;
+		}
+
 		memoryBarSize = c.get("placeholder-format.memory-bar.size", 80);
 		groupsRefreshInterval = c.get("change-prefix-suffix-in-tablist.refresh-interval", 30);
 		objectRefreshInterval = c.get("tablist-object-type.refresh-interval", 3) * 20;

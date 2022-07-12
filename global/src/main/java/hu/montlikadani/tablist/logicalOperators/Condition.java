@@ -2,8 +2,8 @@ package hu.montlikadani.tablist.logicalOperators;
 
 public class Condition {
 
-	private final RelationalOperators operator;
-	private final String[] parseable;
+	public final RelationalOperators operator;
+	public final String[] parseable;
 
 	private String color = "";
 	private double secondCondition = 0D;
@@ -20,20 +20,15 @@ public class Condition {
 		String second = parseable[1];
 
 		try {
-			secondCondition = Double.parseDouble((first.indexOf("%ping%") != -1 || first.indexOf("%tps%") != -1
-					|| first.indexOf("%tps-overflow%") != -1) ? second : first);
+			secondCondition = Double.parseDouble(
+					(first.indexOf("%ping%") != -1 || first.indexOf("%tps%") != -1 || first.indexOf("%tps-overflow%") != -1)
+							? second
+							: first);
 		} catch (NumberFormatException e) {
 		}
 
-		color = (second.matches("&|#") ? second : first).trim();
-	}
-
-	public String[] getParseable() {
-		return parseable;
-	}
-
-	public RelationalOperators getOperator() {
-		return operator;
+		color = (second.matches("&|#") ? second : first).trim().replace("%tps%", "").replace("%tps-overflow%", "")
+				.replace("%ping%", "").replace('&', '\u00a7');
 	}
 
 	public double getSecondCondition() {
@@ -46,8 +41,7 @@ public class Condition {
 
 	public enum RelationalOperators {
 
-		GREATER_THAN(">"), GREATER_THAN_OR_EQUAL(">="), LESS_THAN("<"), LESS_THAN_OR_EQUAL("<="), EQUAL("=="),
-		NOT_EQUAL("!=");
+		GREATER_THAN(">"), GREATER_THAN_OR_EQUAL(">="), LESS_THAN("<"), LESS_THAN_OR_EQUAL("<="), EQUAL("=="), NOT_EQUAL("!=");
 
 		public final String operator;
 

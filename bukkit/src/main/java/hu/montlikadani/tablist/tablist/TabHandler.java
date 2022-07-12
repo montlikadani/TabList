@@ -7,7 +7,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 
-import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.user.TabListUser;
@@ -172,7 +171,7 @@ public class TabHandler {
 				}
 
 				tt = header[a];
-				lh += (r = Global.setSymbols(tt.plainText));
+				lh += (r = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
 				tt.plainText = r;
 				header[a] = tt;
 			}
@@ -192,7 +191,7 @@ public class TabHandler {
 				}
 
 				tt = footer[a];
-				lf += (r = Global.setSymbols(tt.plainText));
+				lf += (r = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
 				tt.plainText = r;
 				footer[a] = tt;
 			}

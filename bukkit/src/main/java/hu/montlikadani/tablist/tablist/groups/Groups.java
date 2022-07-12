@@ -16,7 +16,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.tablist.TabText;
@@ -93,11 +92,11 @@ public final class Groups {
 		String globTabName = gr.getString("globalGroup.tabname", "");
 
 		if (!globTabName.isEmpty() || !globPrefix.isEmpty() || !globSuffix.isEmpty()) {
-			TeamHandler team = new TeamHandler("global", TabText.parseFromText(Global.setSymbols(globPrefix)),
-					TabText.parseFromText(Global.setSymbols(globSuffix)));
+			TeamHandler team = new TeamHandler("global", TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(globPrefix)),
+					TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(globSuffix)));
 
 			team.global = true;
-			team.tabName = TabText.parseFromText(Global.setSymbols(globTabName));
+			team.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(globTabName));
 
 			groupsList.add(team);
 		}
@@ -155,14 +154,14 @@ public final class Groups {
 				continue;
 			}
 
-			TabText prefix = TabText.parseFromText(Global.setSymbols(cs.getString(g + ".prefix", "")));
-			TabText suffix = TabText.parseFromText(Global.setSymbols(cs.getString(g + ".suffix", "")));
+			TabText prefix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(cs.getString(g + ".prefix", "")));
+			TabText suffix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(cs.getString(g + ".suffix", "")));
 
 			TeamHandler th = new TeamHandler(g, prefix, suffix, cs.getString(g + ".permission", ""),
 					last = cs.getInt(g + ".sort-priority", last + 1));
 
 			th.setAfkSortPriority(cs.getInt(g + ".afk-sort-priority", -1));
-			th.tabName = TabText.parseFromText(Global.setSymbols(cs.getString(g + ".tabname", "")));
+			th.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(cs.getString(g + ".tabname", "")));
 
 			groupsList.add(th);
 		}

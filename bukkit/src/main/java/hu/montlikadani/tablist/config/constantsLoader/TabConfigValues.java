@@ -31,9 +31,12 @@ public final class TabConfigValues {
 		rememberToggledTablistToFile = c.getBoolean("remember-toggled-tablist-to-file", true);
 		hideTabWhenPlayerVanished = c.getBoolean("hide-tab-when-player-vanished", false);
 		random = c.getBoolean("random", false);
-		updateInterval = c.getInt("interval", 4);
 		disabledWorlds = c.getStringList("disabled-worlds");
 		blackListedPlayers = c.getStringList("blacklisted-players");
+
+		if ((updateInterval = c.getInt("interval", 4)) > 10000) {
+			updateInterval = 10000;
+		}
 
 		defaultHeader = objectToArrayConversion(c.get("header", null));
 		defaultFooter = objectToArrayConversion(c.get("footer", null));

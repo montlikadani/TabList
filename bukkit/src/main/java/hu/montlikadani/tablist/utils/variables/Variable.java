@@ -9,7 +9,6 @@ final class Variable {
 	private final int refreshSeconds;
 
 	private BiConsumer<Variable, String> consumer;
-	private boolean replacedOnce = false;
 	private Instant rateInstant;
 	private String remainingValue;
 
@@ -17,10 +16,6 @@ final class Variable {
 		this.name = name;
 		fullName = '%' + name + '%';
 		this.refreshSeconds = refreshSeconds;
-	}
-
-	public boolean isReplacedBefore() {
-		return replacedOnce;
 	}
 
 	public String getRemainingValue() {
@@ -33,10 +28,6 @@ final class Variable {
 	}
 
 	public BiConsumer<Variable, String> getReplacer() {
-		if (refreshSeconds == -1) {
-			replacedOnce = true;
-		}
-
 		return consumer;
 	}
 
@@ -45,10 +36,6 @@ final class Variable {
 	}
 
 	public boolean canReplace(String str) {
-		if (refreshSeconds == -1) {
-			return true;
-		}
-
 		if (rateInstant != null && rateInstant.isAfter(Instant.now())) {
 			return false;
 		}

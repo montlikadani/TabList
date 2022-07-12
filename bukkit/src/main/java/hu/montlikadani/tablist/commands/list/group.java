@@ -8,7 +8,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.Perm;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.commands.CommandProcessor;
@@ -126,9 +125,9 @@ public final class group implements ICommand {
 
 				if (t.team.equalsIgnoreCase(target)) {
 					t.team = target;
-					t.prefix = TabText.parseFromText(Global.setSymbols(prefix));
-					t.tabName = TabText.parseFromText(Global.setSymbols(tabName));
-					t.suffix = TabText.parseFromText(Global.setSymbols(suffix));
+					t.prefix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(prefix));
+					t.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(tabName));
+					t.suffix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(suffix));
 					t.priority = priority;
 
 					teams.set(i, t);
@@ -141,9 +140,9 @@ public final class group implements ICommand {
 				team = new TeamHandler();
 
 				team.team = target;
-				team.prefix = TabText.parseFromText(Global.setSymbols(prefix));
-				team.tabName = TabText.parseFromText(Global.setSymbols(tabName));
-				team.suffix = TabText.parseFromText(Global.setSymbols(suffix));
+				team.prefix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(prefix));
+				team.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(tabName));
+				team.suffix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(suffix));
 				team.priority = priority;
 
 				teams.add(team);
