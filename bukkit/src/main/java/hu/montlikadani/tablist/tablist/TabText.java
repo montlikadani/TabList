@@ -80,7 +80,7 @@ public final class TabText {
 		}
 	}
 
-	public void addJson(String str) {
+	private void addJson(String str) {
 		for (JsonElementData jsonElementData : jsonElements) {
 			if (skippedDatas.indexOf(jsonElementData) != -1) {
 				return;

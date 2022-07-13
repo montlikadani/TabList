@@ -9,6 +9,7 @@ import hu.montlikadani.tablist.tablist.groups.impl.ITabScoreboard;
 import hu.montlikadani.tablist.tablist.groups.impl.ReflectionHandled;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.PluginUtils;
+import hu.montlikadani.tablist.utils.ServerVersion;
 
 public final class GroupPlayer {
 
@@ -308,10 +309,16 @@ public final class GroupPlayer {
 			}
 		}
 
+		String full = tl.getPlaceholders().replaceVariables(player, tl.makeAnim(prefix + tabName + suffix));
+
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {
+			full = org.bukkit.ChatColor.translateAlternateColorCodes('&', full);
+		}
+
 		if (fullName == null) {
-			fullName = TabText.parseFromText(tl.getPlaceholders().replaceVariables(player, tl.makeAnim(prefix + tabName + suffix)));
+			fullName = TabText.parseFromText(full);
 		} else {
-			fullName.updateText(tl.getPlaceholders().replaceVariables(player, tl.makeAnim(prefix + tabName + suffix)));
+			fullName.updateText(full);
 		}
 
 		return fullName;

@@ -28,14 +28,13 @@ public final class TabListAPI {
 
 	static {
 		try {
-			(serverMethod = Bukkit.getServer().getClass().getDeclaredMethod("getServer")).setAccessible(true);
-		} catch (NoSuchMethodException ex) {
-		}
-
-		try {
 			Bukkit.getServer().getTPS();
 			isTpsMethodExists = true;
 		} catch (NoSuchMethodError e) {
+			try {
+				(serverMethod = Bukkit.getServer().getClass().getDeclaredMethod("getServer")).setAccessible(true);
+			} catch (NoSuchMethodException ex) {
+			}
 		}
 
 		try {

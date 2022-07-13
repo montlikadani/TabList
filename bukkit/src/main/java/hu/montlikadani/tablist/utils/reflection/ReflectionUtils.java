@@ -25,6 +25,8 @@ public final class ReflectionUtils {
 
 	static {
 		try {
+			playerHandleMethod = Player.class.getDeclaredMethod("getHandle");
+
 			Class<?>[] declaredClasses = ClazzContainer.getIChatBaseComponent().getDeclaredClasses();
 
 			if (declaredClasses.length != 0) {
@@ -66,10 +68,6 @@ public final class ReflectionUtils {
 	}
 
 	public static Object getPlayerHandle(Player player) throws Exception {
-		if (playerHandleMethod == null) {
-			playerHandleMethod = player.getClass().getDeclaredMethod("getHandle");
-		}
-
 		return playerHandleMethod.invoke(player);
 	}
 
