@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.logicalOperators.LogicalNode;
-import hu.montlikadani.tablist.logicalOperators.OperatorNodes;
 import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.user.TabListUser;
+import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.api.TabListAPI;
 import hu.montlikadani.tablist.utils.PluginUtils;
@@ -65,7 +65,7 @@ public final class Variables {
 			}
 		}
 
-		OperatorNodes.reverseOrderOfArray(nodes);
+		LogicalNode.reverseOrderOfArray(nodes);
 
 		if (ConfigValues.getDateFormat() != null) {
 			variables.add(new Variable("date", 3).setVariable((v, str) -> str = str.replace(v.fullName,
@@ -202,29 +202,20 @@ public final class Variables {
 			str = str.replace("%server-time%", getTimeAsString(ConfigValues.getTimeFormat()));
 		}
 
-		if (str.indexOf("%server-ram-free%") != -1) {
-			str = str.replace("%server-ram-free%", Long.toString(Runtime.getRuntime().freeMemory() / MB));
-		}
+		str = Global.replace(str, "%server-ram-free%", () -> Long.toString(Runtime.getRuntime().freeMemory() / MB));
+		str = Global.replace(str, "%server-ram-max%", () -> Long.toString(Runtime.getRuntime().maxMemory() / MB));
 
-		if (str.indexOf("%server-ram-max%") != -1) {
-			str = str.replace("%server-ram-max%", Long.toString(Runtime.getRuntime().maxMemory() / MB));
-		}
-
-		if (str.indexOf("%server-ram-used%") != -1) {
+		str = Global.replace(str, "%server-ram-used%", () -> {
 			Runtime runtime = Runtime.getRuntime();
+			return Long.toString((runtime.totalMemory() - runtime.freeMemory()) / MB);
+		});
 
-			str = str.replace("%server-ram-used%", Long.toString((runtime.totalMemory() - runtime.freeMemory()) / MB));
-		}
+		str = Global.replace(str, "%tps-overflow%", () -> tpsDot(TabListAPI.getTPS()));
 
-		if (str.indexOf("%tps-overflow%") != -1) {
-			str = str.replace("%tps-overflow%", tpsDot(TabListAPI.getTPS()));
-		}
-
-		if (str.indexOf("%tps%") != -1) {
+		str = Global.replace(str, "%tps%", () -> {
 			double tps = TabListAPI.getTPS();
-
-			str = str.replace("%tps%", tps > 20.0 ? '*' + tpsDot(20.0) : tpsDot(tps));
-		}
+			return tps > 20.0 ? '*' + tpsDot(20.0) : tpsDot(tps);
+		});
 
 		return str;
 	}
@@ -274,9 +265,7 @@ public final class Variables {
 			s = s.replace("%player-displayname%", plugin.getComplement().getDisplayName(p));
 		}
 
-		if (s.indexOf("%player-health%") != -1) {
-			s = s.replace("%player-health%", Double.toString(p.getHealth()));
-		}
+		s = Global.replace(s, "%player-health%", () -> Double.toString(p.getHealth()));
 
 		if (s.indexOf("%player-max-health%") != -1) {
 			if (ServerVersion.isCurrentLower(ServerVersion.v1_9_R1)) {
@@ -290,25 +279,11 @@ public final class Variables {
 			}
 		}
 
-		if (s.indexOf("%ping%") != -1) {
-			s = s.replace("%ping%", formatPing(TabListAPI.getPing(p)));
-		}
-
-		if (s.indexOf("%exp-to-level%") != -1) {
-			s = s.replace("%exp-to-level%", Integer.toString(p.getExpToLevel()));
-		}
-
-		if (s.indexOf("%level%") != -1) {
-			s = s.replace("%level%", Integer.toString(p.getLevel()));
-		}
-
-		if (s.indexOf("%xp%") != -1) {
-			s = s.replace("%xp%", Float.toString(p.getExp()));
-		}
-
-		if (s.indexOf("%light-level%") != -1) {
-			s = s.replace("%light-level%", Integer.toString(p.getLocation().getBlock().getLightLevel()));
-		}
+		s = Global.replace(s, "%ping%", () -> formatPing(TabListAPI.getPing(p)));
+		s = Global.replace(s, "%exp-to-level%", () -> Integer.toString(p.getExpToLevel()));
+		s = Global.replace(s, "%level%", () -> Integer.toString(p.getLevel()));
+		s = Global.replace(s, "%xp%", () -> Float.toString(p.getExp()));
+		s = Global.replace(s, "%light-level%", () -> Integer.toString(p.getLocation().getBlock().getLightLevel()));
 
 		if (s.indexOf("%ip-address%") != -1) {
 			java.net.InetSocketAddress address = p.getAddress();
@@ -334,7 +309,7 @@ public final class Variables {
 			return Double.toString(d);
 		}
 
-		String ds = OperatorNodes.parseCondition(d, LogicalNode.NodeType.TPS, nodes);
+		String ds = LogicalNode.parseCondition(d, LogicalNode.NodeType.TPS, nodes);
 		int index = ds.indexOf('.');
 
 		if (index != -1) {
@@ -353,7 +328,7 @@ public final class Variables {
 			return Integer.toString(ping);
 		}
 
-		return OperatorNodes.parseCondition(ping, LogicalNode.NodeType.PING, nodes);
+		return LogicalNode.parseCondition(ping, LogicalNode.NodeType.PING, nodes);
 	}
 
 	private String getTimeAsString(DateTimeFormatter formatterPattern) {

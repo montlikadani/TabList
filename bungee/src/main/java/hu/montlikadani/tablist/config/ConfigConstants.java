@@ -8,7 +8,6 @@ import java.util.Map;
 
 import hu.montlikadani.tablist.Misc;
 import hu.montlikadani.tablist.logicalOperators.LogicalNode;
-import hu.montlikadani.tablist.logicalOperators.OperatorNodes;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.config.Configuration;
 
@@ -121,7 +120,7 @@ public final class ConfigConstants {
 			}
 		}
 
-		OperatorNodes.reverseOrderOfArray(LOGICAL_NODES);
+		LogicalNode.reverseOrderOfArray(LOGICAL_NODES);
 	}
 
 	public static String formatPing(int ping) {
@@ -129,7 +128,7 @@ public final class ConfigConstants {
 			return Integer.toString(ping);
 		}
 
-		return OperatorNodes.parseCondition(ping, LogicalNode.NodeType.PING, LOGICAL_NODES);
+		return LogicalNode.parseCondition(ping, LogicalNode.NodeType.PING, LOGICAL_NODES);
 	}
 
 	public static final class GroupSettings {

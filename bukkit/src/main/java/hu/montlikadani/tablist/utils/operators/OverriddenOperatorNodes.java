@@ -3,7 +3,7 @@ package hu.montlikadani.tablist.utils.operators;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.logicalOperators.LogicalNode;
 
-public class OverriddenOperatorNodes extends hu.montlikadani.tablist.logicalOperators.OperatorNodes {
+public final class OverriddenOperatorNodes extends hu.montlikadani.tablist.logicalOperators.OperatorNodes {
 
 	public OverriddenOperatorNodes(LogicalNode.NodeType type) {
 		super(type);
