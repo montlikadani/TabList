@@ -10,7 +10,6 @@ groups:
     prefix: "&a[&cStaff&a]&6 "
     tabname: "%player-displayname%"
     suffix: "&7 <12>"
-    #permission: tablist.staff
 
   Default:
     prefix: "&7"
