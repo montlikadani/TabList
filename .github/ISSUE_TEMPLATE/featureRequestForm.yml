@@ -1,0 +1,15 @@
+name: Feature request
+description: Suggest an idea for this project
+labels: 'Type: New feature'
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please fill out the below templates, creating an empty or non-filled issues will be closed immediately.
+  - type: textarea
+    attributes:
+      label: Description
+      description: |
+        Describe the suggestion(s) for what you want to be added to the plugin.
+    validations:
+      required: true

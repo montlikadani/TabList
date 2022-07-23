@@ -54,7 +54,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			sendMsg(sender, colorText("&9&lTab&4&lList"));
 			sendMsg(sender, colorText("&5Version:&a " + plugin.getDescription().getVersion()));
 			sendMsg(sender, colorText("&5Author, created by:&a montlikadani"));
-			sendMsg(sender, colorText("&5Commands:&8 /&7" + label + "&a help"));
+			sendMsg(sender, colorText("&5Commands:&7 /" + label + " help"));
 			sendMsg(sender,
 					colorText("&4If you find a bug, make issue here:&e &nhttps://github.com/montlikadani/TabList/issues"));
 			return true;
