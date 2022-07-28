@@ -21,22 +21,22 @@ public class Complement2 implements Complement {
 	}
 
 	@Override
-	public void setPlayerListName(Player player, String text) {
+	public void playerListName(Player player, String text) {
 		player.playerListName(deserialize(text));
 	}
 
 	@Override
-	public String getDisplayName(Player player) {
+	public String displayName(Player player) {
 		return serialize(player.displayName());
 	}
 
 	@Override
-	public String getMotd() {
+	public String motd() {
 		return serialize(Bukkit.getServer().motd());
 	}
 
 	@Override
-	public void setDisplayName(Objective objective, String dName) {
+	public void displayName(Objective objective, String dName) {
 		objective.displayName(deserialize(dName));
 	}
 

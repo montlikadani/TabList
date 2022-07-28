@@ -7,13 +7,13 @@ import org.bukkit.scoreboard.Scoreboard;
 
 public interface Complement {
 
-	void setPlayerListName(Player player, String text);
+	void playerListName(Player player, String text);
 
-	String getDisplayName(Player player);
+	String displayName(Player player);
 
-	String getMotd();
+	String motd();
 
-	void setDisplayName(Objective objective, String dName);
+	void displayName(Objective objective, String dName);
 
 	Objective registerNewObjective(Scoreboard board, String name, String criteria, String displayName, RenderType renderType);
 

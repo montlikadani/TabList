@@ -93,7 +93,7 @@ public final class Variables {
 		}));
 
 		variables.add(new Variable("motd", 10).setVariable(
-				(v, str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getComplement().getMotd()))));
+				(v, str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getComplement().motd()))));
 
 		variables.add(new Variable("fake-players", 3).setVariable((v, str) -> {
 			int pls = plugin.getFakePlayerHandler().getFakePlayers().size();
@@ -262,7 +262,7 @@ public final class Variables {
 		s = s.replace("%player-gamemode%", p.getGameMode().name());
 
 		if (!plugin.isPaper() || s.indexOf("%player-displayname%") != -1) {
-			s = s.replace("%player-displayname%", plugin.getComplement().getDisplayName(p));
+			s = s.replace("%player-displayname%", plugin.getComplement().displayName(p));
 		}
 
 		s = Global.replace(s, "%player-health%", () -> Double.toString(p.getHealth()));

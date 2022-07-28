@@ -52,7 +52,7 @@ public final class Objects {
 						RenderType.HEARTS);
 			} else {
 				objective = board.registerNewObjective(objectName, "health");
-				plugin.getComplement().setDisplayName(objective, org.bukkit.ChatColor.RED + "\u2665");
+				plugin.getComplement().displayName(objective, org.bukkit.ChatColor.RED + "\u2665");
 			}
 
 			objective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
@@ -61,18 +61,21 @@ public final class Objects {
 	}
 
 	private PluginPlaceholders customPlaceholder;
-	private static final PluginPlaceholders[] VALUES = PluginPlaceholders.values();
 
 	void startTask() {
-		cancelTask();
 
+		// Load object setting in every case (even if the task is running)
 		if (ConfigValues.getObjectType() == ObjectTypes.CUSTOM) {
-			for (PluginPlaceholders placeholder : VALUES) {
+			for (PluginPlaceholders placeholder : PluginPlaceholders.values()) {
 				if (ConfigValues.getCustomObjectSetting().indexOf(placeholder.name) != -1) {
 					customPlaceholder = placeholder;
 					break;
 				}
 			}
+		}
+
+		if (!isCancelled()) {
+			return;
 		}
 
 		task = Tasks.submitAsync(() -> {

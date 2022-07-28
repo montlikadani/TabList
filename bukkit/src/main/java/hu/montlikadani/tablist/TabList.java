@@ -327,8 +327,13 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				objects.unregisterHealthObjective(player);
 			}
 
-			if (objects.isCancelled()) {
+			if (reload || objects.isCancelled()) {
 				objects.startTask();
+
+				if (reload) {
+					objects.unregisterObjective(Objects.ObjectTypes.PING, user);
+					objects.unregisterObjective(Objects.ObjectTypes.CUSTOM, user);
+				}
 			}
 
 			break;
@@ -358,7 +363,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		}
 
 		tabManager.addPlayer(user);
-		groups.startTask();
+
+		if (!reload) {
+			groups.startTask();
+		}
 
 		if (ConfigValues.isHidePlayersFromTab()) {
 			user.removeFromPlayerList();

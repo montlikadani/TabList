@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist.utils.stuff;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.RenderType;
@@ -10,22 +9,22 @@ import org.bukkit.scoreboard.Scoreboard;
 public final class Complement1 implements Complement {
 
 	@Override
-	public void setPlayerListName(Player player, String text) {
+	public void playerListName(Player player, String text) {
 		player.setPlayerListName(text);
 	}
 
 	@Override
-	public String getDisplayName(Player player) {
+	public String displayName(Player player) {
 		return player.getDisplayName();
 	}
 
 	@Override
-	public String getMotd() {
-		return Bukkit.getServer().getMotd();
+	public String motd() {
+		return org.bukkit.Bukkit.getServer().getMotd();
 	}
 
 	@Override
-	public void setDisplayName(Objective objective, String dName) {
+	public void displayName(Objective objective, String dName) {
 		objective.setDisplayName(dName);
 	}
 

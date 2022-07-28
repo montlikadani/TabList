@@ -17,7 +17,7 @@ abstract class AfkPlayers {
 		} else if (ConfigValues.isAfkStatusEnabled() && !ConfigValues.isPrefixSuffixEnabled()) {
 			String prop = value ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo();
 
-			plugin.getComplement().setPlayerListName(player, Util.colorText(plugin.getPlaceholders().replaceVariables(player,
+			plugin.getComplement().playerListName(player, Util.colorText(plugin.getPlaceholders().replaceVariables(player,
 					ConfigValues.isAfkStatusShowInRightLeftSide() ? player.getName() + prop : prop + player.getName())));
 		}
 	}
