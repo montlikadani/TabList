@@ -44,12 +44,10 @@ public final class GroupPlayer {
 		return group;
 	}
 
-	// TODO seems this integer based priority is unnecessary
 	public String getFullGroupTeamName() {
 		// We starts the sorting with "a" character and a number as without this will
 		// not work after the 10th player
-		//return 'a' + (safePriority > 9 ? "" : "0") + safePriority;
-		return group.team;
+		return 'a' + (safePriority > 9 ? "" : "0") + safePriority;
 	}
 
 	public void removeGroup() {
