@@ -415,8 +415,13 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	}
 
 	public boolean performanceIsUnderValue() {
-		return ConfigValues.getTpsPerformanceObservationValue() != -1
-				&& hu.montlikadani.tablist.api.TabListAPI.getTPS() <= ConfigValues.getTpsPerformanceObservationValue();
+		if (ConfigValues.getTpsPerformanceObservationValue() != -1
+				&& hu.montlikadani.tablist.api.TabListAPI.getTPS() <= ConfigValues.getTpsPerformanceObservationValue()) {
+			getLogger().log(Level.INFO, "All {0} schedulers has been cancelled. (Low performance)", getName());
+			return true;
+		}
+
+		return false;
 	}
 
 	public Optional<TabListUser> getUser(Player player) {
