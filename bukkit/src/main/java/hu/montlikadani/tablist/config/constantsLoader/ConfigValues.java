@@ -30,6 +30,8 @@ public class ConfigValues {
 
 	private static int tpsSize, groupsRefreshInterval, objectRefreshInterval, memoryBarSize;
 
+	private static double tpsPerformanceObservationValue;
+
 	public static final List<List<String>> PER_WORLD_LIST_NAMES = new java.util.ArrayList<>();
 
 	@SuppressWarnings("serial")
@@ -45,6 +47,15 @@ public class ConfigValues {
 		PER_WORLD_LIST_NAMES.clear();
 
 		c.addComment("hook.placeholderapi", "Hook to PlaceholderAPI to use custom placeholders.");
+		c.addComment("tps-performance-observation-value",
+				"This option monitors server performance. If the server's TPS is less than the set value,",
+				"TabList will cancels all currently running schedulers to improve server performance.",
+				"TabList will not restart these schedulers (ie animations, group updates, etc.),",
+				"so you have to do it manually, by reconnecting to the server or by reloading the plugin.",
+				"At values below 8-5, TabList is almost unable to stop its own running processes,",
+				"as the server is already under a very heavy load.", "The values should be between 5-18",
+				"If the value is below 5 or above 18, the default value will be 16.0", "To disable this feature set to -1");
+
 		c.addComment("fake-players", "Fake players that can be added to the player list.");
 		c.addComment("fake-players.count-fake-players-to-online-players",
 				"Do we count the added fake players to the %online-players% placeholder?");
@@ -143,6 +154,13 @@ public class ConfigValues {
 		c.addComment("logconsole", "Log plugin messages to console?");
 
 		placeholderAPI = c.get("hook.placeholderapi", true);
+		tpsPerformanceObservationValue = c.getDouble("tps-performance-observation-value", -1);
+
+		if (tpsPerformanceObservationValue != -1
+				&& (tpsPerformanceObservationValue < 5.0 || tpsPerformanceObservationValue > 18.0)) {
+			tpsPerformanceObservationValue = 16.0;
+		}
+
 		fakePlayers = c.get("fake-players.enabled", c.getBoolean("enable-fake-players"));
 		countFakePlayersToOnlinePlayers = c.get("fake-players.count-fake-players-to-online-players", false);
 		removeGrayColorFromTabInSpec = c.get("remove-gray-color-from-tab-in-spectator", false);
@@ -458,5 +476,9 @@ public class ConfigValues {
 
 	public static boolean isFollowNameTagVisibility() {
 		return followNameTagVisibility;
+	}
+
+	public static double getTpsPerformanceObservationValue() {
+		return tpsPerformanceObservationValue;
 	}
 }

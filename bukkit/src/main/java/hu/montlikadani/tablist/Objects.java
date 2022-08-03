@@ -79,7 +79,7 @@ public final class Objects {
 		}
 
 		task = Tasks.submitAsync(() -> {
-			if (plugin.getUsers().isEmpty()) {
+			if (plugin.performanceIsUnderValue() || plugin.getUsers().isEmpty()) {
 				cancelTask();
 				return;
 			}

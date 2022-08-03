@@ -414,6 +414,11 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		}
 	}
 
+	public boolean performanceIsUnderValue() {
+		return ConfigValues.getTpsPerformanceObservationValue() != -1
+				&& hu.montlikadani.tablist.api.TabListAPI.getTPS() <= ConfigValues.getTpsPerformanceObservationValue();
+	}
+
 	public Optional<TabListUser> getUser(Player player) {
 		return player == null ? Optional.empty() : getUser(player.getUniqueId());
 	}

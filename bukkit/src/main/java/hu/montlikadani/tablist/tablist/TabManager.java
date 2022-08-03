@@ -45,7 +45,7 @@ public final class TabManager {
 
 		if (task == null) {
 			task = Tasks.submitAsync(() -> {
-				if (plugin.getUsers().isEmpty()) {
+				if (plugin.performanceIsUnderValue() || plugin.getUsers().isEmpty()) {
 					cancelTask();
 					return;
 				}

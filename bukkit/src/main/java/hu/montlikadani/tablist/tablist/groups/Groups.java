@@ -278,7 +278,7 @@ public final class Groups {
 
 		if (animationTask == null) {
 			animationTask = Tasks.submitAsync(() -> {
-				if (plugin.getUsers().isEmpty()) {
+				if (plugin.performanceIsUnderValue() || plugin.getUsers().isEmpty()) {
 					cancelTask();
 					return;
 				}

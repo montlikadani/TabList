@@ -1,6 +1,8 @@
 hook:
   placeholderapi: true
 
+tps-performance-observation-value: -1
+
 fake-players:
   enabled: false
 
