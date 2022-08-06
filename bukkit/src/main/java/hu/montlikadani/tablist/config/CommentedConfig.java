@@ -216,6 +216,13 @@ public class CommentedConfig extends YamlConfiguration {
 		return value;
 	}
 
+	public double get(String path, double def) {
+		double value = getDouble(path, def);
+
+		set(path, value);
+		return value;
+	}
+
 	public List<String> get(String path, List<String> def) {
 		addDefault(path, def);
 

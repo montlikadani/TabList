@@ -416,7 +416,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	private boolean printed = false;
 
 	public boolean performanceIsUnderValue() {
-		if (ConfigValues.getTpsPerformanceObservationValue() != -1
+		if (ConfigValues.getTpsPerformanceObservationValue() != -1.0
 				&& hu.montlikadani.tablist.api.TabListAPI.getTPS() <= ConfigValues.getTpsPerformanceObservationValue()) {
 			if (!printed) {
 				getLogger().log(Level.INFO, "All {0} schedulers has been cancelled. (Low performance)", getName());

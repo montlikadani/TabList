@@ -154,9 +154,9 @@ public class ConfigValues {
 		c.addComment("logconsole", "Log plugin messages to console?");
 
 		placeholderAPI = c.get("hook.placeholderapi", true);
-		tpsPerformanceObservationValue = c.getDouble("tps-performance-observation-value", -1);
+		tpsPerformanceObservationValue = c.get("tps-performance-observation-value", -1.0);
 
-		if (tpsPerformanceObservationValue != -1
+		if (tpsPerformanceObservationValue != -1.0
 				&& (tpsPerformanceObservationValue < 5.0 || tpsPerformanceObservationValue > 18.0)) {
 			tpsPerformanceObservationValue = 16.0;
 		}
