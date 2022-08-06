@@ -54,6 +54,19 @@ public final class Global {
 				|| Character.isDigit(ch);
 	}
 
+	public static void replace(StringBuilder builder, String search, String replacement) {
+		int index = builder.indexOf(search);
+
+		if (index == -1) {
+			return;
+		}
+
+		int searchLength = search.length();
+
+		while ((index = builder.replace(index, index + searchLength, replacement).indexOf(search)) != -1) {
+		}
+	}
+
 	public static String replace(String text, String search, java.util.function.Supplier<String> replacement) {
 		int index = text.indexOf(search);
 

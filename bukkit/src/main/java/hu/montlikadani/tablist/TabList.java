@@ -293,17 +293,15 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			return name;
 		}
 
-		int a = 0; // Avoid infinite loop
+		StringBuilder builder = new StringBuilder(name);
 
-		while (a < 100 && name.indexOf("%anim:") != -1) { // when using multiple animations
+		while (builder.indexOf("%anim:") != -1) { // when using multiple animations
 			for (TextAnimation ac : animations) {
-				name = name.replace("%anim:" + ac.getName() + "%", ac.getText());
+				hu.montlikadani.tablist.Global.replace(builder, "%anim:" + ac.getName() + "%", ac.getText());
 			}
-
-			a++;
 		}
 
-		return name;
+		return builder.toString();
 	}
 
 	public void updateAll(Player p) {
