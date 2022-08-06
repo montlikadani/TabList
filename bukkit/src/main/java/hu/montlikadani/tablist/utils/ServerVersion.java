@@ -23,7 +23,8 @@ public enum ServerVersion {
 	v1_18_R1,
 	v1_18_R2,
 	v1_19_R1,
-	v1_19_R2;
+	v1_20_R1,
+	v1_20_R2;
 
 	private int value;
 
@@ -40,7 +41,9 @@ public enum ServerVersion {
 
 		String[] v = getArrayVersion();
 		String vv = v[v.length - 1];
-		for (ServerVersion one : values()) {
+		ServerVersion[] arr = values();
+
+		for (ServerVersion one : arr) {
 			if (one.name().equalsIgnoreCase(vv)) {
 				current = one;
 				break;
@@ -48,7 +51,7 @@ public enum ServerVersion {
 		}
 
 		if (current == null) { // It is possible when immo not added a new version enum
-			current = ServerVersion.v1_16_R3;
+			current = arr[arr.length - 1];
 		}
 
 		return current;

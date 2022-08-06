@@ -159,7 +159,8 @@ public final class Variables {
 			float totalMem = (float) totalMemory / maxMemory;
 
 			String barChar = ConfigValues.getMemoryBarChar();
-			StringBuilder builder = new StringBuilder(usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
+			StringBuilder builder = new StringBuilder(
+					usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
 
 			int i = 0;
 			int totalBarSize = (int) (barSize * usedMem);

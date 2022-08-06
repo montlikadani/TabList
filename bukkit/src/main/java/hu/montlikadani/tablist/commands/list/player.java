@@ -19,6 +19,7 @@ import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.tablist.groups.GroupPlayer;
 import hu.montlikadani.tablist.tablist.groups.TeamHandler;
+import hu.montlikadani.tablist.utils.Util;
 
 @CommandProcessor(name = "player",
 		params = "<name> prefix/suffix/tabname <displayTag>",
@@ -34,6 +35,10 @@ public final class player implements ICommand {
 		}
 
 		if (args.length < 3) {
+			sendMsg(sender, Util.colorText("&6/" + label + " player"
+					+ "\n          &6prefix <prefix> -&7 Changes the prefix of an existing player."
+					+ "\n          &6suffix <suffix> -&7 Changes the suffix of an existing player."
+					+ "\n          &6tabname -&7 Changes the tabname of an existing player."));
 			return false;
 		}
 
