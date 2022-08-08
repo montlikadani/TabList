@@ -150,8 +150,8 @@ public final class TabList extends Plugin implements Listener {
 							for (ProxiedPlayer pl : getProxy().getPlayers()) {
 								java.util.UUID playerId = pl.getUniqueId();
 
-								if (!tab.getTabToggle().remove(playerId)) {
-									tab.getTabToggle().add(playerId);
+								if (!tab.tabEnableStatus.remove(playerId)) {
+									tab.tabEnableStatus.add(playerId);
 								}
 							}
 
@@ -175,8 +175,8 @@ public final class TabList extends Plugin implements Listener {
 					boolean enabled;
 					java.util.UUID playerId = target.getUniqueId();
 
-					if (!tab.getTabToggle().remove(playerId)) {
-						enabled = !tab.getTabToggle().add(playerId);
+					if (!tab.tabEnableStatus.remove(playerId)) {
+						enabled = !tab.tabEnableStatus.add(playerId);
 					} else {
 						enabled = true;
 					}

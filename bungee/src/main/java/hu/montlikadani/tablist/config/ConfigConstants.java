@@ -133,8 +133,8 @@ public final class ConfigConstants {
 
 	public static final class GroupSettings {
 
-		private final String permission;
-		private final String[] texts;
+		public final String permission;
+		public final String[] texts;
 
 		public GroupSettings(Configuration section, String key) {
 			permission = section.getString(key + ".permission", "");
@@ -148,38 +148,17 @@ public final class ConfigConstants {
 				texts[a] = hu.montlikadani.tablist.Global.setSymbols(texts[a]);
 			}
 		}
-
-		public String getPermission() {
-			return permission;
-		}
-
-		public String[] getTextArray() {
-			return texts;
-		}
 	}
 
 	public static final class TabSetting {
 
-		private final String[] names;
-
-		private final List<String> header, footer;
+		public final String[] names;
+		public final List<String> header, footer;
 
 		public TabSetting(Configuration section, String key) {
 			names = key.split(", ");
 			header = section.getStringList(key + ".header");
 			footer = section.getStringList(key + ".footer");
-		}
-
-		public String[] getNames() {
-			return names;
-		}
-
-		public List<String> getHeader() {
-			return header;
-		}
-
-		public List<String> getFooter() {
-			return footer;
 		}
 	}
 

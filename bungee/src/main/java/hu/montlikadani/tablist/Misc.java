@@ -57,12 +57,12 @@ public final class Misc {
 			str = str.replace(map.getKey(), map.getValue());
 		}
 
-		if (ConfigConstants.getTimeFormat() != null && str.indexOf("%time%") != -1) {
-			str = str.replace("%time%", getTimeAsString(ConfigConstants.getTimeFormat()));
+		if (ConfigConstants.getTimeFormat() != null) {
+			str = Global.replace(str, "%time%", () -> getTimeAsString(ConfigConstants.getTimeFormat()));
 		}
 
-		if (ConfigConstants.getDateFormat() != null && str.indexOf("%date%") != -1) {
-			str = str.replace("%date%", getTimeAsString(ConfigConstants.getDateFormat()));
+		if (ConfigConstants.getDateFormat() != null) {
+			str = Global.replace(str, "%date%", () -> getTimeAsString(ConfigConstants.getDateFormat()));
 		}
 
 		net.md_5.bungee.api.connection.Server server = p.getServer();
@@ -71,10 +71,10 @@ public final class Misc {
 		if (info != null) {
 			str = str.replace("%server%", info.getName());
 			str = str.replace("%bungee-motd%", info.getMotd());
-			str = str.replace("%player-server-online%", Integer.toString(info.getPlayers().size()));
+			str = Global.replace(str, "%player-server-online%", () -> Integer.toString(info.getPlayers().size()));
 		}
 
-		if (str.indexOf("%ip%") != -1) {
+		str = Global.replace(str, "%ip%", () -> {
 			InetSocketAddress address = null;
 			SocketAddress sAddress = null;
 
@@ -84,9 +84,8 @@ public final class Misc {
 				sAddress = p.getSocketAddress();
 			}
 
-			str = str.replace("%ip%",
-					address != null ? address.getAddress().getHostAddress() : sAddress != null ? sAddress.toString() : "");
-		}
+			return address != null ? address.getAddress().getHostAddress() : sAddress != null ? sAddress.toString() : "";
+		});
 
 		str = str.replace("%max-players%", MAX_PLAYERS);
 		str = str.replace("%player-name%", p.getName());
@@ -96,22 +95,17 @@ public final class Misc {
 		str = str.replace("%server-online%", onlineCount); // Deprecated
 		str = str.replace("%bungee-online%", onlineCount);
 
-		if (str.indexOf("%ping%") != -1)
-			str = str.replace("%ping%", ConfigConstants.formatPing(p.getPing()));
+		str = Global.replace(str, "%ping%", () -> ConfigConstants.formatPing(p.getPing()));
 
-		Runtime runtime = Runtime.getRuntime();
+		str = Global.replace(str, "%ram-used%", () -> {
+			Runtime runtime = Runtime.getRuntime();
 
-		if (str.indexOf("%ram-used%") != -1)
-			str = str.replace("%ram-used%", Long.toString((runtime.totalMemory() - runtime.freeMemory()) / MB));
+			return Long.toString((runtime.totalMemory() - runtime.freeMemory()) / MB);
+		});
 
-		if (str.indexOf("%ram-max%") != -1)
-			str = str.replace("%ram-max%", Long.toString(runtime.maxMemory() / MB));
-
-		if (str.indexOf("%ram-free%") != -1)
-			str = str.replace("%ram-free%", Long.toString(runtime.freeMemory() / MB));
-
-		if (str.indexOf("%player-uuid%") != -1)
-			str = str.replace("%player-uuid%", p.getUniqueId().toString());
+		str = Global.replace(str, "%ram-max%", () -> Long.toString(Runtime.getRuntime().maxMemory() / MB));
+		str = Global.replace(str, "%ram-free%", () -> Long.toString(Runtime.getRuntime().freeMemory() / MB));
+		str = Global.replace(str, "%player-uuid%", () -> p.getUniqueId().toString());
 
 		if (str.indexOf("%player-language%") != -1 || str.indexOf("%player-country%") != -1) {
 			java.util.Locale locale = p.getLocale();

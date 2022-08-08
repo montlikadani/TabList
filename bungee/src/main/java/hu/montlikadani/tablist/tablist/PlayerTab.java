@@ -15,7 +15,7 @@ import net.md_5.bungee.config.Configuration;
 public class PlayerTab {
 
 	private final TabList plugin;
-	private final UUID playerId;
+	public final UUID playerId;
 
 	private int i = 0, i2 = 0;
 
@@ -24,10 +24,6 @@ public class PlayerTab {
 	public PlayerTab(TabList plugin, UUID playerId) {
 		this.plugin = plugin;
 		this.playerId = playerId;
-	}
-
-	public UUID getPlayerId() {
-		return playerId;
 	}
 
 	public ProxiedPlayer getPlayer() {
@@ -126,19 +122,19 @@ public class PlayerTab {
 		final String server = player.getServer() != null ? player.getServer().getInfo().getName() : "";
 
 		for (java.util.Map.Entry<String, ConfigConstants.TabSetting> one : ConfigConstants.TAB_SETTINGS.entrySet()) {
-			for (String split : one.getValue().getNames()) {
+			for (String split : one.getValue().names) {
 				if (server.equalsIgnoreCase(split)) {
 					header = fill(header, ConfigConstants.getPerServerSection()
 							.getStringList(one.getKey() + ".per-player." + pName + ".header"));
 
 					if (header == null)
-						header = fill(header, one.getValue().getHeader());
+						header = fill(header, one.getValue().header);
 
 					footer = fill(footer, ConfigConstants.getPerServerSection()
 							.getStringList(one.getKey() + ".per-player." + pName + ".footer"));
 
 					if (footer == null)
-						footer = fill(footer, one.getValue().getFooter());
+						footer = fill(footer, one.getValue().footer);
 
 					break;
 				}
@@ -146,10 +142,10 @@ public class PlayerTab {
 		}
 
 		for (ConfigConstants.TabSetting setting : ConfigConstants.TAB_SETTINGS.values()) {
-			for (String split : setting.getNames()) {
+			for (String split : setting.names) {
 				if (pName.equalsIgnoreCase(split)) {
-					header = fill(header, setting.getHeader());
-					footer = fill(footer, setting.getFooter());
+					header = fill(header, setting.header);
+					footer = fill(footer, setting.footer);
 					break;
 				}
 			}

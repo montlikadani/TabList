@@ -19,15 +19,11 @@ public class TabManager {
 
 	private ScheduledTask task;
 
-	private final Set<UUID> tabEnableStatus = new HashSet<>();
+	public final Set<UUID> tabEnableStatus = new HashSet<>();
 	private final Set<PlayerTab> playerTabs = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 	public TabManager(TabList plugin) {
 		this.plugin = plugin;
-	}
-
-	public Set<UUID> getTabToggle() {
-		return tabEnableStatus;
 	}
 
 	public void addPlayer(ProxiedPlayer player) {
@@ -37,13 +33,11 @@ public class TabManager {
 
 		UUID playerId = player.getUniqueId();
 
-		PlayerTab tab = getPlayerTab(playerId).orElseGet(() -> {
+		getPlayerTab(playerId).orElseGet(() -> {
 			PlayerTab pTab = new PlayerTab(plugin, playerId);
 			playerTabs.add(pTab);
 			return pTab;
-		});
-
-		tab.loadTabList();
+		}).loadTabList();
 	}
 
 	public void removePlayer(ProxiedPlayer player) {
@@ -51,7 +45,7 @@ public class TabManager {
 	}
 
 	public Optional<PlayerTab> getPlayerTab(UUID playerId) {
-		return playerTabs.stream().filter(g -> g.getPlayerId().equals(playerId)).findFirst();
+		return playerTabs.stream().filter(g -> g.playerId.equals(playerId)).findFirst();
 	}
 
 	public void start() {
@@ -71,7 +65,7 @@ public class TabManager {
 			}
 
 			for (PlayerTab tab : playerTabs) {
-				if (tabEnableStatus.contains(tab.getPlayerId())) {
+				if (tabEnableStatus.contains(tab.playerId)) {
 					ProxiedPlayer player = tab.getPlayer();
 
 					if (player != null) {

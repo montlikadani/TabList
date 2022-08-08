@@ -40,9 +40,7 @@ public class PlayerGroup {
 		ConfigConstants.GroupSettings group = null;
 
 		for (ConfigConstants.GroupSettings setting : ConfigConstants.GROUP_SETTINGS) {
-			String perm = setting.getPermission();
-
-			if ((perm.isEmpty() || player.hasPermission(perm)) && setting.getTextArray().length != 0) {
+			if ((setting.permission.isEmpty() || player.hasPermission(setting.permission)) && setting.texts.length != 0) {
 				group = setting;
 			}
 		}
@@ -51,15 +49,13 @@ public class PlayerGroup {
 			return;
 		}
 
-		String[] texts = group.getTextArray();
-
-		if (y >= texts.length) {
+		if (y >= group.texts.length) {
 			y = 0;
 		}
 
-		sendPacket(player, texts[y]);
+		sendPacket(player, group.texts[y]);
 
-		if (y < texts.length - 1) {
+		if (y < group.texts.length - 1) {
 			y++;
 		} else {
 			y = 0;
