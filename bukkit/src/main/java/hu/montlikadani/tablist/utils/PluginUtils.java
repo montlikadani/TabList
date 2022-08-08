@@ -16,6 +16,8 @@ public final class PluginUtils {
 
 	private static final Plugin ESSENTIALS, CMIP, PEX, SUPER_VANISH, PREMIUM_VANISH, STAFF_FACILITIES;
 
+	private static java.lang.reflect.Method purpurIsAfkMethod;
+
 	static {
 		org.bukkit.plugin.PluginManager pm = Bukkit.getServer().getPluginManager();
 
@@ -27,6 +29,12 @@ public final class PluginUtils {
 		SUPER_VANISH = pm.getPlugin("SuperVanish");
 		PREMIUM_VANISH = pm.getPlugin("PremiumVanish");
 		STAFF_FACILITIES = pm.getPlugin("StaffFacilities");
+
+		// Purpur (not a plugin) - isAfk method
+		try {
+			purpurIsAfkMethod = Player.class.getMethod("isAfk");
+		} catch (NoSuchMethodException e) {
+		}
 	}
 
 	public static boolean isAfk(Player player) {
@@ -41,6 +49,14 @@ public final class PluginUtils {
 		if (CMIP != null && CMIP.isEnabled()) {
 			CMIUser user = CMI.getInstance().getPlayerManager().getUser(player.getUniqueId());
 			return user != null && user.isAfk();
+		}
+
+		if (purpurIsAfkMethod != null) {
+			try {
+				return (boolean) purpurIsAfkMethod.invoke(player);
+			} catch (IllegalAccessException | java.lang.reflect.InvocationTargetException e) {
+				e.printStackTrace();
+			}
 		}
 
 		return false;
