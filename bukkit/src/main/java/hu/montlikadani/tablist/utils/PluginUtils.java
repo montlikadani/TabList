@@ -37,6 +37,11 @@ public final class PluginUtils {
 		}
 	}
 
+	// Just a fast check instead of caching if the software is purpur
+	public static boolean isPurpur() {
+		return purpurIsAfkMethod != null;
+	}
+
 	public static boolean isAfk(Player player) {
 		if (player == null) {
 			return false;

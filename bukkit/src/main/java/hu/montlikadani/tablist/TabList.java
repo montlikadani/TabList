@@ -24,13 +24,12 @@ import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.listeners.HidePlayerListener;
 import hu.montlikadani.tablist.listeners.Listeners;
-import hu.montlikadani.tablist.listeners.plugins.CMIAfkStatus;
-import hu.montlikadani.tablist.listeners.plugins.EssAfkStatus;
 import hu.montlikadani.tablist.tablist.TabManager;
 import hu.montlikadani.tablist.tablist.fakeplayers.FakePlayerHandler;
 import hu.montlikadani.tablist.tablist.groups.Groups;
 import hu.montlikadani.tablist.user.TabListPlayer;
 import hu.montlikadani.tablist.user.TabListUser;
+import hu.montlikadani.tablist.utils.PluginUtils;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.UpdateDownloader;
 import hu.montlikadani.tablist.utils.plugin.VaultPermission;
@@ -231,11 +230,15 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		}
 
 		if (isPluginEnabled("Essentials")) {
-			getServer().getPluginManager().registerEvents(new EssAfkStatus(), this);
+			new hu.montlikadani.tablist.listeners.resources.EssAfkStatus(this);
 		}
 
 		if (isPluginEnabled("CMI")) {
-			getServer().getPluginManager().registerEvents(new CMIAfkStatus(), this);
+			getServer().getPluginManager().registerEvents(new hu.montlikadani.tablist.listeners.resources.CMIAfkStatus(), this);
+		}
+
+		if (PluginUtils.isPurpur()) {
+			new hu.montlikadani.tablist.listeners.resources.PurpurAfkStatus(this);
 		}
 
 		if (isPluginEnabled("ProtocolLib")) {

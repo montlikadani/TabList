@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.listeners.plugins;
+package hu.montlikadani.tablist.listeners.resources;
 
 import org.bukkit.event.EventHandler;
 
