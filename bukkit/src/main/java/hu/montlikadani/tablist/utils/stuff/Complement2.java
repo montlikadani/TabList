@@ -9,7 +9,18 @@ import org.bukkit.scoreboard.Scoreboard;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
-public class Complement2 implements Complement {
+public final class Complement2 implements Complement {
+
+	private boolean isCriteriaExists;
+
+	public Complement2() {
+		try {
+			Class.forName("org.bukkit.scoreboard.Criteria");
+			isCriteriaExists = true;
+		} catch (ClassNotFoundException e) {
+			isCriteriaExists = false;
+		}
+	}
 
 	private Component deserialize(String t) {
 		// legacySection is used to deserialize hex colors from plain text too
@@ -40,9 +51,27 @@ public class Complement2 implements Complement {
 		objective.displayName(deserialize(dName));
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public Objective registerNewObjective(Scoreboard board, String name, String criteria, String displayName,
 			RenderType renderType) {
+		if (isCriteriaExists) {
+			org.bukkit.scoreboard.Criteria crit;
+
+			switch (criteria) {
+			case "health":
+				crit = org.bukkit.scoreboard.Criteria.HEALTH;
+				break;
+			case "dummy": // not used
+				crit = org.bukkit.scoreboard.Criteria.DUMMY;
+				break;
+			default:
+				return null; // prob not
+			}
+
+			return board.registerNewObjective(name, crit, deserialize(displayName), renderType);
+		}
+
 		return board.registerNewObjective(name, criteria, deserialize(displayName), renderType);
 	}
 }

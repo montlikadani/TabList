@@ -226,7 +226,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		getServer().getPluginManager().registerEvents(new Listeners(this), this);
 
 		if (ConfigValues.isHidePlayersFromTab()) {
-			getServer().getPluginManager().registerEvents(new HidePlayerListener(this), this);
+			new HidePlayerListener(this);
 		}
 
 		if (isPluginEnabled("Essentials")) {

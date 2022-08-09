@@ -56,15 +56,7 @@ public final class PluginUtils {
 			return user != null && user.isAfk();
 		}
 
-		if (purpurIsAfkMethod != null) {
-			try {
-				return (boolean) purpurIsAfkMethod.invoke(player);
-			} catch (IllegalAccessException | java.lang.reflect.InvocationTargetException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return false;
+		return purpurIsAfkMethod != null && player.isAfk();
 	}
 
 	public static boolean isVanished(Player player) {

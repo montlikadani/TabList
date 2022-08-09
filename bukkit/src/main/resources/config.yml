@@ -94,7 +94,7 @@ change-prefix-suffix-in-tablist:
 
   assign-global-group-to-normal: false
 
-  prefer-primary-vault-group: true
+  prefer-primary-vault-group: false
 
   followNameTagVisibility: false
 
