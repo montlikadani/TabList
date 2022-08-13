@@ -171,7 +171,12 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			Class.forName("com.destroystokyo.paper.PaperConfig");
 			isPaper = true;
 		} catch (ClassNotFoundException e) {
-			isPaper = false;
+			try {
+				Class.forName("io.papermc.paper.configuration.Configuration");
+				isPaper = true;
+			} catch (ClassNotFoundException ex) {
+				isPaper = false;
+			}
 		}
 
 		boolean kyoriSupported = false;

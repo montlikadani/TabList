@@ -139,7 +139,7 @@ public class ConfigValues {
 				"after the player's name (before the ping indicator).");
 		c.addComment("tablist-object-type.type", "Types:", "none - disables tablist objects", "ping - player's ping",
 				"health - player's health", "custom - custom placeholder");
-		c.addComment("tablist-object-type.refresh-interval", "Interval for objects refreshing in seconds.");
+		c.addComment("tablist-object-type.refresh-interval", "How often should it refresh the values in seconds?");
 		c.addComment("tablist-object-type.disabled-worlds", "In these worlds the objects will not be displayed");
 		c.addComment("tablist-object-type.object-settings", "Objective settings");
 		c.addComment("tablist-object-type.object-settings.health", "The player's health - displayed after the player's name.");

@@ -200,7 +200,7 @@ public final class JsonComponent {
 						font = res;
 					}
 				} else if (text.regionMatches(true, i, "{/font", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
-					font = fonts.computeIfAbsent("default", s -> NamespacedKey.minecraft("default").toString());
+					font = fonts.computeIfAbsent("default", s -> NamespacedKey.minecraft(s).toString());
 				} else {
 					builder.append(charAt);
 					continue;

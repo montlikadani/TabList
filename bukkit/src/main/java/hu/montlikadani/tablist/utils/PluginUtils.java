@@ -16,7 +16,7 @@ public final class PluginUtils {
 
 	private static final Plugin ESSENTIALS, CMIP, PEX, SUPER_VANISH, PREMIUM_VANISH, STAFF_FACILITIES;
 
-	private static java.lang.reflect.Method purpurIsAfkMethod;
+	private static boolean isPurpurIsAfkMethodExists;
 
 	static {
 		org.bukkit.plugin.PluginManager pm = Bukkit.getServer().getPluginManager();
@@ -32,14 +32,16 @@ public final class PluginUtils {
 
 		// Purpur (not a plugin) - isAfk method
 		try {
-			purpurIsAfkMethod = Player.class.getMethod("isAfk");
+			Player.class.getMethod("isAfk");
+			isPurpurIsAfkMethodExists = true;
 		} catch (NoSuchMethodException e) {
+			isPurpurIsAfkMethodExists = false;
 		}
 	}
 
 	// Just a fast check instead of caching if the software is purpur
 	public static boolean isPurpur() {
-		return purpurIsAfkMethod != null;
+		return isPurpurIsAfkMethodExists;
 	}
 
 	public static boolean isAfk(Player player) {
@@ -56,7 +58,7 @@ public final class PluginUtils {
 			return user != null && user.isAfk();
 		}
 
-		return purpurIsAfkMethod != null && player.isAfk();
+		return isPurpurIsAfkMethodExists && player.isAfk();
 	}
 
 	public static boolean isVanished(Player player) {

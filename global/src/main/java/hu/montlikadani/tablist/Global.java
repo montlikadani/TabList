@@ -62,8 +62,10 @@ public final class Global {
 		}
 
 		int searchLength = search.length();
+		int replacementLength = replacement.length();
 
-		while ((index = builder.replace(index, index + searchLength, replacement).indexOf(search)) != -1) {
+		while ((index = builder.replace(index, index + searchLength, replacement).indexOf(search,
+				index += replacementLength)) != -1) {
 		}
 	}
 
@@ -76,8 +78,10 @@ public final class Global {
 
 		StringBuilder builder = new StringBuilder(text);
 		int searchLength = search.length();
+		int replacementLength = replacement.get().length();
 
-		while ((index = builder.replace(index, index + searchLength, replacement.get()).indexOf(search)) != -1) {
+		while ((index = builder.replace(index, index + searchLength, replacement.get()).indexOf(search,
+				index += replacementLength)) != -1) {
 		}
 
 		return builder.toString();
