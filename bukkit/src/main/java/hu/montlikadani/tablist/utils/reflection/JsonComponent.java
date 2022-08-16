@@ -41,9 +41,6 @@ public final class JsonComponent {
 		jsonList.clear();
 		jsonList.trimToSize();
 
-		JsonObject obj = new JsonObject();
-		StringBuilder builder = new StringBuilder();
-
 		text = text.replace('\u00a7', '&');
 		text = text.replace("&#", "#");
 		text = text.replace("&x", "#");
@@ -58,6 +55,9 @@ public final class JsonComponent {
 
 		int length = text.length(), index = 0;
 		String font = "";
+
+		JsonObject obj = new JsonObject();
+		StringBuilder builder = new StringBuilder(length);
 
 		for (int i = 0; i < length; i++) {
 			char charAt = text.charAt(i);

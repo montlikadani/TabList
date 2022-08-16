@@ -98,40 +98,43 @@ public class PlayerList {
 		}
 
 		String playerWorldName = playerWorld.getName();
-		boolean isInPlayerWorld = false;
+		int index = -1;
+
 		checked = false;
 
 		for (List<String> keys : ConfigValues.PER_WORLD_LIST_NAMES) {
 
 			// Find the proper player's world in the keys list
-			for (String name : keys) {
-				if (playerWorldName.equalsIgnoreCase(name)) {
-					isInPlayerWorld = true;
+			for (int i = 0; i < keys.size(); i++) {
+				if (playerWorldName.equalsIgnoreCase(keys.get(i))) {
+					index = i;
 					break;
 				}
 			}
 
-			if (!isInPlayerWorld) {
+			if (index == -1) {
 				continue; // If the player world not exist in the first list, continue
 			}
 
-			for (String name : keys) {
-				if (playerWorldName.equalsIgnoreCase(name)) {
+			for (int a = 0; a < keys.size(); a++) {
+				if (index == a) {
 					continue; // The other players already visible in the player's world
 				}
 
-				World world = plugin.getServer().getWorld(name);
+				World world = plugin.getServer().getWorld(keys.get(a));
 
-				if (world != null) {
-					for (Player worldPlayer : world.getPlayers()) {
-						if (!checked && worldPlayer.getUniqueId().equals(this.user.getUniqueId())) {
-							checked = true;
-							continue;
-						}
+				if (world == null) {
+					continue;
+				}
 
-						show(worldPlayer, player);
-						show(player, worldPlayer);
+				for (Player worldPlayer : world.getPlayers()) {
+					if (!checked && worldPlayer.getUniqueId().equals(this.user.getUniqueId())) {
+						checked = true;
+						continue;
 					}
+
+					show(worldPlayer, player);
+					show(player, worldPlayer);
 				}
 			}
 
