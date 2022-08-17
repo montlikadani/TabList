@@ -2,7 +2,6 @@ package hu.montlikadani.tablist.api;
 
 import java.util.UUID;
 
-import org.apache.commons.lang.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -60,8 +59,6 @@ public final class TabListAPI {
 	 * @return true if toggled
 	 */
 	public static boolean isTabListToggled(Player player) {
-		Validate.notNull(player, "Player can not be null");
-
 		return isTabListToggled(player.getUniqueId());
 	}
 
