@@ -4,7 +4,7 @@ import hu.montlikadani.tablist.tablist.TabText;
 
 public class TeamHandler {
 
-	public String team, permission = "";
+	public String team = "", permission = "";
 	public TabText prefix, suffix, tabName = TabText.EMPTY;
 
 	public boolean global = false;
@@ -16,7 +16,7 @@ public class TeamHandler {
 	}
 
 	public TeamHandler(String team, TabText prefix, TabText suffix) {
-		this.team = team;
+		this.team = team == null ? "" : team;
 		this.prefix = prefix;
 		this.suffix = suffix;
 	}
@@ -24,7 +24,7 @@ public class TeamHandler {
 	public TeamHandler(String team, TabText prefix, TabText suffix, String permission, int priority) {
 		this(team, prefix, suffix);
 
-		this.permission = permission;
+		this.permission = permission == null ? "" : permission;
 		this.priority = priority;
 	}
 
