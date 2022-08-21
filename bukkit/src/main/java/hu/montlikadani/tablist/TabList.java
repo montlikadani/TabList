@@ -41,18 +41,18 @@ import hu.montlikadani.tablist.utils.variables.Variables;
 
 public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
-	private VaultPermission vaultPermission;
-	private Objects objects;
-	private Variables variables;
-	private Groups groups;
-	private Configuration conf;
-	private TabManager tabManager;
-	private FakePlayerHandler fakePlayerHandler;
-	private Complement complement;
+	private transient VaultPermission vaultPermission;
+	private transient Objects objects;
+	private transient Variables variables;
+	private transient Groups groups;
+	private transient Configuration conf;
+	private transient TabManager tabManager;
+	private transient FakePlayerHandler fakePlayerHandler;
+	private transient Complement complement;
 
-	private org.bukkit.plugin.Plugin papi;
+	private transient org.bukkit.plugin.Plugin papi;
 
-	private boolean isPaper = false, hasVault = false;
+	private transient boolean isPaper = false, hasVault = false;
 
 	private final Set<TextAnimation> animations = new HashSet<>(8);
 	private final Set<TabListUser> users = Collections.newSetFromMap(new ConcurrentHashMap<>());

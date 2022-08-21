@@ -19,12 +19,12 @@ public class TabListPlayer implements TabListUser {
 	private final TabList plugin;
 	private final UUID uniqueId;
 
-	private final GroupPlayer groupPlayer;
-	private final TabHandler tabHandler;
-	private final PlayerScore playerScore;
+	private transient final GroupPlayer groupPlayer;
+	private transient final TabHandler tabHandler;
+	private transient final PlayerScore playerScore;
 
-	private HidePlayers hidePlayers;
-	private PlayerList playerList;
+	private transient HidePlayers hidePlayers;
+	private transient PlayerList playerList;
 
 	private final Set<UUID> visibleFakePlayers = new java.util.HashSet<>();
 

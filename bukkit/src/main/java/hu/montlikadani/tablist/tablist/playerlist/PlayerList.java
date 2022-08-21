@@ -12,8 +12,8 @@ import hu.montlikadani.tablist.utils.ServerVersion;
 
 public class PlayerList {
 
-	private final TabList plugin;
-	private final TabListUser user;
+	private transient final TabList plugin;
+	private transient final TabListUser user;
 
 	public PlayerList(TabList plugin, TabListUser user) {
 		this.plugin = plugin;

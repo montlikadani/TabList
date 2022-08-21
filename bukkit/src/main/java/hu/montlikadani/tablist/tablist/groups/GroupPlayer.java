@@ -13,11 +13,11 @@ import hu.montlikadani.tablist.utils.ServerVersion;
 
 public final class GroupPlayer {
 
-	private final TabListUser tabListUser;
-	private final ITabScoreboard tabTeam;
-	private final TabList tl;
+	private transient final TabListUser tabListUser;
+	private transient final ITabScoreboard tabTeam;
+	private transient final TabList tl;
 
-	private TeamHandler group, globalGroup;
+	private transient TeamHandler group, globalGroup;
 
 	private String customPrefix, customSuffix, playerVaultGroup;
 

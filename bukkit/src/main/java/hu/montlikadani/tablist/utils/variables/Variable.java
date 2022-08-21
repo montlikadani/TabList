@@ -8,8 +8,9 @@ final class Variable {
 	public final String name, fullName;
 	private final int refreshSeconds;
 
-	private BiConsumer<Variable, String> consumer;
-	private Instant rateInstant;
+	private transient BiConsumer<Variable, String> consumer;
+	private transient Instant rateInstant;
+
 	private String remainingValue;
 
 	public Variable(String name, int refreshSeconds) {

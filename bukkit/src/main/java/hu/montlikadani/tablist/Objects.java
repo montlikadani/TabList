@@ -20,7 +20,7 @@ import hu.montlikadani.tablist.utils.variables.simplePlaceholder.PluginPlacehold
 @SuppressWarnings("deprecation")
 public final class Objects {
 
-	private final TabList plugin;
+	private transient final TabList plugin;
 
 	private BukkitTask task;
 

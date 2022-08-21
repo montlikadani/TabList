@@ -3,7 +3,7 @@ package hu.montlikadani.tablist.logicalOperators;
 public class OperatorNodes implements LogicalNode {
 
 	protected final NodeType type;
-	protected Condition condition;
+	protected transient Condition condition;
 
 	public OperatorNodes(NodeType type) {
 		this.type = type;

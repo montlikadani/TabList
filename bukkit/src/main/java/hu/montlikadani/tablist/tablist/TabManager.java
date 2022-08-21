@@ -9,8 +9,8 @@ import hu.montlikadani.tablist.utils.task.Tasks;
 
 public final class TabManager {
 
-	private final TabList plugin;
-	private final TabToggleBase toggleBase;
+	private transient final TabList plugin;
+	private transient final TabToggleBase toggleBase;
 
 	private BukkitTask task;
 

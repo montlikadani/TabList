@@ -10,7 +10,7 @@ import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.Objects;
 import hu.montlikadani.tablist.config.CommentedConfig;
 
-public class ConfigValues {
+public final class ConfigValues {
 
 	private static boolean logConsole = true, placeholderAPI, perWorldPlayerList, fakePlayers, countFakePlayersToOnlinePlayers,
 			removeGrayColorFromTabInSpec, ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab,

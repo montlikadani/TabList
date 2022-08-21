@@ -5,7 +5,7 @@ import hu.montlikadani.tablist.tablist.TabText;
 public class TeamHandler {
 
 	public String team = "", permission = "";
-	public TabText prefix, suffix, tabName = TabText.EMPTY;
+	public transient TabText prefix, suffix, tabName = TabText.EMPTY;
 
 	public boolean global = false;
 

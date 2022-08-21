@@ -11,7 +11,7 @@ import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 
 public final class HidePlayers {
 
-	private final TabList plugin;
+	private transient final TabList plugin;
 	private final UUID to;
 
 	public HidePlayers(TabList plugin, UUID to) {
