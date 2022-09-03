@@ -149,40 +149,43 @@ public final class Variables {
 			return str;
 		}
 
-		if (!ConfigValues.getMemoryBarChar().isEmpty() && str.indexOf("%memory_bar%") != -1) {
-			Runtime runtime = Runtime.getRuntime();
+		if (!ConfigValues.getMemoryBarChar().isEmpty()) {
+			str = Global.replace(str, "%memory_bar%", () -> {
+				Runtime runtime = Runtime.getRuntime();
 
-			int barSize = ConfigValues.getMemoryBarSize(), totalMemory = (int) (runtime.totalMemory() / MB),
-					usedMemory = totalMemory - (int) (runtime.freeMemory() / MB), maxMemory = (int) (runtime.maxMemory() / MB);
+				int barSize = ConfigValues.getMemoryBarSize(), totalMemory = (int) (runtime.totalMemory() / MB),
+						usedMemory = totalMemory - (int) (runtime.freeMemory() / MB),
+						maxMemory = (int) (runtime.maxMemory() / MB);
 
-			float usedMem = (float) usedMemory / maxMemory;
-			float totalMem = (float) totalMemory / maxMemory;
+				float usedMem = (float) usedMemory / maxMemory;
+				float totalMem = (float) totalMemory / maxMemory;
 
-			String barChar = ConfigValues.getMemoryBarChar();
-			StringBuilder builder = new StringBuilder(
-					usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
+				String barChar = ConfigValues.getMemoryBarChar();
+				StringBuilder builder = new StringBuilder(
+						usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
 
-			int i = 0;
-			int totalBarSize = (int) (barSize * usedMem);
-			for (; i < totalBarSize; i++) {
-				builder.append(barChar);
-			}
+				int i = 0;
+				int totalBarSize = (int) (barSize * usedMem);
+				for (; i < totalBarSize; i++) {
+					builder.append(barChar);
+				}
 
-			builder.append(ConfigValues.getMemoryBarFreeColor());
+				builder.append(ConfigValues.getMemoryBarFreeColor());
 
-			totalBarSize = (int) (barSize * (totalMem - usedMem));
-			for (i = 0; i < totalBarSize; i++) {
-				builder.append(barChar);
-			}
+				totalBarSize = (int) (barSize * (totalMem - usedMem));
+				for (i = 0; i < totalBarSize; i++) {
+					builder.append(barChar);
+				}
 
-			builder.append(ConfigValues.getMemoryBarReleasedColor());
+				builder.append(ConfigValues.getMemoryBarReleasedColor());
 
-			totalBarSize = (int) (barSize * (1 - totalMem));
-			for (i = 0; i < totalBarSize; i++) {
-				builder.append(barChar);
-			}
+				totalBarSize = (int) (barSize * (1 - totalMem));
+				for (i = 0; i < totalBarSize; i++) {
+					builder.append(barChar);
+				}
 
-			str = str.replace("%memory_bar%", builder.toString());
+				return builder.toString();
+			});
 		}
 
 		if (pl != null) {
@@ -199,8 +202,8 @@ public final class Variables {
 			}
 		}
 
-		if (ConfigValues.getTimeFormat() != null && str.indexOf("%server-time%") != -1) {
-			str = str.replace("%server-time%", getTimeAsString(ConfigValues.getTimeFormat()));
+		if (ConfigValues.getTimeFormat() != null) {
+			str = Global.replace(str, "%server-time%", () -> getTimeAsString(ConfigValues.getTimeFormat()));
 		}
 
 		str = Global.replace(str, "%server-ram-free%", () -> Long.toString(Runtime.getRuntime().freeMemory() / MB));
@@ -222,10 +225,7 @@ public final class Variables {
 	}
 
 	@SuppressWarnings("deprecation")
-	String setPlayerPlaceholders(Player p, String s) {
-		// TODO we need optimization for these variables so that there is only a
-		// one-time check for placeholders at load time.
-
+	String setPlayerPlaceholders(Player player, String s) {
 		if (plugin.hasPapi()) {
 
 			// Some PAPI placeholders which does not supports async threads
@@ -255,24 +255,21 @@ public final class Variables {
 				});
 			}
 
-			s = PlaceholderAPI.setPlaceholders(p, s);
+			s = PlaceholderAPI.setPlaceholders(player, s);
 		}
 
-		s = s.replace("%player%", p.getName());
-		s = s.replace("%world%", p.getWorld().getName());
-		s = s.replace("%player-gamemode%", p.getGameMode().name());
+		s = s.replace("%player%", player.getName());
+		s = s.replace("%world%", player.getWorld().getName());
 
-		if (!plugin.isPaper() || s.indexOf("%player-displayname%") != -1) {
-			s = s.replace("%player-displayname%", plugin.getComplement().displayName(p));
-		}
-
-		s = Global.replace(s, "%player-health%", () -> Double.toString(p.getHealth()));
+		s = Global.replace(s, "%player-gamemode%", () -> player.getGameMode().name());
+		s = Global.replace(s, "%player-displayname%", () -> plugin.getComplement().displayName(player));
+		s = Global.replace(s, "%player-health%", () -> Double.toString(player.getHealth()));
 
 		if (s.indexOf("%player-max-health%") != -1) {
 			if (ServerVersion.isCurrentLower(ServerVersion.v1_9_R1)) {
-				s = s.replace("%player-max-health%", Double.toString(p.getMaxHealth()));
+				s = s.replace("%player-max-health%", Double.toString(player.getMaxHealth()));
 			} else {
-				org.bukkit.attribute.AttributeInstance attr = p.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
+				org.bukkit.attribute.AttributeInstance attr = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
 
 				if (attr != null) {
 					s = s.replace("%player-max-health%", Double.toString(attr.getDefaultValue()));
@@ -280,14 +277,14 @@ public final class Variables {
 			}
 		}
 
-		s = Global.replace(s, "%ping%", () -> formatPing(TabListAPI.getPing(p)));
-		s = Global.replace(s, "%exp-to-level%", () -> Integer.toString(p.getExpToLevel()));
-		s = Global.replace(s, "%level%", () -> Integer.toString(p.getLevel()));
-		s = Global.replace(s, "%xp%", () -> Float.toString(p.getExp()));
-		s = Global.replace(s, "%light-level%", () -> Integer.toString(p.getLocation().getBlock().getLightLevel()));
+		s = Global.replace(s, "%ping%", () -> formatPing(TabListAPI.getPing(player)));
+		s = Global.replace(s, "%exp-to-level%", () -> Integer.toString(player.getExpToLevel()));
+		s = Global.replace(s, "%level%", () -> Integer.toString(player.getLevel()));
+		s = Global.replace(s, "%xp%", () -> Float.toString(player.getExp()));
+		s = Global.replace(s, "%light-level%", () -> Integer.toString(player.getLocation().getBlock().getLightLevel()));
 
 		if (s.indexOf("%ip-address%") != -1) {
-			java.net.InetSocketAddress address = p.getAddress();
+			java.net.InetSocketAddress address = player.getAddress();
 
 			if (address != null) {
 				java.net.InetAddress inetAddress = address.getAddress();

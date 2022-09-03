@@ -192,9 +192,9 @@ public final class GroupPlayer {
 				groups.setToSort(true);
 
 				// Users can also display the global group without any other group specified
-				if (teams.size() == 1) {
+				//if (teams.size() == 1) {
 					update = true;
-				}
+				//}
 
 				continue;
 			}
@@ -263,6 +263,7 @@ public final class GroupPlayer {
 
 	private TabText fullName;
 
+	// TODO Refactor, this method is currently disgusting
 	public TabText getTabNameWithPrefixSuffix() {
 		String tabName = null;
 
@@ -281,7 +282,11 @@ public final class GroupPlayer {
 		Player player = tabListUser.getPlayer();
 
 		if (tabName == null) {
-			tabName = player != null ? player.getName() : "";
+			if (globalGroup != null && !globalGroup.tabName.getPlainText().isEmpty()) {
+				tabName = globalGroup.tabName.getPlainText();
+			} else {
+				tabName = player != null ? player.getName() : "";
+			}
 		}
 
 		String prefix = customPrefix == null ? group == null ? "" : group.prefix.getPlainText() : customPrefix;

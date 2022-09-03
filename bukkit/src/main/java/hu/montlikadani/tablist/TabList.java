@@ -52,7 +52,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	private transient org.bukkit.plugin.Plugin papi;
 
-	private transient boolean isPaper = false, hasVault = false;
+	private transient boolean hasVault = false;
 
 	private final Set<TextAnimation> animations = new HashSet<>(8);
 	private final Set<TabListUser> users = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -167,7 +167,9 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	}
 
 	private void verifyServerSoftware() {
-		try {
+		// We're using reflection to check if for example a method is exists
+		// So this useless
+		/*try {
 			Class.forName("com.destroystokyo.paper.PaperConfig");
 			isPaper = true;
 		} catch (ClassNotFoundException e) {
@@ -177,7 +179,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			} catch (ClassNotFoundException ex) {
 				isPaper = false;
 			}
-		}
+		}*/
 
 		boolean kyoriSupported = false;
 		try {
@@ -459,10 +461,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	public boolean hasVault() {
 		return hasVault;
-	}
-
-	public boolean isPaper() {
-		return isPaper;
 	}
 
 	public boolean hasPapi() {
