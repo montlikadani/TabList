@@ -68,6 +68,14 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			return;
 		}
 
+		int availableProcessors = Runtime.getRuntime().availableProcessors();
+		if (availableProcessors < 3) {
+			logConsole(Level.WARNING, "You're currently having " + availableProcessors
+					+ " CPU processors, which is not enough to run a minecraft server with scheduled plugins including TabList.");
+			logConsole(Level.WARNING,
+					"You will be experiencing many lags during the server is running. Consider upgrading your CPU to at least reach 3 cores.");
+		}
+
 		verifyServerSoftware();
 
 		conf = new Configuration(this);

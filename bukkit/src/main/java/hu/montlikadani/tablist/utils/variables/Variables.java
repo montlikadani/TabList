@@ -258,9 +258,8 @@ public final class Variables {
 			s = PlaceholderAPI.setPlaceholders(player, s);
 		}
 
-		s = s.replace("%player%", player.getName());
-		s = s.replace("%world%", player.getWorld().getName());
-
+		s = Global.replace(s, "%player%", () -> player.getName());
+		s = Global.replace(s, "%world%", () -> player.getWorld().getName());
 		s = Global.replace(s, "%player-gamemode%", () -> player.getGameMode().name());
 		s = Global.replace(s, "%player-displayname%", () -> plugin.getComplement().displayName(player));
 		s = Global.replace(s, "%player-health%", () -> Double.toString(player.getHealth()));
