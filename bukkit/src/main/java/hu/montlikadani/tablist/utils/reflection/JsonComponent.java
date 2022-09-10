@@ -22,7 +22,7 @@ public final class JsonComponent {
 	private final ArrayList<JsonObject> jsonList = new ArrayList<>(10);
 	private final java.util.Map<String, String> fonts = new java.util.HashMap<>(1);
 
-	private final Pattern colorRegexPattern = Pattern.compile("(&+([0-9a-fA-F]{1})){6}");
+	private final Pattern colorRegexPattern = Pattern.compile("#&([0-9a-fA-F])");
 
 	private Object emptyJson;
 
@@ -51,6 +51,7 @@ public final class JsonComponent {
 
 		while (matcher.find()) {
 			text = Global.replaceFrom(text, matcher.start(), "&", "", 6);
+			matcher = matcher.reset(text);
 		}
 
 		int length = text.length(), index = 0;
@@ -91,9 +92,9 @@ public final class JsonComponent {
 			}
 
 			if (charAt == '&') {
-				char code = text.charAt(i + 1);
+				MColor mColor = MColor.byCode(text.charAt(i + 1));
 
-				if (Global.isValidColourCharacter(code)) {
+				if (mColor != null) {
 					boolean isTextEmpty = false;
 
 					if (builder.length() != 0) {
@@ -114,34 +115,13 @@ public final class JsonComponent {
 						continue;
 					}
 
-					switch (code) {
-					case 'k':
-						obj.addProperty("obfuscated", true);
-						break;
-					case 'o':
-						obj.addProperty("italic", true);
-						break;
-					case 'n':
-						obj.addProperty("underlined", true);
-						break;
-					case 'm':
-						obj.addProperty("strikethrough", true);
-						break;
-					case 'l':
-						obj.addProperty("bold", true);
-						break;
-					default:
-						if (code == 'f' || code == 'r') {
-							break; // We don't need these formatting as the default colour is white
+					if (mColor != MColor.WHITE && mColor != MColor.RESET) { // We don't need these formatting as the
+																			// default colour is white
+						if (mColor.formatter) {
+							obj.addProperty(mColor.propertyName, true);
+						} else {
+							obj.addProperty("color", mColor.propertyName);
 						}
-
-						org.bukkit.ChatColor colorChar = org.bukkit.ChatColor.getByChar(code);
-
-						if (colorChar != null) {
-							obj.addProperty("color", colorChar.name().toLowerCase(java.util.Locale.ENGLISH));
-						}
-
-						break;
 					}
 
 					if (!font.isEmpty()) {
