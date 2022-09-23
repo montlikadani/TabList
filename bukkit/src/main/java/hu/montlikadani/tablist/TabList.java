@@ -313,10 +313,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		StringBuilder builder = new StringBuilder(name);
 
-		while (builder.indexOf("%anim:") != -1) { // when using multiple animations
-			for (TextAnimation ac : animations) {
-				hu.montlikadani.tablist.Global.replace(builder, "%anim:" + ac.getName() + "%", ac.getText());
-			}
+		for (TextAnimation ac : animations) {
+			hu.montlikadani.tablist.Global.replace(builder, "%anim:" + ac.getName() + "%", ac.getText());
 		}
 
 		return builder.toString();

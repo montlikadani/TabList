@@ -163,14 +163,13 @@ public class TabHandler {
 		if (header != null) {
 			linedHeader = new TabText();
 			String lh = "", r;
-			TabText tt;
 
 			for (int a = 0; a < header.length; a++) {
 				if (a != 0) {
 					lh += "\n\u00a7r";
 				}
 
-				tt = header[a];
+				TabText tt = header[a];
 				lh += (r = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
 				tt.plainText = r;
 				header[a] = tt;
@@ -183,14 +182,13 @@ public class TabHandler {
 		if (footer != null) {
 			linedFooter = new TabText();
 			String lf = "", r;
-			TabText tt;
 
 			for (int a = 0; a < footer.length; a++) {
 				if (a != 0) {
 					lf += "\n\u00a7r";
 				}
 
-				tt = footer[a];
+				TabText tt = footer[a];
 				lf += (r = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
 				tt.plainText = r;
 				footer[a] = tt;
@@ -202,7 +200,10 @@ public class TabHandler {
 	}
 
 	public void sendEmptyTab(Player player) {
-		TabTitle.sendTabTitle(player, TabText.EMPTY, TabText.EMPTY);
+		if (player != null && !tabEmpty) { // Only send it once to allow other plugins to overwrite tablist
+			TabTitle.sendTabTitle(player, TabText.EMPTY, TabText.EMPTY);
+			tabEmpty = true;
+		}
 	}
 
 	protected void sendTab() {
@@ -217,11 +218,7 @@ public class TabHandler {
 
 		if (TabToggleBase.isDisabled(user.getUniqueId())
 				|| (TabConfigValues.isHideTabWhenPlayerVanished() && PluginUtils.isVanished(player))) {
-			if (!tabEmpty) { // Only send it once to allow other plugins to overwrite tablist
-				sendEmptyTab(player);
-				tabEmpty = true;
-			}
-
+			sendEmptyTab(player);
 			return;
 		}
 

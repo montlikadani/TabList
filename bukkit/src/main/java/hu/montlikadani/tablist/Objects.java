@@ -217,7 +217,7 @@ public final class Objects {
 					}
 				}
 			}
-		}, ConfigValues.getObjectRefreshInterval(), ConfigValues.getObjectRefreshInterval());
+		}, 0, ConfigValues.getObjectRefreshInterval());
 	}
 
 	private int getValue(Player player, final String text) {

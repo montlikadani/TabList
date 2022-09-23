@@ -6,33 +6,27 @@ import java.util.function.BiConsumer;
 final class Variable {
 
 	public final String name, fullName;
+	public final transient BiConsumer<Variable, String> consumer;
+
 	private final int refreshSeconds;
 
-	private transient BiConsumer<Variable, String> consumer;
 	private transient Instant rateInstant;
 
 	private String remainingValue;
 
-	public Variable(String name, int refreshSeconds) {
+	public Variable(String name, int refreshSeconds, BiConsumer<Variable, String> consumer) {
 		this.name = name;
-		fullName = '%' + name + '%';
+		this.consumer = consumer;
 		this.refreshSeconds = refreshSeconds;
+
+		fullName = '%' + name + '%';
 	}
 
 	public String getRemainingValue() {
 		return remainingValue;
 	}
 
-	Variable setVariable(BiConsumer<Variable, String> consumer) {
-		this.consumer = consumer;
-		return this;
-	}
-
-	public BiConsumer<Variable, String> getReplacer() {
-		return consumer;
-	}
-
-	public String setAndGetRemainingValue(String remainingValue) {
+	public String remainingValue(String remainingValue) {
 		return this.remainingValue = remainingValue;
 	}
 

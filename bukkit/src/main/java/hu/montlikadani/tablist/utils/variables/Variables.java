@@ -68,40 +68,39 @@ public final class Variables {
 		LogicalNode.reverseOrderOfArray(nodes);
 
 		if (ConfigValues.getDateFormat() != null) {
-			variables.add(new Variable("date", 3).setVariable((v, str) -> str = str.replace(v.fullName,
-					v.setAndGetRemainingValue(getTimeAsString(ConfigValues.getDateFormat())))));
+			variables.add(new Variable("date", 3,
+					(v, str) -> str = str.replace(v.fullName, v.remainingValue(getTimeAsString(ConfigValues.getDateFormat())))));
 		}
 
-		variables.add(new Variable("online-players", 2).setVariable((v, str) -> {
+		variables.add(new Variable("online-players", 2, (v, str) -> {
 			int players = PluginUtils.countVanishedPlayers();
 
 			if (ConfigValues.isCountFakePlayersToOnlinePlayers()) {
 				players += plugin.getFakePlayerHandler().getFakePlayers().size();
 			}
 
-			str = str.replace(v.fullName, v.setAndGetRemainingValue(Integer.toString(players)));
+			str = str.replace(v.fullName, v.remainingValue(Integer.toString(players)));
 		}));
 
-		variables.add(new Variable("max-players", 20).setVariable((v, str) -> str = str.replace(v.fullName,
-				v.setAndGetRemainingValue(Integer.toString(plugin.getServer().getMaxPlayers())))));
+		variables.add(new Variable("max-players", 20, (v,
+				str) -> str = str.replace(v.fullName, v.remainingValue(Integer.toString(plugin.getServer().getMaxPlayers())))));
 
-		variables.add(new Variable("vanished-players", 2).setVariable((v, str) -> {
+		variables.add(new Variable("vanished-players", 2, (v, str) -> {
 			int vanishedPlayers = PluginUtils.getVanishedPlayers();
 
-			str = str.replace(v.fullName,
-					v.setAndGetRemainingValue(vanishedPlayers == 0 ? "0" : Integer.toString(vanishedPlayers)));
+			str = str.replace(v.fullName, v.remainingValue(vanishedPlayers == 0 ? "0" : Integer.toString(vanishedPlayers)));
 		}));
 
-		variables.add(new Variable("motd", 10).setVariable(
-				(v, str) -> str = str.replace(v.fullName, v.setAndGetRemainingValue(plugin.getComplement().motd()))));
+		variables.add(new Variable("motd", 10,
+				(v, str) -> str = str.replace(v.fullName, v.remainingValue(plugin.getComplement().motd()))));
 
-		variables.add(new Variable("fake-players", 3).setVariable((v, str) -> {
+		variables.add(new Variable("fake-players", 3, (v, str) -> {
 			int pls = plugin.getFakePlayerHandler().getFakePlayers().size();
 
-			str = str.replace(v.fullName, v.setAndGetRemainingValue(pls == 0 ? "0" : Integer.toString(pls)));
+			str = str.replace(v.fullName, v.remainingValue(pls == 0 ? "0" : Integer.toString(pls)));
 		}));
 
-		variables.add(new Variable("staff-online", 3).setVariable((v, str) -> {
+		variables.add(new Variable("staff-online", 3, (v, str) -> {
 			int staffs = 0;
 
 			for (TabListUser user : plugin.getUsers()) {
@@ -115,7 +114,7 @@ public final class Variables {
 				staffs++;
 			}
 
-			str = str.replace(v.fullName, v.setAndGetRemainingValue(staffs == 0 ? "0" : Integer.toString(staffs)));
+			str = str.replace(v.fullName, v.remainingValue(staffs == 0 ? "0" : Integer.toString(staffs)));
 		}));
 	}
 
@@ -194,7 +193,7 @@ public final class Variables {
 
 		for (Variable variable : variables) {
 			if (variable.canReplace(str)) {
-				variable.getReplacer().accept(variable, str);
+				variable.consumer.accept(variable, str);
 			}
 
 			if (variable.getRemainingValue() != null) {
@@ -268,7 +267,8 @@ public final class Variables {
 			if (ServerVersion.isCurrentLower(ServerVersion.v1_9_R1)) {
 				s = s.replace("%player-max-health%", Double.toString(player.getMaxHealth()));
 			} else {
-				org.bukkit.attribute.AttributeInstance attr = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
+				org.bukkit.attribute.AttributeInstance attr = player
+						.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
 
 				if (attr != null) {
 					s = s.replace("%player-max-health%", Double.toString(attr.getDefaultValue()));
@@ -314,7 +314,7 @@ public final class Variables {
 			int size = (tpsSize == 1 ? 3 : index) + tpsSize;
 			int length = ds.length();
 
-			ds = ds.substring(0, size > length ? length : size);
+			return ds.substring(0, size > length ? length : size);
 		}
 
 		return ds;

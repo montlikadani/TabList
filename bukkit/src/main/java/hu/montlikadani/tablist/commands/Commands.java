@@ -69,11 +69,10 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
-		boolean found = false;
-		CommandProcessor proc;
-
 		for (ICommand command : cmds) {
-			if ((proc = command.getClass().getAnnotation(CommandProcessor.class)) == null) {
+			CommandProcessor proc = command.getClass().getAnnotation(CommandProcessor.class);
+
+			if (proc == null) {
 				continue;
 			}
 
@@ -83,15 +82,12 @@ public final class Commands implements CommandExecutor, TabCompleter {
 					sendMsg(sender, colorText("&7/" + label + " " + proc.name() + params + " -&6 " + proc.desc()));
 				}
 
-				found = true;
 				continue;
 			}
 
 			if (!proc.name().equalsIgnoreCase(first)) {
 				continue;
 			}
-
-			found = true;
 
 			if (proc.playerOnly() && !isPlayer) {
 				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_CONSOLE, "%command%", label + " " + first));
@@ -105,10 +101,10 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			}
 
 			command.run(plugin, sender, cmd, label, args);
-			break;
+			return true;
 		}
 
-		if (!found) {
+		if (!isHelp) {
 			sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.UNKNOWN_SUB_COMMAND, "%subcmd%", first));
 		}
 
