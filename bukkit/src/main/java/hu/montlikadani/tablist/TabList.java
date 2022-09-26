@@ -314,7 +314,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		StringBuilder builder = new StringBuilder(name);
 
 		for (TextAnimation ac : animations) {
-			hu.montlikadani.tablist.Global.replace(builder, "%anim:" + ac.getName() + "%", ac.getText());
+			hu.montlikadani.tablist.Global.replace(builder, "%anim:" + ac.getName() + "%", () -> ac.getText());
 		}
 
 		return builder.toString();

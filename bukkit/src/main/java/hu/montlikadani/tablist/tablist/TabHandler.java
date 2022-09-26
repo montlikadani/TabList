@@ -162,40 +162,36 @@ public class TabHandler {
 
 		if (header != null) {
 			linedHeader = new TabText();
-			String lh = "", r;
+			StringBuilder lh = new StringBuilder();
 
 			for (int a = 0; a < header.length; a++) {
 				if (a != 0) {
-					lh += "\n\u00a7r";
+					lh.append("\n\u00a7r");
 				}
 
 				TabText tt = header[a];
-				lh += (r = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
-				tt.plainText = r;
+				lh.append(tt.plainText = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
 				header[a] = tt;
 			}
 
-			linedHeader.findJsonInText(lh);
-			linedHeader.plainText = lh;
+			linedHeader.updateText(lh.toString());
 		}
 
 		if (footer != null) {
 			linedFooter = new TabText();
-			String lf = "", r;
+			StringBuilder lf = new StringBuilder();
 
 			for (int a = 0; a < footer.length; a++) {
 				if (a != 0) {
-					lf += "\n\u00a7r";
+					lf.append("\n\u00a7r");
 				}
 
 				TabText tt = footer[a];
-				lf += (r = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
-				tt.plainText = r;
+				lf.append(tt.plainText = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
 				footer[a] = tt;
 			}
 
-			linedFooter.findJsonInText(lf);
-			linedFooter.plainText = lf;
+			linedFooter.updateText(lf.toString());
 		}
 	}
 

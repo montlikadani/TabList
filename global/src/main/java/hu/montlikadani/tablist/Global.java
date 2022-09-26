@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist;
 
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
 import net.kyori.adventure.text.format.TextColor;
@@ -54,7 +55,7 @@ public final class Global {
 				|| Character.isDigit(ch);
 	}
 
-	public static void replace(StringBuilder builder, String search, String replacement) {
+	public static void replace(StringBuilder builder, String search, Supplier<String> replacement) {
 		int index = builder.indexOf(search);
 
 		if (index == -1) {
@@ -62,14 +63,14 @@ public final class Global {
 		}
 
 		int searchLength = search.length();
-		int replacementLength = replacement.length();
+		int replacementLength = replacement.get().length();
 
-		while ((index = builder.replace(index, index + searchLength, replacement).indexOf(search,
+		while ((index = builder.replace(index, index + searchLength, replacement.get()).indexOf(search,
 				index += replacementLength)) != -1) {
 		}
 	}
 
-	public static String replace(String text, String search, java.util.function.Supplier<String> replacement) {
+	public static String replace(String text, String search, Supplier<String> replacement) {
 		int index = text.indexOf(search);
 
 		if (index == -1) {
@@ -97,7 +98,7 @@ public final class Global {
 		StringBuilder builder = new StringBuilder(text);
 
 		while (index != -1) {
-			builder = builder.replace(index, index + 1, replacement);
+			builder.replace(index, index + 1, replacement);
 
 			if (--max <= 0) {
 				break;

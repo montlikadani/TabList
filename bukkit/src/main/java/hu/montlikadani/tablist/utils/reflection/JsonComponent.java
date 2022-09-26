@@ -92,27 +92,16 @@ public final class JsonComponent {
 			}
 
 			if (charAt == '&') {
-				MColor mColor = MColor.byCode(text.charAt(i + 1));
+				int next = i + 1;
+				MColor mColor = next < length ? MColor.byCode(text.charAt(next)) : null;
 
 				if (mColor != null) {
-					boolean isTextEmpty = false;
-
 					if (builder.length() != 0) {
-						String resText = builder.toString();
-
-						isTextEmpty = resText.isEmpty();
-
-						obj.addProperty("text", resText);
+						obj.addProperty("text", builder.toString());
 						jsonList.add(obj);
 
 						obj = new JsonObject();
 						builder = new StringBuilder();
-					}
-
-					// Skip adding formatting to empty texts
-					if (isTextEmpty) {
-						i++;
-						continue;
 					}
 
 					if (mColor != MColor.WHITE && mColor != MColor.RESET) { // We don't need these formatting as the
@@ -129,7 +118,7 @@ public final class JsonComponent {
 						font = "";
 					}
 
-					i++;
+					i = next;
 				} else {
 					builder.append(charAt);
 				}
