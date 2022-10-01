@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist.utils.operators;
 
-import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.logicalOperators.LogicalNode;
 
 public final class OverriddenOperatorNodes extends hu.montlikadani.tablist.logicalOperators.OperatorNodes {
@@ -10,43 +9,33 @@ public final class OverriddenOperatorNodes extends hu.montlikadani.tablist.logic
 	}
 
 	@Override
-	public boolean parse(double leftCond) {
+	public boolean parse(double receivedValue) {
 		if (type == LogicalNode.NodeType.TPS) {
-			if (leftCond < 0.0)
+			if (receivedValue < 0.0)
 				return false;
 
 			double secondCondition = condition.getSecondCondition();
 			if (secondCondition < 0.0)
 				return false;
 
-			// Making leftCond to be equally to secondCondition with tpsSize
-			int tpsSize = ConfigValues.getTpsSize();
-			if (Math.floor(leftCond * tpsSize) != Math.floor(secondCondition * tpsSize)) {
-				String lc = Double.toString(leftCond);
-				int size = (tpsSize == 1 ? 3 : lc.indexOf('.')) + tpsSize;
-				int length = lc.length();
-
-				leftCond = Double.parseDouble(lc.substring(0, size > length ? length : size));
-			}
-
 			switch (condition.operator) {
 			case GREATER_THAN:
-				return leftCond > secondCondition;
+				return receivedValue > secondCondition;
 			case GREATER_THAN_OR_EQUAL:
-				return leftCond >= secondCondition;
+				return receivedValue >= secondCondition;
 			case LESS_THAN:
-				return leftCond < secondCondition;
+				return receivedValue < secondCondition;
 			case LESS_THAN_OR_EQUAL:
-				return leftCond <= secondCondition;
+				return receivedValue <= secondCondition;
 			case EQUAL:
-				return leftCond == secondCondition;
+				return receivedValue == secondCondition;
 			case NOT_EQUAL:
-				return leftCond != secondCondition;
+				return receivedValue != secondCondition;
 			default:
 				return false;
 			}
 		}
 
-		return super.parse(leftCond);
+		return super.parse(receivedValue);
 	}
 }

@@ -108,7 +108,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		loadAnimations();
 		loadListeners();
 		registerCommands();
-		tabManager.getToggleBase().loadToggledTabs();
+		tabManager.toggleBase.loadToggledTabs();
 		groups.load();
 
 		getServer().getOnlinePlayers().forEach(this::updateAll);
@@ -139,7 +139,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			}
 		}
 
-		tabManager.getToggleBase().saveToggledTabs();
+		tabManager.toggleBase.saveToggledTabs();
 		tabManager.cancelTask();
 
 		fakePlayerHandler.removeAllFakePlayer();
@@ -306,15 +306,20 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		}
 	}
 
-	public String makeAnim(String name) {
-		if (name.isEmpty()) {
-			return name;
+	public String makeAnim(String str) {
+		if (str.isEmpty()) {
+			return str;
 		}
 
-		StringBuilder builder = new StringBuilder(name);
+		StringBuilder builder = new StringBuilder(str);
+		int i = 0;
 
-		for (TextAnimation ac : animations) {
-			hu.montlikadani.tablist.Global.replace(builder, "%anim:" + ac.getName() + "%", () -> ac.getText());
+		while (i < animations.size()) {
+			for (TextAnimation ac : animations) {
+				hu.montlikadani.tablist.Global.replace(builder, "%anim:" + ac.getName() + "%", () -> ac.getText());
+			}
+
+			i++;
 		}
 
 		return builder.toString();

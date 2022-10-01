@@ -301,23 +301,17 @@ public final class Variables {
 		return s;
 	}
 
-	private String tpsDot(double d) {
+	private String tpsDot(double value) {
 		if (!ConfigValues.isTpsFormatEnabled() || nodes.isEmpty()) {
-			return Double.toString(d);
+			return Double.toString(value);
 		}
 
-		String ds = LogicalNode.parseCondition(d, LogicalNode.NodeType.TPS, nodes);
-		int index = ds.indexOf('.');
+		int digits = ConfigValues.getTpsDigits();
 
-		if (index != -1) {
-			int tpsSize = ConfigValues.getTpsSize();
-			int size = (tpsSize == 1 ? 3 : index) + tpsSize;
-			int length = ds.length();
+		// Making the value to be equally to secondCondition by rounding
+		value = (double) Math.round(value * digits) / digits;
 
-			return ds.substring(0, size > length ? length : size);
-		}
-
-		return ds;
+		return LogicalNode.parseCondition(value, LogicalNode.NodeType.TPS, nodes).toString();
 	}
 
 	private String formatPing(int ping) {
@@ -325,7 +319,7 @@ public final class Variables {
 			return Integer.toString(ping);
 		}
 
-		return LogicalNode.parseCondition(ping, LogicalNode.NodeType.PING, nodes);
+		return LogicalNode.parseCondition(ping, LogicalNode.NodeType.PING, nodes).toString();
 	}
 
 	private String getTimeAsString(DateTimeFormatter formatterPattern) {

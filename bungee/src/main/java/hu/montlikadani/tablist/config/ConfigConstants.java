@@ -128,7 +128,7 @@ public final class ConfigConstants {
 			return Integer.toString(ping);
 		}
 
-		return LogicalNode.parseCondition(ping, LogicalNode.NodeType.PING, LOGICAL_NODES);
+		return LogicalNode.parseCondition(ping, LogicalNode.NodeType.PING, LOGICAL_NODES).toString();
 	}
 
 	public static final class GroupSettings {

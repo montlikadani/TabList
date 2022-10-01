@@ -173,6 +173,6 @@ public final class Commands implements CommandExecutor, TabCompleter {
 	public enum ContextArguments {
 		PREFIX, SUFFIX, PRIORITY, TABNAME, REMOVE;
 
-		public final String loweredName = toString().toLowerCase(java.util.Locale.ENGLISH);
+		public final String loweredName = name().toLowerCase(java.util.Locale.ENGLISH);
 	}
 }

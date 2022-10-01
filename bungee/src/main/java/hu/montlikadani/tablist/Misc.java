@@ -4,6 +4,7 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import hu.montlikadani.tablist.config.ConfigConstants;
@@ -99,7 +100,6 @@ public final class Misc {
 
 		str = Global.replace(str, "%ram-used%", () -> {
 			Runtime runtime = Runtime.getRuntime();
-
 			return Long.toString((runtime.totalMemory() - runtime.freeMemory()) / MB);
 		});
 
@@ -107,12 +107,15 @@ public final class Misc {
 		str = Global.replace(str, "%ram-free%", () -> Long.toString(Runtime.getRuntime().freeMemory() / MB));
 		str = Global.replace(str, "%player-uuid%", () -> p.getUniqueId().toString());
 
-		if (str.indexOf("%player-language%") != -1 || str.indexOf("%player-country%") != -1) {
-			java.util.Locale locale = p.getLocale();
+		str = Global.replace(str, "%player-language%", () -> {
+			Locale locale = p.getLocale();
+			return locale == null ? "unknown" : locale.getDisplayLanguage();
+		});
 
-			str = str.replace("%player-language%", locale == null ? "unknown" : locale.getDisplayLanguage());
-			str = str.replace("%player-country%", locale == null ? "unknown" : locale.getDisplayCountry());
-		}
+		str = Global.replace(str, "%player-country%", () -> {
+			Locale locale = p.getLocale();
+			return locale == null ? "unknown" : locale.getDisplayCountry();
+		});
 
 		return str;
 	}

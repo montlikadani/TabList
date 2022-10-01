@@ -28,7 +28,7 @@ public final class ConfigValues {
 	private static List<String> tpsColorFormats, pingColorFormats, groupsDisabledWorlds, healthObjectRestricted,
 			objectsDisabledWorlds;
 
-	private static int tpsSize, groupsRefreshInterval, objectRefreshInterval, memoryBarSize;
+	private static int tpsDigits, groupsRefreshInterval, objectRefreshInterval, memoryBarSize;
 
 	private static double tpsPerformanceObservationValue;
 
@@ -273,14 +273,24 @@ public final class ConfigValues {
 			}
 		}
 
+		tpsDigits = 10;
+
+		int size = c.get("placeholder-format.tps.size", 2);
+
+		if (size < 1) {
+			size = 2;
+		} else if (size > 2) {
+			size -= 2;
+
+			for (int i = 0; i < size; i++) {
+				tpsDigits *= 10;
+			}
+		}
+
 		groupsDisabledWorlds = c.get("change-prefix-suffix-in-tablist.disabled-worlds.list", Arrays.asList("myWorldWithUpper"));
 		healthObjectRestricted = c.get("tablist-object-type.object-settings.health.restricted-players",
 				Arrays.asList("exampleplayer", "players"));
 		objectsDisabledWorlds = c.get("tablist-object-type.disabled-worlds", Arrays.asList("testingWorld"));
-
-		if ((tpsSize = c.get("placeholder-format.tps.size", 2)) < 1) {
-			tpsSize = 2;
-		}
 
 		memoryBarSize = c.get("placeholder-format.memory-bar.size", 80);
 		groupsRefreshInterval = c.get("change-prefix-suffix-in-tablist.refresh-interval", 30);
@@ -446,8 +456,8 @@ public final class ConfigValues {
 		return customObjectSetting;
 	}
 
-	public static int getTpsSize() {
-		return tpsSize;
+	public static int getTpsDigits() {
+		return tpsDigits;
 	}
 
 	public static List<String> getTpsColorFormats() {

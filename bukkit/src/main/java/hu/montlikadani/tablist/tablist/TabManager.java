@@ -10,17 +10,13 @@ import hu.montlikadani.tablist.utils.task.Tasks;
 public final class TabManager {
 
 	private transient final TabList plugin;
-	private transient final TabToggleBase toggleBase;
+	public transient final TabToggleBase toggleBase;
 
 	private BukkitTask task;
 
 	public TabManager(TabList plugin) {
 		this.plugin = plugin;
 		this.toggleBase = new TabToggleBase(plugin);
-	}
-
-	public TabToggleBase getToggleBase() {
-		return toggleBase;
 	}
 
 	public void cancelTask() {

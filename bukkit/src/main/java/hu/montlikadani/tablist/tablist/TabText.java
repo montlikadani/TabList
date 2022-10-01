@@ -49,17 +49,16 @@ public final class TabText {
 
 	public void updateText(String plainText) {
 		this.plainText = plainText;
-		findJsonInText(plainText);
+		findJsonInText(new StringBuilder(plainText));
 	}
 
 	// Caching jsons to avoid recreating continuously
 	private final List<JsonElementData> skippedDatas = new ArrayList<>(1);
 
-	public void findJsonInText(String text) {
+	private void findJsonInText(StringBuilder text) {
 		int start, end = 0;
-		int length = text.length();
 
-		while ((start = (end == 0 ? text.indexOf("[\"\",{") : text.indexOf("[\"\",{", end))) != -1) {
+		while ((start = text.indexOf("[\"\",{", end)) != -1) {
 
 			// JSON may contain "raw translate with" array, we should check this also
 			if ((end = text.indexOf("]}]", start)) == -1) {
@@ -72,8 +71,8 @@ public final class TabText {
 
 			end += 2;
 
-			if (end > length) {
-				end = length;
+			if (end > text.length()) {
+				end = text.length();
 			}
 
 			addJson(text.substring(start, end));

@@ -22,7 +22,7 @@ public interface LogicalNode {
 
 	}
 
-	public static String parseCondition(double value, NodeType type, List<LogicalNode> nodes) {
+	public static StringBuilder parseCondition(double value, NodeType type, List<LogicalNode> nodes) {
 		String color = "";
 
 		for (LogicalNode node : nodes) {
@@ -31,13 +31,9 @@ public interface LogicalNode {
 			}
 		}
 
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder(color);
 
-		if (!color.isEmpty()) {
-			builder.append(color);
-		}
-
-		return (type == NodeType.PING ? builder.append((int) value) : builder.append(value)).toString();
+		return type == NodeType.PING ? builder.append((int) value) : builder.append(value);
 	}
 
 	public static void reverseOrderOfArray(List<LogicalNode> nodes) {

@@ -42,13 +42,13 @@ public class OperatorNodes implements LogicalNode {
 	}
 
 	@Override
-	public boolean parse(double leftCond) {
+	public boolean parse(double receivedValue) {
 		if (type == NodeType.PING) {
 			int secondCondition = (int) condition.getSecondCondition();
 			if (secondCondition < 0)
 				return false;
 
-			int firstCondition = (int) leftCond;
+			int firstCondition = (int) receivedValue;
 			if (firstCondition < 0)
 				return false;
 
