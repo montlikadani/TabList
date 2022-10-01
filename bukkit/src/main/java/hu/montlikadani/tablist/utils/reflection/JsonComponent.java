@@ -185,7 +185,7 @@ public final class JsonComponent {
 					obj = new JsonObject();
 					obj.addProperty("font", font);
 					font = "";
-					i += closeIndex - i;
+					i = closeIndex;
 				}
 			} else {
 				builder.append(charAt);

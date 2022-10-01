@@ -213,11 +213,11 @@ public final class Variables {
 			return Long.toString((runtime.totalMemory() - runtime.freeMemory()) / MB);
 		});
 
-		str = Global.replace(str, "%tps-overflow%", () -> tpsDot(TabListAPI.getTPS()));
+		str = Global.replace(str, "%tps-overflow%", () -> roundTpsDigits(TabListAPI.getTPS()));
 
 		str = Global.replace(str, "%tps%", () -> {
 			double tps = TabListAPI.getTPS();
-			return tps > 20.0 ? '*' + tpsDot(20.0) : tpsDot(tps);
+			return tps > 20.0 ? '*' + roundTpsDigits(20.0) : roundTpsDigits(tps);
 		});
 
 		return str;
@@ -301,7 +301,7 @@ public final class Variables {
 		return s;
 	}
 
-	private String tpsDot(double value) {
+	private String roundTpsDigits(double value) {
 		if (!ConfigValues.isTpsFormatEnabled() || nodes.isEmpty()) {
 			return Double.toString(value);
 		}
