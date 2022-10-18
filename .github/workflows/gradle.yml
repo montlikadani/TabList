@@ -14,7 +14,8 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v3
       with:
-        java-version: 18.0.1
+        # JitPack does not supports 17+ versions of JDK and newest gradle yet
+        java-version: 17
         distribution: 'temurin'
 
     - name: Build all
