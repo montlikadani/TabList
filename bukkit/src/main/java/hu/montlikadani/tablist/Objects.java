@@ -35,8 +35,6 @@ public final class Objects {
 			return;
 		}
 
-		// TODO Fix not show correctly the health after reload
-
 		final Scoreboard board = pl.getScoreboard();
 		final String objectName = ConfigValues.getObjectType().objectName;
 

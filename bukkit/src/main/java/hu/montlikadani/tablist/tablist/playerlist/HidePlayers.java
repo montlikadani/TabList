@@ -52,10 +52,7 @@ public final class HidePlayers {
 			Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
 			Array.set(entityPlayerArray, 0, entityPlayer);
 
-			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
-					.newInstance(ClazzContainer.getAddPlayer(), entityPlayerArray);
-
-			ReflectionUtils.sendPacket(to, packetPlayOutPlayerInfo);
+			ReflectionUtils.sendPacket(to, ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), entityPlayerArray));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -68,11 +65,9 @@ public final class HidePlayers {
 			Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
 			Array.set(entityPlayerArray, 0, entityPlayer);
 
-			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
-					.newInstance(ClazzContainer.getRemovePlayer(), entityPlayerArray);
+			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getRemovePlayer(), entityPlayerArray);
 
-			plugin.getServer().getScheduler().runTaskLater(plugin,
-					() -> ReflectionUtils.sendPacket(to, packetPlayOutPlayerInfo), 6L);
+			plugin.getServer().getScheduler().runTaskLater(plugin, () -> ReflectionUtils.sendPacket(to, packetPlayOutPlayerInfo), 6L);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

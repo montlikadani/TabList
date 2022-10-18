@@ -222,8 +222,8 @@ public class TabHandler {
 			return;
 		}
 
-		TabText he = null;
-		TabText fo = null;
+		TabText he = linedHeader;
+		TabText fo = linedFooter;
 
 		if (TabConfigValues.isRandom()) {
 			if (random == null) {
@@ -235,14 +235,6 @@ public class TabHandler {
 
 			if (footer != null)
 				fo = footer[footer.length == 1 ? 0 : random.nextInt(footer.length)];
-		}
-
-		if (he == null) {
-			he = linedHeader;
-		}
-
-		if (fo == null) {
-			fo = linedFooter;
 		}
 
 		if (he == null && fo == null) {
