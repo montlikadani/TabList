@@ -6,8 +6,14 @@ import java.util.List;
 
 import hu.montlikadani.tablist.utils.reflection.JsonComponent;
 
+/**
+ * The class which holds both plain text and json texts to append somewhere.
+ */
 public final class TabText {
 
+	/**
+	 * An empty {@link TabText}
+	 */
 	public static final TabText EMPTY = new TabText();
 
 	// This holds both the original and the updated text in separated instances
@@ -33,10 +39,20 @@ public final class TabText {
 		this.plainText = plainText;
 	}
 
+	/**
+	 * @return the list of identified {@link JsonElementData} in the plain text
+	 */
 	public List<JsonElementData> getJsonElements() {
 		return jsonElements;
 	}
 
+	/**
+	 * Parses {@link TabText} from a plain {@link String} text. If the parameter {@code from} is null this method will
+	 * returns {@link #EMPTY}. If not then it tries to parse the text into {@link TabText} containing the json.
+	 * 
+	 * @param from the plain text to parse
+	 * @return the {@link TabText} containing json texts
+	 */
 	public static TabText parseFromText(String from) {
 		if (from == null) {
 			return EMPTY;
@@ -47,6 +63,11 @@ public final class TabText {
 		return tabText;
 	}
 
+	/**
+	 * Updates this TabText plainText to the specified one including jsons.
+	 * 
+	 * @param plainText to update
+	 */
 	public void updateText(String plainText) {
 		this.plainText = plainText;
 		findJsonInText(new StringBuilder(plainText));

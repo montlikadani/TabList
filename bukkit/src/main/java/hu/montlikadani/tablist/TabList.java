@@ -306,6 +306,12 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		}
 	}
 
+	/**
+	 * Replaces all the animation variables in the specified string.
+	 * 
+	 * @param str the {@link String} where to replace the variables
+	 * @return the {@link String} including the animations
+	 */
 	public String makeAnim(String str) {
 		if (str.isEmpty()) {
 			return str;
@@ -450,6 +456,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		return false;
 	}
 
+	/**
+	 * @param player {@link Player}
+	 * @return An {@link Optional} containing the {@link TabListUser} if present, otherwise {@link Optional#empty()}
+	 */
 	public Optional<TabListUser> getUser(Player player) {
 		return player == null ? Optional.empty() : getUser(player.getUniqueId());
 	}
@@ -466,14 +476,23 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		return Optional.empty();
 	}
 
+	/**
+	 * @return the users whose joined to the server and the plugin recognised.
+	 */
 	public Set<TabListUser> getUsers() {
 		return users;
 	}
 
+	/**
+	 * @return true if the Vault resource is installed and recognised by this plugin.
+	 */
 	public boolean hasVault() {
 		return hasVault;
 	}
 
+	/**
+	 * @return true if the PlaceholderAPI plugin is enabled
+	 */
 	public boolean hasPapi() {
 		return papi != null && papi.isEnabled();
 	}

@@ -35,6 +35,11 @@ public final class GroupPlayer {
 		return tabTeam;
 	}
 
+	/**
+	 * Sets the main group for this player.
+	 * 
+	 * @param group the {@link TeamHandler} to be set
+	 */
 	public void setGroup(TeamHandler group) {
 		this.group = group;
 		tl.getGroups().setToSort(true);
@@ -44,12 +49,18 @@ public final class GroupPlayer {
 		return group;
 	}
 
+	/**
+	 * @return the full group name with priority required for creating
+	 */
 	public String getFullGroupTeamName() {
 		// We starts the sorting with "a" character and a number as without this will
 		// not work after the 10th player
 		return 'a' + (safePriority > 9 ? "" : "0") + safePriority;
 	}
 
+	/**
+	 * Removes the group cache from this player
+	 */
 	public void removeGroup() {
 		group = globalGroup = null;
 		playerVaultGroup = null;
@@ -59,14 +70,29 @@ public final class GroupPlayer {
 		return tabListUser;
 	}
 
+	/**
+	 * Sets a custom prefix for this group
+	 * 
+	 * @param customPrefix
+	 */
 	public void setCustomPrefix(String customPrefix) {
 		this.customPrefix = customPrefix;
 	}
 
+	/**
+	 * Sets a custom suffix for this group
+	 * 
+	 * @param customSuffix
+	 */
 	public void setCustomSuffix(String customSuffix) {
 		this.customSuffix = customSuffix;
 	}
 
+	/**
+	 * Sets a custom priority for this group
+	 * 
+	 * @param customPriority
+	 */
 	public void setCustomPriority(int customPriority) {
 		this.customPriority = customPriority;
 	}
