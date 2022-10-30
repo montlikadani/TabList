@@ -53,11 +53,11 @@ public class ReflectionHandled implements ITabScoreboard {
 				scoreTeam = ClazzContainer.getScoreboardTeamConstructor()
 						.newInstance(ClazzContainer.getScoreboardConstructor().newInstance(), teamName);
 
-				java.util.Collection<String> playerNameSet = (java.util.Collection<String>) ClazzContainer
+				/*java.util.Collection<String> playerNameSet = (java.util.Collection<String>) ClazzContainer
 						.getPlayerNameSetMethod().invoke(scoreTeam);
 				playerNameSet.add(player.getName());
 
-				ClazzContainer.getScoreboardTeamNames().set(scoreTeam, playerNameSet);
+				ClazzContainer.getScoreboardTeamNames().set(scoreTeam, playerNameSet);*/
 
 				ClazzContainer.getScoreboardTeamSetDisplayName().invoke(scoreTeam,
 						ReflectionUtils.getAsIChatBaseComponent(teamName));
@@ -70,7 +70,7 @@ public class ReflectionHandled implements ITabScoreboard {
 						ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1)
 								? ReflectionUtils.getAsIChatBaseComponent(teamName)
 								: teamName);
-				ClazzContainer.getScoreboardTeamNames().set(newTeamPacket, Collections.singletonList(player.getName()));
+				//ClazzContainer.getScoreboardTeamNames().set(newTeamPacket, Collections.singletonList(player.getName()));
 			}
 
 			if (ConfigValues.isFollowNameTagVisibility()) {
