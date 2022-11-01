@@ -253,7 +253,11 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		}
 
 		if (PluginUtils.isPurpur()) {
-			new hu.montlikadani.tablist.listeners.resources.PurpurAfkStatus(this);
+			try {
+				Class.forName("org.purpurmc.purpur.event.PlayerAFKEvent");
+				new hu.montlikadani.tablist.listeners.resources.PurpurAfkStatus(this);
+			} catch (ClassNotFoundException e) {
+			}
 		}
 
 		if (isPluginEnabled("ProtocolLib")) {
