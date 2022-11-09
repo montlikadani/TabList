@@ -9,7 +9,7 @@ import hu.montlikadani.tablist.utils.ServerVersion;
 public final class ClazzContainer {
 
 	private static Field infoList, scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamPrefix, scoreboardTeamSuffix,
-			/*scoreboardTeamNames, */scoreboardTeamMode, scoreboardPlayers, nameTagVisibility, playerInfoDataProfileField,
+			scoreboardTeamNames, scoreboardTeamMode, scoreboardPlayers, nameTagVisibility, playerInfoDataProfileField,
 			playerInfoDataPing, playerInfoDataGameMode, nameTagVisibilityNameField, scoreboardObjectiveMethod,
 			packetPlayOutScoreboardObjectiveNameField, packetPlayOutScoreboardObjectiveDisplayNameField,
 			packetPlayOutScoreboardObjectiveRenderType;
@@ -24,7 +24,7 @@ public final class ClazzContainer {
 
 	private static Method scoreboardTeamSetPrefix, scoreboardTeamSetSuffix, scoreboardTeamSetNameTagVisibility,
 			scoreboardTeamSetDisplayName, packetScoreboardTeamRemove, packetScoreboardTeamUpdateCreate,
-			packetScoreboardTeamEntries, playerInfoDataProfileMethod, /*playerNameSetMethod, */setScoreboardScoreMethod;
+			packetScoreboardTeamEntries, playerInfoDataProfileMethod, playerNameSetMethod, setScoreboardScoreMethod;
 
 	private static Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstructor, scoreboardConstructor,
 			scoreboardTeamConstructor, packetPlayOutScoreboardTeamConstructor, packetPlayOutScoreboardScoreConstructor,
@@ -91,16 +91,16 @@ public final class ClazzContainer {
 					scoreboardTeamSetSuffix = scoreboardTeamClass.getMethod("c", iChatBaseComponent);
 					scoreboardTeamSetDisplayName = scoreboardTeamClass.getMethod("a", iChatBaseComponent);
 					scoreboardTeamSetNameTagVisibility = scoreboardTeamClass.getMethod("a", scoreboardNameTagVisibility);
-					//playerNameSetMethod = scoreboardTeamClass.getMethod("g"); // getPlayers
-					//(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("e")).setAccessible(true); // players
+					playerNameSetMethod = scoreboardTeamClass.getMethod("g"); // getPlayers
+					(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("e")).setAccessible(true); // players
 				} else {
 					scoreboardTeamSetPrefix = scoreboardTeamClass.getMethod("setPrefix", iChatBaseComponent);
 					scoreboardTeamSetSuffix = scoreboardTeamClass.getMethod("setSuffix", iChatBaseComponent);
 					scoreboardTeamSetDisplayName = scoreboardTeamClass.getMethod("setDisplayName", iChatBaseComponent);
 					scoreboardTeamSetNameTagVisibility = scoreboardTeamClass.getMethod("setNameTagVisibility",
 							scoreboardNameTagVisibility);
-					//playerNameSetMethod = scoreboardTeamClass.getMethod("getPlayerNameSet");
-					//(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("f")).setAccessible(true);
+					playerNameSetMethod = scoreboardTeamClass.getMethod("getPlayerNameSet");
+					(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("f")).setAccessible(true);
 				}
 
 				packetScoreboardTeamRemove = packetPlayOutScoreboardTeam.getMethod("a", scoreboardTeamClass);
@@ -504,9 +504,9 @@ public final class ClazzContainer {
 		return scoreboardTeamSuffix;
 	}
 
-	/*public static Field getScoreboardTeamNames() {
+	public static Field getScoreboardTeamNames() {
 		return scoreboardTeamNames;
-	}*/
+	}
 
 	public static Field getScoreboardTeamMode() {
 		return scoreboardTeamMode;
@@ -540,9 +540,9 @@ public final class ClazzContainer {
 		return playerInfoDataGameMode;
 	}
 
-	/*public static Method getPlayerNameSetMethod() {
+	public static Method getPlayerNameSetMethod() {
 		return playerNameSetMethod;
-	}*/
+	}
 
 	public static Field getNameTagVisibilityNameField() {
 		return nameTagVisibilityNameField;
