@@ -28,6 +28,7 @@ public interface LogicalNode {
 		for (LogicalNode node : nodes) {
 			if (node.getType() == type && node.parse(value)) {
 				color = node.getCondition().getColor();
+				break;
 			}
 		}
 
