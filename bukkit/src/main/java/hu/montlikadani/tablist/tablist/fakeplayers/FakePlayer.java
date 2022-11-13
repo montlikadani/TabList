@@ -85,6 +85,10 @@ public final class FakePlayer implements IFakePlayer {
 	public void setName(String name) {
 		this.name = name == null ? "" : name;
 
+		if (this.name.length() > 16) {
+			this.name = this.name.substring(0, 16);
+		}
+
 		try {
 			chatBaseComponentName = this.name.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT
 					: ReflectionUtils.getAsIChatBaseComponent(this.name);

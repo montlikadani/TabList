@@ -73,13 +73,17 @@ public final class FakePlayerHandler {
 		}
 	}
 
-	public EditingResult createPlayer(final String name, String displayName, final String headUUID, int ping) {
+	public EditingResult createPlayer(String name, String displayName, final String headUUID, int ping) {
 		if (name.isEmpty()) {
 			return EditingResult.UNKNOWN;
 		}
 
 		if (getFakePlayerByName(name).isPresent()) {
 			return EditingResult.ALREADY_EXIST;
+		}
+
+		if (name.length() > 16) {
+			name = name.substring(0, 16);
 		}
 
 		String path = "list." + name + ".";
@@ -146,7 +150,7 @@ public final class FakePlayerHandler {
 		return EditingResult.OK;
 	}
 
-	public EditingResult renamePlayer(final String oldName, final String newName) {
+	public EditingResult renamePlayer(final String oldName, String newName) {
 		Optional<IFakePlayer> fp = getFakePlayerByName(oldName);
 
 		if (!fp.isPresent()) {
@@ -158,6 +162,10 @@ public final class FakePlayerHandler {
 		ConfigurationSection section = c.getConfigurationSection("list");
 		if (section == null) {
 			return EditingResult.NOT_EXIST;
+		}
+
+		if (newName.length() > 16) {
+			newName = newName.substring(0, 16);
 		}
 
 		section.set(oldName, newName);
