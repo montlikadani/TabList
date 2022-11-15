@@ -148,6 +148,7 @@ public final class Variables {
 			return str;
 		}
 
+		// TODO marked for removal, no one uses this
 		if (!ConfigValues.getMemoryBarChar().isEmpty()) {
 			str = Global.replace(str, "%memory_bar%", () -> {
 				Runtime runtime = Runtime.getRuntime();

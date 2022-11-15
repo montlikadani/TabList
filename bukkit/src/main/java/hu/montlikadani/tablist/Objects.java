@@ -76,146 +76,155 @@ public final class Objects {
 			return;
 		}
 
+		if (ConfigValues.getObjectRefreshInterval() == 0) {
+			update();
+			return;
+		}
+
 		task = Tasks.submitAsync(() -> {
 			if (plugin.performanceIsUnderValue() || plugin.getUsers().isEmpty()) {
 				cancelTask();
 				return;
 			}
 
-			for (TabListUser user : plugin.getUsers()) {
-				if (user.getPlayerScore().getScoreName().isEmpty()) {
-					continue;
+			update();
+		}, 0, ConfigValues.getObjectRefreshInterval());
+	}
+
+	private void update() {
+		for (TabListUser user : plugin.getUsers()) {
+			if (user.getPlayerScore().getScoreName().isEmpty()) {
+				continue;
+			}
+
+			Player player = user.getPlayer();
+
+			if (player == null || ConfigValues.getObjectsDisabledWorlds().contains(player.getWorld().getName())) {
+				continue;
+			}
+
+			ObjectTypes type = ConfigValues.getObjectType();
+
+			if (!user.getPlayerScore().isObjectiveCreated()) {
+				try {
+					if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+						Object objectiveInstance = ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
+								type.objectName, ClazzContainer.getiScoreboardCriteriaDummy(), type.chatBaseComponent,
+								ClazzContainer.getEnumScoreboardHealthDisplayInteger());
+
+						// Create objective
+						ReflectionUtils.sendPacket(player, ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
+								.newInstance(objectiveInstance, 0));
+
+						// Where to display, 0 - PlayerList
+						ReflectionUtils.sendPacket(player, ClazzContainer
+								.getPacketPlayOutScoreboardDisplayObjectiveConstructor().newInstance(0, objectiveInstance));
+					} else {
+						Scoreboard board = player.getScoreboard();
+						Objective object = board.getObjective(type.objectName);
+
+						if (object == null) {
+							object = board.registerNewObjective(type.objectName, "dummy");
+						}
+
+						object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+
+						if (type == ObjectTypes.PING) {
+							object.setDisplayName("ms");
+						}
+
+						/*Object packet = ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
+								.newInstance();
+
+						ClazzContainer.getPacketPlayOutScoreboardObjectiveNameField().set(packet, type.objectName);
+						ClazzContainer.getPacketPlayOutScoreboardObjectiveDisplayNameField().set(packet,
+								type.objectName);
+						ClazzContainer.getPacketPlayOutScoreboardObjectiveRenderType().set(packet,
+								ClazzContainer.getEnumScoreboardHealthDisplayInteger());
+						ClazzContainer.getScoreboardObjectiveMethod().set(packet, 1);
+
+						ReflectionUtils.sendPacket(player, packet);
+
+						ReflectionUtils.sendPacket(player,
+								ClazzContainer.getPacketPlayOutScoreboardDisplayObjectiveConstructor().newInstance(
+										0, ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
+												type.objectName, ClazzContainer.getiScoreboardCriteriaDummy())));*/
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+					return;
 				}
 
-				Player player = user.getPlayer();
+				user.getPlayerScore().setObjectiveCreated();
+			}
 
-				if (player == null || ConfigValues.getObjectsDisabledWorlds().contains(player.getWorld().getName())) {
-					continue;
-				}
+			int lastScore = 0;
 
-				ObjectTypes type = ConfigValues.getObjectType();
+			if (type == ObjectTypes.PING) {
+				lastScore = TabListAPI.getPing(player);
+			} else if (type == ObjectTypes.CUSTOM) {
+				lastScore = getValue(player, ConfigValues.getCustomObjectSetting());
+			}
 
-				if (!user.getPlayerScore().isObjectiveCreated()) {
+			// Update objective value
+
+			if (lastScore != user.getPlayerScore().getLastScore()) {
+				user.getPlayerScore().setLastScore(lastScore);
+
+				for (TabListUser us : plugin.getUsers()) {
+					Player pl = us.getPlayer();
+
+					if (pl == null) {
+						continue;
+					}
+
 					try {
 						if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-							Object objectiveInstance = ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
-									type.objectName, ClazzContainer.getiScoreboardCriteriaDummy(), type.chatBaseComponent,
-									ClazzContainer.getEnumScoreboardHealthDisplayInteger());
+							ReflectionUtils.sendPacket(pl,
+									ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
+											ClazzContainer.getEnumScoreboardActionChange(), type.objectName,
+											user.getPlayerScore().getScoreName(), lastScore));
 
-							// Create objective
-							ReflectionUtils.sendPacket(player, ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
-									.newInstance(objectiveInstance, 0));
+							// Remove objective from fake players
+							// This is a workaround that does not seem to work still
+							// There is no proper way to remove a score from specific players/fake player
+							for (hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer fp : plugin.getFakePlayerHandler()
+									.getFakePlayers()) {
 
-							// Where to display, 0 - PlayerList
-							ReflectionUtils.sendPacket(player, ClazzContainer
-									.getPacketPlayOutScoreboardDisplayObjectiveConstructor().newInstance(0, objectiveInstance));
+								// Only send remove action
+								ReflectionUtils.sendPacket(pl,
+										ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
+												ClazzContainer.getEnumScoreboardActionRemove(), type.objectName, fp.getName(),
+												0));
+							}
 						} else {
-							Scoreboard board = player.getScoreboard();
-							Objective object = board.getObjective(type.objectName);
+							// Packets does not really want to work for old versions so we uses that the API
+							// provided
 
-							if (object == null) {
-								object = board.registerNewObjective(type.objectName, "dummy");
+							Objective objective = pl.getScoreboard().getObjective(type.objectName);
+
+							if (objective != null) {
+								objective.getScore(user.getPlayerScore().getScoreName()).setScore(lastScore);
 							}
 
-							object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+							/*Object scoreObject = ClazzContainer.getScoreboardScoreConstructor().newInstance(
+									ClazzContainer.getScoreboardConstructor().newInstance(),
+									ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
+											type.objectName, ClazzContainer.getiScoreboardCriteriaDummy()),
+									user.getPlayerScore().getScoreName());
 
-							if (type == ObjectTypes.PING) {
-								object.setDisplayName("ms");
-							}
+							ClazzContainer.getSetScoreboardScoreMethod().invoke(scoreObject, lastScore);
 
-							/*Object packet = ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
-									.newInstance();
-
-							ClazzContainer.getPacketPlayOutScoreboardObjectiveNameField().set(packet, type.objectName);
-							ClazzContainer.getPacketPlayOutScoreboardObjectiveDisplayNameField().set(packet,
-									type.objectName);
-							ClazzContainer.getPacketPlayOutScoreboardObjectiveRenderType().set(packet,
-									ClazzContainer.getEnumScoreboardHealthDisplayInteger());
-							ClazzContainer.getScoreboardObjectiveMethod().set(packet, 1);
-
-							ReflectionUtils.sendPacket(player, packet);
-
-							ReflectionUtils.sendPacket(player,
-									ClazzContainer.getPacketPlayOutScoreboardDisplayObjectiveConstructor().newInstance(
-											0, ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
-													type.objectName, ClazzContainer.getiScoreboardCriteriaDummy())));*/
+							ReflectionUtils.sendPacket(pl, ClazzContainer
+									.getPacketPlayOutScoreboardScoreSbScoreConstructor().newInstance(scoreObject));*/
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
 						return;
 					}
-
-					user.getPlayerScore().setObjectiveCreated();
-				}
-
-				int lastScore = 0;
-
-				if (type == ObjectTypes.PING) {
-					lastScore = TabListAPI.getPing(player);
-				} else if (type == ObjectTypes.CUSTOM) {
-					lastScore = getValue(player, ConfigValues.getCustomObjectSetting());
-				}
-
-				// Update objective value
-
-				if (lastScore != user.getPlayerScore().getLastScore()) {
-					user.getPlayerScore().setLastScore(lastScore);
-
-					for (TabListUser us : plugin.getUsers()) {
-						Player pl = us.getPlayer();
-
-						if (pl == null) {
-							continue;
-						}
-
-						try {
-							if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-								ReflectionUtils.sendPacket(pl,
-										ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
-												ClazzContainer.getEnumScoreboardActionChange(), type.objectName,
-												user.getPlayerScore().getScoreName(), lastScore));
-
-								// Remove objective from fake players
-								// This is a workaround that does not seem to work still
-								// There is no proper way to remove a score from specific players/fake player
-								for (hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer fp : plugin.getFakePlayerHandler()
-										.getFakePlayers()) {
-
-									// Only send remove action
-									ReflectionUtils.sendPacket(pl,
-											ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
-													ClazzContainer.getEnumScoreboardActionRemove(), type.objectName, fp.getName(),
-													0));
-								}
-							} else {
-								// Packets does not really want to work for old versions so we uses that the API
-								// provided
-
-								Objective objective = pl.getScoreboard().getObjective(type.objectName);
-
-								if (objective != null) {
-									objective.getScore(user.getPlayerScore().getScoreName()).setScore(lastScore);
-								}
-
-								/*Object scoreObject = ClazzContainer.getScoreboardScoreConstructor().newInstance(
-										ClazzContainer.getScoreboardConstructor().newInstance(),
-										ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
-												type.objectName, ClazzContainer.getiScoreboardCriteriaDummy()),
-										user.getPlayerScore().getScoreName());
-
-								ClazzContainer.getSetScoreboardScoreMethod().invoke(scoreObject, lastScore);
-
-								ReflectionUtils.sendPacket(pl, ClazzContainer
-										.getPacketPlayOutScoreboardScoreSbScoreConstructor().newInstance(scoreObject));*/
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-							return;
-						}
-					}
 				}
 			}
-		}, 0, ConfigValues.getObjectRefreshInterval());
+		}
 	}
 
 	private int getValue(Player player, final String text) {

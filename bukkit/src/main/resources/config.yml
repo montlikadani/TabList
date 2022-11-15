@@ -103,18 +103,10 @@ tablist-object-type:
   type: ping
 
   refresh-interval: 3
+  custom-value: "%level%"
 
   disabled-worlds:
   - testingWorld
-
-  object-settings:
-    health:
-      restricted-players:
-      - exampleplayer
-      - players
-
-    custom:
-      value: "%level%"
 
 check-update: true
 

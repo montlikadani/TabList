@@ -141,10 +141,6 @@ public final class ConfigValues {
 				"health - player's health", "custom - custom placeholder");
 		c.addComment("tablist-object-type.refresh-interval", "How often should it refresh the values in seconds?");
 		c.addComment("tablist-object-type.disabled-worlds", "In these worlds the objects will not be displayed");
-		c.addComment("tablist-object-type.object-settings", "Objective settings");
-		c.addComment("tablist-object-type.object-settings.health", "The player's health - displayed after the player's name.");
-		c.addComment("tablist-object-type.object-settings.health.restricted-players",
-				"For these players the health will not be displayed");
 		c.addComment("tablist-object-type.object-settings.custom",
 				"Custom placeholder - accepts only number-ending placeholders, like %level%");
 
@@ -246,7 +242,13 @@ public final class ConfigValues {
 		memoryBarFreeColor = c.get("placeholder-format.memory-bar.colors.free", "&a");
 		memoryBarAllocationColor = c.get("placeholder-format.memory-bar.colors.allocation", "&e");
 		memoryBarReleasedColor = c.get("placeholder-format.memory-bar.colors.released", "&6");
-		customObjectSetting = c.get("tablist-object-type.object-settings.custom.value", "%level%");
+
+		if ((customObjectSetting = c.getString("tablist-object-type.object-settings.custom.value", null)) == null) {
+			customObjectSetting = c.get("tablist-object-type.custom-value", "%level%");
+		}
+
+		healthObjectRestricted = c.getStringList("tablist-object-type.object-settings.health.restricted-players"); // TODO deprecated
+		objectsDisabledWorlds = c.get("tablist-object-type.disabled-worlds", Arrays.asList("testingWorld"));
 
 		if (!c.getBoolean("tablist-object-type.enable", true)) {
 			c.set("tablist-object-type.type", "none");
@@ -288,13 +290,15 @@ public final class ConfigValues {
 		}
 
 		groupsDisabledWorlds = c.get("change-prefix-suffix-in-tablist.disabled-worlds.list", Arrays.asList("myWorldWithUpper"));
-		healthObjectRestricted = c.get("tablist-object-type.object-settings.health.restricted-players",
-				Arrays.asList("exampleplayer", "players"));
-		objectsDisabledWorlds = c.get("tablist-object-type.disabled-worlds", Arrays.asList("testingWorld"));
 
 		memoryBarSize = c.get("placeholder-format.memory-bar.size", 80);
 		groupsRefreshInterval = c.get("change-prefix-suffix-in-tablist.refresh-interval", 30);
-		objectRefreshInterval = c.get("tablist-object-type.refresh-interval", 3) * 20;
+
+		if ((objectRefreshInterval = c.get("tablist-object-type.refresh-interval", 3)) < 1) {
+			objectRefreshInterval = 0;
+		} else {
+			objectRefreshInterval *= 20;
+		}
 
 		// Just set if missing
 		c.get("check-update", true);
