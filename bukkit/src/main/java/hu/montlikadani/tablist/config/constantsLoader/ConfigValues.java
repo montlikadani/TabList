@@ -244,6 +244,7 @@ public final class ConfigValues {
 		memoryBarReleasedColor = c.get("placeholder-format.memory-bar.colors.released", "&6");
 
 		if ((customObjectSetting = c.getString("tablist-object-type.object-settings.custom.value", null)) == null) {
+			c.addComment("tablist-object-type.custom-value", "The unique integer variable to be displayed.");
 			customObjectSetting = c.get("tablist-object-type.custom-value", "%level%");
 		}
 

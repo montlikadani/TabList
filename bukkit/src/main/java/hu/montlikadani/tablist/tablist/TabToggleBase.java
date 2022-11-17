@@ -48,7 +48,7 @@ public final class TabToggleBase {
 			return;
 		}
 
-		File file = new File(tl.getFolder(), "toggledtablists.yml");
+		File file = new File(tl.getDataFolder(), "toggledtablists.yml");
 		if (!file.exists()) {
 			return;
 		}
@@ -84,7 +84,7 @@ public final class TabToggleBase {
 	}
 
 	public void saveToggledTabs() {
-		File file = new File(tl.getFolder(), "toggledtablists.yml");
+		File file = new File(tl.getDataFolder(), "toggledtablists.yml");
 
 		if (!TabConfigValues.isRememberToggledTablistToFile() || (!globallySwitched && TAB_TOGGLE.isEmpty())) {
 			if (file.exists()) {

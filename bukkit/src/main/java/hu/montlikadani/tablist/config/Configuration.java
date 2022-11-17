@@ -21,7 +21,7 @@ public class Configuration {
 	public Configuration(TabList plugin) {
 		this.plugin = plugin;
 
-		File folder = plugin.getFolder();
+		File folder = plugin.getDataFolder();
 		messages = new ConfigMessages(folder);
 
 		configFile = new File(folder, "config.yml");
@@ -33,7 +33,7 @@ public class Configuration {
 
 	public void loadFiles() {
 		// Monument
-		File names = new File(plugin.getFolder(), "names.yml");
+		File names = new File(plugin.getDataFolder(), "names.yml");
 		if (names.exists()) {
 			names.delete();
 		}

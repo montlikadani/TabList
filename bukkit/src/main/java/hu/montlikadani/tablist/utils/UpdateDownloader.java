@@ -107,7 +107,7 @@ public abstract class UpdateDownloader {
 
 	// Old releases directory
 	private static void deleteDirectory(TabList tabList) {
-		File releasesFolder = new File(tabList.getFolder(), "releases");
+		File releasesFolder = new File(tabList.getDataFolder(), "releases");
 
 		if (!releasesFolder.exists()) {
 			return;

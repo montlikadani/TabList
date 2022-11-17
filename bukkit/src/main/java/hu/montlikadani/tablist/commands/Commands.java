@@ -55,8 +55,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			sendMsg(sender, colorText("&5Version:&a " + plugin.getDescription().getVersion()));
 			sendMsg(sender, colorText("&5Author, created by:&a montlikadani"));
 			sendMsg(sender, colorText("&5Commands:&7 /" + label + " help"));
-			sendMsg(sender,
-					colorText("&4If you find a bug, make issue here:&e &nhttps://github.com/montlikadani/TabList/issues"));
+			sendMsg(sender, colorText("&4If you find a bug, make issue here:&e &nhttps://github.com/montlikadani/TabList/issues"));
 			return true;
 		}
 
@@ -95,8 +94,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			}
 
 			if (isPlayer && !sender.hasPermission(proc.permission().permission)) {
-				sendMsg(sender,
-						ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", proc.permission().permission));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", proc.permission().permission));
 				return true;
 			}
 
@@ -110,8 +108,6 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 		return true;
 	}
-
-	private static final ContextArguments[] VALUES = ContextArguments.values();
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
@@ -134,14 +130,13 @@ public final class Commands implements CommandExecutor, TabCompleter {
 		case 3:
 			String first = args[0];
 
-			if (ConfigValues.isFakePlayers() && first.equalsIgnoreCase("fakeplayers") && !args[1].equalsIgnoreCase("add")
-					&& !args[1].equalsIgnoreCase("list")) {
+			if (ConfigValues.isFakePlayers() && first.equalsIgnoreCase("fakeplayers") && !args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("list")) {
 				for (IFakePlayer fp : plugin.getFakePlayerHandler().getFakePlayers()) {
 					cmds.add(fp.getName());
 				}
 			} else if (first.equalsIgnoreCase("group") || first.equalsIgnoreCase("player")) {
-				for (ContextArguments ca : VALUES) {
-					cmds.add(ca.loweredName);
+				for (String ca : new String[] { "prefix", "suffix", "priority", "tabname", "remove" }) {
+					cmds.add(ca);
 				}
 			}
 
@@ -168,11 +163,5 @@ public final class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		return c;
-	}
-
-	public enum ContextArguments {
-		PREFIX, SUFFIX, PRIORITY, TABNAME, REMOVE;
-
-		public final String loweredName = name().toLowerCase(java.util.Locale.ENGLISH);
 	}
 }

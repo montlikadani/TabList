@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import org.bstats.bukkit.Metrics;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 
@@ -201,6 +202,12 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	}
 
 	private void beginDataCollection() {
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(new File(getDataFolder().getParentFile(), "bStats"), "config.yml"));
+
+		if (!config.getBoolean("enabled", true)) {
+			return;
+		}
+
 		Metrics metrics = new Metrics(this, 1479);
 
 		metrics.addCustomChart(
@@ -535,11 +542,5 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	boolean isPluginEnabled(String name) {
 		return getServer().getPluginManager().isPluginEnabled(name);
-	}
-
-	public File getFolder() {
-		File dataFolder = getDataFolder();
-		dataFolder.mkdirs();
-		return dataFolder;
 	}
 }

@@ -29,6 +29,8 @@ public final class Variables {
 	private final List<LogicalNode> nodes = new ArrayList<>();
 	private final java.util.Set<Variable> variables = new java.util.HashSet<>(6);
 
+	private String roundedMaxTps;
+
 	public Variables(TabList plugin) {
 		this.plugin = plugin;
 	}
@@ -66,6 +68,7 @@ public final class Variables {
 		}
 
 		LogicalNode.reverseOrderOfArray(nodes);
+		roundedMaxTps = '*' + roundTpsDigits(20.0);
 
 		if (ConfigValues.getDateFormat() != null) {
 			variables.add(new Variable("date", 3,
@@ -218,7 +221,7 @@ public final class Variables {
 
 		str = Global.replace(str, "%tps%", () -> {
 			double tps = TabListAPI.getTPS();
-			return tps > 20.0 ? '*' + roundTpsDigits(20.0) : roundTpsDigits(tps);
+			return tps > 20.0 ? roundedMaxTps : roundTpsDigits(tps);
 		});
 
 		return str;
