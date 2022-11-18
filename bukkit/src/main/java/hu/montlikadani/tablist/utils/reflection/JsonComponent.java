@@ -41,9 +41,7 @@ public final class JsonComponent {
 		jsonList.clear();
 		jsonList.trimToSize();
 
-		text = text.replace('\u00a7', '&');
-		text = text.replace("&#", "#");
-		text = text.replace("&x", "#");
+		text = text.replace('\u00a7', '&').replace("&#", "#").replace("&x", "#");
 
 		// Finds hex colours that may be coming from essentials (&x&f ..) and removes
 		// the "&" character to match the TL hex colour

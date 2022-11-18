@@ -4,7 +4,9 @@ import java.util.Random;
 
 public final class TextAnimation {
 
-	private final String name, firstElement;
+	public final String name;
+
+	private final String firstElement;
 	private final int time, multipliedTime;
 	private final boolean isRandom;
 	private final String[] texts;
@@ -15,22 +17,14 @@ public final class TextAnimation {
 		this.name = name;
 		this.time = (time < 0 || time > Integer.MAX_VALUE) ? 150 : time;
 		this.isRandom = isRandom;
-		this.texts = new String[texts.size()];
+		this.texts = texts.toArray(new String[0]);
 
 		if (isRandom) {
 			random = new Random();
 		}
 
-		for (int i = 0; i < this.texts.length; i++) {
-			this.texts[i] = texts.get(i);
-		}
-
 		firstElement = this.texts[0];
 		multipliedTime = this.texts.length * this.time;
-	}
-
-	public String getName() {
-		return name;
 	}
 
 	public String getText() {
@@ -38,7 +32,6 @@ public final class TextAnimation {
 			return firstElement;
 		}
 
-		return isRandom ? texts[random.nextInt(texts.length) % multipliedTime]
-				: texts[(int) ((System.currentTimeMillis() % multipliedTime) / time)];
+		return isRandom ? texts[random.nextInt(texts.length) % multipliedTime] : texts[(int) ((System.currentTimeMillis() % multipliedTime) / time)];
 	}
 }

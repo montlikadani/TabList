@@ -3,6 +3,7 @@ package hu.montlikadani.tablist.config.constantsLoader;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -14,11 +15,13 @@ public final class ConfigValues {
 
 	private static boolean logConsole = true, placeholderAPI, perWorldPlayerList, fakePlayers, countFakePlayersToOnlinePlayers,
 			removeGrayColorFromTabInSpec, ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab,
-			afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, useSystemZone,
+			afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast,
 			pingFormatEnabled, tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups,
 			hideGroupInVanish, preferPrimaryVaultGroup, assignGlobalGroup, followNameTagVisibility;
 
-	private static String afkFormatYes, afkFormatNo, timeZone, customObjectSetting, memoryBarChar, memoryBarUsedColor,
+	private static TimeZone timeZone;
+
+	private static String afkFormatYes, afkFormatNo, customObjectSetting, memoryBarChar, memoryBarUsedColor,
 			memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
 
 	private static DateTimeFormatter timeFormat, dateFormat;
@@ -193,7 +196,6 @@ public final class ConfigValues {
 		afkStatusShowInRightLeftSide = c.get("placeholder-format.afk-status.show-in-right-or-left-side", true);
 		afkStatusShowPlayerGroup = c.get("placeholder-format.afk-status.show-player-group", true);
 		afkSortLast = c.get("placeholder-format.afk-status.sort-last", false);
-		useSystemZone = c.get("placeholder-format.time.use-system-zone", false);
 		pingFormatEnabled = c.get("placeholder-format.ping.enable", true);
 		tpsFormatEnabled = c.get("placeholder-format.tps.enable", true);
 		prefixSuffixEnabled = c.get("change-prefix-suffix-in-tablist.enable", false);
@@ -206,7 +208,12 @@ public final class ConfigValues {
 
 		afkFormatYes = Global.setSymbols(c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r "));
 		afkFormatNo = Global.setSymbols(c.get("placeholder-format.afk-status.format-no", ""));
-		timeZone = c.get("placeholder-format.time.time-zone", "GMT0");
+
+		if (c.get("placeholder-format.time.use-system-zone", false)) {
+			timeZone = TimeZone.getTimeZone(java.time.ZoneId.systemDefault());
+		} else {
+			timeZone = TimeZone.getTimeZone(c.get("placeholder-format.time.time-zone", "GMT0"));
+		}
 
 		String old = "placeholder-format.time.time-format.format";
 		String last = c.getString(old, null);
@@ -401,12 +408,8 @@ public final class ConfigValues {
 		return afkFormatNo;
 	}
 
-	public static String getTimeZone() {
+	public static TimeZone getTimeZone() {
 		return timeZone;
-	}
-
-	public static boolean isUseSystemZone() {
-		return useSystemZone;
 	}
 
 	public static DateTimeFormatter getTimeFormat() {

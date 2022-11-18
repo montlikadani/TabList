@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -71,8 +70,7 @@ public final class Variables {
 		roundedMaxTps = '*' + roundTpsDigits(20.0);
 
 		if (ConfigValues.getDateFormat() != null) {
-			variables.add(new Variable("date", 3,
-					(v, str) -> str = str.replace(v.fullName, v.remainingValue(getTimeAsString(ConfigValues.getDateFormat())))));
+			variables.add(new Variable("date", 3, (v, str) -> str = str.replace(v.fullName, v.remainingValue(getTimeAsString(ConfigValues.getDateFormat())))));
 		}
 
 		variables.add(new Variable("online-players", 2, (v, str) -> {
@@ -85,8 +83,7 @@ public final class Variables {
 			str = str.replace(v.fullName, v.remainingValue(Integer.toString(players)));
 		}));
 
-		variables.add(new Variable("max-players", 20, (v,
-				str) -> str = str.replace(v.fullName, v.remainingValue(Integer.toString(plugin.getServer().getMaxPlayers())))));
+		variables.add(new Variable("max-players", 20, (v, str) -> str = str.replace(v.fullName, v.remainingValue(Integer.toString(plugin.getServer().getMaxPlayers())))));
 
 		variables.add(new Variable("vanished-players", 2, (v, str) -> {
 			int vanishedPlayers = PluginUtils.getVanishedPlayers();
@@ -94,8 +91,7 @@ public final class Variables {
 			str = str.replace(v.fullName, v.remainingValue(vanishedPlayers == 0 ? "0" : Integer.toString(vanishedPlayers)));
 		}));
 
-		variables.add(new Variable("motd", 10,
-				(v, str) -> str = str.replace(v.fullName, v.remainingValue(plugin.getComplement().motd()))));
+		variables.add(new Variable("motd", 10, (v, str) -> str = str.replace(v.fullName, v.remainingValue(plugin.getComplement().motd()))));
 
 		variables.add(new Variable("fake-players", 3, (v, str) -> {
 			int pls = plugin.getFakePlayerHandler().getFakePlayers().size();
@@ -109,8 +105,7 @@ public final class Variables {
 			for (TabListUser user : plugin.getUsers()) {
 				Player player = user.getPlayer();
 
-				if (player == null || !PluginUtils.hasPermission(player, "tablist.onlinestaff")
-						|| (!ConfigValues.isCountVanishedStaff() && PluginUtils.isVanished(player))) {
+				if (player == null || !PluginUtils.hasPermission(player, "tablist.onlinestaff") || (!ConfigValues.isCountVanishedStaff() && PluginUtils.isVanished(player))) {
 					continue;
 				}
 
@@ -156,16 +151,14 @@ public final class Variables {
 			str = Global.replace(str, "%memory_bar%", () -> {
 				Runtime runtime = Runtime.getRuntime();
 
-				int barSize = ConfigValues.getMemoryBarSize(), totalMemory = (int) (runtime.totalMemory() / MB),
-						usedMemory = totalMemory - (int) (runtime.freeMemory() / MB),
+				int barSize = ConfigValues.getMemoryBarSize(), totalMemory = (int) (runtime.totalMemory() / MB), usedMemory = totalMemory - (int) (runtime.freeMemory() / MB),
 						maxMemory = (int) (runtime.maxMemory() / MB);
 
 				float usedMem = (float) usedMemory / maxMemory;
 				float totalMem = (float) totalMemory / maxMemory;
 
 				String barChar = ConfigValues.getMemoryBarChar();
-				StringBuilder builder = new StringBuilder(
-						usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
+				StringBuilder builder = new StringBuilder(usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
 
 				int i = 0;
 				int totalBarSize = (int) (barSize * usedMem);
@@ -271,8 +264,7 @@ public final class Variables {
 			if (ServerVersion.isCurrentLower(ServerVersion.v1_9_R1)) {
 				s = s.replace("%player-max-health%", Double.toString(player.getMaxHealth()));
 			} else {
-				org.bukkit.attribute.AttributeInstance attr = player
-						.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
+				org.bukkit.attribute.AttributeInstance attr = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
 
 				if (attr != null) {
 					s = s.replace("%player-max-health%", Double.toString(attr.getDefaultValue()));
@@ -327,10 +319,7 @@ public final class Variables {
 	}
 
 	private String getTimeAsString(DateTimeFormatter formatterPattern) {
-		TimeZone zone = ConfigValues.isUseSystemZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
-				: TimeZone.getTimeZone(ConfigValues.getTimeZone());
-
-		return (zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId())).format(formatterPattern);
+		return (ConfigValues.getTimeZone() == null ? LocalDateTime.now() : LocalDateTime.now(ConfigValues.getTimeZone().toZoneId())).format(formatterPattern);
 	}
 
 	private int getChunks() {
