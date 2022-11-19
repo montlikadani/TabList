@@ -67,7 +67,7 @@ public final class Variables {
 		}
 
 		LogicalNode.reverseOrderOfArray(nodes);
-		roundedMaxTps = '*' + roundTpsDigits(20.0);
+		roundedMaxTps = roundTpsDigits(20.0);
 
 		if (ConfigValues.getDateFormat() != null) {
 			variables.add(new Variable("date", 3, (v, str) -> str = str.replace(v.fullName, v.remainingValue(getTimeAsString(ConfigValues.getDateFormat())))));
