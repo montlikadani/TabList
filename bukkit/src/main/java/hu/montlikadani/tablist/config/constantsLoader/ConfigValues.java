@@ -2,6 +2,7 @@ package hu.montlikadani.tablist.config.constantsLoader;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -256,7 +257,7 @@ public final class ConfigValues {
 		}
 
 		healthObjectRestricted = c.getStringList("tablist-object-type.object-settings.health.restricted-players"); // TODO deprecated
-		objectsDisabledWorlds = c.get("tablist-object-type.disabled-worlds", Arrays.asList("testingWorld"));
+		objectsDisabledWorlds = c.get("tablist-object-type.disabled-worlds", Collections.singletonList("testingWorld"));
 
 		if (!c.getBoolean("tablist-object-type.enable", true)) {
 			c.set("tablist-object-type.type", "none");
@@ -297,7 +298,7 @@ public final class ConfigValues {
 			}
 		}
 
-		groupsDisabledWorlds = c.get("change-prefix-suffix-in-tablist.disabled-worlds.list", Arrays.asList("myWorldWithUpper"));
+		groupsDisabledWorlds = c.get("change-prefix-suffix-in-tablist.disabled-worlds.list", Collections.singletonList("myWorldWithUpper"));
 
 		memoryBarSize = c.get("placeholder-format.memory-bar.size", 80);
 		groupsRefreshInterval = c.get("change-prefix-suffix-in-tablist.refresh-interval", 30);

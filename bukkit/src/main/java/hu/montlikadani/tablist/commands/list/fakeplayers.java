@@ -112,7 +112,7 @@ public final class fakeplayers implements ICommand {
 
 			break;
 		case LIST:
-			Set<IFakePlayer> list = handler.getFakePlayers();
+			Set<IFakePlayer> list = handler.fakePlayers;
 
 			if (list.isEmpty()) {
 				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NO_FAKE_PLAYER));

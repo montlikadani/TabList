@@ -256,7 +256,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		}
 
 		if (isPluginEnabled("CMI")) {
-			getServer().getPluginManager().registerEvents(new hu.montlikadani.tablist.listeners.resources.CMIAfkStatus(), this);
+			getServer().getPluginManager().registerEvents(new hu.montlikadani.tablist.listeners.resources.CMIAfkStatus(this), this);
 		}
 
 		if (PluginUtils.isPurpur()) {

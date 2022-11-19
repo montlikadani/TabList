@@ -188,8 +188,7 @@ public final class Objects {
 							// Remove objective from fake players
 							// This is a workaround that does not seem to work still
 							// There is no proper way to remove a score from specific players/fake player
-							for (hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer fp : plugin.getFakePlayerHandler()
-									.getFakePlayers()) {
+							for (hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer fp : plugin.getFakePlayerHandler().fakePlayers) {
 
 								// Only send remove action
 								ReflectionUtils.sendPacket(pl,

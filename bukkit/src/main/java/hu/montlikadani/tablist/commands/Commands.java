@@ -131,7 +131,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			String first = args[0];
 
 			if (ConfigValues.isFakePlayers() && first.equalsIgnoreCase("fakeplayers") && !args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("list")) {
-				for (IFakePlayer fp : plugin.getFakePlayerHandler().getFakePlayers()) {
+				for (IFakePlayer fp : plugin.getFakePlayerHandler().fakePlayers) {
 					cmds.add(fp.getName());
 				}
 			} else if (first.equalsIgnoreCase("group") || first.equalsIgnoreCase("player")) {

@@ -77,7 +77,7 @@ public final class Variables {
 			int players = PluginUtils.countVanishedPlayers();
 
 			if (ConfigValues.isCountFakePlayersToOnlinePlayers()) {
-				players += plugin.getFakePlayerHandler().getFakePlayers().size();
+				players += plugin.getFakePlayerHandler().fakePlayers.size();
 			}
 
 			str = str.replace(v.fullName, v.remainingValue(Integer.toString(players)));
@@ -94,7 +94,7 @@ public final class Variables {
 		variables.add(new Variable("motd", 10, (v, str) -> str = str.replace(v.fullName, v.remainingValue(plugin.getComplement().motd()))));
 
 		variables.add(new Variable("fake-players", 3, (v, str) -> {
-			int pls = plugin.getFakePlayerHandler().getFakePlayers().size();
+			int pls = plugin.getFakePlayerHandler().fakePlayers.size();
 
 			str = str.replace(v.fullName, v.remainingValue(pls == 0 ? "0" : Integer.toString(pls)));
 		}));

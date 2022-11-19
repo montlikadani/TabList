@@ -26,7 +26,7 @@ public enum ServerVersion {
 	v1_20_R1,
 	v1_20_R2;
 
-	private int value;
+	private final int value;
 
 	private static String[] arrayVersion;
 	private static ServerVersion current;

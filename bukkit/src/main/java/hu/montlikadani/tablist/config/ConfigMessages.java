@@ -45,12 +45,6 @@ public final class ConfigMessages {
 					saveRequired = true;
 				}
 
-				if (str.indexOf('%') == -1) {
-					// In case if the string does not contain any placeholder store the text
-					// formatting too
-					str = Util.colorText(str);
-				}
-
 				key.value = str;
 			} else if (key.type == String[].class) {
 				if (!fileWasExisted) {
@@ -105,11 +99,13 @@ public final class ConfigMessages {
 		for (int i = 0; i < array.length; i++) {
 			String msg = array[i];
 
-			for (int y = 0; y < variables.length; y += 2) {
-				msg = msg.replace(String.valueOf(variables[y]), String.valueOf(variables[y + 1]));
-			}
+			if (!msg.isEmpty()) {
+				for (int y = 0; y < variables.length; y += 2) {
+					msg = msg.replace(String.valueOf(variables[y]), String.valueOf(variables[y + 1]));
+				}
 
-			list.add(Util.colorText(msg));
+				list.add(Util.colorText(msg));
+			}
 		}
 
 		return list;
@@ -171,8 +167,7 @@ public final class ConfigMessages {
 				path = name();
 			}
 
-			path = hu.montlikadani.tablist.Global.replaceFrom(path, 0, "_", "", 1).replace('_', '-')
-					.toLowerCase(java.util.Locale.ENGLISH);
+			path = hu.montlikadani.tablist.Global.replaceFrom(path, 0, "_", "", 1).replace('_', '-').toLowerCase(java.util.Locale.ENGLISH);
 		}
 	}
 }

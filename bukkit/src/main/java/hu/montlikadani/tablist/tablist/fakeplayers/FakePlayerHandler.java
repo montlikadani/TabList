@@ -15,14 +15,11 @@ import hu.montlikadani.tablist.utils.Util;
 public final class FakePlayerHandler {
 
 	protected final TabList plugin;
-	private final Set<IFakePlayer> fakePlayers = new java.util.HashSet<>();
+
+	public final Set<IFakePlayer> fakePlayers = new java.util.HashSet<>();
 
 	public FakePlayerHandler(TabList plugin) {
 		this.plugin = plugin;
-	}
-
-	public Set<IFakePlayer> getFakePlayers() {
-		return fakePlayers;
 	}
 
 	public Optional<IFakePlayer> getFakePlayerByName(String name) {

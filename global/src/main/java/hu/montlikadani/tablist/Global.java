@@ -43,7 +43,14 @@ public final class Global {
 
 		int i = -1;
 
-		for (String symbol : Symbols.SYMBOLS) {
+		for (String symbol : new String[] { "•", "➤", "™", "↑", "→", "↓", "∞", "░", "▲", "▶", "◀", "●", "★", "☆", "☐", "☑", "☠", "☢", "☣", "☹", "☺", "✓",
+				"✔", "✘", "✚", "℻", "✠", "✡", "✦", "✧", "✩", "✪", "✮", "✯", "㋡", "❝", "❞", "ツ", "♩", "♪", "♫", "♬", "♭", "♮", "♯",
+				"¶", "\u00A9", "\u00AE", "⏎", "⇧", "⇪", "ᴴᴰ", "☒", "♠", "♣", "☻", "▓", "➾", "➔", "➳", "➧", "《", "》", "︾", "︽",
+				"☃", "¹", "²", "³", "≈", "℠", "\u2665", "✬", "↔", "«", "»", "☀", "♦", "₽", "☎", "☂", "←", "↖", "↗", "↘", "↙", "➲",
+				"✐", "✎", "✏", "✆", "◄", "☼", "►", "↕", "▼", "①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩", "⑪", "⑫", "⑬", "⑭",
+				"⑮", "⑯", "⑰", "⑱", "⑲", "⑳", "♨", "✑", "✖", "✰", "✶", "╗", "╣", "◙", "○", "╠", "┤", "║", "╝", "⌂", "┐", "❉", "⌲",
+				"½", "¼", "¾", "⅓", "⅔", "№", "†", "‡", "µ", "¢", "£", "∅", "≤", "≥", "≠", "∧", "∨", "∩", "∪", "∈", "∀", "∃", "∄",
+				"∑", "∏", "↺", "↻", "Ω"}) {
 			s = s.replace('<' + Integer.toString(++i) + '>', symbol);
 		}
 
@@ -51,8 +58,7 @@ public final class Global {
 	}
 
 	public static boolean isValidColourCharacter(char ch) {
-		return ((ch >= 'a' && ch <= 'f') || (ch == 'k' || ch == 'l' || ch == 'm' || ch == 'n' || ch == 'o' || ch == 'r'))
-				|| Character.isDigit(ch);
+		return ((ch >= 'a' && ch <= 'f') || (ch == 'k' || ch == 'l' || ch == 'm' || ch == 'n' || ch == 'o' || ch == 'r')) || Character.isDigit(ch);
 	}
 
 	public static void replace(StringBuilder builder, String search, Supplier<String> replacement) {
@@ -79,8 +85,7 @@ public final class Global {
 		int searchLength = search.length();
 		int replacementLength = replacement.get().length();
 
-		while ((index = builder.replace(index, index + searchLength, replacement.get()).indexOf(search,
-				index += replacementLength)) != -1) {
+		while ((index = builder.replace(index, index + searchLength, replacement.get()).indexOf(search, index += replacementLength)) != -1) {
 		}
 
 		return builder.toString();
