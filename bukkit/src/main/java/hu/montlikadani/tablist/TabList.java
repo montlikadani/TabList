@@ -127,6 +127,16 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	public void onDisable() {
 		groups.cancelUpdate();
 		objects.cancelTask();
+		tabManager.cancelTask();
+
+		getServer().getScheduler().cancelTasks(this);
+
+		// Async tasks can't be cancelled sometimes, with this we forcedly interrupts the active ones
+		for (org.bukkit.scheduler.BukkitWorker worker : getServer().getScheduler().getActiveWorkers()) {
+			if (equals(worker.getOwner())) {
+				worker.getThread().interrupt();
+			}
+		}
 
 		if (!users.isEmpty()) {
 			for (Objects.ObjectTypes t : Objects.ObjectTypes.values()) {
@@ -138,31 +148,18 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 					objects.unregisterObjective(t, user);
 				}
 			}
+
+			users.forEach(tlu -> {
+				tlu.getTabHandler().sendEmptyTab(tlu.getPlayer());
+				tlu.setHidden(false);
+			});
 		}
 
 		tabManager.toggleBase.saveToggledTabs();
-		tabManager.cancelTask();
-
 		fakePlayerHandler.removeAllFakePlayer();
 
-		users.forEach(tlu -> {
-			tlu.getTabHandler().sendEmptyTab(tlu.getPlayer());
-			tlu.setHidden(false);
-		});
-
 		conf.deleteEmptyFiles();
-
 		HandlerList.unregisterAll(this);
-		getServer().getScheduler().cancelTasks(this);
-		users.clear();
-
-		// Async tasks can't be cancelled sometimes, with this we forcedly interrupts
-		// the active ones
-		for (org.bukkit.scheduler.BukkitWorker worker : getServer().getScheduler().getActiveWorkers()) {
-			if (equals(worker.getOwner()) && !worker.getThread().isInterrupted()) {
-				worker.getThread().interrupt();
-			}
-		}
 	}
 
 	@Override

@@ -179,7 +179,6 @@ public class CommentedConfig extends YamlConfiguration {
 			}
 		}
 
-		boolean newLine = false;
 		StringBuilder comment = new StringBuilder();
 
 		for (String line : commentLines) {
@@ -189,11 +188,8 @@ public class CommentedConfig extends YamlConfiguration {
 
 			if (comment.length() != 0) {
 				comment.append(System.lineSeparator());
-			}
-
-			if (!newLine) {
+			} else {
 				line = System.lineSeparator() + line;
-				newLine = true;
 			}
 
 			comment.append(line);
