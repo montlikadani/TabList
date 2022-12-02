@@ -71,10 +71,8 @@ public final class fakeplayers implements ICommand {
 		switch (action) {
 		case ADD:
 			String name = args[2];
-			int ping = args.length > 4 ? Util.tryParse(args[4]).orElse(-1) : -1;
 
-			if ((output = handler.createPlayer(name, name, args.length > 3 ? args[3] : "",
-					ping)) == EditingResult.ALREADY_EXIST) {
+			if ((output = handler.createPlayer(name, name, "", -1)) == EditingResult.ALREADY_EXIST) {
 				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_ALREADY_ADDED, "%name%", name));
 				return true;
 			}
@@ -101,13 +99,16 @@ public final class fakeplayers implements ICommand {
 				return true;
 			}
 
-			if ((output = handler.renamePlayer(args[2], args[3])) == EditingResult.NOT_EXIST) {
+			String oldName = args[2];
+			String newName = args[3];
+
+			if ((output = handler.renamePlayer(oldName, newName)) == EditingResult.NOT_EXIST) {
 				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
 				return true;
 			}
 
 			if (output == EditingResult.OK) {
-				sendMsg(sender, Util.colorText("&2Old name: &e" + args[2] + "&2, new name: &e" + args[3]));
+				sendMsg(sender, Util.colorText("&2Old name: &e" + oldName + "&2, new name: &e" + newName));
 			}
 
 			break;
@@ -131,8 +132,7 @@ public final class fakeplayers implements ICommand {
 				res.append(one.getName());
 			}
 
-			ConfigMessages.getList(ConfigMessages.MessageKeys.FAKE_PLAYER_LIST, "%amount%", list.size(), "%fake-players%",
-					res.toString()).forEach(line -> sendMsg(sender, line));
+			ConfigMessages.getList(ConfigMessages.MessageKeys.FAKE_PLAYER_LIST, "%amount%", list.size(), "%fake-players%", res.toString()).forEach(line -> sendMsg(sender, line));
 			break;
 		case SETSKIN:
 			if (args.length < 4) {
@@ -164,8 +164,7 @@ public final class fakeplayers implements ICommand {
 			}
 
 			if (output == EditingResult.PING_AMOUNT) {
-				sendMsg(sender,
-						ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_PING_CAN_NOT_BE_LESS, "%amount%", amount));
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_PING_CAN_NOT_BE_LESS, "%amount%", amount));
 			}
 
 			break;

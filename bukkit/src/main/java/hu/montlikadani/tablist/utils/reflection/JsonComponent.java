@@ -3,7 +3,6 @@ package hu.montlikadani.tablist.utils.reflection;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NavigableMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.regex.Pattern;
 
@@ -198,13 +197,10 @@ public final class JsonComponent {
 	}
 
 	@SuppressWarnings("deprecation")
-	public CompletableFuture<NavigableMap<String, String>> getSkinValue(String uuid) {
+	public CompletableFuture<Pair<String, String>> getSkinValue(String uuid) {
 		return CompletableFuture.supplyAsync(() -> {
-			NavigableMap<String, String> map = new java.util.TreeMap<>();
-
 			try (InputStreamReader content = new InputStreamReader(
-					new java.net.URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unasigned=false")
-							.openStream())) {
+					new java.net.URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unasigned=false").openStream())) {
 				JsonObject json;
 
 				try {
@@ -214,8 +210,9 @@ public final class JsonComponent {
 				}
 
 				com.google.gson.JsonArray jsonArray = json.get("properties").getAsJsonArray();
+
 				if (jsonArray.isEmpty()) {
-					return map;
+					return null;
 				}
 
 				String value = jsonArray.get(0).getAsJsonObject().get("value").getAsString();
@@ -227,12 +224,23 @@ public final class JsonComponent {
 					json = new JsonParser().parse(decodedValue).getAsJsonObject();
 				}
 
-				map.put(value, json.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString());
+				return new Pair<>(value, json.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString());
 			} catch (java.io.IOException e1) {
 				e1.printStackTrace();
 			}
 
-			return map;
+			return null;
 		});
+	}
+
+	public final class Pair<K, V> {
+
+		public final K key;
+		public final V value;
+
+		public Pair(K key, V value) {
+			this.key = key;
+			this.value = value;
+		}
 	}
 }

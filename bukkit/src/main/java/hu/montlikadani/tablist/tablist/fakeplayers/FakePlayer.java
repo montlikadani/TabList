@@ -12,7 +12,6 @@ import com.mojang.authlib.GameProfile;
 
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.TabList;
-import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.Util;
 import hu.montlikadani.tablist.utils.reflection.ClazzContainer;
@@ -35,24 +34,14 @@ public final class FakePlayer implements IFakePlayer {
 	private GameProfile profile;
 
 	public FakePlayer(String name, String displayName, String headId, int ping) {
-		setName(name);
-
-		this.displayName = displayName == null ? "" : displayName;
-		this.ping = ping;
-
-		java.util.Optional<UUID> opt = Util.tryParseId(headId);
-		profile = new GameProfile(opt.orElse(UUID.randomUUID()), name);
-
-		this.headId = profile.getId();
-
-		tablist = org.bukkit.plugin.java.JavaPlugin.getPlugin(TabList.class);
+		this(org.bukkit.plugin.java.JavaPlugin.getPlugin(TabList.class), name, displayName, headId, ping);
 	}
 
 	protected FakePlayer(TabList tablist, String name, String displayName, String headId, int ping) {
 		setName(name);
 
 		this.tablist = tablist;
-		this.displayName = displayName;
+		this.displayName = displayName == null ? "" : displayName;
 		this.ping = ping;
 
 		java.util.Optional<UUID> opt = Util.tryParseId(headId);
@@ -90,8 +79,7 @@ public final class FakePlayer implements IFakePlayer {
 		}
 
 		try {
-			chatBaseComponentName = this.name.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT
-					: ReflectionUtils.getAsIChatBaseComponent(this.name);
+			chatBaseComponentName = this.name.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT : ReflectionUtils.getAsIChatBaseComponent(this.name);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -119,27 +107,14 @@ public final class FakePlayer implements IFakePlayer {
 				(listNameField = entityPlayerClass.getDeclaredField("listName")).setAccessible(true);
 			}
 
-			for (TabListUser user : tablist.getUsers()) {
-				if (!user.isFakePlayerVisible(this)) {
-					continue;
-				}
-
-				Player player = user.getPlayer();
-
-				if (player == null) {
-					continue;
-				}
-
-				listNameField.set(fakeEntityPlayer,
-						displayName.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT
-								: ReflectionUtils.getAsIChatBaseComponent(
-										tablist.getPlaceholders().replaceVariables(player, displayName)));
+			for (Player player : tablist.getServer().getOnlinePlayers()) {
+				listNameField.set(fakeEntityPlayer, displayName.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT
+						: ReflectionUtils.getAsIChatBaseComponent(tablist.getPlaceholders().replaceVariables(player, displayName)));
 
 				Object entityPlayerArray = Array.newInstance(entityPlayerClass, 1);
 				Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
-				ReflectionUtils.sendPacket(player, ClazzContainer.getPlayOutPlayerInfoConstructor()
-						.newInstance(ClazzContainer.getUpdateDisplayName(), entityPlayerArray));
+				ReflectionUtils.sendPacket(player, ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateDisplayName(), entityPlayerArray));
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -161,12 +136,10 @@ public final class FakePlayer implements IFakePlayer {
 				Object entityPlayerArray = Array.newInstance(entityPlayerClass, 1);
 				Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
-				Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
-						.newInstance(ClazzContainer.getAddPlayer(), entityPlayerArray);
+				Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), entityPlayerArray);
 
-				for (TabListUser user : tablist.getUsers()) {
-					ReflectionUtils.sendPacket(user.getPlayer(), packetPlayOutPlayerInfo);
-					user.setCanSeeFakePlayer(this);
+				for (Player player : tablist.getServer().getOnlinePlayers()) {
+					ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
 				}
 
 				if (!displayName.isEmpty()) {
@@ -185,16 +158,12 @@ public final class FakePlayer implements IFakePlayer {
 			Object entityPlayerArray = Array.newInstance(entityPlayerClass, 1);
 			Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
-			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
-					.newInstance(ClazzContainer.getAddPlayer(), entityPlayerArray);
+			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), entityPlayerArray);
 
 			setPingFrom(packetPlayOutPlayerInfo);
 
-			for (TabListUser user : tablist.getUsers()) {
-				if (!user.isFakePlayerVisible(this)) {
-					ReflectionUtils.sendPacket(user.getPlayer(), packetPlayOutPlayerInfo);
-					user.setCanSeeFakePlayer(this);
-				}
+			for (Player player : tablist.getServer().getOnlinePlayers()) {
+				ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -217,15 +186,12 @@ public final class FakePlayer implements IFakePlayer {
 			Object entityPlayerArray = Array.newInstance(entityPlayerClass, 1);
 			Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
-			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
-					.newInstance(ClazzContainer.getUpdateLatency(), entityPlayerArray);
+			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateLatency(), entityPlayerArray);
 
 			setPingFrom(packetPlayOutPlayerInfo);
 
-			for (TabListUser user : tablist.getUsers()) {
-				if (user.isFakePlayerVisible(this)) {
-					ReflectionUtils.sendPacket(user.getPlayer(), packetPlayOutPlayerInfo);
-				}
+			for (Player player : tablist.getServer().getOnlinePlayers()) {
+				ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -256,8 +222,7 @@ public final class FakePlayer implements IFakePlayer {
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
 					packet = playerInfoDataConstr.newInstance(profile, ping, gameMode, chatBaseComponentName, null);
 				} else {
-					packet = playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode,
-							chatBaseComponentName);
+					packet = playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode, chatBaseComponentName);
 				}
 
 				break;
@@ -291,19 +256,29 @@ public final class FakePlayer implements IFakePlayer {
 			return;
 		}
 
-		ReflectionUtils.getJsonComponent().getSkinValue(headId.toString()).thenAcceptAsync(map -> {
-			java.util.Map.Entry<String, String> e = map.pollFirstEntry();
-
-			profile.getProperties().get("textures").clear();
-			profile.getProperties().put("textures",
-					new com.mojang.authlib.properties.Property("textures", e.getKey(), e.getValue()));
-		});
-
-		for (TabListUser user : tablist.getUsers()) {
-			if (user.isFakePlayerVisible(this)) {
-				user.setCanSeeFakePlayer(this);
+		ReflectionUtils.getJsonComponent().getSkinValue(headId.toString()).thenAcceptAsync(pair -> {
+			if (pair != null) {
+				profile.getProperties().get("textures").clear();
+				profile.getProperties().put("textures", new com.mojang.authlib.properties.Property("textures", pair.key, pair.value));
 			}
-		}
+		}).thenAccept(v -> {
+			if (fakeEntityPlayer != null) {
+				try {
+					Object entityPlayerArray = Array.newInstance(entityPlayerClass, 1);
+					Array.set(entityPlayerArray, 0, fakeEntityPlayer);
+
+					Object removePacketPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getRemovePlayer(), entityPlayerArray);
+					Object addPacketPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), entityPlayerArray);
+
+					for (Player player : tablist.getServer().getOnlinePlayers()) {
+						ReflectionUtils.sendPacket(player, removePacketPlayOutPlayerInfo);
+						ReflectionUtils.sendPacket(player, addPacketPlayOutPlayerInfo);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
 	}
 
 	@Override
@@ -316,16 +291,10 @@ public final class FakePlayer implements IFakePlayer {
 			Object entityPlayerArray = Array.newInstance(entityPlayerClass, 1);
 			Array.set(entityPlayerArray, 0, fakeEntityPlayer);
 
-			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor()
-					.newInstance(ClazzContainer.getRemovePlayer(), entityPlayerArray);
+			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getRemovePlayer(), entityPlayerArray);
 
-			for (TabListUser user : tablist.getUsers()) {
-				Player player = user.getPlayer();
-
-				if (player != null) {
-					ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
-					user.setCanSeeFakePlayer(this);
-				}
+			for (Player player : tablist.getServer().getOnlinePlayers()) {
+				ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

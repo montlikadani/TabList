@@ -435,7 +435,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 			if (playerId.equals(user.getUniqueId())) {
 				user.getTabHandler().sendEmptyTab(player);
-				user.removeAllVisibleFakePlayer();
 
 				groups.removePlayerGroup(user);
 

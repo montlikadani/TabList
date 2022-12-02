@@ -1,7 +1,5 @@
 package hu.montlikadani.tablist.user;
 
-import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
-
 /**
  * The interface which holds the users recognised by TabList resource.
  */
@@ -61,24 +59,5 @@ public interface TabListUser {
 	 */
 	PlayerScore getPlayerScore();
 
-	/**
-	 * Checks if the specified {@link IFakePlayer} is visible to this player.
-	 * 
-	 * @param fakePlayer {@link IFakePlayer} to check
-	 * @return true if the specified fake player is visible to this player
-	 */
-	boolean isFakePlayerVisible(IFakePlayer fakePlayer);
-
-	/**
-	 * Makes the specified {@link IFakePlayer} visible for this player.
-	 * 
-	 * @param fakePlayer {@link IFakePlayer}
-	 */
-	void setCanSeeFakePlayer(IFakePlayer fakePlayer);
-
-	/**
-	 * Clears the visible fake players cache to make it appear for this player.
-	 */
-	void removeAllVisibleFakePlayer();
 
 }
