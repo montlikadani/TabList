@@ -24,7 +24,7 @@ import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 public final class LegacyVersion implements IPacketNM {
 
 	private Method playerHandleMethod, sendPacketMethod, getHandleWorldMethod, getServerMethod;
-	private Field playerConnectionField, headerField, footerField, listNameField;
+	private Field playerConnectionField, headerField, footerField, listNameField, playerTeamNameField;
 	private Constructor<?> playerListHeaderFooterConstructor, entityPlayerConstructor, interactManagerConstructor;
 	private Class<?> minecraftServer, interactManager, craftServerClass;
 
@@ -498,17 +498,6 @@ public final class LegacyVersion implements IPacketNM {
 			}
 
 			playerTeams.add(scoreTeam);
-
-			/*Object handle = getPlayerHandle(player);
-			Object[] entityPlayerArray = (Object[]) Array.newInstance(handle.getClass(), 1);
-
-			Array.set(entityPlayerArray, 0, handle);*/
-
-			//packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateDisplayName(), entityPlayerArray);
-
-			//infoList = (List<Object>) ClazzContainer.getInfoList().get(packetPlayOutPlayerInfo);
-
-			//return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateDisplayName(), entityPlayerArray);
 			return newTeamPacket;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -526,10 +515,14 @@ public final class LegacyVersion implements IPacketNM {
 				return ClazzContainer.scoreboardTeamPacketByAction(playerTeam, 1);
 			}
 
-			/*Object oldTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
+			Object oldTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
 
-			ClazzContainer.getScoreboardTeamName().set(oldTeamPacket, groupPlayer.getFullGroupTeamName());
-			ClazzContainer.getScoreboardTeamMode().set(oldTeamPacket, 1);*/
+			if (playerTeamNameField == null) {
+				(playerTeamNameField = playerTeam.getClass().getDeclaredField("d")).setAccessible(true);
+			}
+
+			ClazzContainer.getScoreboardTeamName().set(oldTeamPacket, playerTeamNameField.get(playerTeam));
+			ClazzContainer.getScoreboardTeamMode().set(oldTeamPacket, 1);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -538,9 +531,19 @@ public final class LegacyVersion implements IPacketNM {
 	}
 
 	@Override
-	public Object findBoardTeamByName(String teamName, Object playerTeam) {
-		for (Object team : playerTeams) {
-			
+	public Object findBoardTeamByName(String teamName) {
+		try {
+			for (Object team : playerTeams) {
+				if (playerTeamNameField == null) {
+					(playerTeamNameField = team.getClass().getDeclaredField("d")).setAccessible(true);
+				}
+
+				if (((String) playerTeamNameField.get(team)).equals(teamName)) {
+					return team;
+				}
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		return null;

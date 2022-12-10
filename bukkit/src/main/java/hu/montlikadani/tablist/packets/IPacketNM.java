@@ -38,6 +38,6 @@ public interface IPacketNM {
 
 	Object unregisterBoardTeam(Object playerTeam);
 
-	Object findBoardTeamByName(String teamName, Object playerTeam);
+	Object findBoardTeamByName(String teamName);
 
 }

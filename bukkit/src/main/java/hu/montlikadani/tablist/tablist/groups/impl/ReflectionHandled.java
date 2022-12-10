@@ -19,7 +19,7 @@ public class ReflectionHandled {
 	}
 
 	public void registerTeam() {
-		if (!tl.getGroups().isToSort()) {
+		if (packetTeam != null && !tl.getGroups().isToSort()) {
 			return;
 		}
 
@@ -44,7 +44,7 @@ public class ReflectionHandled {
 	}
 
 	public void unregisterTeam() {
-		Object team = PacketNM.NMS_PACKET.findBoardTeamByName(groupPlayer.getFullGroupTeamName(), packetTeam);
+		Object team = PacketNM.NMS_PACKET.findBoardTeamByName(groupPlayer.getFullGroupTeamName());
 
 		if (team == null) {
 			return;
@@ -64,7 +64,7 @@ public class ReflectionHandled {
 	}
 
 	private void updateName() {
-		if (PacketNM.NMS_PACKET.findBoardTeamByName(groupPlayer.getFullGroupTeamName(), packetTeam) == null) {
+		if (PacketNM.NMS_PACKET.findBoardTeamByName(groupPlayer.getFullGroupTeamName()) == null) {
 			return;
 		}
 

@@ -112,11 +112,11 @@ public final class FakePlayer implements IFakePlayer {
 			PacketNM.NMS_PACKET.setListName(fakeEntityPlayer, displayName.isEmpty() ? displayName : Util.colorText(Global.setSymbols(displayName)));
 		}
 
-		Object info = PacketNM.NMS_PACKET.newPlayerInfoUpdatePacketAdd(fakeEntityPlayer);
-		PacketNM.NMS_PACKET.setInfoData(info, profile.getId(), ping, chatBaseComponentName);
+		Object packetAdd = PacketNM.NMS_PACKET.newPlayerInfoUpdatePacketAdd(fakeEntityPlayer);
+		PacketNM.NMS_PACKET.setInfoData(packetAdd, profile.getId(), ping, chatBaseComponentName);
 
 		for (Player player : tablist.getServer().getOnlinePlayers()) {
-			PacketNM.NMS_PACKET.sendPacket(player, info);
+			PacketNM.NMS_PACKET.sendPacket(player, packetAdd);
 		}
 	}
 

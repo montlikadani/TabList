@@ -105,7 +105,9 @@ public final class V1_19_R2 implements IPacketNM {
 
 	@Override
 	public Object newPlayerInfoUpdatePacketAdd(Object entityPlayer) {
-		return new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, (ServerPlayer) entityPlayer);
+		return new ClientboundPlayerInfoUpdatePacket(
+				java.util.EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED),
+				Collections.singletonList((ServerPlayer) entityPlayer));
 	}
 
 	@Override
@@ -199,7 +201,7 @@ public final class V1_19_R2 implements IPacketNM {
 	}
 
 	@Override
-	public Object findBoardTeamByName(String teamName, Object playerTeam) {
+	public Object findBoardTeamByName(String teamName) {
 		for (PlayerTeam team : playerTeams) {
 			if (team.getName().equals(teamName)) {
 				return team;
