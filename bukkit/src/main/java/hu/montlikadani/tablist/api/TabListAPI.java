@@ -7,10 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.TabText;
-import hu.montlikadani.tablist.tablist.TabTitle;
 import hu.montlikadani.tablist.tablist.TabToggleBase;
-import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 
 /**
  * The API methods for TabList.
@@ -81,7 +80,7 @@ public final class TabListAPI {
 	 */
 	public static void sendTabList(Player p, String header, String footer) {
 		if (p != null) {
-			TabTitle.sendTabTitle(p, TabText.parseFromText(header), TabText.parseFromText(footer));
+			PacketNM.NMS_PACKET.sendTabTitle(p, TabText.parseFromText(header), TabText.parseFromText(footer));
 		}
 	}
 
@@ -96,7 +95,7 @@ public final class TabListAPI {
 		TabText foot = TabText.parseFromText(footer);
 
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			TabTitle.sendTabTitle(player, head, foot);
+			PacketNM.NMS_PACKET.sendTabTitle(player, head, foot);
 		}
 	}
 
@@ -112,7 +111,7 @@ public final class TabListAPI {
 		}
 
 		try {
-			Object entityPlayer = ReflectionUtils.getPlayerHandle(player);
+			Object entityPlayer = ((hu.montlikadani.tablist.packets.LegacyVersion) hu.montlikadani.tablist.packets.PacketNM.NMS_PACKET).getPlayerHandle(player);
 
 			if (pingField == null) {
 				(pingField = entityPlayer.getClass().getField("ping")).setAccessible(true);

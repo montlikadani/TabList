@@ -12,6 +12,7 @@ import com.comphenix.protocol.wrappers.PlayerInfoData;
 
 import hu.montlikadani.tablist.api.TabListAPI;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.playerlist.HidePlayers;
 import hu.montlikadani.tablist.user.TabListPlayer;
 import hu.montlikadani.tablist.user.TabListUser;
@@ -94,8 +95,8 @@ public class ProtocolPackets extends PacketAdapter {
 						continue;
 					}
 
-					hp.addPlayerToTab(userPlayer, eventPlayer);
-					hp.addPlayerToTab(eventPlayer, userPlayer);
+					PacketNM.NMS_PACKET.addPlayerToTab(userPlayer, eventPlayer);
+					PacketNM.NMS_PACKET.addPlayerToTab(eventPlayer, userPlayer);
 					hp.removePlayerFromTab(eventPlayer, userPlayer);
 					hp.removePlayerFromTab(userPlayer, eventPlayer);
 				}

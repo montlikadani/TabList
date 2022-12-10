@@ -9,6 +9,7 @@ import org.bukkit.permissions.PermissionDefault;
 
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
+import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.PluginUtils;
 import hu.montlikadani.tablist.utils.StrUtil;
@@ -197,7 +198,7 @@ public class TabHandler {
 
 	public void sendEmptyTab(Player player) {
 		if (player != null && !tabEmpty) { // Only send it once to allow other plugins to overwrite tablist
-			TabTitle.sendTabTitle(player, TabText.EMPTY, TabText.EMPTY);
+			PacketNM.NMS_PACKET.sendTabTitle(player, TabText.EMPTY, TabText.EMPTY);
 			tabEmpty = true;
 		}
 	}
@@ -212,8 +213,7 @@ public class TabHandler {
 			return;
 		}
 
-		if (TabToggleBase.isDisabled(user.getUniqueId())
-				|| (TabConfigValues.isHideTabWhenPlayerVanished() && PluginUtils.isVanished(player))) {
+		if (TabToggleBase.isDisabled(user.getUniqueId()) || (TabConfigValues.isHideTabWhenPlayerVanished() && PluginUtils.isVanished(player))) {
 			sendEmptyTab(player);
 			return;
 		}
@@ -260,13 +260,13 @@ public class TabHandler {
 		final Variables v = plugin.getPlaceholders();
 
 		if (!worldEnabled) {
-			TabTitle.sendTabTitle(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
+			PacketNM.NMS_PACKET.sendTabTitle(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
 			return;
 		}
 
 		if (worldList.isEmpty()) {
 			for (Player all : player.getWorld().getPlayers()) {
-				TabTitle.sendTabTitle(all, v.replaceVariables(all, new TabText(he)), v.replaceVariables(all, new TabText(fo)));
+				PacketNM.NMS_PACKET.sendTabTitle(all, v.replaceVariables(all, new TabText(he)), v.replaceVariables(all, new TabText(fo)));
 			}
 
 			return;
@@ -277,8 +277,7 @@ public class TabHandler {
 		for (String l : worldList) {
 			if ((world = plugin.getServer().getWorld(l)) != null) {
 				for (Player all : world.getPlayers()) {
-					TabTitle.sendTabTitle(all, v.replaceVariables(all, new TabText(he)),
-							v.replaceVariables(all, new TabText(fo)));
+					PacketNM.NMS_PACKET.sendTabTitle(all, v.replaceVariables(all, new TabText(he)), v.replaceVariables(all, new TabText(fo)));
 				}
 			}
 		}

@@ -86,12 +86,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		tabManager = new TabManager(this);
 		fakePlayerHandler = new FakePlayerHandler(this);
 
-		// Load static references in any way
-		// This includes ReflectionUtils, ClazzContainer
+		// Load static references
 		try {
-			Class.forName("hu.montlikadani.tablist.tablist.TabTitle");
+			Class.forName("hu.montlikadani.tablist.packets.PacketNM");
 		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
 		}
 		hu.montlikadani.tablist.api.TabListAPI.getTPS();
 
@@ -173,29 +171,13 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	}
 
 	private void verifyServerSoftware() {
-		// We're using reflection to check if for example a method is exists
-		// So this useless
-		/*try {
-			Class.forName("com.destroystokyo.paper.PaperConfig");
-			isPaper = true;
-		} catch (ClassNotFoundException e) {
-			try {
-				Class.forName("io.papermc.paper.configuration.Configuration");
-				isPaper = true;
-			} catch (ClassNotFoundException ex) {
-				isPaper = false;
-			}
-		}*/
-
-		boolean kyoriSupported = false;
 		try {
 			Class.forName("net.kyori.adventure.text.Component");
 			Player.class.getDeclaredMethod("displayName");
-			kyoriSupported = ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R3);
+
+			complement = ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R3) ? new Complement2() : new Complement1();
 		} catch (NoSuchMethodException | ClassNotFoundException e) {
 		}
-
-		complement = kyoriSupported ? new Complement2() : new Complement1();
 	}
 
 	private void beginDataCollection() {

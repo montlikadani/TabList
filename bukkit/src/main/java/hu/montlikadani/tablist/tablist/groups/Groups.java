@@ -184,7 +184,7 @@ public final class Groups {
 	 */
 	public void setPlayerTeam(GroupPlayer groupPlayer, int safePriority) {
 		groupPlayer.setSafePriority(safePriority);
-		groupPlayer.getTabTeam().setTeam(groupPlayer);
+		groupPlayer.getTabTeam().setTeam();
 	}
 
 	/**
@@ -228,7 +228,7 @@ public final class Groups {
 			sortPlayers();
 		}*/
 
-		groupPlayer.getTabTeam().unregisterTeam(groupPlayer);
+		groupPlayer.getTabTeam().unregisterTeam();
 		groupPlayer.removeGroup();
 	}
 
@@ -253,7 +253,7 @@ public final class Groups {
 		for (TabListUser user : plugin.getUsers()) {
 			GroupPlayer groupPlayer = user.getGroupPlayer();
 
-			groupPlayer.getTabTeam().unregisterTeam(groupPlayer);
+			groupPlayer.getTabTeam().unregisterTeam();
 			groupPlayer.removeGroup();
 		}
 	}

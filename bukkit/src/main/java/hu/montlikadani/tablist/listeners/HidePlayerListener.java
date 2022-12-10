@@ -4,6 +4,8 @@ import org.bukkit.GameMode;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 
+import hu.montlikadani.tablist.packets.PacketNM;
+
 public final class HidePlayerListener {
 
 	public HidePlayerListener(final hu.montlikadani.tablist.TabList tl) {
@@ -23,7 +25,7 @@ public final class HidePlayerListener {
 					tl.getUser(player.getUniqueId()).filter(user -> user.isRemovedFromPlayerList())
 							.map(user -> (hu.montlikadani.tablist.user.TabListPlayer) user).ifPresent(user -> {
 								if (isSpectator) {
-									user.getHidePlayers().addPlayerToTab(player, player);
+									PacketNM.NMS_PACKET.addPlayerToTab(player, player);
 								} else {
 									user.getHidePlayers().removePlayerFromTab(player, player);
 								}

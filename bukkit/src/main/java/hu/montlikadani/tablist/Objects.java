@@ -9,6 +9,7 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import hu.montlikadani.tablist.api.TabListAPI;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
+import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.StrUtil;
@@ -113,11 +114,11 @@ public final class Objects {
 								ClazzContainer.getEnumScoreboardHealthDisplayInteger());
 
 						// Create objective
-						ReflectionUtils.sendPacket(player, ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
+						PacketNM.NMS_PACKET.sendPacket(player, ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
 								.newInstance(objectiveInstance, 0));
 
 						// Where to display, 0 - PlayerList
-						ReflectionUtils.sendPacket(player, ClazzContainer
+						PacketNM.NMS_PACKET.sendPacket(player, ClazzContainer
 								.getPacketPlayOutScoreboardDisplayObjectiveConstructor().newInstance(0, objectiveInstance));
 					} else {
 						Scoreboard board = player.getScoreboard();
@@ -180,7 +181,7 @@ public final class Objects {
 
 					try {
 						if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-							ReflectionUtils.sendPacket(pl,
+							PacketNM.NMS_PACKET.sendPacket(pl,
 									ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
 											ClazzContainer.getEnumScoreboardActionChange(), type.objectName,
 											user.getPlayerScore().getScoreName(), lastScore));
@@ -191,7 +192,7 @@ public final class Objects {
 							for (hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer fp : plugin.getFakePlayerHandler().fakePlayers) {
 
 								// Only send remove action
-								ReflectionUtils.sendPacket(pl,
+								PacketNM.NMS_PACKET.sendPacket(pl,
 										ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
 												ClazzContainer.getEnumScoreboardActionRemove(), type.objectName, fp.getName(),
 												0));
@@ -303,13 +304,13 @@ public final class Objects {
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
 
 				// Send remove action
-				ReflectionUtils.sendPacket(player,
+				PacketNM.NMS_PACKET.sendPacket(player,
 						ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
 								ClazzContainer.getEnumScoreboardActionRemove(), type.objectName,
 								source.getPlayerScore().getScoreName(), 0));
 
 				// Unregister objective
-				ReflectionUtils.sendPacket(player,
+				PacketNM.NMS_PACKET.sendPacket(player,
 						ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
 								.newInstance(ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
 										type.objectName, ClazzContainer.getiScoreboardCriteriaDummy(), type.chatBaseComponent,
@@ -344,12 +345,12 @@ public final class Objects {
 				loweredName = "";
 			}
 
-			if (needChatBaseComponent) {
+			/*if (needChatBaseComponent) {
 				try {
 					chatBaseComponent = ReflectionUtils.getAsIChatBaseComponent(objectName);
 				} catch (Exception e) {
 				}
-			}
+			}*/
 
 			this.objectName = objectName;
 		}

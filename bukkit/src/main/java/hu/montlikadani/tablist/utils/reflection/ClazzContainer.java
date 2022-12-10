@@ -8,29 +8,22 @@ import hu.montlikadani.tablist.utils.ServerVersion;
 
 public final class ClazzContainer {
 
-	private static Field infoList, scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamPrefix, scoreboardTeamSuffix,
-			scoreboardTeamNames, scoreboardTeamMode, scoreboardPlayers, nameTagVisibility, playerInfoDataProfileField,
-			playerInfoDataPing, playerInfoDataGameMode, nameTagVisibilityNameField, scoreboardObjectiveMethod,
-			packetPlayOutScoreboardObjectiveNameField, packetPlayOutScoreboardObjectiveDisplayNameField,
-			packetPlayOutScoreboardObjectiveRenderType;
+	private static Field infoList, scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamPrefix, scoreboardTeamSuffix, scoreboardTeamNames, scoreboardTeamMode,
+			scoreboardPlayers, nameTagVisibility, playerInfoDataProfileField, playerInfoDataPing, playerInfoDataGameMode, nameTagVisibilityNameField, scoreboardObjectiveMethod,
+			packetPlayOutScoreboardObjectiveNameField, packetPlayOutScoreboardObjectiveDisplayNameField, packetPlayOutScoreboardObjectiveRenderType;
 
-	private static Class<?> iChatBaseComponent, packet, packetPlayOutPlayerInfo, enumPlayerInfoAction, enumGameMode,
-			playerInfoData, packetPlayOutScoreboardTeam, scoreboardNameTagVisibility, scoreboardTeamClass, scoreboardClass,
-			scoreboardObjective;
+	private static Class<?> iChatBaseComponent, packet, packetPlayOutPlayerInfo, enumPlayerInfoAction, enumGameMode, playerInfoData, packetPlayOutScoreboardTeam,
+			scoreboardNameTagVisibility, scoreboardTeamClass, scoreboardClass, scoreboardObjective;
 
-	private static Object gameModeNotSet, gameModeSpectator, gameModeSurvival, addPlayer, removePlayer, updateGameMode,
-			updateLatency, updateDisplayName, enumScoreboardHealthDisplayInteger, enumScoreboardActionChange,
-			enumScoreboardActionRemove, iScoreboardCriteriaDummy;
+	private static Object gameModeNotSet, gameModeSpectator, gameModeSurvival, addPlayer, removePlayer, updateGameMode, updateLatency, updateDisplayName,
+			enumScoreboardHealthDisplayInteger, enumScoreboardActionChange, enumScoreboardActionRemove, iScoreboardCriteriaDummy;
 
-	private static Method scoreboardTeamSetPrefix, scoreboardTeamSetSuffix, scoreboardTeamSetNameTagVisibility,
-			scoreboardTeamSetDisplayName, packetScoreboardTeamRemove, packetScoreboardTeamUpdateCreate,
-			packetScoreboardTeamEntries, playerInfoDataProfileMethod, playerNameSetMethod, setScoreboardScoreMethod;
+	private static Method scoreboardTeamSetPrefix, scoreboardTeamSetSuffix, scoreboardTeamSetNameTagVisibility, scoreboardTeamSetDisplayName, packetScoreboardTeamRemove,
+			packetScoreboardTeamUpdateCreate, packetScoreboardTeamEntries, playerInfoDataProfileMethod, playerNameSetMethod, setScoreboardScoreMethod;
 
-	private static Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstructor, scoreboardConstructor,
-			scoreboardTeamConstructor, packetPlayOutScoreboardTeamConstructor, packetPlayOutScoreboardScoreConstructor,
-			packetPlayOutScoreboardObjectiveConstructor, firstScoreboardObjectiveConstructor,
-			packetPlayOutScoreboardDisplayObjectiveConstructor, scoreboardScoreConstructor,
-			packetPlayOutScoreboardScoreSbScoreConstructor;
+	private static Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstructor, scoreboardConstructor, scoreboardTeamConstructor, packetPlayOutScoreboardTeamConstructor,
+			packetPlayOutScoreboardScoreConstructor, packetPlayOutScoreboardObjectiveConstructor, firstScoreboardObjectiveConstructor,
+			packetPlayOutScoreboardDisplayObjectiveConstructor, scoreboardScoreConstructor, packetPlayOutScoreboardScoreSbScoreConstructor;
 
 	private static Constructor<?>[] playerInfoDataConstructors;
 
@@ -82,8 +75,7 @@ public final class ClazzContainer {
 			scoreboardConstructor = scoreboardClass.getConstructor();
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-				scoreboardNameTagVisibility = classByName("net.minecraft.world.scores",
-						"ScoreboardTeamBase$EnumNameTagVisibility");
+				scoreboardNameTagVisibility = classByName("net.minecraft.world.scores", "ScoreboardTeamBase$EnumNameTagVisibility");
 				scoreboardTeamClass = classByName("net.minecraft.world.scores", "ScoreboardTeam");
 
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_18_R1)) {
@@ -97,8 +89,7 @@ public final class ClazzContainer {
 					scoreboardTeamSetPrefix = scoreboardTeamClass.getMethod("setPrefix", iChatBaseComponent);
 					scoreboardTeamSetSuffix = scoreboardTeamClass.getMethod("setSuffix", iChatBaseComponent);
 					scoreboardTeamSetDisplayName = scoreboardTeamClass.getMethod("setDisplayName", iChatBaseComponent);
-					scoreboardTeamSetNameTagVisibility = scoreboardTeamClass.getMethod("setNameTagVisibility",
-							scoreboardNameTagVisibility);
+					scoreboardTeamSetNameTagVisibility = scoreboardTeamClass.getMethod("setNameTagVisibility", scoreboardNameTagVisibility);
 					playerNameSetMethod = scoreboardTeamClass.getMethod("getPlayerNameSet");
 					(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("f")).setAccessible(true);
 				}
@@ -128,8 +119,8 @@ public final class ClazzContainer {
 				try {
 					packetPlayOutScoreboardTeamConstructor = packetPlayOutScoreboardTeam.getDeclaredConstructor();
 				} catch (NoSuchMethodException e) {
-					packetPlayOutScoreboardTeamConstructor = packetPlayOutScoreboardTeam
-							.getDeclaredConstructor(scoreboardTeamClass = classByName(null, "ScoreboardTeam"), int.class);
+					packetPlayOutScoreboardTeamConstructor = packetPlayOutScoreboardTeam.getDeclaredConstructor(scoreboardTeamClass = classByName(null, "ScoreboardTeam"),
+							int.class);
 				}
 
 				packetPlayOutScoreboardTeamConstructor.setAccessible(true);
@@ -140,58 +131,34 @@ public final class ClazzContainer {
 				(scoreboardTeamSuffix = packetPlayOutScoreboardTeam.getDeclaredField("d")).setAccessible(true);
 				(nameTagVisibility = packetPlayOutScoreboardTeam.getDeclaredField("e")).setAccessible(true);
 
-				/*(scoreboardTeamNames = packetPlayOutScoreboardTeam
-						.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "h" : "g"))
-								.setAccessible(true);*/
-				(scoreboardTeamMode = packetPlayOutScoreboardTeam
-						.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "i" : "h"))
-								.setAccessible(true);
-				(scoreboardPlayers = packetPlayOutScoreboardTeam
-						.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "h" : "e"))
-								.setAccessible(true);
+				(scoreboardTeamMode = packetPlayOutScoreboardTeam.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "i" : "h")).setAccessible(true);
+				(scoreboardPlayers = packetPlayOutScoreboardTeam.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "h" : "e")).setAccessible(true);
 			}
 
 			// Objectives
-			Class<?> packetPlayOutScoreboardDisplayObjective = classByName("net.minecraft.network.protocol.game",
-					"PacketPlayOutScoreboardDisplayObjective");
+			Class<?> packetPlayOutScoreboardDisplayObjective = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardDisplayObjective");
 			scoreboardObjective = classByName("net.minecraft.world.scores", "ScoreboardObjective");
 
-			packetPlayOutScoreboardDisplayObjectiveConstructor = packetPlayOutScoreboardDisplayObjective.getConstructor(int.class,
-					scoreboardObjective);
+			packetPlayOutScoreboardDisplayObjectiveConstructor = packetPlayOutScoreboardDisplayObjective.getConstructor(int.class, scoreboardObjective);
 
 			Class<?> enumScoreboardHealthDisplay;
 			try {
-				enumScoreboardHealthDisplay = classByName("net.minecraft.world.scores.criteria",
-						"IScoreboardCriteria$EnumScoreboardHealthDisplay");
+				enumScoreboardHealthDisplay = classByName("net.minecraft.world.scores.criteria", "IScoreboardCriteria$EnumScoreboardHealthDisplay");
 			} catch (ClassNotFoundException e) {
 				enumScoreboardHealthDisplay = classByName("net.minecraft.world.scores.criteria", "EnumScoreboardHealthDisplay");
 			}
 
-			Class<?> packetPlayOutScoreboardObjective = classByName("net.minecraft.network.protocol.game",
-					"PacketPlayOutScoreboardObjective");
-			Class<?> packetPlayOutScoreboardScore = classByName("net.minecraft.network.protocol.game",
-					"PacketPlayOutScoreboardScore");
+			Class<?> packetPlayOutScoreboardObjective = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardObjective");
+			Class<?> packetPlayOutScoreboardScore = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardScore");
 
 			Class<?> iScoreboardCriteria = classByName("net.minecraft.world.scores.criteria", "IScoreboardCriteria");
 
-			iScoreboardCriteriaDummy = getFieldByType(iScoreboardCriteria, iScoreboardCriteria, null).get(iScoreboardCriteria);
-
-			/*try {
-				iScoreboardCriteriaDummy = iScoreboardCriteria.getDeclaredField("b").get(iScoreboardCriteria);
-			} catch (NoSuchFieldException e) {
-				try {
-					iScoreboardCriteriaDummy = iScoreboardCriteria.getDeclaredField("a").get(iScoreboardCriteria);
-				} catch (NoSuchFieldException ex) {
-					iScoreboardCriteriaDummy = iScoreboardCriteria.getDeclaredField("DUMMY").get(iScoreboardCriteria);
-				}
-			}*/
+			iScoreboardCriteriaDummy = getFieldByType(iScoreboardCriteria, iScoreboardCriteria).get(iScoreboardCriteria);
 
 			try {
-				enumScoreboardHealthDisplayInteger = enumScoreboardHealthDisplay.getDeclaredField("a")
-						.get(enumScoreboardHealthDisplay);
+				enumScoreboardHealthDisplayInteger = enumScoreboardHealthDisplay.getDeclaredField("a").get(enumScoreboardHealthDisplay);
 			} catch (NoSuchFieldException e) {
-				enumScoreboardHealthDisplayInteger = enumScoreboardHealthDisplay.getDeclaredField("INTEGER")
-						.get(enumScoreboardHealthDisplay);
+				enumScoreboardHealthDisplayInteger = enumScoreboardHealthDisplay.getDeclaredField("INTEGER").get(enumScoreboardHealthDisplay);
 			}
 
 			firstScoreboardObjectiveConstructor = scoreboardObjective.getConstructors()[0];
@@ -203,8 +170,7 @@ public final class ClazzContainer {
 					enumScoreboardAction = classByName("net.minecraft.server", "ScoreboardServer$Action");
 				} catch (ClassNotFoundException e) {
 					try {
-						enumScoreboardAction = classByName("net.minecraft.server",
-								"PacketPlayOutScoreboardScore$EnumScoreboardAction");
+						enumScoreboardAction = classByName("net.minecraft.server", "PacketPlayOutScoreboardScore$EnumScoreboardAction");
 					} catch (ClassNotFoundException ex) {
 						enumScoreboardAction = classByName("net.minecraft.server", "EnumScoreboardAction");
 					}
@@ -218,36 +184,9 @@ public final class ClazzContainer {
 					enumScoreboardActionRemove = enumScoreboardAction.getDeclaredField("REMOVE").get(enumScoreboardAction);
 				}
 
-				packetPlayOutScoreboardObjectiveConstructor = packetPlayOutScoreboardObjective.getConstructor(scoreboardObjective,
-						int.class);
-				packetPlayOutScoreboardScoreConstructor = packetPlayOutScoreboardScore.getConstructor(enumScoreboardAction,
-						String.class, String.class, int.class);
-			}/* else {
-				Class<?> scoreboardScore = classByName("net.minecraft.world.scores", "ScoreboardScore");
-				scoreboardScoreConstructor = scoreboardScore.getConstructor(scoreboardClass, scoreboardObjective,
-						String.class);
-
-				try {
-					setScoreboardScoreMethod = scoreboardScore.getDeclaredMethod("setScore", int.class);
-				} catch (NoSuchMethodException e) {
-					setScoreboardScoreMethod = scoreboardScore.getDeclaredMethod("b", int.class);
-				}
-
-				packetPlayOutScoreboardObjectiveConstructor = packetPlayOutScoreboardObjective.getConstructor();
-				packetPlayOutScoreboardScoreConstructor = packetPlayOutScoreboardScore.getConstructor(String.class);
-				packetPlayOutScoreboardScoreSbScoreConstructor = packetPlayOutScoreboardScore
-						.getConstructor(scoreboardScore);
-
-				scoreboardObjectiveMethod = getFieldByType(packetPlayOutScoreboardObjective, int.class,
-						field -> !java.lang.reflect.Modifier.isStatic(field.getModifiers()));
-
-				packetPlayOutScoreboardObjectiveNameField = getFieldByType(packetPlayOutScoreboardObjective,
-						String.class, null);
-				packetPlayOutScoreboardObjectiveDisplayNameField = getFieldsByType(packetPlayOutScoreboardObjective,
-						String.class).get(1);
-				packetPlayOutScoreboardObjectiveRenderType = getFieldByType(packetPlayOutScoreboardObjective,
-						enumScoreboardHealthDisplay, null);
-			}*/
+				packetPlayOutScoreboardObjectiveConstructor = packetPlayOutScoreboardObjective.getConstructor(scoreboardObjective, int.class);
+				packetPlayOutScoreboardScoreConstructor = packetPlayOutScoreboardScore.getConstructor(enumScoreboardAction, String.class, String.class, int.class);
+			}
 
 			// PlayerInfoData
 			(infoList = packetPlayOutPlayerInfo.getDeclaredField("b")).setAccessible(true);
@@ -280,8 +219,7 @@ public final class ClazzContainer {
 			}
 
 			(playOutPlayerInfoConstructor = packetPlayOutPlayerInfo.getDeclaredConstructor(enumPlayerInfoAction,
-					java.lang.reflect.Array.newInstance(classByName("net.minecraft.server.level", "EntityPlayer"), 0).getClass()))
-							.setAccessible(true);
+					java.lang.reflect.Array.newInstance(classByName("net.minecraft.server.level", "EntityPlayer"), 0).getClass())).setAccessible(true);
 
 			try {
 				enumGameMode = classByName("net.minecraft.world.level", "EnumGamemode");
@@ -313,8 +251,7 @@ public final class ClazzContainer {
 	private ClazzContainer() {
 	}
 
-	// In ReflectionUtils static clause calls this class again which causes NPE
-	protected static Class<?> classByName(String newPackageName, String name) throws ClassNotFoundException {
+	public static Class<?> classByName(String newPackageName, String name) throws ClassNotFoundException {
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
 			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
 		}
@@ -322,9 +259,9 @@ public final class ClazzContainer {
 		return Class.forName(newPackageName + "." + name);
 	}
 
-	private static Field getFieldByType(Class<?> from, Class<?> type, java.util.function.Predicate<Field> predicate) {
+	private static Field getFieldByType(Class<?> from, Class<?> type) {
 		for (Field field : from.getDeclaredFields()) {
-			if (field.getType() == type && (predicate == null || predicate.test(field))) {
+			if (field.getType() == type) {
 				field.setAccessible(true);
 				return field;
 			}
@@ -332,20 +269,6 @@ public final class ClazzContainer {
 
 		return null;
 	}
-
-	/*private static java.util.List<Field> getFieldsByType(Class<?> from, Class<?> type) {
-		Field[] declaredFields = from.getDeclaredFields();
-		java.util.List<Field> fields = new java.util.ArrayList<>(declaredFields.length);
-
-		for (Field field : declaredFields) {
-			if (field.getType() == type) {
-				field.setAccessible(true);
-				fields.add(field);
-			}
-		}
-
-		return fields;
-	}*/
 
 	public static Object scoreboardTeamPacketByAction(Object scoreboardTeam, int action) throws Exception {
 		switch (action) {

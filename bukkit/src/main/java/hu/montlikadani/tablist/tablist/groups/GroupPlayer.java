@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.tablist.TabText;
-import hu.montlikadani.tablist.tablist.groups.impl.ITabScoreboard;
 import hu.montlikadani.tablist.tablist.groups.impl.ReflectionHandled;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.PluginUtils;
@@ -14,7 +13,7 @@ import hu.montlikadani.tablist.utils.ServerVersion;
 public final class GroupPlayer {
 
 	private transient final TabListUser tabListUser;
-	private transient final ITabScoreboard tabTeam;
+	private transient final ReflectionHandled tabTeam;
 	private transient final TabList tl;
 
 	private transient TeamHandler group, globalGroup;
@@ -28,10 +27,10 @@ public final class GroupPlayer {
 		this.tl = tl;
 		this.tabListUser = tabListUser;
 
-		tabTeam = new ReflectionHandled(tl);
+		tabTeam = new ReflectionHandled(tl, this);
 	}
 
-	public ITabScoreboard getTabTeam() {
+	public ReflectionHandled getTabTeam() {
 		return tabTeam;
 	}
 
@@ -273,7 +272,7 @@ public final class GroupPlayer {
 		}
 
 		if (ConfigValues.isHideGroupInVanish() && PluginUtils.isVanished(player)) {
-			tabTeam.unregisterTeam(this);
+			tabTeam.unregisterTeam();
 			return false;
 		}
 

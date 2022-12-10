@@ -12,6 +12,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import hu.montlikadani.tablist.Global;
+import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.TabText;
 
 public final class JsonComponent {
@@ -28,10 +29,10 @@ public final class JsonComponent {
 	protected JsonComponent() {
 	}
 
-	Object parseProperty(String text, List<TabText.JsonElementData> existingJson) throws Exception {
+	Object parseProperty(String text, List<TabText.JsonElementData> existingJson) {
 		if (text.isEmpty()) {
 			if (emptyJson == null) {
-				emptyJson = ReflectionUtils.jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(), GSON.toJson(""));
+				emptyJson = PacketNM.NMS_PACKET.fromJson(GSON.toJson(""));
 			}
 
 			return emptyJson;
@@ -60,8 +61,8 @@ public final class JsonComponent {
 		for (int i = 0; i < length; i++) {
 			char charAt = text.charAt(i);
 
-			if (charAt == '[' && existingJson != null && index < existingJson.size() && text.charAt(i + 1) == '"'
-					&& text.charAt(i + 2) == '"' && text.charAt(i + 3) == ',' && text.charAt(i + 4) == '{') {
+			if (charAt == '[' && existingJson != null && index < existingJson.size() && text.charAt(i + 1) == '"' && text.charAt(i + 2) == '"' && text.charAt(i + 3) == ','
+					&& text.charAt(i + 4) == '{') {
 				if (builder.length() != 0) {
 					obj.addProperty("text", builder.toString());
 					jsonList.add(obj);
@@ -192,8 +193,7 @@ public final class JsonComponent {
 		obj.addProperty("text", builder.toString());
 		jsonList.add(obj);
 
-		return ReflectionUtils.jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(),
-				"[\"\"," + Global.replaceFrom(GSON.toJson(jsonList, List.class), 0, "[", "", 1));
+		return PacketNM.NMS_PACKET.fromJson("[\"\"," + Global.replaceFrom(GSON.toJson(jsonList, List.class), 0, "[", "", 1));
 	}
 
 	@SuppressWarnings("deprecation")

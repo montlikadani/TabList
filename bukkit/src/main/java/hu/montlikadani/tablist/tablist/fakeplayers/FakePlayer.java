@@ -1,9 +1,5 @@
 package hu.montlikadani.tablist.tablist.fakeplayers;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -12,15 +8,12 @@ import com.mojang.authlib.GameProfile;
 
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.Util;
-import hu.montlikadani.tablist.utils.reflection.ClazzContainer;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 
 public final class FakePlayer implements IFakePlayer {
-
-	private static Field listNameField;
-	private static Class<?> entityPlayerClass;
 
 	private final TabList tablist;
 
@@ -79,7 +72,7 @@ public final class FakePlayer implements IFakePlayer {
 		}
 
 		try {
-			chatBaseComponentName = this.name.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT : ReflectionUtils.getAsIChatBaseComponent(this.name);
+			chatBaseComponentName = this.name.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT : ReflectionUtils.asComponent(this.name);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -102,71 +95,28 @@ public final class FakePlayer implements IFakePlayer {
 			displayName = Util.colorText(Global.setSymbols(displayName));
 		}
 
-		try {
-			if (listNameField == null) {
-				(listNameField = entityPlayerClass.getDeclaredField("listName")).setAccessible(true);
-			}
+		Object packet = PacketNM.NMS_PACKET.updateDisplayNamePacket(fakeEntityPlayer, displayName, true);
 
-			for (Player player : tablist.getServer().getOnlinePlayers()) {
-				listNameField.set(fakeEntityPlayer, displayName.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT
-						: ReflectionUtils.getAsIChatBaseComponent(tablist.getPlaceholders().replaceVariables(player, displayName)));
-
-				Object entityPlayerArray = Array.newInstance(entityPlayerClass, 1);
-				Array.set(entityPlayerArray, 0, fakeEntityPlayer);
-
-				ReflectionUtils.sendPacket(player, ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateDisplayName(), entityPlayerArray));
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		for (Player player : tablist.getServer().getOnlinePlayers()) {
+			PacketNM.NMS_PACKET.sendPacket(player, packet);
 		}
 	}
 
 	@Override
 	public void show() {
 		if (fakeEntityPlayer == null) {
-			try {
-				putTextureProperty(headId, false);
+			putTextureProperty(headId, false);
 
-				fakeEntityPlayer = ReflectionUtils.getNewEntityPlayer(profile);
+			fakeEntityPlayer = PacketNM.NMS_PACKET.getNewEntityPlayer(profile);
 
-				if (entityPlayerClass == null) {
-					entityPlayerClass = fakeEntityPlayer.getClass();
-				}
-
-				Object entityPlayerArray = Array.newInstance(entityPlayerClass, 1);
-				Array.set(entityPlayerArray, 0, fakeEntityPlayer);
-
-				Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), entityPlayerArray);
-
-				for (Player player : tablist.getServer().getOnlinePlayers()) {
-					ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
-				}
-
-				if (!displayName.isEmpty()) {
-					setDisplayName(displayName);
-				}
-
-				setPing(ping);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			return;
+			PacketNM.NMS_PACKET.setListName(fakeEntityPlayer, displayName.isEmpty() ? displayName : Util.colorText(Global.setSymbols(displayName)));
 		}
 
-		try {
-			Object entityPlayerArray = Array.newInstance(entityPlayerClass, 1);
-			Array.set(entityPlayerArray, 0, fakeEntityPlayer);
+		Object info = PacketNM.NMS_PACKET.newPlayerInfoUpdatePacketAdd(fakeEntityPlayer);
+		PacketNM.NMS_PACKET.setInfoData(info, profile.getId(), ping, chatBaseComponentName);
 
-			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), entityPlayerArray);
-
-			setPingFrom(packetPlayOutPlayerInfo);
-
-			for (Player player : tablist.getServer().getOnlinePlayers()) {
-				ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		for (Player player : tablist.getServer().getOnlinePlayers()) {
+			PacketNM.NMS_PACKET.sendPacket(player, info);
 		}
 	}
 
@@ -182,57 +132,11 @@ public final class FakePlayer implements IFakePlayer {
 
 		this.ping = ping;
 
-		try {
-			Object entityPlayerArray = Array.newInstance(entityPlayerClass, 1);
-			Array.set(entityPlayerArray, 0, fakeEntityPlayer);
+		Object info = PacketNM.NMS_PACKET.updateLatency(fakeEntityPlayer);
+		PacketNM.NMS_PACKET.setInfoData(info, profile.getId(), ping, chatBaseComponentName);
 
-			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateLatency(), entityPlayerArray);
-
-			setPingFrom(packetPlayOutPlayerInfo);
-
-			for (Player player : tablist.getServer().getOnlinePlayers()) {
-				ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-
-	@SuppressWarnings("unchecked")
-	private void setPingFrom(Object packetPlayOutPlayerInfo) throws Exception {
-		for (Object infoData : (List<Object>) ClazzContainer.getInfoList().get(packetPlayOutPlayerInfo)) {
-			GameProfile profile;
-
-			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-				profile = (GameProfile) ClazzContainer.getPlayerInfoDataProfileField().get(infoData);
-			} else {
-				profile = (GameProfile) ClazzContainer.getPlayerInfoDataProfileMethod().invoke(infoData);
-			}
-
-			if (!profile.getId().equals(this.profile.getId())) {
-				continue;
-			}
-
-			Constructor<?> playerInfoDataConstr = ClazzContainer.getPlayerInfoDataConstructor();
-			Object gameMode = ClazzContainer.getPlayerInfoDataGameMode().get(infoData);
-			Object packet;
-
-			switch (playerInfoDataConstr.getParameterCount()) {
-			case 5:
-				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
-					packet = playerInfoDataConstr.newInstance(profile, ping, gameMode, chatBaseComponentName, null);
-				} else {
-					packet = playerInfoDataConstr.newInstance(packetPlayOutPlayerInfo, profile, ping, gameMode, chatBaseComponentName);
-				}
-
-				break;
-			default:
-				packet = playerInfoDataConstr.newInstance(profile, ping, gameMode, chatBaseComponentName);
-				break;
-			}
-
-			ClazzContainer.getInfoList().set(packetPlayOutPlayerInfo, java.util.Collections.singletonList(packet));
-			break;
+		for (Player player : tablist.getServer().getOnlinePlayers()) {
+			PacketNM.NMS_PACKET.sendPacket(player, info);
 		}
 	}
 
@@ -258,24 +162,19 @@ public final class FakePlayer implements IFakePlayer {
 
 		ReflectionUtils.getJsonComponent().getSkinValue(headId.toString()).thenAcceptAsync(pair -> {
 			if (pair != null) {
-				profile.getProperties().get("textures").clear();
+				profile.getProperties().removeAll("textures");
 				profile.getProperties().put("textures", new com.mojang.authlib.properties.Property("textures", pair.key, pair.value));
 			}
 		}).thenAccept(v -> {
 			if (fakeEntityPlayer != null) {
-				try {
-					Object entityPlayerArray = Array.newInstance(entityPlayerClass, 1);
-					Array.set(entityPlayerArray, 0, fakeEntityPlayer);
+				fakeEntityPlayer = PacketNM.NMS_PACKET.getNewEntityPlayer(profile);
 
-					Object removePacketPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getRemovePlayer(), entityPlayerArray);
-					Object addPacketPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), entityPlayerArray);
+				Object removeInfo = PacketNM.NMS_PACKET.removeEntityPlayer(fakeEntityPlayer);
+				Object addInfo = PacketNM.NMS_PACKET.newPlayerInfoUpdatePacketAdd(fakeEntityPlayer);
 
-					for (Player player : tablist.getServer().getOnlinePlayers()) {
-						ReflectionUtils.sendPacket(player, removePacketPlayOutPlayerInfo);
-						ReflectionUtils.sendPacket(player, addPacketPlayOutPlayerInfo);
-					}
-				} catch (Exception e) {
-					e.printStackTrace();
+				for (Player player : tablist.getServer().getOnlinePlayers()) {
+					PacketNM.NMS_PACKET.sendPacket(player, removeInfo);
+					PacketNM.NMS_PACKET.sendPacket(player, addInfo);
 				}
 			}
 		});
@@ -287,17 +186,10 @@ public final class FakePlayer implements IFakePlayer {
 			return;
 		}
 
-		try {
-			Object entityPlayerArray = Array.newInstance(entityPlayerClass, 1);
-			Array.set(entityPlayerArray, 0, fakeEntityPlayer);
+		Object info = PacketNM.NMS_PACKET.removeEntityPlayer(fakeEntityPlayer);
 
-			Object packetPlayOutPlayerInfo = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getRemovePlayer(), entityPlayerArray);
-
-			for (Player player : tablist.getServer().getOnlinePlayers()) {
-				ReflectionUtils.sendPacket(player, packetPlayOutPlayerInfo);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		for (Player player : tablist.getServer().getOnlinePlayers()) {
+			PacketNM.NMS_PACKET.sendPacket(player, info);
 		}
 
 		fakeEntityPlayer = null;
