@@ -548,4 +548,72 @@ public final class LegacyVersion implements IPacketNM {
 
 		return null;
 	}
+
+	@Override
+	public Object createObjectivePacket(String objectiveName, Object nameComponent) {
+		try {
+			return ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null, objectiveName, ClazzContainer.getiScoreboardCriteriaDummy(), nameComponent,
+					ClazzContainer.getEnumScoreboardHealthDisplayInteger());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	@Override
+	public Object scoreboardObjectivePacket(Object objective, int mode) {
+		try {
+			return ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor().newInstance(objective, mode);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	@Override
+	public Object scoreboardDisplayObjectivePacket(Object objective, int slot) {
+		try {
+			return ClazzContainer.getPacketPlayOutScoreboardDisplayObjectiveConstructor().newInstance(slot, objective);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	@Override
+	public Object changeScoreboardScorePacket(String objectiveName, String scoreName, int score) {
+		try {
+			return ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(ClazzContainer.getEnumScoreboardActionChange(), objectiveName, scoreName, score);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	@Override
+	public Object removeScoreboardScorePacket(String objectiveName, String scoreName, int score) {
+		try {
+			return ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(ClazzContainer.getEnumScoreboardActionRemove(), objectiveName, scoreName, score);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	@Override
+	public Object createScoreboardHealthObjectivePacket(String objectiveName, Object nameComponent) {
+		try {
+			return ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null, objectiveName, ClazzContainer.getiScoreboardCriteriaDummy(), nameComponent,
+					ClazzContainer.getEnumScoreboardHealthDisplayInteger());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
 }

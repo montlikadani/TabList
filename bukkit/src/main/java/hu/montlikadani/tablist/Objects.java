@@ -13,8 +13,6 @@ import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.StrUtil;
-import hu.montlikadani.tablist.utils.reflection.ClazzContainer;
-import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 import hu.montlikadani.tablist.utils.task.Tasks;
 import hu.montlikadani.tablist.utils.variables.simplePlaceholder.PluginPlaceholders;
 
@@ -30,8 +28,7 @@ public final class Objects {
 	}
 
 	void registerHealthTab(Player pl) {
-		if (ConfigValues.getObjectsDisabledWorlds().contains(pl.getWorld().getName())
-				|| ConfigValues.getHealthObjectRestricted().contains(pl.getName())) {
+		if (ConfigValues.getObjectsDisabledWorlds().contains(pl.getWorld().getName()) || ConfigValues.getHealthObjectRestricted().contains(pl.getName())) {
 			unregisterHealthObjective(pl);
 			return;
 		}
@@ -47,8 +44,7 @@ public final class Objects {
 			Objective objective;
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-				objective = plugin.getComplement().registerNewObjective(board, objectName, "health", objectName,
-						RenderType.HEARTS);
+				objective = plugin.getComplement().registerNewObjective(board, objectName, "health", objectName, RenderType.HEARTS);
 			} else {
 				objective = board.registerNewObjective(objectName, "health");
 				plugin.getComplement().displayName(objective, org.bukkit.ChatColor.RED + "\u2665");
@@ -109,17 +105,13 @@ public final class Objects {
 			if (!user.getPlayerScore().isObjectiveCreated()) {
 				try {
 					if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-						Object objectiveInstance = ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
-								type.objectName, ClazzContainer.getiScoreboardCriteriaDummy(), type.chatBaseComponent,
-								ClazzContainer.getEnumScoreboardHealthDisplayInteger());
+						Object objectiveInstance = PacketNM.NMS_PACKET.createObjectivePacket(type.objectName, type.chatBaseComponent);
 
-						// Create objective
-						PacketNM.NMS_PACKET.sendPacket(player, ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
-								.newInstance(objectiveInstance, 0));
+						// Create objective, 0 - create
+						PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.scoreboardObjectivePacket(objectiveInstance, 0));
 
 						// Where to display, 0 - PlayerList
-						PacketNM.NMS_PACKET.sendPacket(player, ClazzContainer
-								.getPacketPlayOutScoreboardDisplayObjectiveConstructor().newInstance(0, objectiveInstance));
+						PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.scoreboardDisplayObjectivePacket(objectiveInstance, 0));
 					} else {
 						Scoreboard board = player.getScoreboard();
 						Objective object = board.getObjective(type.objectName);
@@ -133,23 +125,6 @@ public final class Objects {
 						if (type == ObjectTypes.PING) {
 							object.setDisplayName("ms");
 						}
-
-						/*Object packet = ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
-								.newInstance();
-
-						ClazzContainer.getPacketPlayOutScoreboardObjectiveNameField().set(packet, type.objectName);
-						ClazzContainer.getPacketPlayOutScoreboardObjectiveDisplayNameField().set(packet,
-								type.objectName);
-						ClazzContainer.getPacketPlayOutScoreboardObjectiveRenderType().set(packet,
-								ClazzContainer.getEnumScoreboardHealthDisplayInteger());
-						ClazzContainer.getScoreboardObjectiveMethod().set(packet, 1);
-
-						ReflectionUtils.sendPacket(player, packet);
-
-						ReflectionUtils.sendPacket(player,
-								ClazzContainer.getPacketPlayOutScoreboardDisplayObjectiveConstructor().newInstance(
-										0, ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
-												type.objectName, ClazzContainer.getiScoreboardCriteriaDummy())));*/
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -181,42 +156,13 @@ public final class Objects {
 
 					try {
 						if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-							PacketNM.NMS_PACKET.sendPacket(pl,
-									ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
-											ClazzContainer.getEnumScoreboardActionChange(), type.objectName,
-											user.getPlayerScore().getScoreName(), lastScore));
-
-							// Remove objective from fake players
-							// This is a workaround that does not seem to work still
-							// There is no proper way to remove a score from specific players/fake player
-							for (hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer fp : plugin.getFakePlayerHandler().fakePlayers) {
-
-								// Only send remove action
-								PacketNM.NMS_PACKET.sendPacket(pl,
-										ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
-												ClazzContainer.getEnumScoreboardActionRemove(), type.objectName, fp.getName(),
-												0));
-							}
+							PacketNM.NMS_PACKET.sendPacket(pl, PacketNM.NMS_PACKET.changeScoreboardScorePacket(type.objectName, user.getPlayerScore().getScoreName(), lastScore));
 						} else {
-							// Packets does not really want to work for old versions so we uses that the API
-							// provided
-
 							Objective objective = pl.getScoreboard().getObjective(type.objectName);
 
 							if (objective != null) {
 								objective.getScore(user.getPlayerScore().getScoreName()).setScore(lastScore);
 							}
-
-							/*Object scoreObject = ClazzContainer.getScoreboardScoreConstructor().newInstance(
-									ClazzContainer.getScoreboardConstructor().newInstance(),
-									ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
-											type.objectName, ClazzContainer.getiScoreboardCriteriaDummy()),
-									user.getPlayerScore().getScoreName());
-
-							ClazzContainer.getSetScoreboardScoreMethod().invoke(scoreObject, lastScore);
-
-							ReflectionUtils.sendPacket(pl, ClazzContainer
-									.getPacketPlayOutScoreboardScoreSbScoreConstructor().newInstance(scoreObject));*/
 						}
 					} catch (Exception e) {
 						e.printStackTrace();
@@ -254,8 +200,7 @@ public final class Objects {
 			try {
 				return Integer.parseInt(result);
 			} catch (NumberFormatException e) {
-				hu.montlikadani.tablist.utils.Util
-						.logConsole("Invalid custom objective with " + ConfigValues.getCustomObjectSetting() + " value.");
+				hu.montlikadani.tablist.utils.Util.logConsole("Invalid custom objective with " + ConfigValues.getCustomObjectSetting() + " value.");
 			}
 		}
 
@@ -270,7 +215,6 @@ public final class Objects {
 	}
 
 	public boolean isCancelled() {
-		// Do NOT use #isCancelled method, version-dependent
 		return task == null;
 	}
 
@@ -304,21 +248,12 @@ public final class Objects {
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
 
 				// Send remove action
-				PacketNM.NMS_PACKET.sendPacket(player,
-						ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(
-								ClazzContainer.getEnumScoreboardActionRemove(), type.objectName,
-								source.getPlayerScore().getScoreName(), 0));
+				PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.removeScoreboardScorePacket(type.objectName, source.getPlayerScore().getScoreName(), 0));
 
 				// Unregister objective
 				PacketNM.NMS_PACKET.sendPacket(player,
-						ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor()
-								.newInstance(ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null,
-										type.objectName, ClazzContainer.getiScoreboardCriteriaDummy(), type.chatBaseComponent,
-										ClazzContainer.getEnumScoreboardHealthDisplayInteger()), 1));
+						PacketNM.NMS_PACKET.scoreboardObjectivePacket(PacketNM.NMS_PACKET.createScoreboardHealthObjectivePacket(type.objectName, type.chatBaseComponent), 1));
 			} else {
-				/*ReflectionUtils.sendPacket(player, ClazzContainer.getPacketPlayOutScoreboardScoreConstructor()
-						.newInstance(source.getPlayerScore().getScoreName()));*/
-
 				Objective object = player.getScoreboard().getObjective(type.objectName);
 
 				if (object != null) {
@@ -345,12 +280,12 @@ public final class Objects {
 				loweredName = "";
 			}
 
-			/*if (needChatBaseComponent) {
+			if (needChatBaseComponent) {
 				try {
-					chatBaseComponent = ReflectionUtils.getAsIChatBaseComponent(objectName);
+					chatBaseComponent = hu.montlikadani.tablist.utils.reflection.ReflectionUtils.asComponent(objectName);
 				} catch (Exception e) {
 				}
-			}*/
+			}
 
 			this.objectName = objectName;
 		}

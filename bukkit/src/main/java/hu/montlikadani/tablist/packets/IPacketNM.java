@@ -40,4 +40,16 @@ public interface IPacketNM {
 
 	Object findBoardTeamByName(String teamName);
 
+	Object createObjectivePacket(String objectiveName, Object nameComponent);
+
+	Object scoreboardObjectivePacket(Object objective, int mode);
+
+	Object scoreboardDisplayObjectivePacket(Object objective, int slot);
+
+	Object changeScoreboardScorePacket(String objectiveName, String scoreName, int score);
+
+	Object removeScoreboardScorePacket(String objectiveName, String scoreName, int score);
+
+	Object createScoreboardHealthObjectivePacket(String objectiveName, Object nameComponent);
+
 }

@@ -16,10 +16,14 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
+import net.minecraft.network.protocol.game.ClientboundSetScorePacket;
 import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 public final class V1_19_R2 implements IPacketNM {
 
@@ -209,5 +213,35 @@ public final class V1_19_R2 implements IPacketNM {
 		}
 
 		return null;
+	}
+
+	@Override
+	public Object createObjectivePacket(String objectiveName, Object nameComponent) {
+		return new Objective(null, objectiveName, ObjectiveCriteria.DUMMY, (Component) nameComponent, ObjectiveCriteria.RenderType.INTEGER);
+	}
+
+	@Override
+	public Object scoreboardObjectivePacket(Object objective, int mode) {
+		return new net.minecraft.network.protocol.game.ClientboundSetObjectivePacket((Objective) objective, mode);
+	}
+
+	@Override
+	public Object scoreboardDisplayObjectivePacket(Object objective, int slot) {
+		return new net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket(slot, (Objective) objective);
+	}
+
+	@Override
+	public Object changeScoreboardScorePacket(String objectiveName, String scoreName, int score) {
+		return new ClientboundSetScorePacket(ServerScoreboard.Method.CHANGE, objectiveName, scoreName, score);
+	}
+
+	@Override
+	public Object removeScoreboardScorePacket(String objectiveName, String scoreName, int score) {
+		return new ClientboundSetScorePacket(ServerScoreboard.Method.REMOVE, objectiveName, scoreName, score);
+	}
+
+	@Override
+	public Object createScoreboardHealthObjectivePacket(String objectiveName, Object nameComponent) {
+		return new Objective(null, objectiveName, ObjectiveCriteria.DUMMY, (Component) nameComponent, ObjectiveCriteria.RenderType.HEARTS);
 	}
 }
