@@ -50,16 +50,22 @@ public class ReflectionHandled {
 			return;
 		}
 
+		Player pl = groupPlayer.getUser().getPlayer();
 		Object removeTeamPacket = PacketNM.NMS_PACKET.unregisterBoardTeam(team);
+		Object updateNamePacket = null;
 
-		if (removeTeamPacket == null) {
-			return;
+		if (pl != null) {
+			updateNamePacket = PacketNM.NMS_PACKET.updateDisplayNamePacket(PacketNM.NMS_PACKET.getPlayerHandle(pl), null, false);
 		}
 
 		packetTeam = null;
 
 		for (Player player : tl.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(player, removeTeamPacket);
+
+			if (updateNamePacket != null) {
+				PacketNM.NMS_PACKET.sendPacket(player, updateNamePacket);
+			}
 		}
 	}
 

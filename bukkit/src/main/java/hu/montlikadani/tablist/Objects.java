@@ -103,32 +103,27 @@ public final class Objects {
 			ObjectTypes type = ConfigValues.getObjectType();
 
 			if (!user.getPlayerScore().isObjectiveCreated()) {
-				try {
-					if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-						Object objectiveInstance = PacketNM.NMS_PACKET.createObjectivePacket(type.objectName, type.chatBaseComponent);
+				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+					Object objectiveInstance = PacketNM.NMS_PACKET.createObjectivePacket(type.objectName, type.chatBaseComponent);
 
-						// Create objective, 0 - create
-						PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.scoreboardObjectivePacket(objectiveInstance, 0));
+					// Create objective, 0 - create
+					PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.scoreboardObjectivePacket(objectiveInstance, 0));
 
-						// Where to display, 0 - PlayerList
-						PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.scoreboardDisplayObjectivePacket(objectiveInstance, 0));
-					} else {
-						Scoreboard board = player.getScoreboard();
-						Objective object = board.getObjective(type.objectName);
+					// Where to display, 0 - PlayerList
+					PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.scoreboardDisplayObjectivePacket(objectiveInstance, 0));
+				} else {
+					Scoreboard board = player.getScoreboard();
+					Objective object = board.getObjective(type.objectName);
 
-						if (object == null) {
-							object = board.registerNewObjective(type.objectName, "dummy");
-						}
-
-						object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-
-						if (type == ObjectTypes.PING) {
-							object.setDisplayName("ms");
-						}
+					if (object == null) {
+						object = board.registerNewObjective(type.objectName, "dummy");
 					}
-				} catch (Exception e) {
-					e.printStackTrace();
-					return;
+
+					object.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+
+					if (type == ObjectTypes.PING) {
+						object.setDisplayName("ms");
+					}
 				}
 
 				user.getPlayerScore().setObjectiveCreated();
@@ -154,19 +149,14 @@ public final class Objects {
 						continue;
 					}
 
-					try {
-						if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-							PacketNM.NMS_PACKET.sendPacket(pl, PacketNM.NMS_PACKET.changeScoreboardScorePacket(type.objectName, user.getPlayerScore().getScoreName(), lastScore));
-						} else {
-							Objective objective = pl.getScoreboard().getObjective(type.objectName);
+					if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+						PacketNM.NMS_PACKET.sendPacket(pl, PacketNM.NMS_PACKET.changeScoreboardScorePacket(type.objectName, user.getPlayerScore().getScoreName(), lastScore));
+					} else {
+						Objective objective = pl.getScoreboard().getObjective(type.objectName);
 
-							if (objective != null) {
-								objective.getScore(user.getPlayerScore().getScoreName()).setScore(lastScore);
-							}
+						if (objective != null) {
+							objective.getScore(user.getPlayerScore().getScoreName()).setScore(lastScore);
 						}
-					} catch (Exception e) {
-						e.printStackTrace();
-						return;
 					}
 				}
 			}
@@ -244,24 +234,20 @@ public final class Objects {
 
 		source.getPlayerScore().setObjectiveCreated();
 
-		try {
-			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
 
-				// Send remove action
-				PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.removeScoreboardScorePacket(type.objectName, source.getPlayerScore().getScoreName(), 0));
+			// Send remove action
+			PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.removeScoreboardScorePacket(type.objectName, source.getPlayerScore().getScoreName(), 0));
 
-				// Unregister objective
-				PacketNM.NMS_PACKET.sendPacket(player,
-						PacketNM.NMS_PACKET.scoreboardObjectivePacket(PacketNM.NMS_PACKET.createScoreboardHealthObjectivePacket(type.objectName, type.chatBaseComponent), 1));
-			} else {
-				Objective object = player.getScoreboard().getObjective(type.objectName);
+			// Unregister objective
+			PacketNM.NMS_PACKET.sendPacket(player,
+					PacketNM.NMS_PACKET.scoreboardObjectivePacket(PacketNM.NMS_PACKET.createScoreboardHealthObjectivePacket(type.objectName, type.chatBaseComponent), 1));
+		} else {
+			Objective object = player.getScoreboard().getObjective(type.objectName);
 
-				if (object != null) {
-					object.unregister();
-				}
+			if (object != null) {
+				object.unregister();
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 

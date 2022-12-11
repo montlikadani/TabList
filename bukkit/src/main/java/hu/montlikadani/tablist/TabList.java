@@ -63,18 +63,16 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		long load = System.currentTimeMillis();
 
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R1)) {
-			logConsole(Level.SEVERE,
-					"Your server version does not supported by this plugin! Please use 1.8+ or higher versions!");
+			logConsole(Level.SEVERE, "Your server version does not supported by this plugin! Please use 1.8+ or higher versions!");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
 
 		int availableProcessors = Runtime.getRuntime().availableProcessors();
 		if (availableProcessors < 3) {
-			logConsole(Level.WARNING, "You're currently having " + availableProcessors
-					+ " CPU processors, which is not enough to run a minecraft server with scheduled plugins including TabList.");
 			logConsole(Level.WARNING,
-					"You will be experiencing many lags during the server is running. Consider upgrading your CPU to at least reach 3 cores.");
+					"You're currently having " + availableProcessors + " CPU processors, which is not enough to run a minecraft server with scheduled plugins including TabList.");
+			logConsole(Level.WARNING, "You will be experiencing many lags during the server is running. Consider upgrading your CPU to at least reach 3 cores.");
 		}
 
 		verifyServerSoftware();
@@ -96,8 +94,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		conf.loadFiles();
 		variables.load();
 
-		if (ConfigValues.isPlaceholderAPI() && (papi = getServer().getPluginManager().getPlugin("PlaceholderAPI")) != null
-				&& papi.isEnabled()) {
+		if (ConfigValues.isPlaceholderAPI() && (papi = getServer().getPluginManager().getPlugin("PlaceholderAPI")) != null && papi.isEnabled()) {
 			logConsole("Hooked " + papi.getName() + " version: " + papi.getDescription().getVersion());
 		}
 
@@ -116,8 +113,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		beginDataCollection();
 
 		if (ConfigValues.isLogConsole()) {
-			getServer().getConsoleSender().sendMessage(colorText("&6[&5Tab&cList&6]&7 >&a Enabled&6 v"
-					+ getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
+			getServer().getConsoleSender()
+					.sendMessage(colorText("&6[&5Tab&cList&6]&7 >&a Enabled&6 v" + getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
 		}
 	}
 
@@ -189,27 +186,21 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		Metrics metrics = new Metrics(this, 1479);
 
-		metrics.addCustomChart(
-				new org.bstats.charts.SimplePie("using_placeholderapi", () -> Boolean.toString(ConfigValues.isPlaceholderAPI())));
+		metrics.addCustomChart(new org.bstats.charts.SimplePie("using_placeholderapi", () -> Boolean.toString(ConfigValues.isPlaceholderAPI())));
 
 		if (TabConfigValues.isEnabled()) {
-			metrics.addCustomChart(
-					new org.bstats.charts.SimplePie("tab_interval", () -> Integer.toString(TabConfigValues.getUpdateInterval())));
+			metrics.addCustomChart(new org.bstats.charts.SimplePie("tab_interval", () -> Integer.toString(TabConfigValues.getUpdateInterval())));
 		}
 
-		metrics.addCustomChart(
-				new org.bstats.charts.SimplePie("enable_tablist", () -> Boolean.toString(TabConfigValues.isEnabled())));
+		metrics.addCustomChart(new org.bstats.charts.SimplePie("enable_tablist", () -> Boolean.toString(TabConfigValues.isEnabled())));
 
 		if (ConfigValues.getObjectType() != Objects.ObjectTypes.NONE) {
-			metrics.addCustomChart(
-					new org.bstats.charts.SimplePie("object_type", () -> ConfigValues.getObjectType().loweredName));
+			metrics.addCustomChart(new org.bstats.charts.SimplePie("object_type", () -> ConfigValues.getObjectType().loweredName));
 		}
 
-		metrics.addCustomChart(
-				new org.bstats.charts.SimplePie("enable_fake_players", () -> Boolean.toString(ConfigValues.isFakePlayers())));
+		metrics.addCustomChart(new org.bstats.charts.SimplePie("enable_fake_players", () -> Boolean.toString(ConfigValues.isFakePlayers())));
 
-		metrics.addCustomChart(
-				new org.bstats.charts.SimplePie("enable_groups", () -> Boolean.toString(ConfigValues.isPrefixSuffixEnabled())));
+		metrics.addCustomChart(new org.bstats.charts.SimplePie("enable_groups", () -> Boolean.toString(ConfigValues.isPrefixSuffixEnabled())));
 	}
 
 	private void registerCommands() {
@@ -230,19 +221,21 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			new HidePlayerListener(this);
 		}
 
-		if (isPluginEnabled("Essentials")) {
-			new hu.montlikadani.tablist.listeners.resources.EssAfkStatus(this);
-		}
+		if (ConfigValues.isAfkStatusEnabled() || ConfigValues.isHidePlayerFromTabAfk()) {
+			if (isPluginEnabled("Essentials")) {
+				new hu.montlikadani.tablist.listeners.resources.EssAfkStatus(this);
+			}
 
-		if (isPluginEnabled("CMI")) {
-			getServer().getPluginManager().registerEvents(new hu.montlikadani.tablist.listeners.resources.CMIAfkStatus(this), this);
-		}
+			if (isPluginEnabled("CMI")) {
+				getServer().getPluginManager().registerEvents(new hu.montlikadani.tablist.listeners.resources.CMIAfkStatus(this), this);
+			}
 
-		if (PluginUtils.isPurpur()) {
-			try {
-				Class.forName("org.purpurmc.purpur.event.PlayerAFKEvent");
-				new hu.montlikadani.tablist.listeners.resources.PurpurAfkStatus(this);
-			} catch (ClassNotFoundException e) {
+			if (PluginUtils.isPurpur()) {
+				try {
+					Class.forName("org.purpurmc.purpur.event.PlayerAFKEvent");
+					new hu.montlikadani.tablist.listeners.resources.PurpurAfkStatus(this);
+				} catch (ClassNotFoundException e) {
+				}
 			}
 		}
 
@@ -290,8 +283,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			if (!list.isEmpty()) {
 				list.replaceAll(variables::replaceMiscVariables);
 
-				animations.add(new TextAnimation(name, list, section.getInt(name + ".interval", 200),
-						section.getBoolean(name + ".random", false)));
+				animations.add(new TextAnimation(name, list, section.getInt(name + ".interval", 200), section.getBoolean(name + ".random", false)));
 			}
 		}
 	}
@@ -432,8 +424,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	private boolean printed = false;
 
 	public boolean performanceIsUnderValue() {
-		if (ConfigValues.getTpsPerformanceObservationValue() != -1.0
-				&& hu.montlikadani.tablist.api.TabListAPI.getTPS() <= ConfigValues.getTpsPerformanceObservationValue()) {
+		if (ConfigValues.getTpsPerformanceObservationValue() != -1.0 && hu.montlikadani.tablist.api.TabListAPI.getTPS() <= ConfigValues.getTpsPerformanceObservationValue()) {
 			if (!printed) {
 				getLogger().log(Level.INFO, "All {0} schedulers has been cancelled. (Low performance)", getName());
 				printed = true;

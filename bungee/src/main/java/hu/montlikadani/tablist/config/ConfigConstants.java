@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
 import hu.montlikadani.tablist.Misc;
 import hu.montlikadani.tablist.logicalOperators.LogicalNode;
@@ -13,9 +14,9 @@ import net.md_5.bungee.config.Configuration;
 
 public final class ConfigConstants {
 
-	private static String timeZone;
+	private static TimeZone timeZone;
 
-	private static boolean useSystemZone, isTabEnabled, isGroupsEnabled;
+	private static boolean isTabEnabled, isGroupsEnabled;
 	private static int tabRefreshInterval, groupsRefreshInterval;
 
 	private static List<String> defaultHeader, defaultFooter, disabledServers, restrictedPlayers;
@@ -54,8 +55,12 @@ public final class ConfigConstants {
 			}
 		}
 
-		timeZone = conf.getString("placeholder-format.time.time-zone", "GMT0");
-		useSystemZone = conf.getBoolean("placeholder-format.time.use-system-zone", false);
+		if (conf.getBoolean("placeholder-format.time.use-system-zone", false)) {
+			timeZone = TimeZone.getTimeZone(java.time.ZoneId.systemDefault());
+		} else {
+			timeZone = TimeZone.getTimeZone(conf.getString("placeholder-format.time.time-zone", "GMT0"));
+		}
+
 		isTabEnabled = conf.getBoolean("tablist.enable", true);
 		isGroupsEnabled = conf.getBoolean("tablist-groups.enabled", false);
 		tabRefreshInterval = conf.getInt("tablist.refresh-interval", 180);
@@ -141,8 +146,7 @@ public final class ConfigConstants {
 
 			List<?> list = section.getList(key + ".name", java.util.Collections.EMPTY_LIST);
 
-			texts = list.size() != 0 ? list.toArray(new String[0])
-					: new String[] { section.getString(key + ".name", "") };
+			texts = list.size() != 0 ? list.toArray(new String[0]) : new String[] { section.getString(key + ".name", "") };
 
 			for (int a = 0; a < texts.length; a++) {
 				texts[a] = hu.montlikadani.tablist.Global.setSymbols(texts[a]);
@@ -170,7 +174,7 @@ public final class ConfigConstants {
 		return key.<List<BaseComponent>>getValue();
 	}
 
-	public static String getTimeZone() {
+	public static TimeZone getTimeZone() {
 		return timeZone;
 	}
 
@@ -180,10 +184,6 @@ public final class ConfigConstants {
 
 	public static DateTimeFormatter getDateFormat() {
 		return dateFormat;
-	}
-
-	public static boolean isUseSystemZone() {
-		return useSystemZone;
 	}
 
 	public static Configuration getPerServerSection() {
@@ -229,8 +229,7 @@ public final class ConfigConstants {
 	public enum MessageKeys {
 		RELOAD_CONFIG(false), NO_PERMISSION(false),
 
-		TOGGLE_NO_CONSOLE(true), TOGGLE_NO_PLAYER(true), TOGGLE_ENABLED(true), TOGGLE_DISABLED(true),
-		TOGGLE_NO_PLAYERS_AVAILABLE(true),
+		TOGGLE_NO_CONSOLE(true), TOGGLE_NO_PLAYER(true), TOGGLE_ENABLED(true), TOGGLE_DISABLED(true), TOGGLE_NO_PLAYERS_AVAILABLE(true),
 
 		CHAT_MESSAGES(false, List.class);
 

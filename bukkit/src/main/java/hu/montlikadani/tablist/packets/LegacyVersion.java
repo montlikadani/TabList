@@ -83,7 +83,7 @@ public final class LegacyVersion implements IPacketNM {
 				craftServerClass = Class.forName("org.bukkit.craftbukkit." + ServerVersion.getArrayVersion()[3] + ".CraftServer");
 			}
 
-			return getServerMethod.invoke(craftServerClass.cast(org.bukkit.Bukkit.getServer()));
+			return getServerMethod.invoke(craftServerClass.cast(Bukkit.getServer()));
 		} catch (Exception x) {
 			try {
 				return getServerMethod.invoke(server);

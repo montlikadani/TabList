@@ -5,7 +5,6 @@ import java.net.SocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
-import java.util.TimeZone;
 
 import hu.montlikadani.tablist.config.ConfigConstants;
 import net.md_5.bungee.api.ChatColor;
@@ -23,8 +22,7 @@ public final class Misc {
 	private static final String MAX_PLAYERS;
 
 	static {
-		java.util.Collection<net.md_5.bungee.api.config.ListenerInfo> coll = ProxyServer.getInstance().getConfigurationAdapter()
-				.getListeners();
+		java.util.Collection<net.md_5.bungee.api.config.ListenerInfo> coll = ProxyServer.getInstance().getConfigurationAdapter().getListeners();
 
 		MAX_PLAYERS = coll.isEmpty() ? "0" : Integer.toString(coll.iterator().next().getMaxPlayers());
 	}
@@ -121,10 +119,6 @@ public final class Misc {
 	}
 
 	private static String getTimeAsString(DateTimeFormatter formatterPattern) {
-		TimeZone zone = ConfigConstants.isUseSystemZone() ? TimeZone.getTimeZone(java.time.ZoneId.systemDefault())
-				: TimeZone.getTimeZone(ConfigConstants.getTimeZone());
-		LocalDateTime now = zone == null ? LocalDateTime.now() : LocalDateTime.now(zone.toZoneId());
-
-		return now.format(formatterPattern);
+		return (ConfigConstants.getTimeZone() == null ? LocalDateTime.now() : LocalDateTime.now(ConfigConstants.getTimeZone().toZoneId())).format(formatterPattern);
 	}
 }
