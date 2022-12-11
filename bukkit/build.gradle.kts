@@ -53,7 +53,7 @@ dependencies {
 	compileOnly(files("lib/CMI9.0.0.0API.jar", "lib/PermissionsEx-1.23.4.jar"))
 }
 
-version = "TabList-5.6.4"
+version = "TabList-5.6.5"
 
 tasks.shadowJar {
 	relocate("org.bstats", "hu.montlikadani.tablist.bstats")

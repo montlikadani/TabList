@@ -23,4 +23,4 @@ dependencies {
 	compileOnly("net.md-5:bungeecord-chat:1.19-R0.1-SNAPSHOT")
 }
 
-version = "TabList-bungee-2.3.0"
+version = "TabList-bungee-2.3.1"
