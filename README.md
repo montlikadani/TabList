@@ -40,6 +40,16 @@ dependencies {
     compileOnly 'com.github.montlikadani:TabList:master-SNAPSHOT'
 }
 ```
+**Gradle** (Kotlin DSL)
+```kotlin
+repositories {
+    maven("https://jitpack.io")
+}
+
+dependencies {
+    compileOnly("com.github.montlikadani:TabList:master-SNAPSHOT")
+}
+```
 _Use `master-SNAPSHOT` as versioning to get the newest commit changes_
 
 ## Link
