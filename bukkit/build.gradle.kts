@@ -23,7 +23,7 @@ repositories {
 
 dependencies {
 	implementation(project(":global"))
-	implementation("com.github.xtomyserrax:StaffFacilities:5.0.6.0")
+	implementation("com.github.xtomyserrax:StaffFacilities:5.0.8")
 	implementation("org.bstats:bstats-bukkit:3.0.0")
 	paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19.3-R0.1-SNAPSHOT")
 	compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
