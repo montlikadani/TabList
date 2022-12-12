@@ -40,7 +40,7 @@ dependencies {
 		exclude("org.bukkit", "bukkit")
 	}
 
-	compileOnly("com.github.LeonMangler:SuperVanish:6.2.6-4")
+	compileOnly("com.github.LeonMangler:SuperVanish:6.2.12")
 	compileOnly(files("lib/CMI9.0.0.0API.jar", "lib/PermissionsEx-1.23.4.jar"))
 }
 
