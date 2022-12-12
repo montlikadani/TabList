@@ -44,7 +44,7 @@ dependencies {
 	compileOnly(files("lib/CMI9.0.0.0API.jar", "lib/PermissionsEx-1.23.4.jar"))
 }
 
-version = "5.6.5"
+version = "5.6.6"
 
 tasks {
 	withType<JavaCompile> {
