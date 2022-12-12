@@ -9,7 +9,7 @@ import hu.montlikadani.tablist.utils.ServerVersion;
 public final class ClazzContainer {
 
 	private static Field infoList, scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamPrefix, scoreboardTeamSuffix, scoreboardTeamNames, scoreboardTeamMode,
-			scoreboardPlayers, nameTagVisibility, playerInfoDataProfileField, playerInfoDataPing, playerInfoDataGameMode, nameTagVisibilityNameField, scoreboardObjectiveMethod,
+			nameTagVisibility, playerInfoDataProfileField, playerInfoDataPing, playerInfoDataGameMode, nameTagVisibilityNameField, scoreboardObjectiveMethod,
 			packetPlayOutScoreboardObjectiveNameField, packetPlayOutScoreboardObjectiveDisplayNameField, packetPlayOutScoreboardObjectiveRenderType;
 
 	private static Class<?> iChatBaseComponent, packet, packetPlayOutPlayerInfo, enumPlayerInfoAction, enumGameMode, playerInfoData, packetPlayOutScoreboardTeam,
@@ -132,7 +132,7 @@ public final class ClazzContainer {
 				(nameTagVisibility = packetPlayOutScoreboardTeam.getDeclaredField("e")).setAccessible(true);
 
 				(scoreboardTeamMode = packetPlayOutScoreboardTeam.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "i" : "h")).setAccessible(true);
-				(scoreboardPlayers = packetPlayOutScoreboardTeam.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "h" : "e")).setAccessible(true);
+				(scoreboardTeamNames = packetPlayOutScoreboardTeam.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "h" : "e")).setAccessible(true); // players
 			}
 
 			// Objectives
@@ -433,10 +433,6 @@ public final class ClazzContainer {
 
 	public static Field getScoreboardTeamMode() {
 		return scoreboardTeamMode;
-	}
-
-	public static Field getScoreboardPlayers() {
-		return scoreboardPlayers;
 	}
 
 	public static Field getNameTagVisibility() {

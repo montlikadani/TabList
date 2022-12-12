@@ -21,6 +21,7 @@ import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.reflection.ClazzContainer;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 
+// TODO get rid from this, I am starting to hate this now, I have a lot of work with this
 public final class LegacyVersion implements IPacketNM {
 
 	private Method playerHandleMethod, sendPacketMethod, getHandleWorldMethod, getServerMethod;
@@ -497,7 +498,7 @@ public final class LegacyVersion implements IPacketNM {
 				newTeamPacket = ClazzContainer.scoreboardTeamPacketByAction(scoreTeam, 0);
 			}
 
-			playerTeams.add(scoreTeam);
+			playerTeams.add(scoreTeam == null ? newTeamPacket : scoreTeam);
 			return newTeamPacket;
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -518,7 +519,7 @@ public final class LegacyVersion implements IPacketNM {
 			Object oldTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
 
 			if (playerTeamNameField == null) {
-				(playerTeamNameField = playerTeam.getClass().getDeclaredField("d")).setAccessible(true);
+				(playerTeamNameField = fieldByNameAndType(playerTeam.getClass(), String.class, "d", "a")).setAccessible(true);
 			}
 
 			ClazzContainer.getScoreboardTeamName().set(oldTeamPacket, playerTeamNameField.get(playerTeam));
@@ -535,7 +536,7 @@ public final class LegacyVersion implements IPacketNM {
 		try {
 			for (Object team : playerTeams) {
 				if (playerTeamNameField == null) {
-					(playerTeamNameField = team.getClass().getDeclaredField("d")).setAccessible(true);
+					(playerTeamNameField = fieldByNameAndType(team.getClass(), String.class, "d", "a")).setAccessible(true);
 				}
 
 				if (((String) playerTeamNameField.get(team)).equals(teamName)) {
@@ -544,6 +545,20 @@ public final class LegacyVersion implements IPacketNM {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	private Field fieldByNameAndType(Class<?> where, Class<?> type, String... names) {
+		for (Field field : where.getDeclaredFields()) {
+			if (field.getType() == type) {
+				for (String name : names) {
+					if (field.getName().equals(name)) {
+						return field;
+					}
+				}
+			}
 		}
 
 		return null;

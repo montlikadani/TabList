@@ -1,12 +1,3 @@
-buildscript {
-	repositories {
-		gradlePluginPortal()
-	}
-	dependencies {
-		classpath("gradle.plugin.com.github.jengelman.gradle.plugins:shadow:7.0.0")
-	}
-}
-
 plugins {
 	id("com.github.johnrengelman.shadow") version "7.0.0"
 	id("io.papermc.paperweight.userdev") version "1.3.11"
@@ -53,10 +44,22 @@ dependencies {
 	compileOnly(files("lib/CMI9.0.0.0API.jar", "lib/PermissionsEx-1.23.4.jar"))
 }
 
-version = "TabList-5.6.5"
+version = "5.6.5"
 
-tasks.shadowJar {
-	relocate("org.bstats", "hu.montlikadani.tablist.bstats")
-	exclude("META-INF/**")
-	minimize()
+tasks {
+	withType<JavaCompile> {
+		options.encoding = "UTF-8"
+	}
+	jar {
+		archiveClassifier.set("noshade")
+	}
+	shadowJar {
+		archiveClassifier.set("")
+		//archiveFileName.set("TabList-bukkit-v${project.version}.jar") // idk why this doesn't includes deps, in bungee it includes
+		relocate("org.bstats", "hu.montlikadani.tablist.bstats")
+		exclude("META-INF/**")
+	}
+	build {
+		dependsOn(shadowJar, reobfJar)
+	}
 }
