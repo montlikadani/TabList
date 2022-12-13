@@ -30,7 +30,7 @@ dependencies {
 	compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8 so we must use this
 	compileOnly("org.purpurmc.purpur:purpur-api:1.19.3-R0.1-SNAPSHOT")
 
-	compileOnly("net.essentialsx:EssentialsX:2.19.8-SNAPSHOT") {
+	compileOnly("net.essentialsx:EssentialsX:2.20.0-SNAPSHOT") {
 		exclude("org.spigotmc", "spigot-api")
 	}
 
