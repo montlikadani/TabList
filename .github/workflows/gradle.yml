@@ -19,14 +19,16 @@ jobs:
         distribution: 'temurin'
 
     - name: Build all
-      run: ./gradlew clean build
+      run: ./gradlew clean build --parallel
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:
         name: tablist-dev
         path: |
-          ${{ github.workspace }}/bukkit/build/libs/bukkit-TabList*.jar
-          ${{ github.workspace }}/bungee/build/libs/bungee-TabList*.jar
+          !${{ github.workspace }}/bukkit/build/libs/*dev-all*.jar
+          ${{ github.workspace }}/bukkit/build/libs/*bukkit*.jar
+          !${{ github.workspace }}/bukkit/build/libs/*dev-all*.jar
+          ${{ github.workspace }}/bungee/build/libs/*bungee*.jar
           ${{ github.workspace }}/sponge7/build/libs/tablist-sponge7*.jar
           ${{ github.workspace }}/sponge8/build/libs/tablist-sponge8*.jar
