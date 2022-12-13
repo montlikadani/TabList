@@ -56,7 +56,9 @@ public final class TabListAPI {
 	 * 
 	 * @param uuid Player
 	 * @return true if toggled
+	 * @deprecated Use {@link TabToggleBase#isDisabled(hu.montlikadani.tablist.user.TabListUser)}
 	 */
+	@Deprecated
 	public static boolean isTabListToggled(Player player) {
 		return isTabListToggled(player.getUniqueId());
 	}
@@ -66,9 +68,12 @@ public final class TabListAPI {
 	 * 
 	 * @param uuid Player UUID
 	 * @return true if toggled
+	 * @deprecated Use {@link TabToggleBase#isDisabled(hu.montlikadani.tablist.user.TabListUser)}
 	 */
+	@Deprecated
 	public static boolean isTabListToggled(UUID uuid) {
-		return TabToggleBase.TAB_TOGGLE.contains(uuid);
+		hu.montlikadani.tablist.user.TabListUser user = getPlugin().getUser(uuid).orElse(null);
+		return user != null && TabToggleBase.isDisabled(user);
 	}
 
 	/**

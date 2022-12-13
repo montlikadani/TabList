@@ -45,7 +45,7 @@ public class TabHandler {
 
 		sendEmptyTab(player);
 
-		if (TabToggleBase.isDisabled(user.getUniqueId())) {
+		if (TabToggleBase.isDisabled(user)) {
 			return;
 		}
 
@@ -213,7 +213,7 @@ public class TabHandler {
 			return;
 		}
 
-		if (TabToggleBase.isDisabled(user.getUniqueId()) || (TabConfigValues.isHideTabWhenPlayerVanished() && PluginUtils.isVanished(player))) {
+		if (TabToggleBase.isDisabled(user) || (TabConfigValues.isHideTabWhenPlayerVanished() && PluginUtils.isVanished(player))) {
 			sendEmptyTab(player);
 			return;
 		}

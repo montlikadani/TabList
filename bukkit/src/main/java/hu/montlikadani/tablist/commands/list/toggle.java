@@ -15,11 +15,7 @@ import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.tablist.TabToggleBase;
 import hu.montlikadani.tablist.user.TabListUser;
 
-@CommandProcessor(
-	name = "toggle",
-	params = "[player/all]",
-	desc = "Toggles the tab visibility for player(s)",
-	permission = Perm.TOGGLE)
+@CommandProcessor(name = "toggle", params = "[player/all]", desc = "Toggles the tab visibility for player(s)", permission = Perm.TOGGLE)
 public final class toggle implements ICommand {
 
 	@Override
@@ -33,8 +29,7 @@ public final class toggle implements ICommand {
 			Player player = (Player) sender;
 
 			plugin.getUser(player).ifPresent(
-					user -> sendMsg(player, ConfigMessages.get(toggleTab(user, player) ? ConfigMessages.MessageKeys.TOGGLE_ENABLED
-							: ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
+					user -> sendMsg(player, ConfigMessages.get(toggleTab(user, player) ? ConfigMessages.MessageKeys.TOGGLE_ENABLED : ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
 			return true;
 		}
 
@@ -43,8 +38,7 @@ public final class toggle implements ICommand {
 
 			if (first.equalsIgnoreCase("all")) {
 				if (sender instanceof Player && !sender.hasPermission(Perm.TOGGLEALL.permission)) {
-					sendMsg(sender,
-							ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.TOGGLEALL.permission));
+					sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.TOGGLEALL.permission));
 					return false;
 				}
 
@@ -68,19 +62,20 @@ public final class toggle implements ICommand {
 			}
 
 			plugin.getUser(player).ifPresent(
-					user -> sendMsg(player, ConfigMessages.get(toggleTab(user, player) ? ConfigMessages.MessageKeys.TOGGLE_ENABLED
-							: ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
+					user -> sendMsg(player, ConfigMessages.get(toggleTab(user, player) ? ConfigMessages.MessageKeys.TOGGLE_ENABLED : ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
 		}
 
 		return true;
 	}
 
 	private boolean toggleTab(TabListUser user, Player player) {
-		if (!TabToggleBase.TAB_TOGGLE.remove(user.getUniqueId())) {
-			TabToggleBase.TAB_TOGGLE.add(user.getUniqueId());
+		if (user.isTabVisible()) {
+			user.setTabVisibility(false);
 			user.getTabHandler().sendEmptyTab(player);
 			return false;
 		}
+
+		user.setTabVisibility(true);
 
 		if (TabConfigValues.isEnabled()) {
 			user.getTabHandler().loadTabComponents();

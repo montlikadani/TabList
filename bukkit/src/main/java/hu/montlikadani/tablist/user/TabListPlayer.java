@@ -24,6 +24,8 @@ public class TabListPlayer implements TabListUser {
 	private transient HidePlayers hidePlayers;
 	private transient PlayerList playerList;
 
+	private boolean tabVisible = true;
+
 	public TabListPlayer(TabList plugin, UUID uniqueId) {
 		this.plugin = plugin;
 		this.uniqueId = uniqueId;
@@ -127,5 +129,15 @@ public class TabListPlayer implements TabListUser {
 	@Override
 	public PlayerScore getPlayerScore() {
 		return playerScore;
+	}
+
+	@Override
+	public boolean isTabVisible() {
+		return tabVisible;
+	}
+
+	@Override
+	public void setTabVisibility(boolean visibility) {
+		tabVisible = visibility;
 	}
 }

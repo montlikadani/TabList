@@ -142,13 +142,7 @@ public final class Objects {
 			if (lastScore != user.getPlayerScore().getLastScore()) {
 				user.getPlayerScore().setLastScore(lastScore);
 
-				for (TabListUser us : plugin.getUsers()) {
-					Player pl = us.getPlayer();
-
-					if (pl == null) {
-						continue;
-					}
-
+				for (Player pl : plugin.getServer().getOnlinePlayers()) {
 					if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
 						PacketNM.NMS_PACKET.sendPacket(pl, PacketNM.NMS_PACKET.changeScoreboardScorePacket(type.objectName, user.getPlayerScore().getScoreName(), lastScore));
 					} else {

@@ -16,7 +16,7 @@ public final class TabManager {
 
 	public TabManager(TabList plugin) {
 		this.plugin = plugin;
-		this.toggleBase = new TabToggleBase(plugin);
+		this.toggleBase = new TabToggleBase();
 	}
 
 	public void cancelTask() {

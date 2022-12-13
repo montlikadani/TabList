@@ -9,41 +9,30 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
+import hu.montlikadani.tablist.user.TabListUser;
 
 public final class TabToggleBase {
 
 	/**
-	 * This property stores of toggled tablists for specific players
-	 */
-	public static final java.util.Set<UUID> TAB_TOGGLE = new java.util.HashSet<>();
-
-	/**
-	 * Holds the information that the tablist is globally (for every online player)
-	 * disabled or not.
+	 * Holds the information that the tablist is globally (for every online player) disabled or not.
 	 */
 	public static boolean globallySwitched = false;
 
-	private final TabList tl;
-
 	/**
-	 * Checks if tablist is disabled globally (for everyone) or for the specified
-	 * UUID's one.
+	 * Checks if tablist is disabled globally (for everyone) or for the specified user.
 	 * 
-	 * @param id the target {@link UUID}
-	 * @return true if globally or for the specific uuid's is disabled, otherwise
-	 *         false.
+	 * @param user the target {@link TabListUser} to check if the tablist is disabled
+	 * @return true if disabled for everyone or for the specific user, otherwise false.
+	 * @throws NullPointerException if user is null
 	 */
-	public static boolean isDisabled(UUID id) {
-		return globallySwitched || TAB_TOGGLE.contains(id);
+	public static boolean isDisabled(TabListUser user) {
+		return globallySwitched || !user.isTabVisible();
 	}
 
-	public TabToggleBase(TabList tl) {
-		this.tl = tl;
+	protected TabToggleBase() {
 	}
 
-	public void loadToggledTabs() {
-		TAB_TOGGLE.clear();
-
+	public void loadToggledTabs(TabList tl) {
 		if (!TabConfigValues.isRememberToggledTablistToFile()) {
 			return;
 		}
@@ -63,12 +52,12 @@ public final class TabToggleBase {
 			}
 
 			for (String uuid : section.getKeys(false)) {
-				if (!section.getBoolean(uuid, false)) {
+				if (section.getBoolean(uuid, false)) {
 					continue;
 				}
 
 				try {
-					TAB_TOGGLE.add(UUID.fromString(uuid));
+					tl.getUser(UUID.fromString(uuid)).ifPresent(user -> user.setTabVisibility(false));
 				} catch (IllegalArgumentException e) {
 				}
 			}
@@ -83,10 +72,10 @@ public final class TabToggleBase {
 		}
 	}
 
-	public void saveToggledTabs() {
+	public void saveToggledTabs(TabList tl) {
 		File file = new File(tl.getDataFolder(), "toggledtablists.yml");
 
-		if (!TabConfigValues.isRememberToggledTablistToFile() || (!globallySwitched && TAB_TOGGLE.isEmpty())) {
+		if (!TabConfigValues.isRememberToggledTablistToFile() || (!globallySwitched && tl.getUsers().stream().allMatch(TabListUser::isTabVisible))) {
 			if (file.exists()) {
 				file.delete();
 			}
@@ -108,8 +97,10 @@ public final class TabToggleBase {
 		if (globallySwitched) {
 			config.set("globallySwitched", globallySwitched);
 		} else {
-			for (UUID key : TAB_TOGGLE) {
-				config.set("tablists." + key, false);
+			for (TabListUser user : tl.getUsers()) {
+				if (!user.isTabVisible()) {
+					config.set("tablists." + user.getUniqueId(), false);
+				}
 			}
 
 			config.set("globallySwitched", null);
@@ -120,7 +111,5 @@ public final class TabToggleBase {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		TAB_TOGGLE.clear();
 	}
 }

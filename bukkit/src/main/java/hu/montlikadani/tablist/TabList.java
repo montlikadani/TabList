@@ -104,9 +104,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		loadAnimations();
 		loadListeners();
 		registerCommands();
-		tabManager.toggleBase.loadToggledTabs();
 		groups.load();
 
+		getServer().getOnlinePlayers().forEach(this::getOrLoadUser);
+		tabManager.toggleBase.loadToggledTabs(this);
 		getServer().getOnlinePlayers().forEach(this::updateAll);
 
 		UpdateDownloader.checkFromGithub(this);
@@ -150,7 +151,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			});
 		}
 
-		tabManager.toggleBase.saveToggledTabs();
+		tabManager.toggleBase.saveToggledTabs(this);
 		fakePlayerHandler.removeAllFakePlayer();
 
 		conf.deleteEmptyFiles();
@@ -313,16 +314,20 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		return builder.toString();
 	}
 
+	private TabListUser getOrLoadUser(Player player) {
+		return getUser(player.getUniqueId()).orElseGet(() -> {
+			TabListUser tlu = new TabListPlayer(this, player.getUniqueId());
+			users.add(tlu);
+			return tlu;
+		});
+	}
+
 	public void updateAll(Player p) {
 		updateAll(p, false);
 	}
 
 	void updateAll(Player player, boolean reload) {
-		TabListUser user = getUser(player.getUniqueId()).orElseGet(() -> {
-			TabListUser tlu = new TabListPlayer(this, player.getUniqueId());
-			users.add(tlu);
-			return tlu;
-		});
+		TabListUser user = getOrLoadUser(player);
 
 		if (reload) { // Reset player score for integer objectives
 			user.getPlayerScore().setLastScore(-1);

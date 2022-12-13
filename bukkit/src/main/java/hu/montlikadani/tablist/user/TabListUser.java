@@ -11,6 +11,18 @@ public interface TabListUser {
 	org.bukkit.entity.Player getPlayer();
 
 	/**
+	 * @return true if the tablist for this player is visible
+	 */
+	boolean isTabVisible();
+
+	/**
+	 * Sets the tablist visibility for this player.
+	 * 
+	 * @param visibility true if visible, false otherwise
+	 */
+	void setTabVisibility(boolean visibility);
+
+	/**
 	 * @return true if this player is hidden from other players
 	 */
 	boolean isHidden();
