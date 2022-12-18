@@ -110,7 +110,8 @@ public final class V1_19_R2 implements IPacketNM {
 	@Override
 	public Object newPlayerInfoUpdatePacketAdd(Object entityPlayer) {
 		return new ClientboundPlayerInfoUpdatePacket(
-				java.util.EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED),
+				java.util.EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED,
+						ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY),
 				Collections.singletonList((ServerPlayer) entityPlayer));
 	}
 

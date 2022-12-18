@@ -49,8 +49,7 @@ public final class FakePlayerHandler {
 		}
 
 		for (String name : cs.getKeys(false)) {
-			FakePlayer fp = new FakePlayer(plugin, name, cs.getString(name + ".displayname", ""),
-					cs.getString(name + ".headuuid", ""), cs.getInt(name + ".ping", -1));
+			FakePlayer fp = new FakePlayer(name, cs.getString(name + ".displayname", ""), cs.getString(name + ".headuuid", ""), cs.getInt(name + ".ping", -1));
 			fp.show();
 			fakePlayers.add(fp);
 		}
@@ -102,7 +101,7 @@ public final class FakePlayerHandler {
 			return EditingResult.UNKNOWN;
 		}
 
-		IFakePlayer fp = new FakePlayer(plugin, name, displayName, headUUID, ping);
+		IFakePlayer fp = new FakePlayer(name, displayName, headUUID, ping);
 		fp.show();
 		fakePlayers.add(fp);
 		return EditingResult.OK;

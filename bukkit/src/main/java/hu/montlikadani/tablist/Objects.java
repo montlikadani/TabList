@@ -10,6 +10,7 @@ import org.bukkit.scoreboard.Scoreboard;
 import hu.montlikadani.tablist.api.TabListAPI;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.packets.PacketNM;
+import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.StrUtil;
@@ -81,10 +82,9 @@ public final class Objects {
 		task = Tasks.submitAsync(() -> {
 			if (plugin.performanceIsUnderValue() || plugin.getUsers().isEmpty()) {
 				cancelTask();
-				return;
+			} else {
+				update();
 			}
-
-			update();
 		}, 0, ConfigValues.getObjectRefreshInterval());
 	}
 
@@ -111,6 +111,16 @@ public final class Objects {
 
 					// Where to display, 0 - PlayerList
 					PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.scoreboardDisplayObjectivePacket(objectiveInstance, 0));
+
+					// Update ping score for fake players if set
+					if (type == ObjectTypes.PING) {
+						for (IFakePlayer fakePlayer : plugin.getFakePlayerHandler().fakePlayers) {
+							if (fakePlayer.getPingLatency() > 0) {
+								PacketNM.NMS_PACKET.sendPacket(player,
+										PacketNM.NMS_PACKET.changeScoreboardScorePacket(type.objectName, fakePlayer.getName(), fakePlayer.getPingLatency()));
+							}
+						}
+					}
 				} else {
 					Scoreboard board = player.getScoreboard();
 					Objective object = board.getObjective(type.objectName);
@@ -124,6 +134,8 @@ public final class Objects {
 					if (type == ObjectTypes.PING) {
 						object.setDisplayName("ms");
 					}
+
+					// TODO update scores in legacy versions for fake players
 				}
 
 				user.getPlayerScore().setObjectiveCreated();

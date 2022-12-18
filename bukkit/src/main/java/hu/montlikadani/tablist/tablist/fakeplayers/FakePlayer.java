@@ -2,20 +2,20 @@ package hu.montlikadani.tablist.tablist.fakeplayers;
 
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.mojang.authlib.GameProfile;
 
 import hu.montlikadani.tablist.Global;
-import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.Objects.ObjectTypes;
+import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.Util;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 
 public final class FakePlayer implements IFakePlayer {
-
-	private final TabList tablist;
 
 	private String displayName;
 	private String name;
@@ -27,18 +27,13 @@ public final class FakePlayer implements IFakePlayer {
 	private GameProfile profile;
 
 	public FakePlayer(String name, String displayName, String headId, int ping) {
-		this(org.bukkit.plugin.java.JavaPlugin.getPlugin(TabList.class), name, displayName, headId, ping);
-	}
-
-	protected FakePlayer(TabList tablist, String name, String displayName, String headId, int ping) {
 		setName(name);
 
-		this.tablist = tablist;
 		this.displayName = displayName == null ? "" : displayName;
 		this.ping = ping;
 
 		java.util.Optional<UUID> opt = Util.tryParseId(headId);
-		profile = new GameProfile(opt.orElse(UUID.randomUUID()), name);
+		profile = new GameProfile(opt.orElse(UUID.randomUUID()), this.name);
 
 		this.headId = profile.getId();
 	}
@@ -97,7 +92,7 @@ public final class FakePlayer implements IFakePlayer {
 
 		Object packet = PacketNM.NMS_PACKET.updateDisplayNamePacket(fakeEntityPlayer, displayName, true);
 
-		for (Player player : tablist.getServer().getOnlinePlayers()) {
+		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(player, packet);
 		}
 	}
@@ -115,7 +110,7 @@ public final class FakePlayer implements IFakePlayer {
 		Object packetAdd = PacketNM.NMS_PACKET.newPlayerInfoUpdatePacketAdd(fakeEntityPlayer);
 		PacketNM.NMS_PACKET.setInfoData(packetAdd, profile.getId(), ping, chatBaseComponentName);
 
-		for (Player player : tablist.getServer().getOnlinePlayers()) {
+		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(player, packetAdd);
 		}
 	}
@@ -133,10 +128,21 @@ public final class FakePlayer implements IFakePlayer {
 		this.ping = ping;
 
 		Object info = PacketNM.NMS_PACKET.updateLatency(fakeEntityPlayer);
+		Object packetUpdateScore = null;
+		ObjectTypes objectType = ConfigValues.getObjectType();
+
+		if (objectType == ObjectTypes.PING) {
+			packetUpdateScore = PacketNM.NMS_PACKET.changeScoreboardScorePacket(objectType.getObjectName(), name, ping);
+		}
+
 		PacketNM.NMS_PACKET.setInfoData(info, profile.getId(), ping, chatBaseComponentName);
 
-		for (Player player : tablist.getServer().getOnlinePlayers()) {
+		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(player, info);
+
+			if (packetUpdateScore != null) {
+				PacketNM.NMS_PACKET.sendPacket(player, packetUpdateScore);
+			}
 		}
 	}
 
@@ -152,7 +158,7 @@ public final class FakePlayer implements IFakePlayer {
 			return;
 		}
 
-		if (!tablist.getServer().getOnlineMode()) {
+		if (!Bukkit.getServer().getOnlineMode()) {
 			if (debug) {
 				Util.logConsole(java.util.logging.Level.WARNING, "Can't set skin for offline servers.");
 			}
@@ -172,7 +178,7 @@ public final class FakePlayer implements IFakePlayer {
 				Object removeInfo = PacketNM.NMS_PACKET.removeEntityPlayer(fakeEntityPlayer);
 				Object addInfo = PacketNM.NMS_PACKET.newPlayerInfoUpdatePacketAdd(fakeEntityPlayer);
 
-				for (Player player : tablist.getServer().getOnlinePlayers()) {
+				for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 					PacketNM.NMS_PACKET.sendPacket(player, removeInfo);
 					PacketNM.NMS_PACKET.sendPacket(player, addInfo);
 				}
@@ -188,7 +194,7 @@ public final class FakePlayer implements IFakePlayer {
 
 		Object info = PacketNM.NMS_PACKET.removeEntityPlayer(fakeEntityPlayer);
 
-		for (Player player : tablist.getServer().getOnlinePlayers()) {
+		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(player, info);
 		}
 
