@@ -44,7 +44,7 @@ public final class V1_19_R2 implements IPacketNM {
 			return;
 		}
 
-		ServerPlayer serverPlayer = (ServerPlayer) PacketNM.NMS_PACKET.getPlayerHandle(player);
+		ServerPlayer serverPlayer = getPlayerHandle(player);
 
 		if (serverPlayer.connection.connection.channel.pipeline().get("PacketInjector") == null) {
 			serverPlayer.connection.connection.channel.pipeline().addBefore("packet_handler", "PacketInjector", new PacketReceivingListener(serverPlayer.getUUID()));
@@ -53,7 +53,7 @@ public final class V1_19_R2 implements IPacketNM {
 
 	@Override
 	public void removePlayerChannelListener(Player player) {
-		ServerPlayer serverPlayer = (ServerPlayer) PacketNM.NMS_PACKET.getPlayerHandle(player);
+		ServerPlayer serverPlayer = getPlayerHandle(player);
 
 		if (serverPlayer.connection.connection.channel.pipeline().get("PacketInjector") != null) {
 			serverPlayer.connection.connection.channel.pipeline().remove("PacketInjector");
@@ -167,7 +167,6 @@ public final class V1_19_R2 implements IPacketNM {
 
 	private void setEntriesField(ClientboundPlayerInfoUpdatePacket playerInfoPacket, java.util.function.Supplier<ClientboundPlayerInfoUpdatePacket.Entry> supplier) {
 		try {
-			ClientboundPlayerInfoUpdatePacket.Entry entry = supplier.get();
 
 			// Entries list is immutable, so use reflection to bypass
 			if (entriesField == null) {
@@ -175,7 +174,7 @@ public final class V1_19_R2 implements IPacketNM {
 				entriesField.setAccessible(true);
 			}
 
-			entriesField.set(playerInfoPacket, Collections.singletonList(entry));
+			entriesField.set(playerInfoPacket, Collections.singletonList(supplier.get()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
