@@ -24,17 +24,21 @@ public interface IPacketNM {
 
 	void addPlayerToTab(Player source, Player target);
 
-	void removePlayerFromTab(Player source, Player target);
+	void addPlayersToTab(Player source, java.util.Collection<? extends Player> players);
+
+	void appendPlayer(Player source);
+
+	void removePlayersFromTab(Player source, java.util.Collection<? extends Player> players);
 
 	Object updateDisplayNamePacket(Object entityPlayer, String component, boolean listName);
 
 	void setListName(Object entityPlayer, String component);
 
-	Object newPlayerInfoUpdatePacketAdd(Object entityPlayer);
+	Object newPlayerInfoUpdatePacketAdd(Object... entityPlayer);
 
 	Object updateLatency(Object entityPlayer);
 
-	Object removeEntityPlayer(Object entityPlayer);
+	Object removeEntityPlayer(Object... entityPlayers);
 
 	void setInfoData(Object info, java.util.UUID id, int ping, Object component);
 

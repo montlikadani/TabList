@@ -33,17 +33,8 @@ public final class HidePlayers {
 	public void removePlayerFromTab() {
 		Player player = plugin.getServer().getPlayer(to);
 
-		if (player == null) {
-			return;
+		if (player != null) {
+			PacketNM.NMS_PACKET.removePlayersFromTab(player, plugin.getServer().getOnlinePlayers());
 		}
-
-		for (Player pl : plugin.getServer().getOnlinePlayers()) {
-			removePlayerFromTab(player, pl);
-			removePlayerFromTab(pl, player);
-		}
-	}
-
-	public void removePlayerFromTab(Player p, Player to) {
-		plugin.getServer().getScheduler().runTaskLater(plugin, () -> PacketNM.NMS_PACKET.removePlayerFromTab(p, to), 6L);
 	}
 }

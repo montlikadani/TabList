@@ -15,21 +15,13 @@ public final class HidePlayerListener {
 			@Override
 			public void execute(Listener listener, org.bukkit.event.Event e) {
 				PlayerGameModeChangeEvent event = (PlayerGameModeChangeEvent) e;
-				boolean isSpectator = event.getNewGameMode() == GameMode.SPECTATOR;
 
 				// Checks if the new game mode is spectator or the player's old game mode was
 				// spectator
-				if (isSpectator || event.getPlayer().getGameMode() == GameMode.SPECTATOR) {
+				if (event.getNewGameMode() == GameMode.SPECTATOR || event.getPlayer().getGameMode() == GameMode.SPECTATOR) {
 					org.bukkit.entity.Player player = event.getPlayer();
 
-					tl.getUser(player.getUniqueId()).filter(user -> user.isRemovedFromPlayerList())
-							.map(user -> (hu.montlikadani.tablist.user.TabListPlayer) user).ifPresent(user -> {
-								if (isSpectator) {
-									PacketNM.NMS_PACKET.addPlayerToTab(player, player);
-								} else {
-									user.getHidePlayers().removePlayerFromTab(player, player);
-								}
-							});
+					tl.getUser(player.getUniqueId()).filter(user -> user.isRemovedFromPlayerList()).ifPresent(user -> PacketNM.NMS_PACKET.appendPlayer(player));
 				}
 			}
 		}, tl);

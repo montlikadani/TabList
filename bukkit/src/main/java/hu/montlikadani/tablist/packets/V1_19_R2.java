@@ -2,6 +2,7 @@ package hu.montlikadani.tablist.packets;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
@@ -16,6 +17,7 @@ import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundAnimatePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.protocol.game.ClientboundSetPlayerTeamPacket;
@@ -31,11 +33,15 @@ import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 
 public final class V1_19_R2 implements IPacketNM {
 
-	private final java.util.List<PlayerTeam> playerTeams = new ArrayList<>();
+	private final List<PlayerTeam> playerTeams = new ArrayList<>();
 
 	@Override
 	public void sendPacket(Player player, Object packet) {
 		getPlayerHandle(player).connection.send((Packet<?>) packet);
+	}
+
+	private void sendPacket(ServerPlayer player, Packet<?> packet) {
+		player.connection.send(packet);
 	}
 
 	@Override
@@ -107,12 +113,35 @@ public final class V1_19_R2 implements IPacketNM {
 
 	@Override
 	public void addPlayerToTab(Player source, Player target) {
-		sendPacket(target, ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(Collections.singletonList(((CraftPlayer) source).getHandle())));
+		sendPacket(target, ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(Collections.singletonList((getPlayerHandle(source)))));
 	}
 
 	@Override
-	public void removePlayerFromTab(Player source, Player target) {
-		sendPacket(target, new ClientboundPlayerInfoRemovePacket(Collections.singletonList(source.getUniqueId())));
+	public void addPlayersToTab(Player source, java.util.Collection<? extends Player> players) {
+		sendPacket(source, ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(players.stream().map(this::getPlayerHandle).toList()));
+	}
+
+	@Override
+	public void removePlayersFromTab(Player source, java.util.Collection<? extends Player> players) {
+		sendPacket(getPlayerHandle(source), new ClientboundPlayerInfoRemovePacket(players.stream().map(Player::getUniqueId).toList()));
+	}
+
+	@Override
+	public void appendPlayer(Player source) {
+		ServerPlayer from = getPlayerHandle(source);
+		ClientboundPlayerInfoUpdatePacket updatePacket = ClientboundPlayerInfoUpdatePacket.createPlayerInitializing(Collections.singletonList(from));
+
+		setEntriesField(updatePacket, () -> new ClientboundPlayerInfoUpdatePacket.Entry(from.getUUID(), from.gameProfile, false, from.latency, from.gameMode.getGameModeForPlayer(),
+				Component.empty(), from.getChatSession() == null ? null : from.getChatSession().asData()));
+
+		ClientboundAnimatePacket animatePacket = new ClientboundAnimatePacket(from, 0);
+
+		for (Player player : org.bukkit.Bukkit.getServer().getOnlinePlayers()) {
+			ServerPlayer serverPlayer = getPlayerHandle(player);
+
+			sendPacket(serverPlayer, updatePacket);
+			sendPacket(serverPlayer, animatePacket);
+		}
 	}
 
 	@Override
@@ -134,10 +163,15 @@ public final class V1_19_R2 implements IPacketNM {
 	}
 
 	@Override
-	public Object newPlayerInfoUpdatePacketAdd(Object entityPlayer) {
+	public Object newPlayerInfoUpdatePacketAdd(Object... entityPlayers) {
+		List<ServerPlayer> players = new ArrayList<>(entityPlayers.length);
+
+		for (ServerPlayer player : (ServerPlayer[]) entityPlayers) {
+			players.add(player);
+		}
+
 		return new ClientboundPlayerInfoUpdatePacket(java.util.EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER,
-				ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED, ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY),
-				Collections.singletonList((ServerPlayer) entityPlayer));
+				ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED, ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY), players);
 	}
 
 	@Override
@@ -146,8 +180,14 @@ public final class V1_19_R2 implements IPacketNM {
 	}
 
 	@Override
-	public Object removeEntityPlayer(Object entityPlayer) {
-		return new ClientboundPlayerInfoRemovePacket(Collections.singletonList(((ServerPlayer) entityPlayer).getUUID()));
+	public Object removeEntityPlayer(Object... entityPlayers) {
+		List<UUID> players = new ArrayList<>(entityPlayers.length);
+
+		for (ServerPlayer player : (ServerPlayer[]) entityPlayers) {
+			players.add(player.getUUID());
+		}
+
+		return new ClientboundPlayerInfoRemovePacket(players);
 	}
 
 	private java.lang.reflect.Field entriesField;

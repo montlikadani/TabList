@@ -297,12 +297,26 @@ public final class LegacyVersion implements IPacketNM {
 	}
 
 	@Override
-	public void removePlayerFromTab(Player source, Player target) {
+	public void addPlayersToTab(Player source, java.util.Collection<? extends Player> players) {
 		try {
-			sendPacket(target, removeEntityPlayer(getPlayerHandle(source)));
+			sendPacket(source, newPlayerInfoUpdatePacketAdd(players.stream().map(this::getPlayerHandle).toArray()));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public void removePlayersFromTab(Player source, java.util.Collection<? extends Player> players) {
+		try {
+			sendPacket(source, removeEntityPlayer(players.stream().map(this::getPlayerHandle).toArray()));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void appendPlayer(Player source) {
+		// TODO
 	}
 
 	@Override
@@ -337,12 +351,9 @@ public final class LegacyVersion implements IPacketNM {
 	}
 
 	@Override
-	public Object newPlayerInfoUpdatePacketAdd(Object entityPlayer) {
+	public Object newPlayerInfoUpdatePacketAdd(Object... entityPlayers) {
 		try {
-			Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
-			Array.set(entityPlayerArray, 0, entityPlayer);
-
-			return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), entityPlayerArray);
+			return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), entityPlayers);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -365,12 +376,9 @@ public final class LegacyVersion implements IPacketNM {
 	}
 
 	@Override
-	public Object removeEntityPlayer(Object entityPlayer) {
+	public Object removeEntityPlayer(Object... entityPlayer) {
 		try {
-			Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
-			Array.set(entityPlayerArray, 0, entityPlayer);
-
-			return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getRemovePlayer(), entityPlayerArray);
+			return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getRemovePlayer(), entityPlayer);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
