@@ -65,7 +65,7 @@ public final class ConfigValues {
 				"Do we count the added fake players to the %online-players% placeholder?");
 		c.addComment("remove-gray-color-from-tab-in-spectator",
 				"If enabled, the gray color will not appear to other players when the player's game mode is spectator.",
-				"The gray color will only show for the spectator player.", "Requires ProtocolLib!");
+				"The gray color will only show for the spectator player.");
 		c.addComment("ignore-vanished-players-in-online-players",
 				"true - does not count vanished players in %online-players% placeholder.",
 				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!");
@@ -78,8 +78,7 @@ public final class ConfigValues {
 		c.addComment("hide-players-from-tablist", "Hide all players from the player list?",
 				"This removes all players from the player list, but the player that has the",
 				"group set is retained as it is not changed during removal, so your group",
-				"will be restored if this option is disabled.",
-				"Requires ProtocolLib to fix view distance issue! (https://github.com/montlikadani/TabList/issues/147)");
+				"will be restored if this option is disabled.");
 
 		c.addComment("per-world-player-list", "Different player list in different world.");
 		c.addComment("per-world-player-list.world-groups", "You can specify worlds, which will share the same list of players");

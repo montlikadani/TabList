@@ -25,6 +25,7 @@ import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.listeners.HidePlayerListener;
 import hu.montlikadani.tablist.listeners.Listeners;
+import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.TabManager;
 import hu.montlikadani.tablist.tablist.fakeplayers.FakePlayerHandler;
 import hu.montlikadani.tablist.tablist.groups.Groups;
@@ -87,6 +88,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		// Load static references
 		try {
 			Class.forName("hu.montlikadani.tablist.packets.PacketNM");
+			Class.forName("hu.montlikadani.tablist.packets.PacketReceivingListeners");
 		} catch (ClassNotFoundException e) {
 		}
 		hu.montlikadani.tablist.api.TabListAPI.getTPS();
@@ -239,10 +241,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				}
 			}
 		}
-
-		if (isPluginEnabled("ProtocolLib")) {
-			ProtocolPackets.onSpectatorChange();
-		}
 	}
 
 	public void reload() {
@@ -381,6 +379,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			groups.startTask();
 		}
 
+		PacketNM.NMS_PACKET.addPlayerChannelListener(player);
+
 		if (ConfigValues.isHidePlayersFromTab()) {
 			user.removeFromPlayerList();
 		} else {
@@ -424,6 +424,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				break;
 			}
 		}
+
+		PacketNM.NMS_PACKET.removePlayerChannelListener(player);
 	}
 
 	private boolean printed = false;

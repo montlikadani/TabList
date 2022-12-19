@@ -16,7 +16,6 @@ repositories {
 	maven("https://repo.codemc.org/repository/maven-public")
 	maven("https://oss.sonatype.org/content/repositories/snapshots")
 	maven("https://libraries.minecraft.net/")
-	maven("https://repo.dmulloy2.net/nexus/repository/public/")
 	maven("https://repo.essentialsx.net/snapshots/")
 	maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
 }
@@ -26,7 +25,6 @@ dependencies {
 	implementation("com.github.xtomyserrax:StaffFacilities:5.0.8")
 	implementation("org.bstats:bstats-bukkit:3.0.0")
 	paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19.3-R0.1-SNAPSHOT")
-	compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
 	compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8 so we must use this
 	compileOnly("org.purpurmc.purpur:purpur-api:1.19.3-R0.1-SNAPSHOT")
 

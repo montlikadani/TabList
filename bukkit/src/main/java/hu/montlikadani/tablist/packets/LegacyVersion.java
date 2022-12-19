@@ -70,6 +70,14 @@ public final class LegacyVersion implements IPacketNM {
 		return null;
 	}
 
+	@Override
+	public void addPlayerChannelListener(Player player) {
+	}
+
+	@Override
+	public void removePlayerChannelListener(Player player) {
+	}
+
 	private Object getServer(Class<?> server) {
 		if (getServerMethod == null) {
 			try {

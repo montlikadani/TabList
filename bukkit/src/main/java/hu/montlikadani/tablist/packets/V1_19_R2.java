@@ -2,6 +2,7 @@ package hu.montlikadani.tablist.packets;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.UUID;
 
 import org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -9,8 +10,10 @@ import org.bukkit.scoreboard.Team;
 
 import com.mojang.authlib.GameProfile;
 
+import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
+import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
@@ -21,6 +24,7 @@ import net.minecraft.network.protocol.game.ClientboundTabListPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ServerScoreboard;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
 import net.minecraft.world.scores.criteria.ObjectiveCriteria;
@@ -32,6 +36,28 @@ public final class V1_19_R2 implements IPacketNM {
 	@Override
 	public void sendPacket(Player player, Object packet) {
 		getPlayerHandle(player).connection.send((Packet<?>) packet);
+	}
+
+	@Override
+	public void addPlayerChannelListener(Player player) {
+		if (!ConfigValues.isRemoveGrayColorFromTabInSpec() && !ConfigValues.isHidePlayersFromTab()) {
+			return;
+		}
+
+		ServerPlayer serverPlayer = (ServerPlayer) PacketNM.NMS_PACKET.getPlayerHandle(player);
+
+		if (serverPlayer.connection.connection.channel.pipeline().get("PacketInjector") == null) {
+			serverPlayer.connection.connection.channel.pipeline().addBefore("packet_handler", "PacketInjector", new PacketReceivingListener(serverPlayer.getUUID()));
+		}
+	}
+
+	@Override
+	public void removePlayerChannelListener(Player player) {
+		ServerPlayer serverPlayer = (ServerPlayer) PacketNM.NMS_PACKET.getPlayerHandle(player);
+
+		if (serverPlayer.connection.connection.channel.pipeline().get("PacketInjector") != null) {
+			serverPlayer.connection.connection.channel.pipeline().remove("PacketInjector");
+		}
 	}
 
 	@Override
@@ -109,9 +135,8 @@ public final class V1_19_R2 implements IPacketNM {
 
 	@Override
 	public Object newPlayerInfoUpdatePacketAdd(Object entityPlayer) {
-		return new ClientboundPlayerInfoUpdatePacket(
-				java.util.EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER, ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED,
-						ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY),
+		return new ClientboundPlayerInfoUpdatePacket(java.util.EnumSet.of(ClientboundPlayerInfoUpdatePacket.Action.ADD_PLAYER,
+				ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LISTED, ClientboundPlayerInfoUpdatePacket.Action.UPDATE_LATENCY),
 				Collections.singletonList((ServerPlayer) entityPlayer));
 	}
 
@@ -132,24 +157,27 @@ public final class V1_19_R2 implements IPacketNM {
 		ClientboundPlayerInfoUpdatePacket update = (ClientboundPlayerInfoUpdatePacket) info;
 
 		for (ClientboundPlayerInfoUpdatePacket.Entry playerInfo : update.entries()) {
-			if (!playerInfo.profileId().equals(id)) {
-				continue;
+			if (playerInfo.profileId().equals(id)) {
+				setEntriesField(update, () -> new ClientboundPlayerInfoUpdatePacket.Entry(playerInfo.profileId(), playerInfo.profile(), playerInfo.listed(),
+						ping == -2 ? playerInfo.latency() : ping, playerInfo.gameMode(), (Component) component, playerInfo.chatSession()));
+				break;
+			}
+		}
+	}
+
+	private void setEntriesField(ClientboundPlayerInfoUpdatePacket playerInfoPacket, java.util.function.Supplier<ClientboundPlayerInfoUpdatePacket.Entry> supplier) {
+		try {
+			ClientboundPlayerInfoUpdatePacket.Entry entry = supplier.get();
+
+			// Entries list is immutable, so use reflection to bypass
+			if (entriesField == null) {
+				entriesField = playerInfoPacket.getClass().getDeclaredField("b");
+				entriesField.setAccessible(true);
 			}
 
-			try {
-				// Entries list is immutable, so use reflection to bypass
-				if (entriesField == null) {
-					entriesField = update.getClass().getDeclaredField("b");
-					entriesField.setAccessible(true);
-				}
-
-				entriesField.set(update, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.Entry(playerInfo.profileId(), playerInfo.profile(), playerInfo.listed(),
-						ping == -2 ? playerInfo.latency() : ping, playerInfo.gameMode(), (Component) component, playerInfo.chatSession())));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-
-			break;
+			entriesField.set(playerInfoPacket, Collections.singletonList(entry));
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -166,7 +194,7 @@ public final class V1_19_R2 implements IPacketNM {
 			return null;
 		}
 
-		if (hu.montlikadani.tablist.config.constantsLoader.ConfigValues.isFollowNameTagVisibility()) {
+		if (ConfigValues.isFollowNameTagVisibility()) {
 			net.minecraft.world.scores.Team.Visibility visibility = null;
 
 			for (Team team : player.getScoreboard().getTeams()) {
@@ -244,5 +272,41 @@ public final class V1_19_R2 implements IPacketNM {
 	@Override
 	public Object createScoreboardHealthObjectivePacket(String objectiveName, Object nameComponent) {
 		return new Objective(null, objectiveName, ObjectiveCriteria.DUMMY, (Component) nameComponent, ObjectiveCriteria.RenderType.HEARTS);
+	}
+
+	private final class PacketReceivingListener extends io.netty.channel.ChannelDuplexHandler {
+
+		private final UUID listenerPlayerId;
+
+		public PacketReceivingListener(UUID listenerPlayerId) {
+			this.listenerPlayerId = listenerPlayerId;
+		}
+
+		@Override
+		public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
+			if (ConfigValues.isRemoveGrayColorFromTabInSpec() && msg.getClass() == ClientboundPlayerInfoUpdatePacket.class) {
+				ClientboundPlayerInfoUpdatePacket playerInfoPacket = (ClientboundPlayerInfoUpdatePacket) msg;
+
+				if (playerInfoPacket.actions().contains(ClientboundPlayerInfoUpdatePacket.Action.UPDATE_GAME_MODE)) {
+					java.util.ListIterator<ClientboundPlayerInfoUpdatePacket.Entry> entryListIterator = playerInfoPacket.entries().listIterator();
+
+					while (entryListIterator.hasNext()) {
+						ClientboundPlayerInfoUpdatePacket.Entry entry = entryListIterator.next();
+
+						if (entry.gameMode() == GameType.SPECTATOR && !entry.profileId().equals(listenerPlayerId)) {
+							setEntriesField(playerInfoPacket, () -> new ClientboundPlayerInfoUpdatePacket.Entry(entry.profileId(), entry.profile(), entry.listed(), entry.latency(),
+									GameType.CREATIVE, entry.displayName(), entry.chatSession()));
+						}
+					}
+				}
+			}
+
+			super.write(ctx, msg, promise);
+		}
+
+		@Override
+		public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+			super.channelRead(ctx, msg);
+		}
 	}
 }

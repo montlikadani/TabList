@@ -10,6 +10,10 @@ public interface IPacketNM {
 
 	void sendPacket(Player player, Object packet);
 
+	void addPlayerChannelListener(Player player);
+
+	void removePlayerChannelListener(Player player);
+
 	Object getPlayerHandle(Player player);
 
 	Object fromJson(String json);
