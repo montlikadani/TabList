@@ -278,12 +278,7 @@ public final class GroupPlayer {
 
 		boolean containsWorld = ConfigValues.getGroupsDisabledWorlds().indexOf(player.getWorld().getName()) != -1;
 
-		if (((ConfigValues.isUseDisabledWorldsAsWhiteList() && !containsWorld)
-				|| (!ConfigValues.isUseDisabledWorldsAsWhiteList() && containsWorld))) {
-			return false;
-		}
-
-		return true;
+		return (!ConfigValues.isUseDisabledWorldsAsWhiteList() || containsWorld) && (ConfigValues.isUseDisabledWorldsAsWhiteList() || !containsWorld);
 	}
 
 	private TabText fullName;

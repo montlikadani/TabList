@@ -1,19 +1,19 @@
 package hu.montlikadani.tablist.tablist;
 
-import java.util.Random;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
-
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.PluginUtils;
 import hu.montlikadani.tablist.utils.StrUtil;
+import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 import hu.montlikadani.tablist.utils.variables.Variables;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.PermissionDefault;
+
+import java.util.Random;
 
 public class TabHandler {
 
@@ -198,7 +198,7 @@ public class TabHandler {
 
 	public void sendEmptyTab(Player player) {
 		if (player != null && !tabEmpty) { // Only send it once to allow other plugins to overwrite tablist
-			PacketNM.NMS_PACKET.sendTabTitle(player, TabText.EMPTY, TabText.EMPTY);
+			PacketNM.NMS_PACKET.sendTabTitle(player, ReflectionUtils.EMPTY_COMPONENT, ReflectionUtils.EMPTY_COMPONENT);
 			tabEmpty = true;
 		}
 	}
@@ -260,13 +260,13 @@ public class TabHandler {
 		final Variables v = plugin.getPlaceholders();
 
 		if (!worldEnabled) {
-			PacketNM.NMS_PACKET.sendTabTitle(player, v.replaceVariables(player, he), v.replaceVariables(player, fo));
+			PacketNM.NMS_PACKET.sendTabTitle(player, v.replaceVariables(player, he).toComponent(), v.replaceVariables(player, fo).toComponent());
 			return;
 		}
 
 		if (worldList.isEmpty()) {
 			for (Player all : player.getWorld().getPlayers()) {
-				PacketNM.NMS_PACKET.sendTabTitle(all, v.replaceVariables(all, new TabText(he)), v.replaceVariables(all, new TabText(fo)));
+				PacketNM.NMS_PACKET.sendTabTitle(all, v.replaceVariables(all, new TabText(he)).toComponent(), v.replaceVariables(all, new TabText(fo)).toComponent());
 			}
 
 			return;
@@ -277,7 +277,7 @@ public class TabHandler {
 		for (String l : worldList) {
 			if ((world = plugin.getServer().getWorld(l)) != null) {
 				for (Player all : world.getPlayers()) {
-					PacketNM.NMS_PACKET.sendTabTitle(all, v.replaceVariables(all, new TabText(he)), v.replaceVariables(all, new TabText(fo)));
+					PacketNM.NMS_PACKET.sendTabTitle(all, v.replaceVariables(all, new TabText(he)).toComponent(), v.replaceVariables(all, new TabText(fo)).toComponent());
 				}
 			}
 		}

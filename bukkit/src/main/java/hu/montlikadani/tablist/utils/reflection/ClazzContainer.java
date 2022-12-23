@@ -5,6 +5,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import hu.montlikadani.tablist.utils.ServerVersion;
+import static hu.montlikadani.tablist.utils.reflection.ReflectionUtils.classByName;
 
 public final class ClazzContainer {
 
@@ -249,14 +250,6 @@ public final class ClazzContainer {
 	}
 
 	private ClazzContainer() {
-	}
-
-	public static Class<?> classByName(String newPackageName, String name) throws ClassNotFoundException {
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
-			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
-		}
-
-		return Class.forName(newPackageName + "." + name);
 	}
 
 	private static Field getFieldByType(Class<?> from, Class<?> type) {

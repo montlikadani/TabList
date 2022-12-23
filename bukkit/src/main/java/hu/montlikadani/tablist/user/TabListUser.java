@@ -1,7 +1,7 @@
 package hu.montlikadani.tablist.user;
 
 /**
- * The interface which holds the users recognised by TabList resource.
+ * The interface which holds users tablist information
  */
 public interface TabListUser {
 

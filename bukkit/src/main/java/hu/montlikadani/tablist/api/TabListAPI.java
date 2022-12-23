@@ -85,7 +85,7 @@ public final class TabListAPI {
 	 */
 	public static void sendTabList(Player p, String header, String footer) {
 		if (p != null) {
-			PacketNM.NMS_PACKET.sendTabTitle(p, TabText.parseFromText(header), TabText.parseFromText(footer));
+			PacketNM.NMS_PACKET.sendTabTitle(p, TabText.parseFromText(header).toComponent(), TabText.parseFromText(footer).toComponent());
 		}
 	}
 
@@ -96,8 +96,8 @@ public final class TabListAPI {
 	 * @param footer the footer to display
 	 */
 	public static void sendTabList(String header, String footer) {
-		TabText head = TabText.parseFromText(header);
-		TabText foot = TabText.parseFromText(footer);
+		Object head = TabText.parseFromText(header).toComponent();
+		Object foot = TabText.parseFromText(footer).toComponent();
 
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendTabTitle(player, head, foot);
@@ -116,7 +116,7 @@ public final class TabListAPI {
 		}
 
 		try {
-			Object entityPlayer = ((hu.montlikadani.tablist.packets.LegacyVersion) hu.montlikadani.tablist.packets.PacketNM.NMS_PACKET).getPlayerHandle(player);
+			Object entityPlayer = PacketNM.NMS_PACKET.getPlayerHandle(player);
 
 			if (pingField == null) {
 				(pingField = entityPlayer.getClass().getField("ping")).setAccessible(true);

@@ -1,63 +1,91 @@
 plugins {
-	id("com.github.johnrengelman.shadow") version "7.0.0"
-	id("io.papermc.paperweight.userdev") version "1.4.1-SNAPSHOT"
-	id("java-library")
+    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("java-library")
 }
 
 java {
-	sourceCompatibility = JavaVersion.VERSION_1_8
-	targetCompatibility = JavaVersion.VERSION_1_8
-	disableAutoTargetJvm()
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    disableAutoTargetJvm()
 }
 
 repositories {
-	maven("https://repo.purpurmc.org/snapshots")
-	maven("https://jitpack.io")
-	maven("https://repo.codemc.org/repository/maven-public")
-	maven("https://oss.sonatype.org/content/repositories/snapshots")
-	maven("https://libraries.minecraft.net/")
-	maven("https://repo.essentialsx.net/snapshots/")
-	maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    maven("https://repo.purpurmc.org/snapshots")
+    maven("https://repo.codemc.org/repository/maven-public")
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
+    maven("https://libraries.minecraft.net/")
+    maven("https://repo.essentialsx.net/snapshots/")
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    maven("https://jitpack.io")
 }
+
+val nmsProjects = setOf("1_8_R3", "1_19_R2")
 
 dependencies {
-	implementation(project(":global"))
-	implementation("com.github.xtomyserrax:StaffFacilities:5.0.8")
-	implementation("org.bstats:bstats-bukkit:3.0.0")
-	paperweightDevelopmentBundle("io.papermc.paper:dev-bundle:1.19.3-R0.1-SNAPSHOT")
-	compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8 so we must use this
-	compileOnly("org.purpurmc.purpur:purpur-api:1.19.3-R0.1-SNAPSHOT")
+    implementation(project(":global"))
+    api(project(":api"))
 
-	compileOnly("net.essentialsx:EssentialsX:2.20.0-SNAPSHOT") {
-		exclude("org.spigotmc", "spigot-api")
-	}
+    nmsProjects.forEach {
+        api(project(":v$it"))
+    }
 
-	compileOnly("me.clip:placeholderapi:2.11.2")
+    implementation("org.bstats:bstats-bukkit:3.0.0")
 
-	compileOnly("com.github.MilkBowl:VaultAPI:1.7.1") {
-		exclude("org.bukkit", "bukkit")
-	}
+    compileOnly("com.github.xtomyserrax:StaffFacilities:5.0.8")
+    compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8 so we must use this
+    compileOnly("org.purpurmc.purpur:purpur-api:1.19.3-R0.1-SNAPSHOT") {
+        exclude("junit", "junit")
+    }
 
-	compileOnly("com.github.LeonMangler:SuperVanish:6.2.12")
-	compileOnly(files("lib/CMI9.0.0.0API.jar", "lib/PermissionsEx-1.23.4.jar"))
+    compileOnly("net.essentialsx:EssentialsX:2.20.0-SNAPSHOT") {
+        isTransitive = false
+    }
+
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7.1") {
+        exclude(group = "org.bukkit")
+    }
+
+    compileOnly("me.clip:placeholderapi:2.11.2") {
+        isTransitive = false
+    }
+
+    compileOnly("com.github.LeonMangler:SuperVanish:6.2.12") {
+        isTransitive = false
+    }
+
+    compileOnly(files("lib/CMI9.0.0.0API.jar", "lib/PermissionsEx-1.23.4.jar"))
 }
 
+group = "hu.montlikadani.tablist"
 version = "5.6.6"
 
 tasks {
-	withType<JavaCompile> {
-		options.encoding = "UTF-8"
-	}
-	jar {
-		archiveClassifier.set("noshade")
-	}
-	shadowJar {
-		archiveClassifier.set("")
-		//archiveFileName.set("TabList-bukkit-v${project.version}.jar") // idk why this doesn't includes deps, in bungee it includes
-		relocate("org.bstats", "hu.montlikadani.tablist.bstats")
-		exclude("META-INF/**")
-	}
-	build {
-		dependsOn(shadowJar, reobfJar)
-	}
+    withType<JavaCompile> {
+        options.encoding = "UTF-8"
+    }
+    jar {
+        archiveClassifier.set("noshade")
+    }
+    shadowJar {
+        archiveClassifier.set("")
+        archiveFileName.set("TabList-bukkit-v${project.version}.jar")
+        includeEmptyDirs = false
+
+        dependencies {
+            nmsProjects.forEach {
+                include(project(":v$it"))
+            }
+
+            include(project(":api"))
+            include(project(":global"))
+            include(dependency("org.bstats::"))
+        }
+
+        relocate("org.bstats", "${project.group}.lib.bstats")
+
+        minimize()
+    }
+    build {
+        dependsOn(shadowJar)
+    }
 }

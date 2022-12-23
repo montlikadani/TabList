@@ -21,7 +21,7 @@ public final class HidePlayerListener {
 				if (event.getNewGameMode() == GameMode.SPECTATOR || event.getPlayer().getGameMode() == GameMode.SPECTATOR) {
 					org.bukkit.entity.Player player = event.getPlayer();
 
-					tl.getUser(player.getUniqueId()).filter(user -> user.isRemovedFromPlayerList()).ifPresent(user -> PacketNM.NMS_PACKET.appendPlayer(player));
+					tl.getUser(player.getUniqueId()).filter(user -> user.isRemovedFromPlayerList()).ifPresent(user -> PacketNM.NMS_PACKET.appendPlayerWithoutListed(player));
 				}
 			}
 		}, tl);

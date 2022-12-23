@@ -100,7 +100,7 @@ public class TabListPlayer implements TabListUser {
 	@Override
 	public void removeFromPlayerList() {
 		if (hidePlayers == null) {
-			hidePlayers = new HidePlayers(plugin, uniqueId);
+			hidePlayers = new HidePlayers(uniqueId);
 			hidePlayers.removePlayerFromTab();
 		}
 	}

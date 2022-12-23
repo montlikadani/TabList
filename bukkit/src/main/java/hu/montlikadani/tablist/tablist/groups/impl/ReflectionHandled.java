@@ -1,6 +1,7 @@
 package hu.montlikadani.tablist.tablist.groups.impl;
 
 import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.groups.GroupPlayer;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
@@ -31,7 +32,7 @@ public class ReflectionHandled {
 			return;
 		}
 
-		packetTeam = PacketNM.NMS_PACKET.createBoardTeam(groupPlayer.getFullGroupTeamName(), player);
+		packetTeam = PacketNM.NMS_PACKET.createBoardTeam(ReflectionUtils.asComponent(groupPlayer.getFullGroupTeamName()), player, ConfigValues.isFollowNameTagVisibility());
 
 		for (Player pl : tl.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(pl, packetTeam);
@@ -82,12 +83,7 @@ public class ReflectionHandled {
 
 		Object updatePacket = PacketNM.NMS_PACKET.updateDisplayNamePacket(PacketNM.NMS_PACKET.getPlayerHandle(player), null, false);
 
-		try {
-			PacketNM.NMS_PACKET.setInfoData(updatePacket, groupPlayer.getUser().getUniqueId(), -2, ReflectionUtils.asComponent(groupPlayer.getTabNameWithPrefixSuffix()));
-		} catch (Exception e) {
-			e.printStackTrace();
-			return;
-		}
+		PacketNM.NMS_PACKET.setInfoData(updatePacket, groupPlayer.getUser().getUniqueId(), -2, groupPlayer.getTabNameWithPrefixSuffix().toComponent());
 
 		for (Player pl : tl.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(pl, updatePacket);

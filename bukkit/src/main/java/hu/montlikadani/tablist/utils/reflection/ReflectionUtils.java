@@ -1,10 +1,10 @@
 package hu.montlikadani.tablist.utils.reflection;
 
-import java.lang.reflect.Method;
-import java.util.concurrent.locks.ReentrantLock;
-
 import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.utils.ServerVersion;
+
+import java.lang.reflect.Method;
+import java.util.concurrent.locks.ReentrantLock;
 
 public final class ReflectionUtils {
 
@@ -21,20 +21,10 @@ public final class ReflectionUtils {
 			LOCK = new ReentrantLock();
 		}
 
-		EMPTY_COMPONENT = emptyComponent();
+		EMPTY_COMPONENT = asComponent("");
 	}
 
 	private ReflectionUtils() {
-	}
-
-	private static Object emptyComponent() {
-		try {
-			return asComponent("");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return null;
 	}
 
 	public static Method jsonComponentMethod() {
@@ -66,7 +56,15 @@ public final class ReflectionUtils {
 		return jsonComponent;
 	}
 
-	public static Object asComponent(TabText text) throws Exception {
+	public static Class<?> classByName(String newPackageName, String name) throws ClassNotFoundException {
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
+			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
+		}
+
+		return Class.forName(newPackageName + "." + name);
+	}
+
+	public static Object asComponent(TabText text) {
 		if (text.getJsonElements().isEmpty()) {
 			return asComponent(text.getPlainText());
 		}
@@ -135,14 +133,20 @@ public final class ReflectionUtils {
 			result.append("{\"text\":\"" + plainText + "\"}");
 		}
 
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
-			return asChatSerializer(result.toString());
+		try {
+			if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
+				return asChatSerializer(result.toString());
+			}
+
+			return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), result.toString());
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
-		return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), result.toString());
+		return null;
 	}
 
-	public static Object asComponent(final String text) throws Exception {
+	public static Object asComponent(final String text) {
 		if (LOCK != null) {
 			LOCK.lock();
 
@@ -156,11 +160,17 @@ public final class ReflectionUtils {
 			return component;
 		}
 
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
-			return asChatSerializer("{\"text\":\"" + text + "\"}");
+		try {
+			if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
+				return asChatSerializer("{\"text\":\"" + text + "\"}");
+			}
+
+			return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), "{\"text\":\"" + text + "\"}");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
-		return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), "{\"text\":\"" + text + "\"}");
+		return null;
 	}
 
 	private static Object asChatSerializer(String json) throws Exception {

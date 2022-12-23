@@ -1,10 +1,11 @@
 package hu.montlikadani.tablist.tablist;
 
+import hu.montlikadani.tablist.utils.reflection.JsonComponent;
+import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
+
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-
-import hu.montlikadani.tablist.utils.reflection.JsonComponent;
 
 /**
  * The class which holds both plain text and json texts to append somewhere.
@@ -61,6 +62,15 @@ public final class TabText {
 		TabText tabText = new TabText();
 		tabText.updateText(from);
 		return tabText;
+	}
+
+	/**
+	 * Parses this tabText into NMS component to append in tablist.
+	 * 
+	 * @return the component object (can be IChatBaseComponent), or null if {@link #EMPTY}
+	 */
+	public Object toComponent() {
+		return this == EMPTY ? null : ReflectionUtils.asComponent(this);
 	}
 
 	/**

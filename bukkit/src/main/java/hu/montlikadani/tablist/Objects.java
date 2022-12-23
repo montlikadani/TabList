@@ -111,16 +111,6 @@ public final class Objects {
 
 					// Where to display, 0 - PlayerList
 					PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.scoreboardDisplayObjectivePacket(objectiveInstance, 0));
-
-					// Update ping score for fake players if set
-					if (type == ObjectTypes.PING) {
-						for (IFakePlayer fakePlayer : plugin.getFakePlayerHandler().fakePlayers) {
-							if (fakePlayer.getPingLatency() > 0) {
-								PacketNM.NMS_PACKET.sendPacket(player,
-										PacketNM.NMS_PACKET.changeScoreboardScorePacket(type.objectName, fakePlayer.getName(), fakePlayer.getPingLatency()));
-							}
-						}
-					}
 				} else {
 					Scoreboard board = player.getScoreboard();
 					Objective object = board.getObjective(type.objectName);
@@ -134,8 +124,16 @@ public final class Objects {
 					if (type == ObjectTypes.PING) {
 						object.setDisplayName("ms");
 					}
+				}
 
-					// TODO update scores in legacy versions for fake players
+				// Update ping score for fake players if set
+				if (type == ObjectTypes.PING) {
+					for (IFakePlayer fakePlayer : plugin.getFakePlayerHandler().fakePlayers) {
+						if (fakePlayer.getPingLatency() > 0) {
+							PacketNM.NMS_PACKET.sendPacket(player,
+									PacketNM.NMS_PACKET.changeScoreboardScorePacket(type.objectName, fakePlayer.getName(), fakePlayer.getPingLatency()));
+						}
+					}
 				}
 
 				user.getPlayerScore().setObjectiveCreated();
@@ -190,11 +188,8 @@ public final class Objects {
 
 	private int parsePapi(Player player, String from) {
 		if (plugin.hasPapi()) {
-			String result = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, from);
-			result = StrUtil.getNumberEscapeSequence().matcher(result).replaceAll("");
-
 			try {
-				return Integer.parseInt(result);
+				return Integer.parseInt(StrUtil.getNumberEscapeSequence().matcher(me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, from)).replaceAll(""));
 			} catch (NumberFormatException e) {
 				hu.montlikadani.tablist.utils.Util.logConsole("Invalid custom objective with " + ConfigValues.getCustomObjectSetting() + " value.");
 			}
@@ -273,10 +268,7 @@ public final class Objects {
 			}
 
 			if (needChatBaseComponent) {
-				try {
-					chatBaseComponent = hu.montlikadani.tablist.utils.reflection.ReflectionUtils.asComponent(objectName);
-				} catch (Exception e) {
-				}
+				chatBaseComponent = hu.montlikadani.tablist.utils.reflection.ReflectionUtils.asComponent(objectName);
 			}
 
 			this.objectName = objectName;

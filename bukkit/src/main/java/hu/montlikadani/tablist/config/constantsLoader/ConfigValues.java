@@ -14,23 +14,20 @@ import hu.montlikadani.tablist.config.CommentedConfig;
 
 public final class ConfigValues {
 
-	private static boolean logConsole = true, placeholderAPI, perWorldPlayerList, fakePlayers, countFakePlayersToOnlinePlayers,
-			removeGrayColorFromTabInSpec, ignoreVanishedPlayers, countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab,
-			afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast,
-			pingFormatEnabled, tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups,
-			hideGroupInVanish, preferPrimaryVaultGroup, assignGlobalGroup, followNameTagVisibility;
+	private static boolean logConsole = true, placeholderAPI, perWorldPlayerList, fakePlayers, countFakePlayersToOnlinePlayers, removeGrayColorFromTabInSpec, ignoreVanishedPlayers,
+			countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, pingFormatEnabled,
+			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish, preferPrimaryVaultGroup, assignGlobalGroup,
+			followNameTagVisibility;
 
 	private static TimeZone timeZone;
 
-	private static String afkFormatYes, afkFormatNo, customObjectSetting, memoryBarChar, memoryBarUsedColor,
-			memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
+	private static String afkFormatYes, afkFormatNo, customObjectSetting, memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
 
 	private static DateTimeFormatter timeFormat, dateFormat;
 
 	private static Objects.ObjectTypes objectType = Objects.ObjectTypes.PING;
 
-	private static List<String> tpsColorFormats, pingColorFormats, groupsDisabledWorlds, healthObjectRestricted,
-			objectsDisabledWorlds;
+	private static List<String> tpsColorFormats, pingColorFormats, groupsDisabledWorlds, healthObjectRestricted, objectsDisabledWorlds;
 
 	private static int tpsDigits, groupsRefreshInterval, objectRefreshInterval, memoryBarSize;
 
@@ -51,34 +48,24 @@ public final class ConfigValues {
 		PER_WORLD_LIST_NAMES.clear();
 
 		c.addComment("hook.placeholderapi", "Hook to PlaceholderAPI to use custom placeholders.");
-		c.addComment("tps-performance-observation-value",
-				"This option monitors server performance. If the server's TPS is less than the set value,",
+		c.addComment("tps-performance-observation-value", "This option monitors server performance. If the server's TPS is less than the set value,",
 				"TabList will cancels all currently running schedulers to improve server performance.",
 				"TabList will not restart these schedulers (ie animations, group updates, etc.),",
 				"so you have to do it manually, by reconnecting to the server or by reloading the plugin.",
-				"At values below 8-5, TabList is almost unable to stop its own running processes,",
-				"as the server is already under a very heavy load.", "The values should be between 5-18",
-				"If the value is below 5 or above 18, the default value will be 16.0", "To disable this feature set to -1");
+				"At values below 8-5, TabList is almost unable to stop its own running processes,", "as the server is already under a very heavy load.",
+				"The values should be between 5-18", "If the value is below 5 or above 18, the default value will be 16.0", "To disable this feature set to -1");
 
 		c.addComment("fake-players", "Fake players that can be added to the player list.");
-		c.addComment("fake-players.count-fake-players-to-online-players",
-				"Do we count the added fake players to the %online-players% placeholder?");
-		c.addComment("remove-gray-color-from-tab-in-spectator",
-				"If enabled, the gray color will not appear to other players when the player's game mode is spectator.",
+		c.addComment("fake-players.count-fake-players-to-online-players", "Do we count the added fake players to the %online-players% placeholder?");
+		c.addComment("remove-gray-color-from-tab-in-spectator", "If enabled, the gray color will not appear to other players when the player's game mode is spectator.",
 				"The gray color will only show for the spectator player.");
-		c.addComment("ignore-vanished-players-in-online-players",
-				"true - does not count vanished players in %online-players% placeholder.",
+		c.addComment("ignore-vanished-players-in-online-players", "true - does not count vanished players in %online-players% placeholder.",
 				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!");
-		c.addComment("count-vanished-staffs", "true - count vanished staff in %staff-online% placeholder,",
-				"but they need to have \"tablist.onlinestaff\" permission set.",
-				"false - does not count vanished staff in the %staff-online% placeholder",
-				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!");
-		c.addComment("hide-player-from-tab-when-afk", "Hide player from player list when a player is AFK?",
-				"Requires Essentials or CMI plugin!");
-		c.addComment("hide-players-from-tablist", "Hide all players from the player list?",
-				"This removes all players from the player list, but the player that has the",
-				"group set is retained as it is not changed during removal, so your group",
-				"will be restored if this option is disabled.");
+		c.addComment("count-vanished-staffs", "true - count vanished staff in %staff-online% placeholder,", "but they need to have \"tablist.onlinestaff\" permission set.",
+				"false - does not count vanished staff in the %staff-online% placeholder", "Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!");
+		c.addComment("hide-player-from-tab-when-afk", "Hide player from player list when a player is AFK?", "Requires Essentials or CMI plugin!");
+		c.addComment("hide-players-from-tablist", "Hide all players from the player list?", "This removes all players from the player list, but the player that has the",
+				"group set is retained as it is not changed during removal, so your group", "will be restored if this option is disabled.");
 
 		c.addComment("per-world-player-list", "Different player list in different world.");
 		c.addComment("per-world-player-list.world-groups", "You can specify worlds, which will share the same list of players");
@@ -86,77 +73,58 @@ public final class ConfigValues {
 
 		c.addComment("placeholder-format", "Placeholders formatting");
 		c.addComment("placeholder-format.afk-status", "When the player changes the AFK status, change his tablist name format?");
-		c.addComment("placeholder-format.afk-status.show-in-right-or-left-side",
-				"Should the AFK format display in right or left side?", "true - displays in right side",
+		c.addComment("placeholder-format.afk-status.show-in-right-or-left-side", "Should the AFK format display in right or left side?", "true - displays in right side",
 				"false - displays in left side");
 		c.addComment("placeholder-format.afk-status.show-player-group", "Show player's group if the player is AFK?");
 		c.addComment("placeholder-format.afk-status.format-yes", "Format when the player is AFK.");
 		c.addComment("placeholder-format.afk-status.format-no", "Format when the player is not AFK.");
 		c.addComment("placeholder-format.afk-status.sort-last", "Sort AFK players to the bottom of the player list?");
-		c.addComment("placeholder-format.time.time-zone",
-				"Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/",
+		c.addComment("placeholder-format.time.time-zone", "Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/",
 				"Or google it: \"what is my time zone\"");
 		c.addComment("placeholder-format.time.use-system-zone", "Use system default time zone instead of searching for that?");
-		c.addComment("placeholder-format.time.time-format",
-				"Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html",
+		c.addComment("placeholder-format.time.time-format", "Formats/examples: https://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html",
 				"Format of %server-time% placeholder.");
 		c.addComment("placeholder-format.time.date-format", "Format of %date% placeholder.");
 		c.addComment("placeholder-format.ping", "Ping color format for %ping% placeholder.");
 		c.addComment("placeholder-format.ping.formats", "https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
 		c.addComment("placeholder-format.tps", "TPS color format for %tps% placeholder.");
 		c.addComment("placeholder-format.tps.formats", "https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
-		c.addComment("placeholder-format.tps.size", "How many numbers do you want to display after \".\" in %tps% placeholder?",
-				"The number should be higher than 0.", "Example: 3 = 19.14");
-		c.addComment("placeholder-format.memory-bar", "Memory bar settings for %memory_bar% variable");
-		c.addComment("placeholder-format.memory-bar.colors.allocation", "When the server memory less than 80");
-		c.addComment("placeholder-format.memory-bar.colors.released",
-				"When the server memory is on critical level (less than 40) and some resource need memory to run.");
+		c.addComment("placeholder-format.tps.size", "How many numbers do you want to display after \".\" in %tps% placeholder?", "The number should be higher than 0.",
+				"Example: 3 = 19.14");
 
 		c.addComment("change-prefix-suffix-in-tablist", "Enable changing of prefix & suffix in player list?");
-		c.addComment("change-prefix-suffix-in-tablist.refresh-interval", "Refresh interval in server ticks.",
-				"Set to 0 if you don't want to refresh the groups.",
+		c.addComment("change-prefix-suffix-in-tablist.refresh-interval", "Refresh interval in server ticks.", "Set to 0 if you don't want to refresh the groups.",
 				"If 0, then you will need to execute the /tl reload command to refresh the groups.");
 		c.addComment("change-prefix-suffix-in-tablist.disabled-worlds", "Disable groups in these worlds.");
 		c.addComment("change-prefix-suffix-in-tablist.disabled-worlds.use-as-whitelist", "Use the list as whitelist?");
-		c.addComment("change-prefix-suffix-in-tablist.sync-plugins-groups-with-tablist",
-				"Automatically add groups from another plugins to the tablist groups.yml on every reload?",
+		c.addComment("change-prefix-suffix-in-tablist.sync-plugins-groups-with-tablist", "Automatically add groups from another plugins to the tablist groups.yml on every reload?",
 				"If a plugin does not support Vault, it will not be added.");
-		c.addComment("change-prefix-suffix-in-tablist.hide-group-when-player-vanished",
-				"Hide player's group in player list when the player is vanished?",
+		c.addComment("change-prefix-suffix-in-tablist.hide-group-when-player-vanished", "Hide player's group in player list when the player is vanished?",
 				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!");
-		c.addComment("change-prefix-suffix-in-tablist.assign-global-group-to-normal",
-				"Do you want to assign global group to normal groups?", "true - \"globalGroupPrefix + normalGroupPrefix\"",
-				"false - \"normalGroupPrefix\"");
-		c.addComment("change-prefix-suffix-in-tablist.prefer-primary-vault-group",
-				"Prefer player's primary Vault group when assigning tablist group from groups.yml?",
-				"true - player will be assigned their primary vault group where possible",
-				"false - applies the group that has the higher priority in the permission plugin");
-		c.addComment("change-prefix-suffix-in-tablist.followNameTagVisibility",
-				"Follow the name tag visibility for players to show the name tag above player or not,",
+		c.addComment("change-prefix-suffix-in-tablist.assign-global-group-to-normal", "Do you want to assign global group to normal groups?",
+				"true - \"globalGroupPrefix + normalGroupPrefix\"", "false - \"normalGroupPrefix\"");
+		c.addComment("change-prefix-suffix-in-tablist.prefer-primary-vault-group", "Prefer player's primary Vault group when assigning tablist group from groups.yml?",
+				"true - player will be assigned their primary vault group where possible", "false - applies the group that has the higher priority in the permission plugin");
+		c.addComment("change-prefix-suffix-in-tablist.followNameTagVisibility", "Follow the name tag visibility for players to show the name tag above player or not,",
 				"depending if a scoreboard team with visibility 'hidden' is exist.",
 				"true - Follows the name tag visibility and hides if there is a scoreboard team created with visibility 'hidden'",
 				"false - Always shows the name tag above player");
 
-		c.addComment("tablist-object-type", "Tablist objective types",
-				"Shows your current health (with life indicator), your current ping or any NUMBER placeholder",
+		c.addComment("tablist-object-type", "Tablist objective types", "Shows your current health (with life indicator), your current ping or any NUMBER placeholder",
 				"after the player's name (before the ping indicator).");
-		c.addComment("tablist-object-type.type", "Types:", "none - disables tablist objects", "ping - player's ping",
-				"health - player's health", "custom - custom placeholder");
+		c.addComment("tablist-object-type.type", "Types:", "none - disables tablist objects", "ping - player's ping", "health - player's health", "custom - custom placeholder");
 		c.addComment("tablist-object-type.refresh-interval", "How often should it refresh the values in seconds?");
 		c.addComment("tablist-object-type.disabled-worlds", "In these worlds the objects will not be displayed");
-		c.addComment("tablist-object-type.object-settings.custom",
-				"Custom placeholder - accepts only number-ending placeholders, like %level%");
+		c.addComment("tablist-object-type.object-settings.custom", "Custom placeholder - accepts only number-ending placeholders, like %level%");
 
 		c.addComment("check-update", "Check for updates?");
-		c.addComment("download-updates", "Download new releases to \"releases\" folder?",
-				"This only works if the \"check-update\" is true.");
+		c.addComment("download-updates", "Download new releases to \"releases\" folder?", "This only works if the \"check-update\" is true.");
 		c.addComment("logconsole", "Log plugin messages to console?");
 
 		placeholderAPI = c.get("hook.placeholderapi", true);
 		tpsPerformanceObservationValue = c.get("tps-performance-observation-value", -1.0);
 
-		if (tpsPerformanceObservationValue != -1.0
-				&& (tpsPerformanceObservationValue < 5.0 || tpsPerformanceObservationValue > 18.0)) {
+		if (tpsPerformanceObservationValue != -1.0 && (tpsPerformanceObservationValue < 5.0 || tpsPerformanceObservationValue > 18.0)) {
 			tpsPerformanceObservationValue = 16.0;
 		}
 
@@ -244,11 +212,15 @@ public final class ConfigValues {
 			}
 		}
 
-		memoryBarChar = c.get("placeholder-format.memory-bar.char", "|");
-		memoryBarUsedColor = c.get("placeholder-format.memory-bar.colors.used", "&c");
-		memoryBarFreeColor = c.get("placeholder-format.memory-bar.colors.free", "&a");
-		memoryBarAllocationColor = c.get("placeholder-format.memory-bar.colors.allocation", "&e");
-		memoryBarReleasedColor = c.get("placeholder-format.memory-bar.colors.released", "&6");
+		if (!(memoryBarChar = c.getString("placeholder-format.memory-bar.char", "|")).isEmpty()) {
+			c.addComment("placeholder-format.memory-bar", "Memory bar settings for %memory_bar% variable");
+			c.addComment("placeholder-format.memory-bar.colors.allocation", "When the server memory less than 80");
+			c.addComment("placeholder-format.memory-bar.colors.released", "When the server memory is on critical level (less than 40) and some resource need memory to run.");
+		}
+		memoryBarUsedColor = c.getString("placeholder-format.memory-bar.colors.used", "&c");
+		memoryBarFreeColor = c.getString("placeholder-format.memory-bar.colors.free", "&a");
+		memoryBarAllocationColor = c.getString("placeholder-format.memory-bar.colors.allocation", "&e");
+		memoryBarReleasedColor = c.getString("placeholder-format.memory-bar.colors.released", "&6");
 
 		if ((customObjectSetting = c.getString("tablist-object-type.object-settings.custom.value", null)) == null) {
 			c.addComment("tablist-object-type.custom-value", "The unique integer variable to be displayed.");
@@ -264,18 +236,15 @@ public final class ConfigValues {
 			objectType = Objects.ObjectTypes.NONE;
 		} else {
 			try {
-				objectType = Objects.ObjectTypes
-						.valueOf(c.get("tablist-object-type.type", "ping").toUpperCase(java.util.Locale.ENGLISH));
+				objectType = Objects.ObjectTypes.valueOf(c.get("tablist-object-type.type", "ping").toUpperCase(java.util.Locale.ENGLISH));
 			} catch (IllegalArgumentException e) {
 			}
 		}
 
 		c.set("tablist-object-type.enable", null);
 
-		tpsColorFormats = c.get("placeholder-format.tps.formats",
-				Arrays.asList("&a%tps% > 18.0", "&6%tps% == 16.0", "&c%tps% < 16.0"));
-		pingColorFormats = c.get("placeholder-format.ping.formats",
-				Arrays.asList("&a%ping% <= 200", "&6%ping% >= 200", "&c%ping% > 500"));
+		tpsColorFormats = c.get("placeholder-format.tps.formats", Arrays.asList("&a%tps% > 18.0", "&6%tps% == 16.0", "&c%tps% < 16.0"));
+		pingColorFormats = c.get("placeholder-format.ping.formats", Arrays.asList("&a%ping% <= 200", "&6%ping% >= 200", "&c%ping% > 500"));
 		for (String f : pingColorFormats) { // TODO remove in the future
 			if (!f.contains("%ping%")) {
 				c.set("placeholder-format.ping.formats", Arrays.asList("&a%ping% <= 200", "&6%ping% >= 200", "&c%ping% > 500"));
@@ -299,7 +268,7 @@ public final class ConfigValues {
 
 		groupsDisabledWorlds = c.get("change-prefix-suffix-in-tablist.disabled-worlds.list", Collections.singletonList("myWorldWithUpper"));
 
-		memoryBarSize = c.get("placeholder-format.memory-bar.size", 80);
+		memoryBarSize = c.getInt("placeholder-format.memory-bar.size", 80);
 		groupsRefreshInterval = c.get("change-prefix-suffix-in-tablist.refresh-interval", 30);
 
 		if ((objectRefreshInterval = c.get("tablist-object-type.refresh-interval", 3)) < 1) {

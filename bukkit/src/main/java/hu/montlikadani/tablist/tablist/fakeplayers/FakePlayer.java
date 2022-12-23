@@ -1,12 +1,6 @@
 package hu.montlikadani.tablist.tablist.fakeplayers;
 
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import com.mojang.authlib.GameProfile;
-
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.Objects.ObjectTypes;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
@@ -14,6 +8,10 @@ import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.Util;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 public final class FakePlayer implements IFakePlayer {
 
@@ -27,13 +25,12 @@ public final class FakePlayer implements IFakePlayer {
 	private GameProfile profile;
 
 	public FakePlayer(String name, String displayName, String headId, int ping) {
-		setName(name);
+		setNameWithoutRenamingProfile(name);
 
 		this.displayName = displayName == null ? "" : displayName;
 		this.ping = ping;
 
-		java.util.Optional<UUID> opt = Util.tryParseId(headId);
-		profile = new GameProfile(opt.orElse(UUID.randomUUID()), this.name);
+		profile = new GameProfile(Util.tryParseId(headId).orElseGet(UUID::randomUUID), this.name);
 
 		this.headId = profile.getId();
 	}
@@ -60,16 +57,17 @@ public final class FakePlayer implements IFakePlayer {
 
 	@Override
 	public void setName(String name) {
+		setNameWithoutRenamingProfile(name);
+
+		chatBaseComponentName = this.name.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT : ReflectionUtils.asComponent(this.name);
+		profile = new GameProfile(profile.getId(), this.name);
+	}
+
+	private void setNameWithoutRenamingProfile(String name) {
 		this.name = name == null ? "" : name;
 
 		if (this.name.length() > 16) {
 			this.name = this.name.substring(0, 16);
-		}
-
-		try {
-			chatBaseComponentName = this.name.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT : ReflectionUtils.asComponent(this.name);
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 	}
 
@@ -90,7 +88,7 @@ public final class FakePlayer implements IFakePlayer {
 			displayName = Util.colorText(Global.setSymbols(displayName));
 		}
 
-		Object packet = PacketNM.NMS_PACKET.updateDisplayNamePacket(fakeEntityPlayer, displayName, true);
+		Object packet = PacketNM.NMS_PACKET.updateDisplayNamePacket(fakeEntityPlayer, ReflectionUtils.asComponent(displayName), true);
 
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(player, packet);
@@ -101,11 +99,10 @@ public final class FakePlayer implements IFakePlayer {
 	public void show() {
 		if (fakeEntityPlayer == null) {
 			putTextureProperty(headId, false);
-
 			fakeEntityPlayer = PacketNM.NMS_PACKET.getNewEntityPlayer(profile);
-
-			PacketNM.NMS_PACKET.setListName(fakeEntityPlayer, displayName.isEmpty() ? displayName : Util.colorText(Global.setSymbols(displayName)));
 		}
+
+		PacketNM.NMS_PACKET.setListName(fakeEntityPlayer, ReflectionUtils.asComponent(displayName.isEmpty() ? displayName : Util.colorText(Global.setSymbols(displayName))));
 
 		Object packetAdd = PacketNM.NMS_PACKET.newPlayerInfoUpdatePacketAdd(fakeEntityPlayer);
 		PacketNM.NMS_PACKET.setInfoData(packetAdd, profile.getId(), ping, chatBaseComponentName);
@@ -175,7 +172,7 @@ public final class FakePlayer implements IFakePlayer {
 			if (fakeEntityPlayer != null) {
 				fakeEntityPlayer = PacketNM.NMS_PACKET.getNewEntityPlayer(profile);
 
-				Object removeInfo = PacketNM.NMS_PACKET.removeEntityPlayer(fakeEntityPlayer);
+				Object removeInfo = PacketNM.NMS_PACKET.removeEntityPlayers(fakeEntityPlayer);
 				Object addInfo = PacketNM.NMS_PACKET.newPlayerInfoUpdatePacketAdd(fakeEntityPlayer);
 
 				for (Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -192,7 +189,7 @@ public final class FakePlayer implements IFakePlayer {
 			return;
 		}
 
-		Object info = PacketNM.NMS_PACKET.removeEntityPlayer(fakeEntityPlayer);
+		Object info = PacketNM.NMS_PACKET.removeEntityPlayers(fakeEntityPlayer);
 
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(player, info);

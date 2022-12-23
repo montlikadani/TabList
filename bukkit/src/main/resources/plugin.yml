@@ -14,7 +14,6 @@ softdepend:
 - StaffFacilities
 - PlaceholderAPI
 - Multiverse-Core # Load this plugin before tablist to prevent issues
-- ProtocolLib
 api-version: 1.13
 # DO NOT EDIT ANYTHING ABOVE THIS LINE!
 

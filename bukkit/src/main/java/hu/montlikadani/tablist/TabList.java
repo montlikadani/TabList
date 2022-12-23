@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist;
 
-import static hu.montlikadani.tablist.utils.Util.colorText;
 import static hu.montlikadani.tablist.utils.Util.logConsole;
 
 import java.io.File;
@@ -58,6 +57,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	private final Set<TextAnimation> animations = new HashSet<>(8);
 	private final Set<TabListUser> users = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	private Class<?>[] packetClasses;
 
 	@Override
 	public void onEnable() {
@@ -88,13 +88,29 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		// Load static references
 		try {
 			Class.forName("hu.montlikadani.tablist.packets.PacketNM");
-			Class.forName("hu.montlikadani.tablist.packets.PacketReceivingListeners");
 		} catch (ClassNotFoundException e) {
 		}
 		hu.montlikadani.tablist.api.TabListAPI.getTPS();
 
 		conf.loadFiles();
 		variables.load();
+
+		if (ConfigValues.isRemoveGrayColorFromTabInSpec() || ConfigValues.isHidePlayersFromTab()) {
+			Set<Class<?>> classes = new HashSet<>();
+
+			try {
+				classes.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket"));
+			} catch (ClassNotFoundException e) {
+				try {
+					classes.add(hu.montlikadani.tablist.utils.reflection.ReflectionUtils.classByName("net.minecraft.network.protocol.game", "PacketPlayOutPlayerInfo"));
+				} catch (ClassNotFoundException ex) {
+				}
+			}
+
+			if (!classes.isEmpty()) {
+				packetClasses = classes.toArray(new Class<?>[0]);
+			}
+		}
 
 		if (ConfigValues.isPlaceholderAPI() && (papi = getServer().getPluginManager().getPlugin("PlaceholderAPI")) != null && papi.isEnabled()) {
 			logConsole("Hooked " + papi.getName() + " version: " + papi.getDescription().getVersion());
@@ -116,8 +132,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		beginDataCollection();
 
 		if (ConfigValues.isLogConsole()) {
-			getServer().getConsoleSender()
-					.sendMessage(colorText("&6[&5Tab&cList&6]&7 >&a Enabled&6 v" + getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
+			getServer().getConsoleSender().sendMessage(hu.montlikadani.tablist.utils.Util
+					.colorText("&6[&5Tab&cList&6]&7 >&a Enabled&6 v" + getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
 		}
 	}
 
@@ -379,7 +395,9 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			groups.startTask();
 		}
 
-		PacketNM.NMS_PACKET.addPlayerChannelListener(player);
+		if (packetClasses != null) {
+			PacketNM.NMS_PACKET.addPlayerChannelListener(player, packetClasses);
+		}
 
 		if (ConfigValues.isHidePlayersFromTab()) {
 			user.removeFromPlayerList();

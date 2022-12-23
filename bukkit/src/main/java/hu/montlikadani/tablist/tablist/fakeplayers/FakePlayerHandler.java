@@ -153,10 +153,9 @@ public final class FakePlayerHandler {
 			return EditingResult.NOT_EXIST;
 		}
 
-		FileConfiguration c = plugin.getConf().getFakeplayers();
+		FileConfiguration config = plugin.getConf().getFakeplayers();
 
-		ConfigurationSection section = c.getConfigurationSection("list");
-		if (section == null) {
+		if (!config.isConfigurationSection("list")) {
 			return EditingResult.NOT_EXIST;
 		}
 
@@ -164,10 +163,11 @@ public final class FakePlayerHandler {
 			newName = newName.substring(0, 16);
 		}
 
-		section.set(oldName, newName);
+		config.set("list." + newName, config.get("list." + oldName));
+		config.set("list." + oldName, null);
 
 		try {
-			c.save(plugin.getConf().getFakeplayersFile());
+			config.save(plugin.getConf().getFakeplayersFile());
 		} catch (IOException e) {
 			e.printStackTrace();
 			return EditingResult.UNKNOWN;
@@ -247,6 +247,6 @@ public final class FakePlayerHandler {
 	}
 
 	public enum EditingResult {
-		NOT_EXIST, ALREADY_EXIST, EMPTY_DATA, UUID_MATCH_ERROR, PING_AMOUNT, UNKNOWN, OK;
+		NOT_EXIST, ALREADY_EXIST, UUID_MATCH_ERROR, PING_AMOUNT, UNKNOWN, OK;
 	}
 }

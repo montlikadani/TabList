@@ -69,15 +69,6 @@ placeholder-format:
 
     size: 2
 
-  memory-bar:
-    char: "|"
-    size: 80
-    colors:
-      used: "&c"
-      free: "&a"
-      allocation: "&e"
-      released: "&6"
-
 change-prefix-suffix-in-tablist:
   enable: true
 

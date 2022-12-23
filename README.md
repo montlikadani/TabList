@@ -11,6 +11,7 @@ A plugin for Minecraft servers that allows to get an animated tablist with heade
 - For general questions and support, join our discord server: https://discord.gg/XsfT5cJ
 
 ### API
+<details><summary>Click to view</summary>
 To get access to TabList API you need [jitpack](https://jitpack.io/#montlikadani/TabList)
 
 **Maven**
@@ -51,6 +52,7 @@ dependencies {
 }
 ```
 _Use `master-SNAPSHOT` as versioning to get the newest commit changes_
+</details>
 
 ## Link
 * [Spigot](https://www.spigotmc.org/resources/46229/)

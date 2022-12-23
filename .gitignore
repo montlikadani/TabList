@@ -3,6 +3,7 @@ target/
 bin/
 .gradle/
 build/
+.idea
 
 # IDE files
 .project
