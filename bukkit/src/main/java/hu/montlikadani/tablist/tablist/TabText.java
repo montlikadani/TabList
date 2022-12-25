@@ -67,10 +67,10 @@ public final class TabText {
 	/**
 	 * Parses this tabText into NMS component to append in tablist.
 	 * 
-	 * @return the component object (can be IChatBaseComponent), or null if {@link #EMPTY}
+	 * @return the component object (can be IChatBaseComponent), or an empty object if this {@link #EMPTY}
 	 */
 	public Object toComponent() {
-		return this == EMPTY ? null : ReflectionUtils.asComponent(this);
+		return this == EMPTY ? ReflectionUtils.EMPTY_COMPONENT : ReflectionUtils.asComponent(this);
 	}
 
 	/**

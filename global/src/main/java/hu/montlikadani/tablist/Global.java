@@ -19,11 +19,7 @@ public final class Global {
 			String group = matcher.group(0);
 
 			try {
-				TextColor hex = TextColor.color(Integer.parseInt(group.substring(1), 16));
-
-				if (hex != null) {
-					s = s.replace(group, hex.asHexString());
-				}
+				s = s.replace(group, TextColor.color(Integer.parseInt(group.substring(1), 16)).asHexString());
 			} catch (NumberFormatException e) {
 			} catch (Error er) {
 				try {

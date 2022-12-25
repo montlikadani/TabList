@@ -254,7 +254,7 @@ public final class Variables {
 			s = PlaceholderAPI.setPlaceholders(player, s);
 		}
 
-		s = Global.replace(s, "%player%", () -> player.getName());
+		s = Global.replace(s, "%player%", player::getName);
 		s = Global.replace(s, "%world%", () -> player.getWorld().getName());
 		s = Global.replace(s, "%player-gamemode%", () -> player.getGameMode().name());
 		s = Global.replace(s, "%player-displayname%", () -> plugin.getComplement().displayName(player));

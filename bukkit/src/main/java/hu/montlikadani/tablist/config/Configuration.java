@@ -11,12 +11,12 @@ import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
 
 public class Configuration {
 
-	private transient TabList plugin;
+	private final transient TabList plugin;
 
 	private transient FileConfiguration tablist, groups, fakePlayers, animCreator;
 	private transient CommentedConfig config;
-	private transient ConfigMessages messages;
-	private File configFile, animationFile, tablistFile, groupsFile, fakePlayersFile;
+	private final transient ConfigMessages messages;
+	private final File configFile, animationFile, tablistFile, groupsFile, fakePlayersFile;
 
 	public Configuration(TabList plugin) {
 		this.plugin = plugin;

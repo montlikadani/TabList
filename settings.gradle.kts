@@ -12,6 +12,7 @@ include(
 	"api",
 	"v1_19_R2",
 	"v1_8_R3",
+	"v1_9_R2",
 	"bukkit",
 	"bungee",
 	"tablist-sponge7",

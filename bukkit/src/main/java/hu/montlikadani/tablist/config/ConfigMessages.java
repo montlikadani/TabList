@@ -96,9 +96,7 @@ public final class ConfigMessages {
 		String[] array = (String[]) key.value;
 		List<String> list = new java.util.ArrayList<>(array.length);
 
-		for (int i = 0; i < array.length; i++) {
-			String msg = array[i];
-
+		for (String msg : array) {
 			if (!msg.isEmpty()) {
 				for (int y = 0; y < variables.length; y += 2) {
 					msg = msg.replace(String.valueOf(variables[y]), String.valueOf(variables[y + 1]));

@@ -87,7 +87,7 @@ public interface IFakePlayer {
 	 */
 	void remove();
 
-	public static final class FakePlayerBuilder {
+	final class FakePlayerBuilder {
 
 		private String name = "", displayName = "", headIdentifier;
 		private int ping = -1;

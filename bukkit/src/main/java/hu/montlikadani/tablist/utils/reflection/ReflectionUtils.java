@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.utils.reflection;
 
+import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.utils.ServerVersion;
 
@@ -87,60 +88,42 @@ public final class ReflectionUtils {
 			return component;
 		}
 
-		// A bit complicated way to split json and texts from each other
-		StringBuilder result = new StringBuilder();
-		String strJson = text.getJsonElements().get(0).plainJson, plainText = text.getPlainText();
-		int textLength = -1, from = 0, index = 0;
+		StringBuilder result = new StringBuilder("[");
+		int index = 0, jsonStartingIndex, beginIndex = 0;
+		String strJson = text.getJsonElements().get(0).plainJson;
+		String plainText = text.getPlainText();
 
-		int jsonIndex = plainText.indexOf(strJson);
-
-		if (jsonIndex != -1) {
-			result.append("{\"text\":\"" + plainText.substring(from, jsonIndex) + "\",\"extra\":" + strJson.replace("}]}]", "}]}"));
-		}
-
-		while (jsonIndex != -1) {
-			if (textLength == -1) {
-				textLength = plainText.length();
+		while ((jsonStartingIndex = plainText.indexOf(strJson)) != -1) {
+			if (beginIndex + 1 != jsonStartingIndex) {
+				result.append("{\"text\":\"").append(plainText.substring(beginIndex, jsonStartingIndex)).append("\"},");
 			}
 
-			int length = strJson.length();
-
-			if ((from = jsonIndex + length) >= textLength) {
-				from = length;
-			}
-
-			result.append(",");
+			result.append(strJson.substring(4).replace("}]", "}"));
 			index++;
 
 			if (index >= text.getJsonElements().size()) {
 				break;
 			}
 
+			beginIndex = jsonStartingIndex + strJson.length();
 			strJson = text.getJsonElements().get(index).plainJson;
-
-			if ((jsonIndex = plainText.indexOf(strJson, from)) == -1) {
-				break;
-			}
-
-			result.append("{\"text\":\"" + plainText.substring(from, jsonIndex) + "\",\"extra\":" + strJson + "}");
+			result.append(",");
 		}
 
-		// The remaining text after last json
-		if (from != 0) {
-			result.append("{\"text\":\"" + plainText.substring(from) + "\"}]}");
-		} else {
-			result.setLength(0);
-			result.append("{\"text\":\"" + plainText + "\"}");
-		}
+		result.append(",{\"text\":\"").append(plainText.substring(jsonStartingIndex + strJson.length())).append("\"}]");
 
 		try {
-			if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
-				return asChatSerializer(result.toString());
-			}
+			return PacketNM.NMS_PACKET.fromJson(result.toString());
+		} catch (Exception ex) {
+			try {
+				if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
+					return asChatSerializer(result.toString());
+				}
 
-			return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), result.toString());
-		} catch (Exception e) {
-			e.printStackTrace();
+				return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), result.toString());
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		return null;
@@ -161,13 +144,17 @@ public final class ReflectionUtils {
 		}
 
 		try {
-			if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
-				return asChatSerializer("{\"text\":\"" + text + "\"}");
-			}
+			return PacketNM.NMS_PACKET.fromJson("{\"text\":\"" + text + "\"}");
+		} catch (Exception ex) {
+			try {
+				if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
+					return asChatSerializer("{\"text\":\"" + text + "\"}");
+				}
 
-			return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), "{\"text\":\"" + text + "\"}");
-		} catch (Exception e) {
-			e.printStackTrace();
+				return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), "{\"text\":\"" + text + "\"}");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 
 		return null;

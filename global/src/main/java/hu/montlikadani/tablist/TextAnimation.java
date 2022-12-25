@@ -15,7 +15,7 @@ public final class TextAnimation {
 
 	public TextAnimation(String name, java.util.List<String> texts, int time, boolean isRandom) {
 		this.name = name;
-		this.time = (time < 0 || time > Integer.MAX_VALUE) ? 150 : time;
+		this.time = time < 0 ? 150 : time;
 		this.isRandom = isRandom;
 		this.texts = texts.toArray(new String[0]);
 

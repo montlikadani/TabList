@@ -45,7 +45,7 @@ public class TabHandler {
 
 		sendEmptyTab(player);
 
-		if (TabToggleBase.isDisabled(user)) {
+		if (!TabConfigValues.isEnabled() || TabToggleBase.isDisabled(user)) {
 			return;
 		}
 

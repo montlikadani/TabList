@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+import hu.montlikadani.tablist.tablist.TabToggleBase;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -319,7 +320,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		while (i < animations.size()) {
 			for (TextAnimation ac : animations) {
-				hu.montlikadani.tablist.Global.replace(builder, "%anim:" + ac.name + "%", () -> ac.getText());
+				hu.montlikadani.tablist.Global.replace(builder, "%anim:" + ac.name + "%", ac::getText);
 			}
 
 			i++;
@@ -331,6 +332,11 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	private TabListUser getOrLoadUser(Player player) {
 		return getUser(player.getUniqueId()).orElseGet(() -> {
 			TabListUser tlu = new TabListPlayer(this, player.getUniqueId());
+
+			if (TabToggleBase.TEMPORAL_PLAYER_CACHE.remove(tlu.getUniqueId())) {
+				tlu.setTabVisibility(false);
+			}
+
 			users.add(tlu);
 			return tlu;
 		});
@@ -431,7 +437,11 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			TabListUser user = iterator.next();
 
 			if (playerId.equals(user.getUniqueId())) {
-				user.getTabHandler().sendEmptyTab(player);
+				if (user.isTabVisible()) {
+					user.getTabHandler().sendEmptyTab(player);
+				} else {
+					TabToggleBase.TEMPORAL_PLAYER_CACHE.add(user.getUniqueId());
+				}
 
 				groups.removePlayerGroup(user);
 

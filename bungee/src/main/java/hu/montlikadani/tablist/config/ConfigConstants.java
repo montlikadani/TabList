@@ -21,7 +21,7 @@ public final class ConfigConstants {
 
 	private static List<String> defaultHeader, defaultFooter, disabledServers, restrictedPlayers;
 
-	private static Configuration perServerSection, perPlayerSection;
+	private static Configuration perServerSection;
 	private static DateTimeFormatter timeFormat, dateFormat;
 
 	public static final Map<String, String> CUSTOM_VARIABLES = new HashMap<>();
@@ -84,9 +84,9 @@ public final class ConfigConstants {
 			}
 		}
 
-		if ((perPlayerSection = conf.getSection("tablist.per-player")) != null) {
-			for (String key : perPlayerSection.getKeys()) {
-				TAB_SETTINGS.put(key, new TabSetting(perPlayerSection, key));
+		if ((section = conf.getSection("tablist.per-player")) != null) {
+			for (String key : section.getKeys()) {
+				TAB_SETTINGS.put(key, new TabSetting(section, key));
 			}
 		}
 
@@ -190,10 +190,6 @@ public final class ConfigConstants {
 		return perServerSection;
 	}
 
-	public static Configuration getPerPlayerSection() {
-		return perPlayerSection;
-	}
-
 	public static List<String> getDefaultHeader() {
 		return defaultHeader;
 	}
@@ -235,7 +231,7 @@ public final class ConfigConstants {
 
 		public final String path;
 
-		private Class<?> type;
+		private final Class<?> type;
 		private Object value;
 
 		MessageKeys(boolean keyed) {

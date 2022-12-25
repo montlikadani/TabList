@@ -33,13 +33,13 @@ enum MColor {
 	public final boolean formatter;
 	public final String propertyName;
 
-	private MColor(char code) {
+	MColor(char code) {
 		this.code = code;
 		formatter = false;
 		propertyName = name().toLowerCase(java.util.Locale.ENGLISH);
 	}
 
-	private MColor(char code, String propertyName) {
+	MColor(char code, String propertyName) {
 		this.code = code;
 		formatter = true;
 		this.propertyName = propertyName;

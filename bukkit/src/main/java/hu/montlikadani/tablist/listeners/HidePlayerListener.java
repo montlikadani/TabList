@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.listeners;
 
+import hu.montlikadani.tablist.user.TabListUser;
 import org.bukkit.GameMode;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
@@ -10,19 +11,15 @@ public final class HidePlayerListener {
 
 	public HidePlayerListener(final hu.montlikadani.tablist.TabList tl) {
 		tl.getServer().getPluginManager().registerEvent(PlayerGameModeChangeEvent.class, new Listener() {
-		}, org.bukkit.event.EventPriority.NORMAL, new org.bukkit.plugin.EventExecutor() {
+		}, org.bukkit.event.EventPriority.NORMAL, (listener, e) -> {
+			PlayerGameModeChangeEvent event = (PlayerGameModeChangeEvent) e;
 
-			@Override
-			public void execute(Listener listener, org.bukkit.event.Event e) {
-				PlayerGameModeChangeEvent event = (PlayerGameModeChangeEvent) e;
+			// Checks if the new game mode is spectator or the player's old game mode was
+			// spectator
+			if (event.getNewGameMode() == GameMode.SPECTATOR || event.getPlayer().getGameMode() == GameMode.SPECTATOR) {
+				org.bukkit.entity.Player player = event.getPlayer();
 
-				// Checks if the new game mode is spectator or the player's old game mode was
-				// spectator
-				if (event.getNewGameMode() == GameMode.SPECTATOR || event.getPlayer().getGameMode() == GameMode.SPECTATOR) {
-					org.bukkit.entity.Player player = event.getPlayer();
-
-					tl.getUser(player.getUniqueId()).filter(user -> user.isRemovedFromPlayerList()).ifPresent(user -> PacketNM.NMS_PACKET.appendPlayerWithoutListed(player));
-				}
+				tl.getUser(player.getUniqueId()).filter(TabListUser::isRemovedFromPlayerList).ifPresent(user -> PacketNM.NMS_PACKET.appendPlayerWithoutListed(player));
 			}
 		}, tl);
 	}

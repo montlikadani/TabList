@@ -16,7 +16,7 @@ public class CommentedConfig extends YamlConfiguration {
 	// This map shouldn't be set as "weak" as this needed for #save method
 	private final java.util.Map<String, String> comments = new java.util.HashMap<>();
 
-	private File file;
+	private final File file;
 
 	public CommentedConfig(File file) {
 		this.file = file;
@@ -159,7 +159,7 @@ public class CommentedConfig extends YamlConfiguration {
 			}
 
 			newLine.append(System.lineSeparator());
-			newContents.append(newLine.toString());
+			newContents.append(newLine);
 		}
 
 		return newContents.toString();
@@ -170,20 +170,21 @@ public class CommentedConfig extends YamlConfiguration {
 			return;
 		}
 
-		String leadingSpaces = "";
+		StringBuilder leadingSpaces = new StringBuilder();
 		int length = path.length();
 
 		for (int n = 0; n < length; n++) {
 			if (path.charAt(n) == '.') {
-				leadingSpaces += "  ";
+				leadingSpaces.append("  ");
 			}
 		}
 
+		String leadSpaces = leadingSpaces.toString();
 		StringBuilder comment = new StringBuilder();
 
 		for (String line : commentLines) {
 			if (!line.isEmpty()) {
-				line = leadingSpaces + "# " + line;
+				line = leadSpaces + "# " + line;
 			}
 
 			if (comment.length() != 0) {

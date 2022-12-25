@@ -30,14 +30,6 @@ public class PlayerTab {
 		return plugin.getProxy().getPlayer(playerId);
 	}
 
-	public String[] getHeader() {
-		return header;
-	}
-
-	public String[] getFooter() {
-		return footer;
-	}
-
 	private BaseComponent[] getNextHeader(ProxiedPlayer source) {
 		if (header == null || header.length == 0) {
 			return Misc.EMPTY_COMPONENT_ARRAY;
@@ -128,13 +120,13 @@ public class PlayerTab {
 							.getStringList(one.getKey() + ".per-player." + pName + ".header"));
 
 					if (header == null)
-						header = fill(header, one.getValue().header);
+						header = fill(null, one.getValue().header);
 
 					footer = fill(footer, ConfigConstants.getPerServerSection()
 							.getStringList(one.getKey() + ".per-player." + pName + ".footer"));
 
 					if (footer == null)
-						footer = fill(footer, one.getValue().footer);
+						footer = fill(null, one.getValue().footer);
 
 					break;
 				}
@@ -158,28 +150,28 @@ public class PlayerTab {
 		final Configuration conf = plugin.getConf();
 
 		if (header == null)
-			header = fill(header, conf.getStringList("tablist.per-server." + server + ".per-player." + pName + ".header"));
+			header = fill(null, conf.getStringList("tablist.per-server." + server + ".per-player." + pName + ".header"));
 
 		if (header == null)
-			header = fill(header, conf.getStringList("tablist.per-server." + server + ".header"));
+			header = fill(null, conf.getStringList("tablist.per-server." + server + ".header"));
 
 		if (header == null)
-			header = fill(header, conf.getStringList("tablist.per-player." + pName + ".header"));
+			header = fill(null, conf.getStringList("tablist.per-player." + pName + ".header"));
 
 		if (header == null)
-			header = fill(header, ConfigConstants.getDefaultHeader());
+			header = fill(null, ConfigConstants.getDefaultHeader());
 
 		if (footer == null)
-			footer = fill(footer, conf.getStringList("tablist.per-server." + server + ".per-player." + pName + ".footer"));
+			footer = fill(null, conf.getStringList("tablist.per-server." + server + ".per-player." + pName + ".footer"));
 
 		if (footer == null)
-			footer = fill(footer, conf.getStringList("tablist.per-server." + server + ".footer"));
+			footer = fill(null, conf.getStringList("tablist.per-server." + server + ".footer"));
 
 		if (footer == null)
-			footer = fill(footer, conf.getStringList("tablist.per-player." + pName + ".footer"));
+			footer = fill(null, conf.getStringList("tablist.per-player." + pName + ".footer"));
 
 		if (footer == null)
-			footer = fill(footer, ConfigConstants.getDefaultFooter());
+			footer = fill(null, ConfigConstants.getDefaultFooter());
 
 		if (header != null) {
 			for (int i = 0; i < header.length; i++) {

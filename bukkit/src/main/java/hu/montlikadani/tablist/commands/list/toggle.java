@@ -11,7 +11,6 @@ import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.commands.CommandProcessor;
 import hu.montlikadani.tablist.commands.ICommand;
 import hu.montlikadani.tablist.config.ConfigMessages;
-import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.tablist.TabToggleBase;
 import hu.montlikadani.tablist.user.TabListUser;
 
@@ -44,12 +43,10 @@ public final class toggle implements ICommand {
 
 				if (!(TabToggleBase.globallySwitched = !TabToggleBase.globallySwitched)) {
 					for (TabListUser user : plugin.getUsers()) {
-						if (TabConfigValues.isEnabled()) {
-							user.getTabHandler().loadTabComponents();
-						} else {
-							user.getTabHandler().sendEmptyTab(user.getPlayer());
-						}
+						user.getTabHandler().loadTabComponents();
 					}
+				} else {
+					TabToggleBase.TEMPORAL_PLAYER_CACHE.clear();
 				}
 
 				return true;
@@ -71,16 +68,14 @@ public final class toggle implements ICommand {
 	private boolean toggleTab(TabListUser user, Player player) {
 		if (user.isTabVisible()) {
 			user.setTabVisibility(false);
+			TabToggleBase.TEMPORAL_PLAYER_CACHE.add(user.getUniqueId());
 			user.getTabHandler().sendEmptyTab(player);
 			return false;
 		}
 
 		user.setTabVisibility(true);
-
-		if (TabConfigValues.isEnabled()) {
-			user.getTabHandler().loadTabComponents();
-		}
-
+		TabToggleBase.TEMPORAL_PLAYER_CACHE.remove(user.getUniqueId());
+		user.getTabHandler().loadTabComponents();
 		return true;
 	}
 }

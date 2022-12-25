@@ -1,4 +1,4 @@
-package hu.montlikadani.v1_8_R3;
+package hu.montlikadani.v1_9_R2;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -8,36 +8,37 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import net.minecraft.server.v1_9_R2.EntityPlayer;
+import net.minecraft.server.v1_9_R2.IChatBaseComponent;
+import net.minecraft.server.v1_9_R2.IScoreboardCriteria;
+import net.minecraft.server.v1_9_R2.MinecraftServer;
+import net.minecraft.server.v1_9_R2.Packet;
+import net.minecraft.server.v1_9_R2.PacketPlayInArmAnimation;
+import net.minecraft.server.v1_9_R2.PacketPlayOutPlayerInfo;
+import net.minecraft.server.v1_9_R2.PacketPlayOutPlayerListHeaderFooter;
+import net.minecraft.server.v1_9_R2.PacketPlayOutScoreboardDisplayObjective;
+import net.minecraft.server.v1_9_R2.PacketPlayOutScoreboardObjective;
+import net.minecraft.server.v1_9_R2.PacketPlayOutScoreboardScore;
+import net.minecraft.server.v1_9_R2.PacketPlayOutScoreboardTeam;
+import net.minecraft.server.v1_9_R2.PlayerInteractManager;
+import net.minecraft.server.v1_9_R2.Scoreboard;
+import net.minecraft.server.v1_9_R2.ScoreboardObjective;
+import net.minecraft.server.v1_9_R2.ScoreboardScore;
+import net.minecraft.server.v1_9_R2.ScoreboardTeam;
+import net.minecraft.server.v1_9_R2.ScoreboardTeamBase;
+import net.minecraft.server.v1_9_R2.WorldServer;
+import net.minecraft.server.v1_9_R2.WorldSettings.EnumGamemode;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_9_R2.CraftServer;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Team;
 
 import com.mojang.authlib.GameProfile;
 
 import hu.montlikadani.api.IPacketNM;
 import io.netty.channel.ChannelHandlerContext;
-import net.minecraft.server.v1_8_R3.EntityPlayer;
-import net.minecraft.server.v1_8_R3.IChatBaseComponent;
-import net.minecraft.server.v1_8_R3.IScoreboardCriteria;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
-import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.PacketPlayInArmAnimation;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
-import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerListHeaderFooter;
-import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardDisplayObjective;
-import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardObjective;
-import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardScore;
-import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardTeam;
-import net.minecraft.server.v1_8_R3.PlayerInteractManager;
-import net.minecraft.server.v1_8_R3.Scoreboard;
-import net.minecraft.server.v1_8_R3.ScoreboardObjective;
-import net.minecraft.server.v1_8_R3.ScoreboardScore;
-import net.minecraft.server.v1_8_R3.ScoreboardTeam;
-import net.minecraft.server.v1_8_R3.ScoreboardTeamBase;
-import net.minecraft.server.v1_8_R3.WorldServer;
-import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode;
 
-public final class V1_8_R3 implements IPacketNM {
+public final class V1_9_R2 implements IPacketNM {
 
 	private final List<ScoreboardTeam> playerTeams = new ArrayList<>();
 	private final List<ObjectiveStorage> objectiveStorage = new ArrayList<>();
@@ -45,7 +46,7 @@ public final class V1_8_R3 implements IPacketNM {
 	private Field headerField, footerField, entriesField, infoList, playerInfoAction;
 	private final IChatBaseComponent emptyComponent = IChatBaseComponent.ChatSerializer.a("");
 
-	public V1_8_R3() {
+	public V1_9_R2() {
 		try {
 			(headerField = PacketPlayOutPlayerListHeaderFooter.class.getDeclaredField("a")).setAccessible(true);
 			(footerField = PacketPlayOutPlayerListHeaderFooter.class.getDeclaredField("b")).setAccessible(true);
@@ -86,7 +87,7 @@ public final class V1_8_R3 implements IPacketNM {
 
 	@Override
 	public EntityPlayer getPlayerHandle(Player player) {
-		return ((org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer) player).getHandle();
+		return ((org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer) player).getHandle();
 	}
 
 	@Override
@@ -110,9 +111,10 @@ public final class V1_8_R3 implements IPacketNM {
 
 	@Override
 	public EntityPlayer getNewEntityPlayer(GameProfile profile) {
-		WorldServer worldServer = MinecraftServer.getServer().getWorldServer(0);
+		MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+		WorldServer worldServer = server.getWorldServer(0);
 
-		return new EntityPlayer(MinecraftServer.getServer(), worldServer, profile, new PlayerInteractManager(worldServer));
+		return new EntityPlayer(server, worldServer, profile, new PlayerInteractManager(worldServer));
 	}
 
 	@Override
@@ -141,7 +143,7 @@ public final class V1_8_R3 implements IPacketNM {
 
 		PacketPlayInArmAnimation animatePacket = new PacketPlayInArmAnimation();
 
-		for (Player player : org.bukkit.Bukkit.getServer().getOnlinePlayers()) {
+		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			EntityPlayer entityPlayer = getPlayerHandle(player);
 
 			sendPacket(entityPlayer, updatePacket);
@@ -234,21 +236,21 @@ public final class V1_8_R3 implements IPacketNM {
 			ScoreboardTeamBase.EnumNameTagVisibility visibility = null;
 
 			for (Team team : player.getScoreboard().getTeams()) {
-				NameTagVisibility optionStatus = team.getNameTagVisibility();
+				Team.OptionStatus optionStatus = team.getOption(Team.Option.NAME_TAG_VISIBILITY);
 
 				switch (optionStatus) {
-				case HIDE_FOR_OTHER_TEAMS:
-					visibility = ScoreboardTeamBase.EnumNameTagVisibility.HIDE_FOR_OTHER_TEAMS;
-					break;
-				case HIDE_FOR_OWN_TEAM:
-					visibility = ScoreboardTeamBase.EnumNameTagVisibility.HIDE_FOR_OWN_TEAM;
-					break;
-				default:
-					if (optionStatus != NameTagVisibility.ALWAYS) {
-						visibility = ScoreboardTeamBase.EnumNameTagVisibility.NEVER;
-					}
+					case FOR_OTHER_TEAMS:
+						visibility = ScoreboardTeamBase.EnumNameTagVisibility.HIDE_FOR_OTHER_TEAMS;
+						break;
+					case FOR_OWN_TEAM:
+						visibility = ScoreboardTeamBase.EnumNameTagVisibility.HIDE_FOR_OWN_TEAM;
+						break;
+					default:
+						if (optionStatus != Team.OptionStatus.ALWAYS) {
+							visibility = ScoreboardTeamBase.EnumNameTagVisibility.NEVER;
+						}
 
-					break;
+						break;
 				}
 			}
 

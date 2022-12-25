@@ -12,6 +12,8 @@ import java.util.UUID;
 
 public final class TabToggleBase {
 
+    public static final java.util.Set<UUID> TEMPORAL_PLAYER_CACHE = new java.util.HashSet<>();
+
     /**
      * Holds the information that the tablist is globally (for every online player) disabled or not.
      */
@@ -56,7 +58,14 @@ public final class TabToggleBase {
                 }
 
                 try {
-                    tl.getUser(UUID.fromString(uuid)).ifPresent(user -> user.setTabVisibility(false));
+                    UUID id = UUID.fromString(uuid);
+                    java.util.Optional<TabListUser> user = tl.getUser(id);
+
+                    if (!user.isPresent()) {
+                        TEMPORAL_PLAYER_CACHE.add(id);
+                    } else {
+                        user.get().setTabVisibility(false);
+                    }
                 } catch (IllegalArgumentException e) {
                 }
             }
@@ -102,8 +111,14 @@ public final class TabToggleBase {
                 }
             }
 
+            for (UUID id : TEMPORAL_PLAYER_CACHE) {
+                config.set("tablists." + id.toString(), false);
+            }
+
             config.set("globallySwitched", null);
         }
+
+        TEMPORAL_PLAYER_CACHE.clear();
 
         try {
             config.save(file);

@@ -27,10 +27,6 @@ public final class LegacyTextConverter {
 		int length = legacyText.length();
 
 		for (int i = 0; i < length; i++) {
-			if (i >= length) {
-				break;
-			}
-
 			char c = legacyText.charAt(i);
 
 			if (c == '&') {
@@ -126,10 +122,6 @@ public final class LegacyTextConverter {
 		int length = text.length();
 
 		for (int i = 0; i < length; i++) {
-			if (i >= length) {
-				break;
-			}
-
 			char charAt = text.charAt(i);
 
 			if (charAt == '&') {

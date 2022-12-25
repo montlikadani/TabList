@@ -118,10 +118,6 @@ public class TabListPlayer implements TabListUser {
 		return o != null && o.getClass() == getClass() && uniqueId.equals(((TabListPlayer) o).uniqueId);
 	}
 
-	public HidePlayers getHidePlayers() {
-		return hidePlayers;
-	}
-
 	public PlayerList getPlayerList() {
 		return playerList;
 	}

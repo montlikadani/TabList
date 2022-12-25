@@ -12,7 +12,8 @@ repositories {
     maven("https://repo.codemc.org/repository/nms/")
     maven("https://libraries.minecraft.net/")
     maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
-    mavenCentral()
+    maven("https://oss.sonatype.org/content/repositories/snapshots/")
+    maven("https://oss.sonatype.org/content/groups/public/") // SnakeYAML
 }
 
 dependencies {
@@ -24,4 +25,7 @@ dependencies {
     compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
     }
+
+    implementation("io.netty:netty-all:4.1.86.Final") // Required to compile
+    compileOnly("org.yaml:snakeyaml:1.33") // Required to compile spigot api, idk why intellij?
 }

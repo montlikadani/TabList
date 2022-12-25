@@ -19,7 +19,7 @@ jobs:
         distribution: 'temurin'
 
     - name: Build all
-      run: ./gradlew clean build --parallel
+      run: ./gradlew clean build
 
     - name: Upload artifacts
       uses: actions/upload-artifact@v3

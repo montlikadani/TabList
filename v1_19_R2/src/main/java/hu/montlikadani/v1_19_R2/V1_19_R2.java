@@ -79,9 +79,7 @@ public final class V1_19_R2 implements IPacketNM {
 
     @Override
     public void sendTabTitle(Player player, Object header, Object footer) {
-        if (header != null && footer != null) {
-            sendPacket(player, new PacketPlayOutPlayerListHeaderFooter((IChatBaseComponent) header, (IChatBaseComponent) footer));
-        }
+        sendPacket(player, new PacketPlayOutPlayerListHeaderFooter((IChatBaseComponent) header, (IChatBaseComponent) footer));
     }
 
     @Override

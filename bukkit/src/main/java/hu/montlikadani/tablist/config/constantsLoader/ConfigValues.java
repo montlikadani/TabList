@@ -256,9 +256,7 @@ public final class ConfigValues {
 
 		int size = c.get("placeholder-format.tps.size", 2);
 
-		if (size < 1) {
-			size = 2;
-		} else if (size > 2) {
+		if (size > 2) {
 			size -= 2;
 
 			for (int i = 0; i < size; i++) {
