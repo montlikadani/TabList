@@ -52,6 +52,7 @@ public final class Objects {
 			}
 
 			objective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
+			pl.setHealth(pl.getHealth());
 			return 1;
 		});
 	}
