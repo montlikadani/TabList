@@ -19,7 +19,7 @@ repositories {
     maven("https://jitpack.io")
 }
 
-val nmsProjects = setOf("1_8_R3", "1_19_R1", "1_19_R2")
+val nmsProjects = setOf("1_8_R3", "1_18_R2", "1_19_R1", "1_19_R2")
 
 dependencies {
     implementation(project(":global"))
