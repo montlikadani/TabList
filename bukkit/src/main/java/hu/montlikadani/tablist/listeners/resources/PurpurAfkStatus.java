@@ -7,14 +7,10 @@ public final class PurpurAfkStatus extends AfkPlayers {
 
 	public PurpurAfkStatus(final hu.montlikadani.tablist.TabList tl) {
 		tl.getServer().getPluginManager().registerEvent(PlayerAFKEvent.class, new Listener() {
-		}, org.bukkit.event.EventPriority.NORMAL, new org.bukkit.plugin.EventExecutor() {
+		}, org.bukkit.event.EventPriority.NORMAL, (listener, e) -> {
+			PlayerAFKEvent event = (PlayerAFKEvent) e;
 
-			@Override
-			public void execute(Listener listener, org.bukkit.event.Event e) {
-				PlayerAFKEvent event = (PlayerAFKEvent) e;
-
-				goAfk(tl, event.getPlayer(), event.isGoingAfk());
-			}
+			goAfk(tl, event.getPlayer(), event.isGoingAfk());
 		}, tl);
 	}
 }

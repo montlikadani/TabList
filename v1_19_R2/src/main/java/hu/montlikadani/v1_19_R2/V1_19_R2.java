@@ -194,12 +194,11 @@ public final class V1_19_R2 implements IPacketNM {
     }
 
     @Override
-    public PacketPlayOutScoreboardTeam createBoardTeam(Object teamName, Player player, boolean followNameTagVisibility) {
-        IChatBaseComponent component = (IChatBaseComponent) teamName;
-        ScoreboardTeam playerTeam = new ScoreboardTeam(new net.minecraft.world.scores.Scoreboard(), component.getString());
+    public PacketPlayOutScoreboardTeam createBoardTeam(Object teamNameComponent, String teamName, Player player, boolean followNameTagVisibility) {
+        ScoreboardTeam playerTeam = new ScoreboardTeam(new net.minecraft.world.scores.Scoreboard(), teamName);
 
         playerTeam.g().add(player.getName());
-        playerTeam.a(component);
+        playerTeam.a((IChatBaseComponent) teamNameComponent);
 
         if (followNameTagVisibility) {
             ScoreboardTeam.EnumNameTagVisibility visibility = null;

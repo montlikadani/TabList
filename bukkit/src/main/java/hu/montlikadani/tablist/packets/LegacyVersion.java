@@ -449,26 +449,27 @@ public final class LegacyVersion implements IPacketNM {
 
     @SuppressWarnings("deprecation")
     @Override
-    public Object createBoardTeam(Object teamName, Player player, boolean followNameTagVisibility) {
+    public Object createBoardTeam(Object teamNameComponent, String teamName, Player player, boolean followNameTagVisibility) {
         Object newTeamPacket = null, scoreTeam = null;
 
         try {
             if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-                scoreTeam = ClazzContainer.getScoreboardTeamConstructor().newInstance(ClazzContainer.getScoreboardConstructor().newInstance(), teamName.toString());
+                scoreTeam = ClazzContainer.getScoreboardTeamConstructor().newInstance(ClazzContainer.getScoreboardConstructor().newInstance(), teamName);
 
                 @SuppressWarnings("unchecked")
                 Collection<String> playerNameSet = (Collection<String>) ClazzContainer.getPlayerNameSetMethod().invoke(scoreTeam);
                 playerNameSet.add(player.getName());
 
                 ClazzContainer.getScoreboardTeamNames().set(scoreTeam, playerNameSet);
-
-                ClazzContainer.getScoreboardTeamSetDisplayName().invoke(scoreTeam, teamName);
+                ClazzContainer.getScoreboardTeamSetDisplayName().invoke(scoreTeam, teamNameComponent);
             } else {
                 newTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
 
-                ClazzContainer.getScoreboardTeamName().set(newTeamPacket, ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) ? teamName.toString() : teamName);
+                ClazzContainer.getScoreboardTeamName().set(newTeamPacket, ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) ?
+                        teamName : teamNameComponent);
                 ClazzContainer.getScoreboardTeamMode().set(newTeamPacket, 0);
-                ClazzContainer.getScoreboardTeamDisplayName().set(newTeamPacket, ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1) ? teamName : teamName.toString());
+                ClazzContainer.getScoreboardTeamDisplayName().set(newTeamPacket, ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1)
+                        ? teamNameComponent : teamName);
                 ClazzContainer.getScoreboardTeamNames().set(newTeamPacket, Collections.singletonList(player.getName()));
             }
 

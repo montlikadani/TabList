@@ -32,7 +32,8 @@ public class ReflectionHandled {
 			return;
 		}
 
-		packetTeam = PacketNM.NMS_PACKET.createBoardTeam(ReflectionUtils.asComponent(groupPlayer.getFullGroupTeamName()), player, ConfigValues.isFollowNameTagVisibility());
+		String teamName = groupPlayer.getFullGroupTeamName();
+		packetTeam = PacketNM.NMS_PACKET.createBoardTeam(ReflectionUtils.asComponent(teamName), teamName, player, ConfigValues.isFollowNameTagVisibility());
 
 		for (Player pl : tl.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(pl, packetTeam);

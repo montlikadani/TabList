@@ -8,14 +8,10 @@ public final class EssAfkStatus extends AfkPlayers {
 
 	public EssAfkStatus(final hu.montlikadani.tablist.TabList tl) {
 		tl.getServer().getPluginManager().registerEvent(AfkStatusChangeEvent.class, new Listener() {
-		}, org.bukkit.event.EventPriority.NORMAL, new org.bukkit.plugin.EventExecutor() {
+		}, org.bukkit.event.EventPriority.NORMAL, (listener, e) -> {
+			AfkStatusChangeEvent event = (AfkStatusChangeEvent) e;
 
-			@Override
-			public void execute(Listener listener, org.bukkit.event.Event e) {
-				AfkStatusChangeEvent event = (AfkStatusChangeEvent) e;
-
-				goAfk(tl, event.getAffected().getBase(), event.getValue());
-			}
+			goAfk(tl, event.getAffected().getBase(), event.getValue());
 		}, tl);
 	}
 }

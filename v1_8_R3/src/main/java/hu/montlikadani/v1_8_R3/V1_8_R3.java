@@ -223,12 +223,11 @@ public final class V1_8_R3 implements IPacketNM {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardTeam createBoardTeam(Object teamName, Player player, boolean followNameTagVisibility) {
-		String textComponent = ((IChatBaseComponent) teamName).getText();
-		ScoreboardTeam playerTeam = new ScoreboardTeam(new Scoreboard(), textComponent);
+	public PacketPlayOutScoreboardTeam createBoardTeam(Object teamNameComponent, String teamName, Player player, boolean followNameTagVisibility) {
+		ScoreboardTeam playerTeam = new ScoreboardTeam(new Scoreboard(), teamName);
 
 		playerTeam.getPlayerNameSet().add(player.getName());
-		playerTeam.setDisplayName(textComponent);
+		playerTeam.setDisplayName(teamName);
 
 		if (followNameTagVisibility) {
 			ScoreboardTeamBase.EnumNameTagVisibility visibility = null;
