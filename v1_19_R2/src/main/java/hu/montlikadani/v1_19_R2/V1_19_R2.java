@@ -146,7 +146,7 @@ public final class V1_19_R2 implements IPacketNM {
         }
 
         return new ClientboundPlayerInfoUpdatePacket(java.util.EnumSet.of(ClientboundPlayerInfoUpdatePacket.a.a,
-                ClientboundPlayerInfoUpdatePacket.a.d, ClientboundPlayerInfoUpdatePacket.a.e), players);
+                ClientboundPlayerInfoUpdatePacket.a.d, ClientboundPlayerInfoUpdatePacket.a.e, ClientboundPlayerInfoUpdatePacket.a.f), players);
     }
 
     @Override
@@ -202,21 +202,21 @@ public final class V1_19_R2 implements IPacketNM {
         playerTeam.a(component);
 
         if (followNameTagVisibility) {
-            net.minecraft.world.scores.ScoreboardTeam.EnumNameTagVisibility visibility = null;
+            ScoreboardTeam.EnumNameTagVisibility visibility = null;
 
             for (Team team : player.getScoreboard().getTeams()) {
                 Team.OptionStatus optionStatus = team.getOption(Team.Option.NAME_TAG_VISIBILITY);
 
                 switch (optionStatus) {
                     case FOR_OTHER_TEAMS:
-                        visibility = net.minecraft.world.scores.ScoreboardTeam.EnumNameTagVisibility.c;
+                        visibility = ScoreboardTeam.EnumNameTagVisibility.c;
                         break;
                     case FOR_OWN_TEAM:
-                        visibility = net.minecraft.world.scores.ScoreboardTeam.EnumNameTagVisibility.d;
+                        visibility = ScoreboardTeam.EnumNameTagVisibility.d;
                         break;
                     default:
                         if (optionStatus != Team.OptionStatus.ALWAYS) {
-                            visibility = net.minecraft.world.scores.ScoreboardTeam.EnumNameTagVisibility.b;
+                            visibility = ScoreboardTeam.EnumNameTagVisibility.b;
                         }
 
                         break;

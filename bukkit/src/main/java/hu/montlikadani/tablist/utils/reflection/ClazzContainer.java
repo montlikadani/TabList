@@ -4,18 +4,18 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import com.mojang.authlib.GameProfile;
 import hu.montlikadani.tablist.utils.ServerVersion;
-import static hu.montlikadani.tablist.utils.reflection.ReflectionUtils.classByName;
 
 public final class ClazzContainer {
 
 	private static Field infoList, scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamNames, scoreboardTeamMode, nameTagVisibility,
-			playerInfoDataProfileField, playerInfoDataGameMode, nameTagVisibilityNameField;
+			playerInfoDataProfileField, playerInfoDataGameMode, nameTagVisibilityNameField, actionField, playerInfoDataPing, playerInfoDisplayName;
 
 	private static Class<?> iChatBaseComponent, packet, enumPlayerInfoAction, packetPlayOutScoreboardTeam;
 
-	private static Object addPlayer, removePlayer, updateLatency, updateDisplayName, enumScoreboardHealthDisplayInteger, enumScoreboardActionChange,
-			enumScoreboardActionRemove, iScoreboardCriteriaDummy;
+	private static Object addPlayer, removePlayer, updateLatency, updateDisplayName, updateGameMode, enumScoreboardHealthDisplayInteger, enumScoreboardActionChange,
+			enumScoreboardActionRemove, iScoreboardCriteriaDummy, gameModeSpectator, gameModeCreative;
 
 	private static Method scoreboardTeamSetNameTagVisibility, scoreboardTeamSetDisplayName, packetScoreboardTeamRemove, packetScoreboardTeamUpdateCreate,
 			playerInfoDataProfileMethod, playerNameSetMethod;
@@ -58,11 +58,13 @@ public final class ClazzContainer {
 				addPlayer = enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction);
 				updateLatency = enumPlayerInfoAction.getDeclaredField("UPDATE_LATENCY").get(enumPlayerInfoAction);
 				updateDisplayName = enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME").get(enumPlayerInfoAction);
+				updateGameMode = enumPlayerInfoAction.getDeclaredField("UPDATE_GAME_MODE").get(enumPlayerInfoAction);
 				removePlayer = enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER").get(enumPlayerInfoAction);
 			} catch (NoSuchFieldException ex) {
 				addPlayer = enumPlayerInfoAction.getDeclaredField("a").get(enumPlayerInfoAction);
 				updateLatency = enumPlayerInfoAction.getDeclaredField("c").get(enumPlayerInfoAction);
 				updateDisplayName = enumPlayerInfoAction.getDeclaredField("d").get(enumPlayerInfoAction);
+				updateGameMode = enumPlayerInfoAction.getDeclaredField("b").get(enumPlayerInfoAction);
 				removePlayer = enumPlayerInfoAction.getDeclaredField("e").get(enumPlayerInfoAction);
 			}
 
@@ -171,8 +173,8 @@ public final class ClazzContainer {
 						.getConstructor(enumScoreboardAction, String.class, String.class, int.class);
 			}
 
-			// PlayerInfoData
 			(infoList = packetPlayOutPlayerInfo.getDeclaredField("b")).setAccessible(true);
+			(actionField = packetPlayOutPlayerInfo.getDeclaredField("a")).setAccessible(true);
 
 			Class<?> playerInfoData;
 			try {
@@ -191,15 +193,43 @@ public final class ClazzContainer {
 			}
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+				(playerInfoDataPing = playerInfoData.getDeclaredField("a")).setAccessible(true);
 				(playerInfoDataProfileField = playerInfoData.getDeclaredField("c")).setAccessible(true);
 				(playerInfoDataGameMode = playerInfoData.getDeclaredField("b")).setAccessible(true);
+				(playerInfoDisplayName = playerInfoData.getDeclaredField("d")).setAccessible(true);
 			} else {
 				(playerInfoDataProfileMethod = playerInfoData.getDeclaredMethod("a")).setAccessible(true);
+				(playerInfoDataPing = playerInfoData.getDeclaredField("b")).setAccessible(true);
 				(playerInfoDataGameMode = playerInfoData.getDeclaredField("c")).setAccessible(true);
+				(playerInfoDisplayName = playerInfoData.getDeclaredField("e")).setAccessible(true);
 			}
 
-			(playOutPlayerInfoConstructor = packetPlayOutPlayerInfo.getDeclaredConstructor(enumPlayerInfoAction,
-					java.lang.reflect.Array.newInstance(classByName("net.minecraft.server.level", "EntityPlayer"), 0).getClass())).setAccessible(true);
+			for (Constructor<?> constructor : packetPlayOutPlayerInfo.getConstructors()) {
+				if (constructor.getParameterCount() == 2 && constructor.getParameters()[1].getType().isArray()) {
+					(playOutPlayerInfoConstructor = constructor).setAccessible(true);
+					break;
+				}
+			}
+
+			Class<?> enumGameMode;
+			try {
+				enumGameMode = classByName("net.minecraft.world.level", "EnumGamemode");
+			} catch (ClassNotFoundException e) {
+				enumGameMode = classByName(null, "WorldSettings$EnumGamemode");
+			}
+
+			try {
+				gameModeCreative = enumGameMode.getDeclaredField("CREATIVE").get(enumGameMode);
+				gameModeSpectator = enumGameMode.getDeclaredField("SPECTATOR").get(enumGameMode);
+			} catch (NoSuchFieldException ex) {
+				Field field = enumGameMode.getDeclaredField("d");
+				field.setAccessible(true);
+
+				gameModeSpectator = field.get(enumGameMode);
+
+				(field = enumGameMode.getDeclaredField("b")).setAccessible(true);
+				gameModeCreative = field.get(enumGameMode);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -208,7 +238,15 @@ public final class ClazzContainer {
 	private ClazzContainer() {
 	}
 
-	private static Field getFieldByType(Class<?> from, Class<?> type) {
+	public static Class<?> classByName(String newPackageName, String name) throws ClassNotFoundException {
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
+			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
+		}
+
+		return Class.forName(newPackageName + "." + name);
+	}
+
+	public static Field getFieldByType(Class<?> from, Class<?> type) {
 		for (Field field : from.getDeclaredFields()) {
 			if (field.getType() == type) {
 				field.setAccessible(true);
@@ -230,6 +268,20 @@ public final class ClazzContainer {
 		default:
 			return null;
 		}
+	}
+
+	public static GameProfile getPlayerInfoDataProfile(Object infoData) {
+		try {
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+				return (GameProfile) playerInfoDataProfileField.get(infoData);
+			}
+
+			return (GameProfile) playerInfoDataProfileMethod.invoke(infoData);
+		} catch (IllegalArgumentException | IllegalAccessException | java.lang.reflect.InvocationTargetException e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	public static boolean isTeamOptionStatusEnumExist() {
@@ -316,14 +368,6 @@ public final class ClazzContainer {
 		return scoreboardNameTagVisibilityEnumConstants;
 	}
 
-	public static Field getPlayerInfoDataProfileField() {
-		return playerInfoDataProfileField;
-	}
-
-	public static Method getPlayerInfoDataProfileMethod() {
-		return playerInfoDataProfileMethod;
-	}
-
 	public static Field getPlayerInfoDataGameMode() {
 		return playerInfoDataGameMode;
 	}
@@ -366,5 +410,29 @@ public final class ClazzContainer {
 
 	public static Object getiScoreboardCriteriaDummy() {
 		return iScoreboardCriteriaDummy;
+	}
+
+	public static Object getEnumUpdateGameMode() {
+		return updateGameMode;
+	}
+
+	public static Field getActionField() {
+		return actionField;
+	}
+
+	public static Object getGameModeSpectator() {
+		return gameModeSpectator;
+	}
+
+	public static Object getGameModeCreative() {
+		return gameModeCreative;
+	}
+
+	public static Field getPlayerInfoDataPing() {
+		return playerInfoDataPing;
+	}
+
+	public static Field getPlayerInfoDisplayName() {
+		return playerInfoDisplayName;
 	}
 }

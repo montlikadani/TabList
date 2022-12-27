@@ -17,6 +17,7 @@ repositories {
     maven("https://repo.essentialsx.net/snapshots/")
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     maven("https://jitpack.io")
+    maven("https://oss.sonatype.org/content/groups/public/") // Netty
 }
 
 val nmsProjects = setOf("1_8_R3", "1_18_R2", "1_19_R1", "1_19_R2")
@@ -54,6 +55,7 @@ dependencies {
     }
 
     compileOnly(files("lib/CMI9.0.0.0API.jar", "lib/PermissionsEx-1.23.4.jar"))
+    compileOnly("io.netty:netty-all:4.1.86.Final")
 }
 
 group = "hu.montlikadani.tablist"

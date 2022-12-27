@@ -57,14 +57,6 @@ public final class ReflectionUtils {
 		return jsonComponent;
 	}
 
-	public static Class<?> classByName(String newPackageName, String name) throws ClassNotFoundException {
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
-			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
-		}
-
-		return Class.forName(newPackageName + "." + name);
-	}
-
 	public static Object asComponent(TabText text) {
 		if (text.getJsonElements().isEmpty()) {
 			return asComponent(text.getPlainText());

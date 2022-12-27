@@ -53,14 +53,6 @@ public final class FakePlayerHandler {
 			fp.show();
 			fakePlayers.add(fp);
 		}
-
-		plugin.getConf().getFakeplayers().set("fakeplayers", null);
-
-		try {
-			plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	public void display() {

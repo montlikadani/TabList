@@ -15,7 +15,7 @@ import java.util.UUID;
 
 public final class FakePlayer implements IFakePlayer {
 
-	private String displayName;
+	private final String displayName;
 	private String name;
 	private UUID headId;
 	private int ping = -1;
@@ -76,6 +76,10 @@ public final class FakePlayer implements IFakePlayer {
 		return displayName;
 	}
 
+	private Object displayNameComponent() {
+		return displayName.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT : ReflectionUtils.asComponent(Util.colorText(Global.setSymbols(displayName)));
+	}
+
 	@Override
 	public void setDisplayName(String displayName) {
 		if (fakeEntityPlayer == null) {
@@ -102,10 +106,11 @@ public final class FakePlayer implements IFakePlayer {
 			fakeEntityPlayer = PacketNM.NMS_PACKET.getNewEntityPlayer(profile);
 		}
 
-		PacketNM.NMS_PACKET.setListName(fakeEntityPlayer, ReflectionUtils.asComponent(displayName.isEmpty() ? displayName : Util.colorText(Global.setSymbols(displayName))));
+		Object dName = displayNameComponent();
+		PacketNM.NMS_PACKET.setListName(fakeEntityPlayer, dName);
 
 		Object packetAdd = PacketNM.NMS_PACKET.newPlayerInfoUpdatePacketAdd(fakeEntityPlayer);
-		PacketNM.NMS_PACKET.setInfoData(packetAdd, profile.getId(), ping, chatBaseComponentName);
+		PacketNM.NMS_PACKET.setInfoData(packetAdd, profile.getId(), ping, dName);
 
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(player, packetAdd);
@@ -132,7 +137,7 @@ public final class FakePlayer implements IFakePlayer {
 			packetUpdateScore = PacketNM.NMS_PACKET.changeScoreboardScorePacket(objectType.getObjectName(), name, ping);
 		}
 
-		PacketNM.NMS_PACKET.setInfoData(info, profile.getId(), ping, chatBaseComponentName);
+		PacketNM.NMS_PACKET.setInfoData(info, profile.getId(), ping, displayNameComponent());
 
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(player, info);

@@ -103,8 +103,12 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				classes.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket"));
 			} catch (ClassNotFoundException e) {
 				try {
-					classes.add(hu.montlikadani.tablist.utils.reflection.ReflectionUtils.classByName("net.minecraft.network.protocol.game", "PacketPlayOutPlayerInfo"));
+					classes.add(Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo"));
 				} catch (ClassNotFoundException ex) {
+					try {
+						classes.add(Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".PacketPlayOutPlayerInfo"));
+					} catch (ClassNotFoundException c) {
+					}
 				}
 			}
 

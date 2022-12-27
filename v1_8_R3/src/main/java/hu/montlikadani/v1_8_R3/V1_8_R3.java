@@ -367,8 +367,7 @@ public final class V1_8_R3 implements IPacketNM {
 				PacketPlayOutPlayerInfo playerInfoPacket = (PacketPlayOutPlayerInfo) msg;
 
 				if (playerInfoAction.get(playerInfoPacket) == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE) {
-					for (PacketPlayOutPlayerInfo.PlayerInfoData infoData : (List<PacketPlayOutPlayerInfo.PlayerInfoData>) infoList
-							.get(playerInfoPacket)) {
+					for (PacketPlayOutPlayerInfo.PlayerInfoData infoData : (List<PacketPlayOutPlayerInfo.PlayerInfoData>) infoList.get(playerInfoPacket)) {
 						if (infoData.c() == EnumGamemode.SPECTATOR && !infoData.a().getId().equals(listenerPlayerId)) {
 							setEntriesField(playerInfoPacket, () -> playerInfoPacket.new PlayerInfoData(infoData.a(), infoData.b(), EnumGamemode.CREATIVE, infoData.d()));
 						}

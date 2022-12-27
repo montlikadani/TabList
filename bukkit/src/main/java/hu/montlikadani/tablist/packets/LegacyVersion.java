@@ -5,6 +5,8 @@ import hu.montlikadani.api.IPacketNM;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.reflection.ClazzContainer;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
@@ -19,22 +21,33 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
-// TODO get rid from this, I am starting to hate this now, I have a lot of work with this
 public final class LegacyVersion implements IPacketNM {
 
     private Method playerHandleMethod, sendPacketMethod, getHandleWorldMethod, getServerMethod;
-    private Field playerConnectionField, headerField, footerField, listNameField, playerTeamNameField;
+    private Field playerConnectionField, headerField, footerField, listNameField, playerTeamNameField, networkManager, channel;
     private Constructor<?> playerListHeaderFooterConstructor, entityPlayerConstructor, interactManagerConstructor;
     private Class<?> minecraftServer, interactManager, craftServerClass;
 
     private final List<Object> playerTeams = new ArrayList<>();
 
     public LegacyVersion() {
-        Class<?> playerListHeaderFooter;
-
         try {
-            playerListHeaderFooter = ReflectionUtils.classByName("net.minecraft.network.protocol.game", "PacketPlayOutPlayerListHeaderFooter");
+            Class<?> networkManagerClass = ClazzContainer.classByName("net.minecraft.server.network", "NetworkManager");
+
+            networkManager = ClazzContainer.getFieldByType(ClazzContainer.classByName("net.minecraft.server.network", "PlayerConnection"),
+                    networkManagerClass);
+            channel = ClazzContainer.getFieldByType(networkManagerClass, Channel.class);
+
+            playerConnectionField = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer")
+                    .getDeclaredField((ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1) ? "b" : "playerConnection"));
+        } catch (ClassNotFoundException | NoSuchFieldException e) {
+        }
+
+        Class<?> playerListHeaderFooter;
+        try {
+            playerListHeaderFooter = ClazzContainer.classByName("net.minecraft.network.protocol.game", "PacketPlayOutPlayerListHeaderFooter");
         } catch (ClassNotFoundException e) {
             return;
         }
@@ -71,10 +84,36 @@ public final class LegacyVersion implements IPacketNM {
 
     @Override
     public void addPlayerChannelListener(Player player, Class<?>... classesToListen) {
+        Object entityPlayer = getPlayerHandle(player);
+        Channel channel;
+
+        try {
+            channel = (Channel) this.channel.get(networkManager.get(playerConnectionField.get(entityPlayer)));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        if (channel.pipeline().get("PacketInjector") == null) {
+            channel.pipeline().addBefore("packet_handler", "PacketInjector", new PacketReceivingListener(player.getUniqueId(), classesToListen));
+        }
     }
 
     @Override
     public void removePlayerChannelListener(Player player) {
+        Object entityPlayer = getPlayerHandle(player);
+        Channel channel;
+
+        try {
+            channel = (Channel) this.channel.get(networkManager.get(playerConnectionField.get(entityPlayer)));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        if (channel.pipeline().get("PacketInjector") != null) {
+            channel.pipeline().remove("PacketInjector");
+        }
     }
 
     private Object getServer(Class<?> server) {
@@ -106,13 +145,7 @@ public final class LegacyVersion implements IPacketNM {
     @Override
     public void sendPacket(Player player, Object packet) {
         try {
-            Object playerHandle = getPlayerHandle(player);
-
-            if (playerConnectionField == null) {
-                playerConnectionField = playerHandle.getClass().getDeclaredField((ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1) ? "b" : "playerConnection"));
-            }
-
-            Object playerConnection = playerConnectionField.get(playerHandle);
+            Object playerConnection = playerConnectionField.get(getPlayerHandle(player));
 
             if (sendPacketMethod == null) {
                 sendPacketMethod = playerConnection.getClass().getDeclaredMethod(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_18_R1) ? "a" : "sendPacket",
@@ -120,7 +153,7 @@ public final class LegacyVersion implements IPacketNM {
             }
 
             sendPacketMethod.invoke(playerConnection, packet);
-        } catch (Exception e) {
+        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
         }
     }
 
@@ -137,10 +170,6 @@ public final class LegacyVersion implements IPacketNM {
 
     @Override
     public void sendTabTitle(Player player, Object header, Object footer) {
-        if (header == null || footer == null) {
-            return;
-        }
-
         try {
             Object packet;
 
@@ -203,19 +232,18 @@ public final class LegacyVersion implements IPacketNM {
     public Object getNewEntityPlayer(GameProfile profile) {
         if (minecraftServer == null) {
             try {
-                minecraftServer = ReflectionUtils.classByName("net.minecraft.server", "MinecraftServer");
+                minecraftServer = ClazzContainer.classByName("net.minecraft.server", "MinecraftServer");
             } catch (ClassNotFoundException c) {
                 try {
-                    minecraftServer = ReflectionUtils.classByName("net.minecraft.server.dedicated", "DedicatedServer");
+                    minecraftServer = ClazzContainer.classByName("net.minecraft.server.dedicated", "DedicatedServer");
                 } catch (ClassNotFoundException e) {
                 }
             }
         }
 
-        try {
-            // Only get the first world
-            org.bukkit.World world = Bukkit.getServer().getWorlds().get(0);
+        org.bukkit.World world = Bukkit.getServer().getWorlds().get(0);
 
+        try {
             if (getHandleWorldMethod == null) {
                 getHandleWorldMethod = world.getClass().getDeclaredMethod("getHandle");
             }
@@ -225,10 +253,10 @@ public final class LegacyVersion implements IPacketNM {
             if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
                 if (entityPlayerConstructor == null) {
                     if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
-                        entityPlayerConstructor = ReflectionUtils.classByName("net.minecraft.server.level", "EntityPlayer").getConstructor(minecraftServer, worldServer.getClass(),
-                                profile.getClass(), ReflectionUtils.classByName("net.minecraft.world.entity.player", "ProfilePublicKey"));
+                        entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer").getConstructor(minecraftServer, worldServer.getClass(),
+                                profile.getClass(), ClazzContainer.classByName("net.minecraft.world.entity.player", "ProfilePublicKey"));
                     } else {
-                        entityPlayerConstructor = ReflectionUtils.classByName("net.minecraft.server.level", "EntityPlayer").getConstructor(minecraftServer, worldServer.getClass(),
+                        entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer").getConstructor(minecraftServer, worldServer.getClass(),
                                 profile.getClass());
                     }
                 }
@@ -241,7 +269,7 @@ public final class LegacyVersion implements IPacketNM {
             }
 
             if (interactManager == null) {
-                interactManager = ReflectionUtils.classByName("net.minecraft.server.level", "PlayerInteractManager");
+                interactManager = ClazzContainer.classByName("net.minecraft.server.level", "PlayerInteractManager");
             }
 
             if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
@@ -253,7 +281,7 @@ public final class LegacyVersion implements IPacketNM {
             }
 
             if (entityPlayerConstructor == null) {
-                entityPlayerConstructor = ReflectionUtils.classByName("net.minecraft.server.level", "EntityPlayer").getConstructor(minecraftServer, worldServer.getClass(),
+                entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer").getConstructor(minecraftServer, worldServer.getClass(),
                         profile.getClass(), interactManager);
             }
 
@@ -301,10 +329,7 @@ public final class LegacyVersion implements IPacketNM {
                 setListName(entityPlayer, component);
             }
 
-            Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
-            Array.set(entityPlayerArray, 0, entityPlayer);
-
-            return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateDisplayName(), entityPlayerArray);
+            return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateDisplayName(), toArray(entityPlayer));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -328,8 +353,14 @@ public final class LegacyVersion implements IPacketNM {
     @Override
     public Object newPlayerInfoUpdatePacketAdd(Object... entityPlayers) {
         try {
-            return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), entityPlayers);
-        } catch (Exception e) {
+
+            // Weird reflection behaviour: this sometimes work and not
+            try {
+                return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), toArray(entityPlayers));
+            } catch (IllegalArgumentException ex) {
+                return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), entityPlayers);
+            }
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
 
@@ -339,11 +370,14 @@ public final class LegacyVersion implements IPacketNM {
     @Override
     public Object updateLatency(Object entityPlayer) {
         try {
-            Object entityPlayerArray = Array.newInstance(entityPlayer.getClass(), 1);
-            Array.set(entityPlayerArray, 0, entityPlayer);
 
-            return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateLatency(), entityPlayerArray);
-        } catch (Exception e) {
+            // Weird reflection behaviour: this sometimes work and not
+            try {
+                return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateLatency(), toArray(entityPlayer));
+            } catch (IllegalArgumentException ex) {
+                return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateLatency(), entityPlayer);
+            }
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
         }
 
@@ -351,28 +385,33 @@ public final class LegacyVersion implements IPacketNM {
     }
 
     @Override
-    public Object removeEntityPlayers(Object... entityPlayer) {
+    public Object removeEntityPlayers(Object... entityPlayers) {
         try {
-            return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getRemovePlayer(), entityPlayer);
-        } catch (Exception e) {
+            return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getRemovePlayer(), toArray(entityPlayers));
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    // don't know why this required, but without this "argument type mismatch"
+    private Object toArray(Object... arr) {
+        Object entityPlayerArray = Array.newInstance(arr[0].getClass(), arr.length);
+
+        for (int i = 0; i < arr.length; i++) {
+            Array.set(entityPlayerArray, i, arr[i]);
+        }
+
+        return entityPlayerArray;
     }
 
     @SuppressWarnings("unchecked")
     @Override
-    public void setInfoData(Object info, java.util.UUID id, int ping, Object component) {
+    public void setInfoData(Object info, UUID id, int ping, Object component) {
         try {
             for (Object infoData : (List<Object>) ClazzContainer.getInfoList().get(info)) {
-                GameProfile profile;
-
-                if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-                    profile = (GameProfile) ClazzContainer.getPlayerInfoDataProfileField().get(infoData);
-                } else {
-                    profile = (GameProfile) ClazzContainer.getPlayerInfoDataProfileMethod().invoke(infoData);
-                }
+                GameProfile profile = ClazzContainer.getPlayerInfoDataProfile(infoData);
 
                 if (!profile.getId().equals(id)) {
                     continue;
@@ -400,6 +439,14 @@ public final class LegacyVersion implements IPacketNM {
         }
     }
 
+    private void setEntriesField(Object playerInfoPacket, java.util.function.Supplier<Object> supplier) {
+        try {
+            ClazzContainer.getInfoList().set(playerInfoPacket, Collections.singletonList(supplier.get()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     @SuppressWarnings("deprecation")
     @Override
     public Object createBoardTeam(Object teamName, Player player, boolean followNameTagVisibility) {
@@ -419,7 +466,7 @@ public final class LegacyVersion implements IPacketNM {
             } else {
                 newTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
 
-                ClazzContainer.getScoreboardTeamName().set(newTeamPacket, teamName);
+                ClazzContainer.getScoreboardTeamName().set(newTeamPacket, ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) ? teamName.toString() : teamName);
                 ClazzContainer.getScoreboardTeamMode().set(newTeamPacket, 0);
                 ClazzContainer.getScoreboardTeamDisplayName().set(newTeamPacket, ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1) ? teamName : teamName.toString());
                 ClazzContainer.getScoreboardTeamNames().set(newTeamPacket, Collections.singletonList(player.getName()));
@@ -618,5 +665,73 @@ public final class LegacyVersion implements IPacketNM {
         }
 
         return null;
+    }
+
+    private final class PacketReceivingListener extends io.netty.channel.ChannelDuplexHandler {
+
+        private final UUID listenerPlayerId;
+        private final Class<?>[] classesToListen;
+
+        public PacketReceivingListener(UUID listenerPlayerId, Class<?>... classesToListen) {
+            this.listenerPlayerId = listenerPlayerId;
+            this.classesToListen = classesToListen;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
+            Class<?> receivingClass = msg.getClass();
+
+            for (Class<?> cl : classesToListen) {
+                if (cl != receivingClass) {
+                    continue;
+                }
+
+                if (ClazzContainer.getActionField().get(msg) == ClazzContainer.getEnumUpdateGameMode()) {
+                    for (Object entry : (List<Object>) ClazzContainer.getInfoList().get(msg)) {
+                        if (ClazzContainer.getPlayerInfoDataGameMode().get(entry) != ClazzContainer.getGameModeSpectator()) {
+                            continue;
+                        }
+
+                        GameProfile profile = ClazzContainer.getPlayerInfoDataProfile(entry);
+
+                        if (profile.getId().equals(listenerPlayerId)) {
+                            continue;
+                        }
+
+                        setEntriesField(msg, () -> {
+                            try {
+                                int ping = ClazzContainer.getPlayerInfoDataPing().getInt(entry);
+                                Object component = ClazzContainer.getPlayerInfoDisplayName().get(entry);
+
+                                if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
+                                    if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
+                                        return ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeCreative(), component, null);
+                                    }
+
+                                    return ClazzContainer.getPlayerInfoDataConstructor().newInstance(msg, profile, ping, ClazzContainer.getGameModeCreative(), component);
+                                }
+
+                                return ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeCreative(), component);
+                            } catch (IllegalAccessException | InstantiationException |
+                                     java.lang.reflect.InvocationTargetException e) {
+                                e.printStackTrace();
+                            }
+
+                            return null;
+                        });
+                    }
+                }
+
+                break;
+            }
+
+            super.write(ctx, msg, promise);
+        }
+
+        @Override
+        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+            super.channelRead(ctx, msg);
+        }
     }
 }
