@@ -94,8 +94,8 @@ public final class LegacyVersion implements IPacketNM {
             return;
         }
 
-        if (channel.pipeline().get("PacketInjector") == null) {
-            channel.pipeline().addBefore("packet_handler", "PacketInjector", new PacketReceivingListener(player.getUniqueId(), classesToListen));
+        if (channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
+            channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(player.getUniqueId(), classesToListen));
         }
     }
 
@@ -111,8 +111,8 @@ public final class LegacyVersion implements IPacketNM {
             return;
         }
 
-        if (channel.pipeline().get("PacketInjector") != null) {
-            channel.pipeline().remove("PacketInjector");
+        if (channel.pipeline().get(PACKET_INJECTOR_NAME) != null) {
+            channel.pipeline().remove(PACKET_INJECTOR_NAME);
         }
     }
 

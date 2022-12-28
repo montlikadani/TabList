@@ -69,8 +69,8 @@ public final class V1_8_R3 implements IPacketNM {
 	public void addPlayerChannelListener(Player player, Class<?>... classesToListen) {
 		EntityPlayer entityPlayer = getPlayerHandle(player);
 
-		if (entityPlayer.playerConnection.networkManager.channel.pipeline().get("PacketInjector") == null) {
-			entityPlayer.playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", "PacketInjector",
+		if (entityPlayer.playerConnection.networkManager.channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
+			entityPlayer.playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
 					new PacketReceivingListener(entityPlayer.getUniqueID(), classesToListen));
 		}
 	}
@@ -79,8 +79,8 @@ public final class V1_8_R3 implements IPacketNM {
 	public void removePlayerChannelListener(Player player) {
 		EntityPlayer entityPlayer = getPlayerHandle(player);
 
-		if (entityPlayer.playerConnection.networkManager.channel.pipeline().get("PacketInjector") != null) {
-			entityPlayer.playerConnection.networkManager.channel.pipeline().remove("PacketInjector");
+		if (entityPlayer.playerConnection.networkManager.channel.pipeline().get(PACKET_INJECTOR_NAME) != null) {
+			entityPlayer.playerConnection.networkManager.channel.pipeline().remove(PACKET_INJECTOR_NAME);
 		}
 	}
 

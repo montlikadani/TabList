@@ -29,7 +29,7 @@ public class TeamHandler {
 	}
 
 	public void setAfkSortPriority(int afkSortPriority) {
-		if (afkSortPriority >= 0) {
+		if (afkSortPriority >= -1) {
 			this.afkSortPriority = afkSortPriority;
 		}
 	}

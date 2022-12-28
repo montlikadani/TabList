@@ -128,7 +128,7 @@ public final class GroupPlayer {
 		// Initial inspections to remove group from player, if one of condition is true
 		if (!isPlayerCanSeeGroup(player)) {
 
-			// Make sure the group or global is exist and remove only once
+			// Make sure the group or global is exists and remove only once
 			if (group != null || globalGroup != null) {
 				tl.getGroups().removePlayerGroup(tabListUser);
 				tl.getGroups().setToSort(false); // Refuse to sort by this player
@@ -144,7 +144,7 @@ public final class GroupPlayer {
 		String playerName = player.getName();
 		java.util.List<TeamHandler> teams = groups.getGroupsList();
 
-		// Search for player' name
+		// Search for player name
 		for (TeamHandler team : teams) {
 			if (playerName.equalsIgnoreCase(team.team)) {
 
@@ -160,7 +160,7 @@ public final class GroupPlayer {
 					}
 				}
 
-				if (group != team) { // Player' group was changed
+				if (group != team) { // Player group was changed
 					update = true;
 					setGroup(team);
 				}
@@ -261,6 +261,12 @@ public final class GroupPlayer {
 					}
 				}
 			}
+		}
+
+		// If player has a group which is not in groups.yml and it has not changed since last check
+		if (group == null && globalGroup == null) {
+			setGroup(groups.getDefaultAssignedGroup());
+			update = true;
 		}
 
 		return update;

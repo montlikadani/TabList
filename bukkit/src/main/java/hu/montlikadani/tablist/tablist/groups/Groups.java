@@ -34,6 +34,7 @@ public final class Groups {
 	private final Set<GroupPlayer> afkPlayersCache = new HashSet<>();
 
 	private boolean toSort = true;
+	private TeamHandler defaultAssignedGroup;
 
 	public Groups(TabList plugin) {
 		this.plugin = plugin;
@@ -46,6 +47,14 @@ public final class Groups {
 	 */
 	public List<TeamHandler> getGroupsList() {
 		return groupsList;
+	}
+
+	/**
+	 * @return the default assigned group which every online player have except
+	 * who already have a group specified
+	 */
+	public TeamHandler getDefaultAssignedGroup() {
+		return defaultAssignedGroup;
 	}
 
 	/**
@@ -165,6 +174,8 @@ public final class Groups {
 
 			groupsList.add(th);
 		}
+
+		groupsList.add(defaultAssignedGroup = new TeamHandler("defaultLast", TabText.EMPTY, TabText.EMPTY, "", 0));
 
 		// Sort groups by priority to match the lowest priority firstly (highest
 		// priority is on the top of other)
