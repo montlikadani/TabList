@@ -233,7 +233,7 @@ public final class GroupPlayer {
 						setGroup(team);
 					}
 
-					break;
+					return update;
 				}
 			} else if (tl.hasVault()) {
 				for (String playerGroup : tl.getVaultPerm().getPlayerGroups(player)) {
@@ -264,7 +264,7 @@ public final class GroupPlayer {
 		}
 
 		// If player has a group which is not in groups.yml and it has not changed since last check
-		if (group == null && globalGroup == null) {
+		if (group != groups.getDefaultAssignedGroup() || (group == null && globalGroup == null)) {
 			setGroup(groups.getDefaultAssignedGroup());
 			update = true;
 		}
