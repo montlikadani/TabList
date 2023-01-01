@@ -17,6 +17,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ScoreboardServer;
 import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.world.level.EnumGamemode;
+import net.minecraft.world.scores.Scoreboard;
 import net.minecraft.world.scores.ScoreboardObjective;
 import net.minecraft.world.scores.ScoreboardTeam;
 import net.minecraft.world.scores.criteria.IScoreboardCriteria;
@@ -195,9 +196,10 @@ public final class V1_19_R2 implements IPacketNM {
 
     @Override
     public PacketPlayOutScoreboardTeam createBoardTeam(Object teamNameComponent, String teamName, Player player, boolean followNameTagVisibility) {
-        ScoreboardTeam playerTeam = new ScoreboardTeam(new net.minecraft.world.scores.Scoreboard(), teamName);
+        Scoreboard scoreboard = new Scoreboard();
+        ScoreboardTeam playerTeam = scoreboard.g(teamName);
 
-        playerTeam.g().add(player.getName());
+        scoreboard.a(player.getName(), playerTeam);
         playerTeam.a((IChatBaseComponent) teamNameComponent);
 
         if (followNameTagVisibility) {

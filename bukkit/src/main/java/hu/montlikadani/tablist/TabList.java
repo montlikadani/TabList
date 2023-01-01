@@ -477,12 +477,16 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	/**
 	 * @param player {@link Player}
-	 * @return An {@link Optional} containing the {@link TabListUser} if present, otherwise {@link Optional#empty()}
+	 * @return {@link TabListUser} if present, otherwise {@link Optional#empty()}
 	 */
 	public Optional<TabListUser> getUser(Player player) {
 		return player == null ? Optional.empty() : getUser(player.getUniqueId());
 	}
 
+	/**
+	 * @param uuid {@link UUID} of specific player
+	 * @return {@link TabListUser} if present, otherwise {@link Optional#empty()}
+	 */
 	public Optional<TabListUser> getUser(UUID uuid) {
 		if (uuid != null) {
 			for (TabListUser tlp : users) {

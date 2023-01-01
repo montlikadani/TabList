@@ -20,7 +20,6 @@ public final class FakePlayer implements IFakePlayer {
 	private UUID headId;
 	private int ping = -1;
 
-	private Object chatBaseComponentName;
 	private Object fakeEntityPlayer;
 	private GameProfile profile;
 
@@ -59,7 +58,6 @@ public final class FakePlayer implements IFakePlayer {
 	public void setName(String name) {
 		setNameWithoutRenamingProfile(name);
 
-		chatBaseComponentName = this.name.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT : ReflectionUtils.asComponent(this.name);
 		profile = new GameProfile(profile.getId(), this.name);
 	}
 

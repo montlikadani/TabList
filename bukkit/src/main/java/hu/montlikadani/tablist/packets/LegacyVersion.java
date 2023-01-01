@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
+import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -25,10 +26,12 @@ import java.util.UUID;
 
 public final class LegacyVersion implements IPacketNM {
 
-    private Method playerHandleMethod, sendPacketMethod, getHandleWorldMethod, getServerMethod;
-    private Field playerConnectionField, headerField, footerField, listNameField, playerTeamNameField, networkManager, channel;
-    private Constructor<?> playerListHeaderFooterConstructor, entityPlayerConstructor, interactManagerConstructor;
+    private Method playerHandleMethod, sendPacketMethod, getHandleWorldMethod, getServerMethod, interactGameModeMethod;
+    private Field playerConnectionField, headerField, footerField, listNameField, playerTeamNameField, networkManager, channel, playerLatency, gameProfileField,
+            interactManagerField;
+    private Constructor<?> playerListHeaderFooterConstructor, entityPlayerConstructor, interactManagerConstructor, packetPlayInArmAnimation;
     private Class<?> minecraftServer, interactManager, craftServerClass;
+    private Object mainHand;
 
     private final List<Object> playerTeams = new ArrayList<>();
 
@@ -319,7 +322,91 @@ public final class LegacyVersion implements IPacketNM {
 
     @Override
     public void appendPlayerWithoutListed(Player source) {
-        // TODO
+        Object player = getPlayerHandle(source);
+
+        try {
+            Object updatePacket = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), toArray(player));
+
+            setEntriesField(updatePacket, () -> {
+                if (playerLatency == null) {
+                    playerLatency = fieldByNameAndType(player.getClass(), int.class, "latency", "ping", "g", "f", "e");
+                }
+
+                if (gameProfileField == null) {
+                    gameProfileField = ClazzContainer.getFieldByType(player.getClass(), GameProfile.class);
+                }
+
+                if (interactManagerField == null) {
+                    interactManagerField = ClazzContainer.getFieldByType(player.getClass(), interactManager);
+                }
+
+                try {
+                    Object interactManagerInstance = interactManagerField.get(player);
+
+                    if (interactGameModeMethod == null) {
+                        interactGameModeMethod = methodByTypeAndName(interactManagerInstance.getClass(), ClazzContainer.getGameModeCreative().getClass(),
+                                "b", "getGameModeForPlayer", "getGameMode");
+                    }
+
+                    int ping = playerLatency.getInt(player);
+                    GameProfile profile = (GameProfile) gameProfileField.get(player);
+                    Object gameMode = interactGameModeMethod.invoke(interactManagerInstance);
+
+                    if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
+                        if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
+                            return ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, gameMode,
+                                    ReflectionUtils.EMPTY_COMPONENT, null);
+                        }
+
+                        return ClazzContainer.getPlayerInfoDataConstructor().newInstance(updatePacket, profile, ping, gameMode, ReflectionUtils.EMPTY_COMPONENT);
+                    }
+
+                    return ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, gameMode, ReflectionUtils.EMPTY_COMPONENT);
+                } catch (IllegalAccessException | InstantiationException |
+                         java.lang.reflect.InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+
+                return null;
+            });
+
+            if (packetPlayInArmAnimation == null) {
+                Class<?> cl = ClazzContainer.classByName("net.minecraft.network.protocol.game", "PacketPlayInArmAnimation");
+
+                try {
+                    packetPlayInArmAnimation = cl.getConstructor();
+                } catch (NoSuchMethodException ex) {
+                    Class<?> enumHand = ClazzContainer.classByName("net.minecraft.world", "EnumHand");
+
+                    packetPlayInArmAnimation = cl.getConstructor(enumHand);
+                    mainHand = fieldByNameAndType(enumHand, enumHand, "a", "hand", "MAIN_HAND").get(enumHand);
+                }
+            }
+
+            Object animatePacket = packetPlayInArmAnimation.getParameterCount() == 0 ? packetPlayInArmAnimation.newInstance()
+                    : packetPlayInArmAnimation.newInstance(mainHand);
+
+            for (Player pl : Bukkit.getOnlinePlayers()) {
+                sendPacket(pl, updatePacket);
+                sendPacket(pl, animatePacket);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private Method methodByTypeAndName(Class<?> from, Class<?> type, String... names) {
+        for (Method method : from.getDeclaredMethods()) {
+            if (method.getReturnType() == type) {
+                for (String name : names) {
+                    if (method.getName().equals(name)) {
+                        return method;
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
     @Override

@@ -224,9 +224,10 @@ public final class V1_8_R3 implements IPacketNM {
 
 	@Override
 	public PacketPlayOutScoreboardTeam createBoardTeam(Object teamNameComponent, String teamName, Player player, boolean followNameTagVisibility) {
-		ScoreboardTeam playerTeam = new ScoreboardTeam(new Scoreboard(), teamName);
+		Scoreboard scoreboard = new Scoreboard();
+		ScoreboardTeam playerTeam = scoreboard.createTeam(teamName);
 
-		playerTeam.getPlayerNameSet().add(player.getName());
+		scoreboard.addPlayerToTeam(player.getName(), teamName);
 		playerTeam.setDisplayName(teamName);
 
 		if (followNameTagVisibility) {

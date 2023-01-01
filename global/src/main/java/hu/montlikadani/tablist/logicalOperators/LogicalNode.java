@@ -16,13 +16,13 @@ public interface LogicalNode {
 
 	boolean parse(double value);
 
-	public enum NodeType {
+	enum NodeType {
 
 		PING, TPS
 
 	}
 
-	public static StringBuilder parseCondition(double value, NodeType type, List<LogicalNode> nodes) {
+	static StringBuilder parseCondition(double value, NodeType type, List<LogicalNode> nodes) {
 		String color = "";
 
 		for (LogicalNode node : nodes) {
@@ -37,7 +37,7 @@ public interface LogicalNode {
 		return type == NodeType.PING ? builder.append((int) value) : builder.append(value);
 	}
 
-	public static void reverseOrderOfArray(List<LogicalNode> nodes) {
+	static void reverseOrderOfArray(List<LogicalNode> nodes) {
 		// Sort
 		// ping in descending order
 		// tps in ascending order
