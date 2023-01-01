@@ -26,8 +26,8 @@ import java.util.UUID;
 
 public final class LegacyVersion implements IPacketNM {
 
-    private Method playerHandleMethod, sendPacketMethod, getHandleWorldMethod, getServerMethod, interactGameModeMethod;
-    private Field playerConnectionField, headerField, footerField, listNameField, playerTeamNameField, networkManager, channel, playerLatency, gameProfileField,
+    private Method playerHandleMethod, sendPacketMethod, getHandleWorldMethod, getServerMethod, interactGameModeMethod, gameProfileMethod;
+    private Field playerConnectionField, headerField, footerField, listNameField, playerTeamNameField, networkManager, channel, playerLatency,
             interactManagerField;
     private Constructor<?> playerListHeaderFooterConstructor, entityPlayerConstructor, interactManagerConstructor, packetPlayInArmAnimation;
     private Class<?> minecraftServer, interactManager, craftServerClass;
@@ -45,6 +45,8 @@ public final class LegacyVersion implements IPacketNM {
 
             playerConnectionField = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer")
                     .getDeclaredField((ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1) ? "b" : "playerConnection"));
+
+            interactManager = ClazzContainer.classByName("net.minecraft.server.level", "PlayerInteractManager");
         } catch (ClassNotFoundException | NoSuchFieldException e) {
         }
 
@@ -271,10 +273,6 @@ public final class LegacyVersion implements IPacketNM {
                 return entityPlayerConstructor.newInstance(getServer(minecraftServer), worldServer, profile);
             }
 
-            if (interactManager == null) {
-                interactManager = ClazzContainer.classByName("net.minecraft.server.level", "PlayerInteractManager");
-            }
-
             if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
                 if (interactManagerConstructor == null) {
                     interactManagerConstructor = interactManager.getConstructor(worldServer.getClass());
@@ -332,12 +330,13 @@ public final class LegacyVersion implements IPacketNM {
                     playerLatency = fieldByNameAndType(player.getClass(), int.class, "latency", "ping", "g", "f", "e");
                 }
 
-                if (gameProfileField == null) {
-                    gameProfileField = ClazzContainer.getFieldByType(player.getClass(), GameProfile.class);
+                if (gameProfileMethod == null) {
+                    gameProfileMethod = methodByTypeAndName(player.getClass().getSuperclass(), GameProfile.class, "getProfile", "fi", "getGameProfile",
+                            "cS", "dH", "fp", "da", "cK", "eA", "ez", "ed", "do", "da", "cP", "cL"); // This is why I hate
                 }
 
                 if (interactManagerField == null) {
-                    interactManagerField = ClazzContainer.getFieldByType(player.getClass(), interactManager);
+                    interactManagerField = fieldByNameAndType(player.getClass(), interactManager, "playerInteractManager", "d", "c", "gameMode");
                 }
 
                 try {
@@ -349,7 +348,7 @@ public final class LegacyVersion implements IPacketNM {
                     }
 
                     int ping = playerLatency.getInt(player);
-                    GameProfile profile = (GameProfile) gameProfileField.get(player);
+                    GameProfile profile = (GameProfile) gameProfileMethod.invoke(player);
                     Object gameMode = interactGameModeMethod.invoke(interactManagerInstance);
 
                     if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
@@ -370,25 +369,26 @@ public final class LegacyVersion implements IPacketNM {
                 return null;
             });
 
-            if (packetPlayInArmAnimation == null) {
+            // io.netty.handler.codec.EncoderException: java.io.IOException: Can't serialize unregistered packet
+            /*if (packetPlayInArmAnimation == null) {
                 Class<?> cl = ClazzContainer.classByName("net.minecraft.network.protocol.game", "PacketPlayInArmAnimation");
 
                 try {
-                    packetPlayInArmAnimation = cl.getConstructor();
-                } catch (NoSuchMethodException ex) {
                     Class<?> enumHand = ClazzContainer.classByName("net.minecraft.world", "EnumHand");
 
                     packetPlayInArmAnimation = cl.getConstructor(enumHand);
-                    mainHand = fieldByNameAndType(enumHand, enumHand, "a", "hand", "MAIN_HAND").get(enumHand);
+                    mainHand = fieldByNameAndType(enumHand, null, "a", "hand", "MAIN_HAND").get(enumHand);
+                } catch (NoSuchMethodException | ClassNotFoundException ex) {
+                    packetPlayInArmAnimation = cl.getConstructor();
                 }
             }
 
             Object animatePacket = packetPlayInArmAnimation.getParameterCount() == 0 ? packetPlayInArmAnimation.newInstance()
-                    : packetPlayInArmAnimation.newInstance(mainHand);
+                    : packetPlayInArmAnimation.newInstance(mainHand);*/
 
             for (Player pl : Bukkit.getOnlinePlayers()) {
                 sendPacket(pl, updatePacket);
-                sendPacket(pl, animatePacket);
+                //sendPacket(pl, animatePacket);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -396,13 +396,22 @@ public final class LegacyVersion implements IPacketNM {
     }
 
     private Method methodByTypeAndName(Class<?> from, Class<?> type, String... names) {
-        for (Method method : from.getDeclaredMethods()) {
+        Method[] methods = from.getDeclaredMethods();
+
+        for (Method method : methods) {
             if (method.getReturnType() == type) {
                 for (String name : names) {
                     if (method.getName().equals(name)) {
                         return method;
                     }
                 }
+            }
+        }
+
+        // If not found by name just return the first method which matches the type
+        for (Method method : methods) {
+            if (method.getReturnType() == type) {
+                return method;
             }
         }
 
@@ -675,7 +684,7 @@ public final class LegacyVersion implements IPacketNM {
 
     private Field fieldByNameAndType(Class<?> where, Class<?> type, String... names) {
         for (Field field : where.getDeclaredFields()) {
-            if (field.getType() == type) {
+            if (type == null || field.getType() == type) {
                 for (String name : names) {
                     if (field.getName().equals(name)) {
                         return field;
