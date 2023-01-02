@@ -249,12 +249,16 @@ public class TabHandler {
 			TabText tt = new TabText(he);
 			tt.plainText = plugin.makeAnim(tt.plainText);
 			he = tt;
+		} else {
+			he = TabText.EMPTY;
 		}
 
 		if (fo != null) {
 			TabText tt = new TabText(fo);
 			tt.plainText = plugin.makeAnim(tt.plainText);
 			fo = tt;
+		} else {
+			fo = TabText.EMPTY;
 		}
 
 		final Variables v = plugin.getPlaceholders();

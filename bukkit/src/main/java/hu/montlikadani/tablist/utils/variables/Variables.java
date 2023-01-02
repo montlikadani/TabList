@@ -126,14 +126,10 @@ public final class Variables {
 	}
 
 	public TabText replaceVariables(Player pl, TabText text) {
-		if (text != null) {
-			String t = replaceVariables(pl, text.getPlainText());
+		if (text != null && !text.getPlainText().isEmpty()) {
+			String str = replaceVariables(pl, text.getPlainText());
 
-			if (ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2)) {
-				t = Util.colorText(t);
-			}
-
-			text.updateText(t);
+			text.updateText(ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2) ? Util.colorText(str) : str);
 		}
 
 		return text;
