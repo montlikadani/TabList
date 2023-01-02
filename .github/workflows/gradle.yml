@@ -27,8 +27,12 @@ jobs:
         name: tablist-dev
         path: |
           !${{ github.workspace }}/bukkit/build/libs/*dev-all*.jar
+          !${{ github.workspace }}/bukkit/build/libs/*noshade.jar
           ${{ github.workspace }}/bukkit/build/libs/*bukkit*.jar
-          !${{ github.workspace }}/bukkit/build/libs/*dev-all*.jar
+
+          !${{ github.workspace }}/bungee/build/libs/*dev-all*.jar
+          !${{ github.workspace }}/bungee/build/libs/*noshade.jar
           ${{ github.workspace }}/bungee/build/libs/*bungee*.jar
+
           ${{ github.workspace }}/sponge7/build/libs/tablist-sponge7*.jar
           ${{ github.workspace }}/sponge8/build/libs/tablist-sponge8*.jar
