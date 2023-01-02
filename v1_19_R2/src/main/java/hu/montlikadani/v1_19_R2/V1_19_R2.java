@@ -8,6 +8,7 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.protocol.game.PacketPlayInArmAnimation;
+import net.minecraft.network.protocol.game.PacketPlayOutAnimation;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective;
@@ -114,7 +115,8 @@ public final class V1_19_R2 implements IPacketNM {
         setEntriesField(updatePacket, () -> new ClientboundPlayerInfoUpdatePacket.b(from.fD().getId(), from.fD(), false, from.e, from.d.b(), emptyComponent,
                 from.Y() == null ? null : from.Y().b()));
 
-        PacketPlayInArmAnimation animatePacket = new PacketPlayInArmAnimation(net.minecraft.world.EnumHand.a);
+        //PacketPlayInArmAnimation animatePacket = new PacketPlayInArmAnimation(net.minecraft.world.EnumHand.a);
+        PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
 
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             EntityPlayer entityPlayer = getPlayerHandle(player);

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Team;
@@ -21,7 +22,6 @@ import net.minecraft.server.v1_8_R3.IChatBaseComponent;
 import net.minecraft.server.v1_8_R3.IScoreboardCriteria;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.PacketPlayInArmAnimation;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerInfo;
 import net.minecraft.server.v1_8_R3.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.server.v1_8_R3.PacketPlayOutScoreboardDisplayObjective;
@@ -139,7 +139,8 @@ public final class V1_8_R3 implements IPacketNM {
 
 		setEntriesField(updatePacket, () -> updatePacket.new PlayerInfoData(from.getProfile(), from.ping, from.playerInteractManager.getGameMode(), emptyComponent));
 
-		PacketPlayInArmAnimation animatePacket = new PacketPlayInArmAnimation();
+		//PacketPlayInArmAnimation animatePacket = new PacketPlayInArmAnimation();
+		PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
 
 		for (Player player : org.bukkit.Bukkit.getServer().getOnlinePlayers()) {
 			EntityPlayer entityPlayer = getPlayerHandle(player);

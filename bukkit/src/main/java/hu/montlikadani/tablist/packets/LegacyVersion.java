@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import java.lang.reflect.AnnotatedArrayType;
 import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -29,9 +28,8 @@ public final class LegacyVersion implements IPacketNM {
     private Method playerHandleMethod, sendPacketMethod, getHandleWorldMethod, getServerMethod, interactGameModeMethod, gameProfileMethod;
     private Field playerConnectionField, headerField, footerField, listNameField, playerTeamNameField, networkManager, channel, playerLatency,
             interactManagerField;
-    private Constructor<?> playerListHeaderFooterConstructor, entityPlayerConstructor, interactManagerConstructor, packetPlayInArmAnimation;
+    private Constructor<?> playerListHeaderFooterConstructor, entityPlayerConstructor, interactManagerConstructor, packetPlayOutAnimation;
     private Class<?> minecraftServer, interactManager, craftServerClass;
-    private Object mainHand;
 
     private final List<Object> playerTeams = new ArrayList<>();
 
@@ -369,26 +367,16 @@ public final class LegacyVersion implements IPacketNM {
                 return null;
             });
 
-            // io.netty.handler.codec.EncoderException: java.io.IOException: Can't serialize unregistered packet
-            /*if (packetPlayInArmAnimation == null) {
-                Class<?> cl = ClazzContainer.classByName("net.minecraft.network.protocol.game", "PacketPlayInArmAnimation");
-
-                try {
-                    Class<?> enumHand = ClazzContainer.classByName("net.minecraft.world", "EnumHand");
-
-                    packetPlayInArmAnimation = cl.getConstructor(enumHand);
-                    mainHand = fieldByNameAndType(enumHand, null, "a", "hand", "MAIN_HAND").get(enumHand);
-                } catch (NoSuchMethodException | ClassNotFoundException ex) {
-                    packetPlayInArmAnimation = cl.getConstructor();
-                }
+            if (packetPlayOutAnimation == null) {
+                packetPlayOutAnimation = ClazzContainer.classByName("net.minecraft.network.protocol.game", "PacketPlayOutAnimation")
+                        .getConstructors()[1];
             }
 
-            Object animatePacket = packetPlayInArmAnimation.getParameterCount() == 0 ? packetPlayInArmAnimation.newInstance()
-                    : packetPlayInArmAnimation.newInstance(mainHand);*/
+            Object animatePacket = packetPlayOutAnimation.newInstance(player, 0);
 
             for (Player pl : Bukkit.getOnlinePlayers()) {
                 sendPacket(pl, updatePacket);
-                //sendPacket(pl, animatePacket);
+                sendPacket(pl, animatePacket);
             }
         } catch (Exception e) {
             e.printStackTrace();

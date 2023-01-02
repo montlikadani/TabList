@@ -5,7 +5,7 @@ import hu.montlikadani.api.IPacketNM;
 import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.PacketPlayInArmAnimation;
+import net.minecraft.network.protocol.game.PacketPlayOutAnimation;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective;
@@ -113,7 +113,8 @@ public final class V1_19_R1 implements IPacketNM {
 
         setEntriesField(updatePacket, () -> new PacketPlayOutPlayerInfo.PlayerInfoData(from.fy(), from.e, from.d.b(), emptyComponent, from.fz() == null ? null : from.fz().b()));
 
-        PacketPlayInArmAnimation animatePacket = new PacketPlayInArmAnimation(net.minecraft.world.EnumHand.a);
+        //PacketPlayInArmAnimation animatePacket = new PacketPlayInArmAnimation(net.minecraft.world.EnumHand.a);
+        PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
 
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
             EntityPlayer entityPlayer = getPlayerHandle(player);
