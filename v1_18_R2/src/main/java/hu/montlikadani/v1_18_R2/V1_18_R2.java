@@ -305,7 +305,7 @@ public final class V1_18_R2 implements IPacketNM {
                 if (playerInfoPacket.c() == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.b) {
                     for (PacketPlayOutPlayerInfo.PlayerInfoData entry : playerInfoPacket.b()) {
                         if (entry.c() == EnumGamemode.d && !entry.a().getId().equals(listenerPlayerId)) {
-                            setEntriesField(playerInfoPacket, () -> new PacketPlayOutPlayerInfo.PlayerInfoData(entry.a(), entry.b(), EnumGamemode.b, entry.d()));
+                            setEntriesField(playerInfoPacket, () -> new PacketPlayOutPlayerInfo.PlayerInfoData(entry.a(), entry.b(), EnumGamemode.a, entry.d()));
                         }
                     }
                 }

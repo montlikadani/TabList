@@ -46,6 +46,7 @@ public final class LegacyVersion implements IPacketNM {
 
             interactManager = ClazzContainer.classByName("net.minecraft.server.level", "PlayerInteractManager");
         } catch (ClassNotFoundException | NoSuchFieldException e) {
+            e.printStackTrace();
         }
 
         Class<?> playerListHeaderFooter;
@@ -341,7 +342,7 @@ public final class LegacyVersion implements IPacketNM {
                     Object interactManagerInstance = interactManagerField.get(player);
 
                     if (interactGameModeMethod == null) {
-                        interactGameModeMethod = methodByTypeAndName(interactManagerInstance.getClass(), ClazzContainer.getGameModeCreative().getClass(),
+                        interactGameModeMethod = methodByTypeAndName(interactManagerInstance.getClass(), ClazzContainer.getGameModeSurvival().getClass(),
                                 "b", "getGameModeForPlayer", "getGameMode");
                     }
 
@@ -656,7 +657,7 @@ public final class LegacyVersion implements IPacketNM {
         try {
             for (Object team : playerTeams) {
                 if (playerTeamNameField == null) {
-                    (playerTeamNameField = fieldByNameAndType(team.getClass(), String.class, "d", "a")).setAccessible(true);
+                    (playerTeamNameField = fieldByNameAndType(team.getClass(), String.class, "d", "a", "e", "i")).setAccessible(true);
                 }
 
                 if (playerTeamNameField.get(team).equals(teamName)) {
@@ -791,13 +792,13 @@ public final class LegacyVersion implements IPacketNM {
 
                                 if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
                                     if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
-                                        return ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeCreative(), component, null);
+                                        return ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeSurvival(), component, null);
                                     }
 
-                                    return ClazzContainer.getPlayerInfoDataConstructor().newInstance(msg, profile, ping, ClazzContainer.getGameModeCreative(), component);
+                                    return ClazzContainer.getPlayerInfoDataConstructor().newInstance(msg, profile, ping, ClazzContainer.getGameModeSurvival(), component);
                                 }
 
-                                return ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeCreative(), component);
+                                return ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeSurvival(), component);
                             } catch (IllegalAccessException | InstantiationException |
                                      java.lang.reflect.InvocationTargetException e) {
                                 e.printStackTrace();

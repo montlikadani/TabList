@@ -49,7 +49,7 @@ public final class JsonComponent {
 
 		while (matcher.find()) {
 			text = Global.replaceFrom(text, matcher.start(), "&", "", 6);
-			matcher = matcher.reset(text);
+			matcher.reset(text);
 		}
 
 		int length = text.length(), index = 0;

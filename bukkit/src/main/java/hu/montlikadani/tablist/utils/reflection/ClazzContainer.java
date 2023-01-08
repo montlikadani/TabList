@@ -15,7 +15,7 @@ public final class ClazzContainer {
 	private static Class<?> iChatBaseComponent, packet, enumPlayerInfoAction, packetPlayOutScoreboardTeam;
 
 	private static Object addPlayer, removePlayer, updateLatency, updateDisplayName, updateGameMode, enumScoreboardHealthDisplayInteger, enumScoreboardActionChange,
-			enumScoreboardActionRemove, iScoreboardCriteriaDummy, gameModeSpectator, gameModeCreative;
+			enumScoreboardActionRemove, iScoreboardCriteriaDummy, gameModeSpectator, gameModeSurvival;
 
 	private static Method scoreboardTeamSetNameTagVisibility, scoreboardTeamSetDisplayName, packetScoreboardTeamRemove, packetScoreboardTeamUpdateCreate,
 			playerInfoDataProfileMethod, playerNameSetMethod;
@@ -219,7 +219,7 @@ public final class ClazzContainer {
 			}
 
 			try {
-				gameModeCreative = enumGameMode.getDeclaredField("CREATIVE").get(enumGameMode);
+				gameModeSurvival = enumGameMode.getDeclaredField("SURVIVAL").get(enumGameMode);
 				gameModeSpectator = enumGameMode.getDeclaredField("SPECTATOR").get(enumGameMode);
 			} catch (NoSuchFieldException ex) {
 				Field field = enumGameMode.getDeclaredField("d");
@@ -227,8 +227,8 @@ public final class ClazzContainer {
 
 				gameModeSpectator = field.get(enumGameMode);
 
-				(field = enumGameMode.getDeclaredField("b")).setAccessible(true);
-				gameModeCreative = field.get(enumGameMode);
+				(field = enumGameMode.getDeclaredField("a")).setAccessible(true);
+				gameModeSurvival = field.get(enumGameMode);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -424,15 +424,15 @@ public final class ClazzContainer {
 		return gameModeSpectator;
 	}
 
-	public static Object getGameModeCreative() {
-		return gameModeCreative;
-	}
-
 	public static Field getPlayerInfoDataPing() {
 		return playerInfoDataPing;
 	}
 
 	public static Field getPlayerInfoDisplayName() {
 		return playerInfoDisplayName;
+	}
+
+	public static Object getGameModeSurvival() {
+		return gameModeSurvival;
 	}
 }

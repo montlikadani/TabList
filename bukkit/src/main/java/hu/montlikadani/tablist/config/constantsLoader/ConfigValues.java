@@ -64,8 +64,8 @@ public final class ConfigValues {
 		c.addComment("count-vanished-staffs", "true - count vanished staff in %staff-online% placeholder,", "but they need to have \"tablist.onlinestaff\" permission set.",
 				"false - does not count vanished staff in the %staff-online% placeholder", "Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!");
 		c.addComment("hide-player-from-tab-when-afk", "Hide player from player list when a player is AFK?", "Requires Essentials or CMI plugin!");
-		c.addComment("hide-players-from-tablist", "Hide all players from the player list?", "This removes all players from the player list, but the player that has the",
-				"group set is retained as it is not changed during removal, so your group", "will be restored if this option is disabled.");
+		c.addComment("hide-players-from-tablist", "Hide all players from the player list?", "This removes all players from the player list,",
+				"resulting to only display the tablist with header and footer without players.");
 
 		c.addComment("per-world-player-list", "Different player list in different world.");
 		c.addComment("per-world-player-list.world-groups", "You can specify worlds, which will share the same list of players");

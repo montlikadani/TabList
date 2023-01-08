@@ -309,7 +309,7 @@ public final class V1_19_R2 implements IPacketNM {
                     for (ClientboundPlayerInfoUpdatePacket.b entry : playerInfoPacket.c()) {
                         if (entry.e() == EnumGamemode.d && !entry.a().equals(listenerPlayerId)) {
                             setEntriesField(playerInfoPacket, () -> new ClientboundPlayerInfoUpdatePacket.b(entry.a(), entry.b(), entry.c(), entry.d(),
-                                    EnumGamemode.b, entry.f(), entry.g()));
+                                    EnumGamemode.a, entry.f(), entry.g()));
                         }
                     }
                 }
