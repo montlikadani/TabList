@@ -8,8 +8,7 @@ import hu.montlikadani.tablist.tablist.text.LegacyTextConverter;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.protocol.packet.PlayerListItem;
-import net.md_5.bungee.protocol.packet.PlayerListItem.Action;
-import net.md_5.bungee.protocol.packet.PlayerListItem.Item;
+import net.md_5.bungee.protocol.packet.PlayerListItemUpdate;
 
 public class PlayerGroup {
 
@@ -17,8 +16,8 @@ public class PlayerGroup {
 
 	private int y = 0;
 
-	private final Item item = new Item();
-	private final PlayerListItem listItem = new PlayerListItem();
+	private final PlayerListItem.Item item = new PlayerListItem.Item();
+	private final PlayerListItemUpdate listItemUpdate = new PlayerListItemUpdate();
 
 	public PlayerGroup(UUID playerId) {
 		this.playerId = playerId;
@@ -69,14 +68,11 @@ public class PlayerGroup {
 			item.setDisplayName(Misc.replaceVariables(LegacyTextConverter.toJson(text), player));
 		}
 
-		listItem.setItems(new Item[] { item });
-
-		if (listItem.getAction() != Action.UPDATE_DISPLAY_NAME) {
-			listItem.setAction(Action.UPDATE_DISPLAY_NAME);
-		}
+		listItemUpdate.setActions(java.util.EnumSet.of(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME));
+		listItemUpdate.setItems(new PlayerListItem.Item[] { item });
 
 		for (ProxiedPlayer pl : ProxyServer.getInstance().getPlayers()) {
-			pl.unsafe().sendPacket(listItem);
+			pl.unsafe().sendPacket(listItemUpdate);
 		}
 	}
 }

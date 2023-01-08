@@ -21,13 +21,6 @@ placeholder-format:
   - "&6%ping% >= 200"
   - "&c%ping% > 500"
 
-# Custom variables that will be replaced in tablist.
-# This is useful when creating a lot of lines with the same content.
-# Usage: <NameOfPlaceholder>: "&6Text..."
-custom-variables:
-  <name>: "&7&o%player-name%"
-  <lines>: "&5&m======================"
-
 # Enable the tablist groups?
 tablist-groups:
   enabled: false

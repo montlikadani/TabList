@@ -168,10 +168,6 @@ public final class TabList extends Plugin implements Listener {
 						target = (ProxiedPlayer) sender;
 					}
 
-					if (target == null) {
-						return;
-					}
-
 					boolean enabled;
 					java.util.UUID playerId = target.getUniqueId();
 
