@@ -69,9 +69,17 @@ public final class V1_8_R3 implements IPacketNM {
 	public void addPlayerChannelListener(Player player, Class<?>... classesToListen) {
 		EntityPlayer entityPlayer = getPlayerHandle(player);
 
+		if (!entityPlayer.playerConnection.networkManager.channel.pipeline().names().contains("packet_handler")) {
+			return;
+		}
+
 		if (entityPlayer.playerConnection.networkManager.channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
-			entityPlayer.playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
-					new PacketReceivingListener(entityPlayer.getUniqueID(), classesToListen));
+			try {
+				entityPlayer.playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
+						new PacketReceivingListener(entityPlayer.getUniqueID(), classesToListen));
+			} catch (java.util.NoSuchElementException ex) {
+				// packet_handler not exists, sure then, ignore
+			}
 		}
 	}
 

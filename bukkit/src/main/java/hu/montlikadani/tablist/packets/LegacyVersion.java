@@ -98,8 +98,16 @@ public final class LegacyVersion implements IPacketNM {
             return;
         }
 
+        if (!channel.pipeline().names().contains("packet_handler")) {
+            return;
+        }
+
         if (channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
-            channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(player.getUniqueId(), classesToListen));
+            try {
+                channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(player.getUniqueId(), classesToListen));
+            } catch (java.util.NoSuchElementException ex) {
+                // packet_handler not exists, sure then, ignore
+            }
         }
     }
 
