@@ -23,10 +23,7 @@ public enum ServerVersion {
 	v1_18_R1,
 	v1_18_R2,
 	v1_19_R1,
-	v1_19_R2,
-	v1_19_R3,
-	v1_20_R1,
-	v1_20_R2;
+	v1_19_R2;
 
 	private final int value;
 
@@ -41,19 +38,14 @@ public enum ServerVersion {
 		if (current != null)
 			return current;
 
-		String[] v = getArrayVersion();
-		String vv = v[v.length - 1];
-		ServerVersion[] arr = values();
+		String[] version = getArrayVersion();
+		String last = version[version.length - 1];
 
-		for (ServerVersion one : arr) {
-			if (one.name().equalsIgnoreCase(vv)) {
+		for (ServerVersion one : values()) {
+			if (one.name().equalsIgnoreCase(last)) {
 				current = one;
 				break;
 			}
-		}
-
-		if (current == null) { // It is possible when immo not added a new version enum
-			current = arr[arr.length - 1];
 		}
 
 		return current;
@@ -71,19 +63,11 @@ public enum ServerVersion {
 		return getCurrent().value >= v.value;
 	}
 
-	public static boolean isCurrentHigher(ServerVersion v) {
-		return getCurrent().value > v.value;
-	}
-
 	public static boolean isCurrentLower(ServerVersion v) {
 		return getCurrent().value < v.value;
 	}
 
 	public static boolean isCurrentEqualOrLower(ServerVersion v) {
 		return getCurrent().value <= v.value;
-	}
-
-	public static boolean isCurrentEqual(ServerVersion v) {
-		return getCurrent().value == v.value;
 	}
 }
