@@ -189,8 +189,6 @@ public class CommentedConfig extends YamlConfiguration {
 
 			if (comment.length() != 0) {
 				comment.append(System.lineSeparator());
-			} else {
-				line = System.lineSeparator() + line;
 			}
 
 			comment.append(line);

@@ -69,10 +69,6 @@ public final class V1_8_R3 implements IPacketNM {
 	public void addPlayerChannelListener(Player player, Class<?>... classesToListen) {
 		EntityPlayer entityPlayer = getPlayerHandle(player);
 
-		if (!entityPlayer.playerConnection.networkManager.channel.pipeline().names().contains("packet_handler")) {
-			return;
-		}
-
 		if (entityPlayer.playerConnection.networkManager.channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
 			try {
 				entityPlayer.playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
