@@ -65,13 +65,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		long load = System.currentTimeMillis();
 
 		if (ServerVersion.getCurrent() == null) {
-			logConsole(Level.SEVERE, "Your server version currently not supported " + ServerVersion.getArrayVersion()[3]);
-			getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
-
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R1)) {
-			logConsole(Level.SEVERE, "Your server version does not supported by this plugin! Please use 1.8+ or higher versions!");
+			logConsole(Level.SEVERE, "Your server version does not supported " + ServerVersion.getArrayVersion()[3]);
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
