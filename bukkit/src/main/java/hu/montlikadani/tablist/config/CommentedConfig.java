@@ -187,11 +187,7 @@ public class CommentedConfig extends YamlConfiguration {
 				line = leadSpaces + "# " + line;
 			}
 
-			if (comment.length() != 0) {
-				comment.append(System.lineSeparator());
-			}
-
-			comment.append(line);
+			comment.append(System.lineSeparator()).append(line);
 		}
 
 		comments.put(path, comment.toString());

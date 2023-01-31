@@ -4,7 +4,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.regex.Pattern;
 
 import org.bukkit.NamespacedKey;
 
@@ -22,7 +21,7 @@ public final class JsonComponent {
 	private final ArrayList<JsonObject> jsonList = new ArrayList<>(10);
 	private final java.util.Map<String, String> fonts = new java.util.HashMap<>(1);
 
-	private final Pattern colorRegexPattern = Pattern.compile("#&([0-9a-fA-F])");
+	private final java.util.regex.Matcher colorRegexMatcher = java.util.regex.Pattern.compile("#&([0-9a-fA-F])").matcher("");
 
 	private Object emptyJson;
 
@@ -45,11 +44,11 @@ public final class JsonComponent {
 
 		// Finds hex colours that may be coming from essentials (&x&f ..) and removes
 		// the "&" character to match the TL hex colour
-		java.util.regex.Matcher matcher = colorRegexPattern.matcher(text);
+		colorRegexMatcher.reset(text);
 
-		while (matcher.find()) {
-			text = Global.replaceFrom(text, matcher.start(), "&", "", 6);
-			matcher.reset(text);
+		while (colorRegexMatcher.find()) {
+			text = Global.replaceFrom(text, colorRegexMatcher.start(), "&", "", 6);
+			colorRegexMatcher.reset(text);
 		}
 
 		int length = text.length(), index = 0;
@@ -149,7 +148,7 @@ public final class JsonComponent {
 					i += 6; // Increase loop to skip the next 6 hex digit
 				}
 			} else if (charAt == '{') {
-				int closeIndex = -1;
+				int closeIndex;
 				int fromIndex = i + 6;
 
 				if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
