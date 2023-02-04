@@ -95,27 +95,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		conf.loadFiles();
 		variables.load();
-
-		if (ConfigValues.isRemoveGrayColorFromTabInSpec() || ConfigValues.isHidePlayersFromTab()) {
-			Set<Class<?>> classes = new HashSet<>();
-
-			try {
-				classes.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket"));
-			} catch (ClassNotFoundException e) {
-				try {
-					classes.add(Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo"));
-				} catch (ClassNotFoundException ex) {
-					try {
-						classes.add(Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".PacketPlayOutPlayerInfo"));
-					} catch (ClassNotFoundException c) {
-					}
-				}
-			}
-
-			if (!classes.isEmpty()) {
-				packetClasses = classes.toArray(new Class<?>[0]);
-			}
-		}
+		loadPacketListener();
 
 		if (ConfigValues.isPlaceholderAPI() && (papi = getServer().getPluginManager().getPlugin("PlaceholderAPI")) != null && papi.isEnabled()) {
 			logConsole("Hooked " + papi.getName() + " version: " + papi.getDescription().getVersion());
@@ -236,6 +216,30 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		});
 	}
 
+	private void loadPacketListener() {
+		if (!ConfigValues.isRemoveGrayColorFromTabInSpec() && !ConfigValues.isHidePlayersFromTab()) {
+			getServer().getOnlinePlayers().forEach(PacketNM.NMS_PACKET::removePlayerChannelListener);
+			packetClasses = null;
+			return;
+		}
+
+		packetClasses = new Class<?>[1];
+
+		try {
+			packetClasses[0] = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
+		} catch (ClassNotFoundException e) {
+			try {
+				packetClasses[0] = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo");
+			} catch (ClassNotFoundException ex) {
+				try {
+					packetClasses[0] = Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".PacketPlayOutPlayerInfo");
+				} catch (ClassNotFoundException c) {
+					packetClasses = null;
+				}
+			}
+		}
+	}
+
 	void loadListeners() {
 		HandlerList.unregisterAll(this);
 
@@ -276,6 +280,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		loadListeners();
 		conf.loadFiles();
 		loadAnimations();
+		loadPacketListener();
 		variables.load();
 		fakePlayerHandler.load();
 		groups.load();
