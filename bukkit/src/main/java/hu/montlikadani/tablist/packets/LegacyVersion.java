@@ -35,7 +35,13 @@ public final class LegacyVersion implements IPacketNM {
 
     public LegacyVersion() {
         try {
-            Class<?> networkManagerClass = ClazzContainer.classByName("net.minecraft.server.network", "NetworkManager");
+            Class<?> networkManagerClass;
+
+            try {
+                networkManagerClass = ClazzContainer.classByName("net.minecraft.server.network", "NetworkManager");
+            } catch (ClassNotFoundException ex) {
+                networkManagerClass = ClazzContainer.classByName("net.minecraft.network", "NetworkManager");
+            }
 
             networkManager = ClazzContainer.getFieldByType(ClazzContainer.classByName("net.minecraft.server.network", "PlayerConnection"),
                     networkManagerClass);
