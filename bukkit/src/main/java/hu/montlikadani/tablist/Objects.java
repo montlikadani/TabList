@@ -167,7 +167,7 @@ public final class Objects {
 	private int parsePapi(Player player, String from) {
 		if (plugin.hasPapi()) {
 			try {
-				return Integer.parseInt(StrUtil.getNumberEscapeSequence().matcher(me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, from)).replaceAll(""));
+				return Integer.parseInt(StrUtil.getNumberEscapeSequence().reset(me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, from)).replaceAll(""));
 			} catch (NumberFormatException e) {
 				hu.montlikadani.tablist.utils.Util.logConsole("Invalid custom objective with " + ConfigValues.getCustomObjectSetting() + " value.");
 			}

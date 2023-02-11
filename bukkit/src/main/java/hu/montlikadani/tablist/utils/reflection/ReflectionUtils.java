@@ -65,9 +65,9 @@ public final class ReflectionUtils {
 		if (LOCK != null) {
 
 			// JsonComponent#parseProperty takes a bit longer time than expected and in some
-			// circumstances it can cause ThreadDeath (deadlock) because of the synchronized
-			// method. With this lock now the current thread will be paused until the thread
-			// unlocks this lock. So multiple thread can await for it to be done.
+			// circumstances it can cause ThreadDeath (deadlock) due to long operation.
+			// With this lock now the current thread will be paused until the operation
+			// is working. So multiple thread can await for it to be done.
 			LOCK.lock();
 
 			Object component;

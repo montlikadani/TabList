@@ -665,7 +665,11 @@ public final class LegacyVersion implements IPacketNM {
     @Override
     public Object findBoardTeamByName(String teamName) {
         try {
-            for (Object team : playerTeams) {
+
+            // We use indexed loop to prevent concurrent modification exception
+            for (int i = 0; i < playerTeams.size(); i++) {
+                Object team = playerTeams.get(i);
+
                 if (playerTeamNameField == null) {
                     (playerTeamNameField = fieldByNameAndType(team.getClass(), String.class, "d", "a", "e", "i")).setAccessible(true);
                 }
