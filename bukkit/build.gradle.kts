@@ -30,7 +30,7 @@ dependencies {
         api(project(":v$it"))
     }
 
-    implementation("org.bstats:bstats-bukkit:3.0.0")
+    implementation("org.bstats:bstats-bukkit:3.0.1")
 
     compileOnly("com.github.xtomyserrax:StaffFacilities:5.0.8")
     compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8 so we must use this
