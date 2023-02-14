@@ -647,11 +647,7 @@ public final class LegacyVersion implements IPacketNM {
 
             Object oldTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
 
-            if (playerTeamNameField == null) {
-                (playerTeamNameField = fieldByNameAndType(playerTeam.getClass(), String.class, "d", "a")).setAccessible(true);
-            }
-
-            ClazzContainer.getScoreboardTeamName().set(oldTeamPacket, playerTeamNameField.get(playerTeam));
+            ClazzContainer.getScoreboardTeamName().set(oldTeamPacket, playerTeamName(playerTeam));
             ClazzContainer.getScoreboardTeamMode().set(oldTeamPacket, 1);
 
             return oldTeamPacket;
@@ -670,19 +666,23 @@ public final class LegacyVersion implements IPacketNM {
             for (int i = 0; i < playerTeams.size(); i++) {
                 Object team = playerTeams.get(i);
 
-                if (playerTeamNameField == null) {
-                    (playerTeamNameField = fieldByNameAndType(team.getClass(), String.class, "d", "a", "e", "i")).setAccessible(true);
-                }
-
-                if (playerTeamNameField.get(team).equals(teamName)) {
+                if (playerTeamName(team).equals(teamName)) {
                     return team;
                 }
             }
-        } catch (Exception e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    private Object playerTeamName(Object team) throws IllegalAccessException {
+        if (playerTeamNameField == null) {
+            (playerTeamNameField = fieldByNameAndType(team.getClass(), String.class, "d", "a", "e", "i")).setAccessible(true);
+        }
+
+        return playerTeamNameField.get(team);
     }
 
     private Field fieldByNameAndType(Class<?> where, Class<?> type, String... names) {
