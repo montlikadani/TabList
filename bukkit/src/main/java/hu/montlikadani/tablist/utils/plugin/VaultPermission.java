@@ -11,10 +11,10 @@ public final class VaultPermission {
 	private Permission perm;
 
 	public VaultPermission() {
-		org.bukkit.plugin.RegisteredServiceProvider<Permission> rsp = Bukkit.getServer().getServicesManager()
-				.getRegistration(Permission.class);
+		org.bukkit.plugin.RegisteredServiceProvider<Permission> rsp = Bukkit.getServer().getServicesManager().getRegistration(Permission.class);
+
 		if (rsp != null) {
-			this.perm = rsp.getProvider();
+			perm = rsp.getProvider();
 		}
 	}
 
@@ -40,13 +40,13 @@ public final class VaultPermission {
 		return null;
 	}
 
-	public String[] getPlayerGroups(Player player) {
+	public boolean playerInGroup(Player player, String group) {
 		try {
-			return perm.getPlayerGroups(player);
+			return perm.playerInGroup(player, group);
 		} catch (UnsupportedOperationException e) {
 		}
 
-		return new String[0];
+		return false;
 	}
 
 	public String[] getGroups() {

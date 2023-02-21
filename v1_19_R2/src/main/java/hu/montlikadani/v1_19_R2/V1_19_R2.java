@@ -7,7 +7,6 @@ import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
-import net.minecraft.network.protocol.game.PacketPlayInArmAnimation;
 import net.minecraft.network.protocol.game.PacketPlayOutAnimation;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective;

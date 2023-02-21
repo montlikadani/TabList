@@ -178,6 +178,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 			complement = ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R3) ? new Complement2() : new Complement1();
 		} catch (NoSuchMethodException | ClassNotFoundException e) {
+			complement = new Complement1();
 		}
 	}
 

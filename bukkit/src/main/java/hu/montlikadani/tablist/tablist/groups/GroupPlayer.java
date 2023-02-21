@@ -36,7 +36,7 @@ public final class GroupPlayer {
 
 	/**
 	 * Sets the main group for this player.
-	 * 
+	 *
 	 * @param group the {@link TeamHandler} to be set
 	 */
 	public void setGroup(TeamHandler group) {
@@ -71,7 +71,7 @@ public final class GroupPlayer {
 
 	/**
 	 * Sets a custom prefix for this group
-	 * 
+	 *
 	 * @param customPrefix
 	 */
 	public void setCustomPrefix(String customPrefix) {
@@ -80,7 +80,7 @@ public final class GroupPlayer {
 
 	/**
 	 * Sets a custom suffix for this group
-	 * 
+	 *
 	 * @param customSuffix
 	 */
 	public void setCustomSuffix(String customSuffix) {
@@ -89,7 +89,7 @@ public final class GroupPlayer {
 
 	/**
 	 * Sets a custom priority for this group
-	 * 
+	 *
 	 * @param customPriority
 	 */
 	public void setCustomPriority(int customPriority) {
@@ -116,6 +116,22 @@ public final class GroupPlayer {
 
 	public int getPriority() {
 		return customPriority == Integer.MIN_VALUE ? group == null ? Integer.MAX_VALUE : group.priority : customPriority;
+	}
+
+	/**
+	 * This method finds and caches player primary group once. If player
+	 * primary group changed it will be refreshed with the new one. This
+	 * prevents luckperms verbose spam as the group will be checked at
+	 * every tick when enabled.
+	 */
+	private void refreshPlayerVaultGroup(Player player) {
+		if (!tl.hasVault() || !ConfigValues.isPreferPrimaryVaultGroup()) {
+			return;
+		}
+
+		if (playerVaultGroup == null || !tl.getVaultPerm().playerInGroup(player, playerVaultGroup)) {
+			playerVaultGroup = tl.getVaultPerm().getPrimaryGroup(player);
+		}
 	}
 
 	public boolean update() {
@@ -169,23 +185,7 @@ public final class GroupPlayer {
 			}
 		}
 
-		if (tl.hasVault()) {
-			boolean found = false;
-
-			// Avoiding verbose spam
-			if (playerVaultGroup != null) {
-				for (String g : tl.getVaultPerm().getPlayerGroups(player)) {
-					if (playerVaultGroup.equalsIgnoreCase(g)) {
-						found = true;
-						break;
-					}
-				}
-			}
-
-			if (!found && ConfigValues.isPreferPrimaryVaultGroup()) {
-				playerVaultGroup = tl.getVaultPerm().getPrimaryGroup(player);
-			}
-		}
+		refreshPlayerVaultGroup(player);
 
 		for (TeamHandler team : teams) {
 
@@ -204,7 +204,7 @@ public final class GroupPlayer {
 					}
 				}
 
-				if (group != team) { // Player' group was changed or not set
+				if (group != team) { // Player group was changed or not set
 					update = true;
 					setGroup(team);
 				}
@@ -235,35 +235,31 @@ public final class GroupPlayer {
 
 					return update;
 				}
-			} else if (tl.hasVault()) {
-				for (String playerGroup : tl.getVaultPerm().getPlayerGroups(player)) {
-					if (playerGroup != null && playerGroup.equalsIgnoreCase(team.team)) {
+			} else if (tl.hasVault() && tl.getVaultPerm().playerInGroup(player, team.team)) {
 
-						// Search for global group and cache if exists to allow assigning multiple
-						// prefixes for this group
-						if (!team.global) {
-							for (TeamHandler t : teams) {
-								if (t.global && globalGroup != t) {
-									globalGroup = t;
-									groups.setToSort(true);
-									break;
-								}
-							}
+				// Search for global group and cache if exists to allow assigning multiple
+				// prefixes for this group
+				if (!team.global) {
+					for (TeamHandler t : teams) {
+						if (t.global && globalGroup != t) {
+							globalGroup = t;
+							groups.setToSort(true);
+							break;
 						}
-
-						if (group != team) {
-							update = true;
-							setGroup(team);
-						}
-
-						// Player group found
-						return update;
 					}
 				}
+
+				if (group != team) {
+					update = true;
+					setGroup(team);
+				}
+
+				// Player group found
+				return update;
 			}
 		}
 
-		// If player has a group which is not in groups.yml and it has not changed since last check
+		// If player has a group which is not in groups.yml, and it has not changed since last check
 		if (group != groups.getDefaultAssignedGroup() || (group == null && globalGroup == null)) {
 			setGroup(groups.getDefaultAssignedGroup());
 			update = true;
