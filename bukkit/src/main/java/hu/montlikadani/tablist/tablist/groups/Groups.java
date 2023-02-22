@@ -298,7 +298,7 @@ public final class Groups {
 				if (!lock.isLocked()) {
 					updatePlayers();
 				}
-			}, refreshInt, refreshInt);
+			}, 0, refreshInt);
 		}
 	}
 

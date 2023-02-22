@@ -21,8 +21,6 @@ public final class JsonComponent {
 	private final ArrayList<JsonObject> jsonList = new ArrayList<>(10);
 	private final java.util.Map<String, String> fonts = new java.util.HashMap<>(1);
 
-	private final java.util.regex.Matcher colorRegexMatcher = java.util.regex.Pattern.compile("#&([0-9a-fA-F])").matcher("");
-
 	private Object emptyJson;
 
 	protected JsonComponent() {
@@ -42,15 +40,6 @@ public final class JsonComponent {
 
 		text = text.replace('\u00a7', '&').replace("&#", "#").replace("&x", "#");
 
-		// Finds hex colours that may be coming from essentials (&x&f ..) and removes
-		// the "&" character to match the TL hex colour
-		colorRegexMatcher.reset(text);
-
-		while (colorRegexMatcher.find()) {
-			text = Global.replaceFrom(text, colorRegexMatcher.start(), "&", "", 6);
-			colorRegexMatcher.reset(text);
-		}
-
 		int length = text.length(), index = 0;
 		String font = "";
 
@@ -58,6 +47,21 @@ public final class JsonComponent {
 		StringBuilder builder = new StringBuilder(length);
 
 		for (int i = 0; i < length; i++) {
+			boolean containsHex = false;
+			int count = i + 13; // = #§a§a§e§2§a§5
+
+			// Finds hex colours that may be coming from essentials (&x&f ..) and removes "&" character to match the correct hex colour
+			for (int j = i + 1; j < count && j < length; j += 2) {
+				if (!(containsHex = text.charAt(j) == '&')) {
+					break;
+				}
+			}
+
+			if (containsHex) {
+				text = Global.replaceFrom(text, i, "&", "", 6);
+				length = text.length();
+			}
+
 			char charAt = text.charAt(i);
 
 			if (charAt == '[' && existingJson != null && index < existingJson.size() && text.charAt(i + 1) == '"' && text.charAt(i + 2) == '"' && text.charAt(i + 3) == ','
@@ -121,10 +125,9 @@ public final class JsonComponent {
 				}
 			} else if (charAt == '#') {
 				boolean isAllDigit = true;
-				int from = i + 1;
 				int end = i + 7;
 
-				for (int b = from; b < end; b++) {
+				for (int b = i + 1; b < end; b++) {
 					if (b >= length || !Character.isLetterOrDigit(text.charAt(b))) {
 						isAllDigit = false;
 						break;
@@ -132,10 +135,7 @@ public final class JsonComponent {
 				}
 
 				if (!isAllDigit) {
-					// Temporary solution to do not display # character
-					if (from < length && text.charAt(from) != '&') {
-						builder.append(charAt);
-					}
+					builder.append(charAt);
 				} else {
 					if (builder.length() != 0) {
 						obj.addProperty("text", builder.toString());
