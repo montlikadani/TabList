@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.utils.reflection;
 
+import java.awt.Color;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -124,17 +125,9 @@ public final class JsonComponent {
 					builder.append(charAt);
 				}
 			} else if (charAt == '#') {
-				boolean isAllDigit = true;
 				int end = i + 7;
 
-				for (int b = i + 1; b < end; b++) {
-					if (b >= length || !Character.isLetterOrDigit(text.charAt(b))) {
-						isAllDigit = false;
-						break;
-					}
-				}
-
-				if (!isAllDigit) {
+				if (!validateHex(text, i + 1, end, length)) {
 					builder.append(charAt);
 				} else {
 					if (builder.length() != 0) {
@@ -148,8 +141,50 @@ public final class JsonComponent {
 					i += 6; // Increase loop to skip the next 6 hex digit
 				}
 			} else if (charAt == '{') {
-				int closeIndex;
-				int fromIndex = i + 6;
+				int closeIndex = -1;
+				int fromIndex = i + 10;
+
+				if (text.regionMatches(true, i, "{gradient=", 0, length) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
+					Color[] colors = new Color[2];
+					int co = 0;
+
+					for (String one : text.substring(fromIndex, closeIndex).split(":", 2)) {
+						if (one.isEmpty() || one.charAt(0) != '#' || !validateHex(one, 1, 6, one.length())) {
+							closeIndex = -1;
+							break;
+						}
+
+						colors[co] = Color.decode(one);
+						co++;
+					}
+
+					if (co == 2) {
+						Color startColor = colors[0];
+						Color endColor = colors[1];
+
+						int red = endColor.getRed() + startColor.getRed() * (1 - length);
+						int green = endColor.getGreen() + startColor.getGreen() * (1 - length);
+						int blue = endColor.getBlue() + startColor.getBlue() * (1 - length);
+
+						String result = "#" + Integer.toHexString(new Color(red, green, blue).getRGB());
+					}
+				} else if (text.regionMatches(true, i, "{/gradient", 0, 10) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
+				}
+
+				if (closeIndex != -1) {
+					if (builder.length() != 0) {
+						obj.addProperty("text", builder.toString());
+						jsonList.add(obj);
+						builder = new StringBuilder();
+					}
+
+					obj = new JsonObject();
+					obj.addProperty("color", "");
+					i = closeIndex;
+				}
+
+				closeIndex = -1;
+				fromIndex = i + 6;
 
 				if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
 					String res = fonts.computeIfAbsent(text.substring(fromIndex, closeIndex), key -> {
@@ -193,6 +228,16 @@ public final class JsonComponent {
 		jsonList.add(obj);
 
 		return PacketNM.NMS_PACKET.fromJson("[\"\"," + Global.replaceFrom(GSON.toJson(jsonList, List.class), 0, "[", "", 1));
+	}
+
+	private boolean validateHex(String text, int start, int end, int length) {
+		for (int b = start; b < end; b++) {
+			if (b >= length || !Character.isLetterOrDigit(text.charAt(b))) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	@SuppressWarnings("deprecation")
