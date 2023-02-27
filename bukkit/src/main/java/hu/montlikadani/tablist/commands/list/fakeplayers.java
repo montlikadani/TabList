@@ -156,7 +156,12 @@ public final class fakeplayers implements ICommand {
 				return true;
 			}
 
-			int amount = Util.tryParse(args[3]).orElse(-1);
+			int amount;
+			try {
+				amount = Integer.parseInt(args[3]);
+			} catch (NumberFormatException ex) {
+				amount = -1;
+			}
 
 			if ((output = handler.setPing(args[2], amount)) == EditingResult.NOT_EXIST) {
 				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));

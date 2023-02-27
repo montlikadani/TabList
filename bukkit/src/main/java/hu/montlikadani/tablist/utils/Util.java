@@ -4,7 +4,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 
 public final class Util {
@@ -20,10 +19,6 @@ public final class Util {
 	}
 
 	public static String colorText(String msg) {
-		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1) && msg.indexOf('#') != -1) {
-			msg = Global.matchHexColour(msg);
-		}
-
 		return org.bukkit.ChatColor.translateAlternateColorCodes('&', msg);
 	}
 
@@ -51,15 +46,6 @@ public final class Util {
 		try {
 			return Optional.of(UUID.fromString(uuid));
 		} catch (IllegalArgumentException e) {
-		}
-
-		return Optional.empty();
-	}
-
-	public static Optional<Integer> tryParse(String parseable) {
-		try {
-			return Optional.of(Integer.parseInt(parseable));
-		} catch (NumberFormatException e) {
 		}
 
 		return Optional.empty();

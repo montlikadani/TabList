@@ -405,7 +405,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			fakePlayerHandler.display();
 		}
 
-		tabManager.addPlayer(user);
+		tabManager.load(user);
 
 		if (!reload) {
 			groups.startTask();

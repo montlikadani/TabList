@@ -3,8 +3,6 @@ package hu.montlikadani.tablist;
 import java.util.function.Supplier;
 import java.util.regex.Pattern;
 
-import net.kyori.adventure.text.format.TextColor;
-
 public final class Global {
 
 	private Global() {
@@ -18,15 +16,16 @@ public final class Global {
 		while (matcher.find()) {
 			String group = matcher.group(0);
 
-			try {
+			// Actually this is useless, convert hex to hex, congrats for me
+			/*try {
 				s = s.replace(group, TextColor.color(Integer.parseInt(group.substring(1), 16)).asHexString());
 			} catch (NumberFormatException e) {
-			} catch (Error er) {
+			} catch (Error er) {*/
 				try {
 					s = s.replace(group, net.md_5.bungee.api.ChatColor.of(group).toString());
-				} catch (IllegalArgumentException e) {
+				} catch (IllegalArgumentException ignored) {
 				}
-			}
+			//}
 		}
 
 		return s;

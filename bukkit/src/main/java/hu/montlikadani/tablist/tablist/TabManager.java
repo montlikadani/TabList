@@ -26,7 +26,7 @@ public final class TabManager {
 		}
 	}
 
-	public void addPlayer(TabListUser user) {
+	public void load(TabListUser user) {
 		if (!TabConfigValues.isEnabled()) {
 			return;
 		}

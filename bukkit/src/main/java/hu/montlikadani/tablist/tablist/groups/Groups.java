@@ -234,11 +234,6 @@ public final class Groups {
 		sortedPlayers.remove(groupPlayer);
 		afkPlayersCache.remove(groupPlayer);
 
-		// Is this even required?
-		/*if (!sortedPlayers.isEmpty()) {
-			sortPlayers();
-		}*/
-
 		groupPlayer.getTabTeam().unregisterTeam();
 		groupPlayer.removeGroup();
 	}
@@ -327,7 +322,7 @@ public final class Groups {
 		// This was implemented to fix a less reproducible and undetectable exception.
 		// This lock was needed for the stream collect, so it pauses the current thread
 		// until the stream ends and unlocks the thread.
-		// Without this lock some of data will be lost.
+		// Without this lock some data will be lost.
 		lock.lock();
 
 		List<GroupPlayer> playerGroups;
