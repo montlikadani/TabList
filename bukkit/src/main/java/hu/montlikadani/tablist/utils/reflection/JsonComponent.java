@@ -106,8 +106,8 @@ public final class JsonComponent {
 						builder = new StringBuilder();
 					}
 
-					if (mColor != MColor.WHITE && mColor != MColor.RESET) { // We don't need these formatting as the
-																			// default colour is white
+					// We don't need these formatting as the default colour is white
+					if (mColor != MColor.WHITE && mColor != MColor.RESET) {
 						if (mColor.formatter) {
 							obj.addProperty(mColor.propertyName, true);
 						} else {
@@ -141,10 +141,10 @@ public final class JsonComponent {
 					i += 6; // Increase loop to skip the next 6 hex digit
 				}
 			} else if (charAt == '{') {
-				int closeIndex = -1;
+				int closeIndex;
 				int fromIndex = i + 10;
 
-				if (text.regionMatches(true, i, "{gradient=", 0, length) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
+				if (text.regionMatches(true, i, "{gradient=", 0, 10) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
 					Color[] colors = new Color[2];
 					int co = 0;
 
@@ -161,29 +161,30 @@ public final class JsonComponent {
 					if (co == 2) {
 						Color startColor = colors[0];
 						Color endColor = colors[1];
+						int g = closeIndex + 1;
+						int endIndex = text.indexOf("{/gradient}", g);
+						int ls = endIndex - 1;
 
-						int red = endColor.getRed() + startColor.getRed() * (1 - length);
-						int green = endColor.getGreen() + startColor.getGreen() * (1 - length);
-						int blue = endColor.getBlue() + startColor.getBlue() * (1 - length);
+						for (; g < endIndex; g++) {
+							obj = new JsonObject();
+							obj.addProperty("text", text.charAt(g));
 
-						String result = "#" + Integer.toHexString(new Color(red, green, blue).getRGB());
+							// Don't know what is this but works
+							// https://www.spigotmc.org/threads/470496/
+							int red = (int) (startColor.getRed() + g * (float) (endColor.getRed() - startColor.getRed()) / ls);
+							int green = (int) (startColor.getGreen() + g * (float) (endColor.getGreen() - startColor.getGreen()) / ls);
+							int blue = (int) (startColor.getBlue() + g * (float) (endColor.getBlue() - startColor.getBlue()) / ls);
+
+							// https://stackoverflow.com/questions/4801366
+							obj.addProperty("color", String.format("#%06x", ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff)));
+							jsonList.add(obj);
+						}
+
+						i = endIndex + 11;
+						continue;
 					}
-				} else if (text.regionMatches(true, i, "{/gradient", 0, 10) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
 				}
 
-				if (closeIndex != -1) {
-					if (builder.length() != 0) {
-						obj.addProperty("text", builder.toString());
-						jsonList.add(obj);
-						builder = new StringBuilder();
-					}
-
-					obj = new JsonObject();
-					obj.addProperty("color", "");
-					i = closeIndex;
-				}
-
-				closeIndex = -1;
 				fromIndex = i + 6;
 
 				if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
@@ -207,18 +208,16 @@ public final class JsonComponent {
 					continue;
 				}
 
-				if (closeIndex != -1) {
-					if (builder.length() != 0) {
-						obj.addProperty("text", builder.toString());
-						jsonList.add(obj);
-						builder = new StringBuilder();
-					}
-
-					obj = new JsonObject();
-					obj.addProperty("font", font);
-					font = "";
-					i = closeIndex;
+				if (builder.length() != 0) {
+					obj.addProperty("text", builder.toString());
+					jsonList.add(obj);
+					builder = new StringBuilder();
 				}
+
+				obj = new JsonObject();
+				obj.addProperty("font", font);
+				font = "";
+				i = closeIndex;
 			} else {
 				builder.append(charAt);
 			}
