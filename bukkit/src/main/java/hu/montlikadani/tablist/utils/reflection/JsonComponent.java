@@ -43,6 +43,7 @@ public final class JsonComponent {
 
 		int length = text.length(), index = 0;
 		String font = "";
+		MColor lastColor = null;
 
 		JsonObject obj = new JsonObject();
 		StringBuilder builder = new StringBuilder(length);
@@ -95,9 +96,12 @@ public final class JsonComponent {
 
 			if (charAt == '&') {
 				int next = i + 1;
-				MColor mColor = next < length ? MColor.byCode(text.charAt(next)) : null;
 
-				if (mColor != null) {
+				if (next < length) {
+					lastColor = MColor.byCode(text.charAt(next));
+				}
+
+				if (lastColor != null) {
 					if (builder.length() != 0) {
 						obj.addProperty("text", builder.toString());
 						jsonList.add(obj);
@@ -107,17 +111,12 @@ public final class JsonComponent {
 					}
 
 					// We don't need these formatting as the default colour is white
-					if (mColor != MColor.WHITE && mColor != MColor.RESET) {
-						if (mColor.formatter) {
-							obj.addProperty(mColor.propertyName, true);
+					if (lastColor != MColor.WHITE && lastColor != MColor.RESET) {
+						if (lastColor.formatter) {
+							obj.addProperty(lastColor.propertyName, true);
 						} else {
-							obj.addProperty("color", mColor.propertyName);
+							obj.addProperty("color", lastColor.propertyName);
 						}
-					}
-
-					if (!font.isEmpty()) {
-						obj.addProperty("font", font);
-						font = "";
 					}
 
 					i = next;
@@ -166,7 +165,6 @@ public final class JsonComponent {
 						int ls = endIndex - 1;
 
 						for (; g < endIndex; g++) {
-							obj = new JsonObject();
 							obj.addProperty("text", text.charAt(g));
 
 							// Don't know what is this but works
@@ -177,10 +175,20 @@ public final class JsonComponent {
 
 							// https://stackoverflow.com/questions/4801366
 							obj.addProperty("color", String.format("#%06x", ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff)));
+
+							if (lastColor != null && lastColor.formatter) {
+								obj.addProperty(lastColor.propertyName, true);
+							}
+
 							jsonList.add(obj);
+
+							if (g + 1 < endIndex) {
+								obj = new JsonObject();
+							}
 						}
 
-						i = endIndex + 11;
+						lastColor = null;
+						i = endIndex + 10;
 						continue;
 					}
 				}
