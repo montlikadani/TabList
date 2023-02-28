@@ -42,7 +42,6 @@ public final class JsonComponent {
 		text = text.replace('\u00a7', '&').replace("&#", "#").replace("&x", "#");
 
 		int length = text.length(), index = 0;
-		String font = "";
 		MColor lastColor = null;
 
 		JsonObject obj = new JsonObject();
@@ -195,6 +194,8 @@ public final class JsonComponent {
 
 				fromIndex = i + 6;
 
+				String font = "";
+
 				if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
 					String res = fonts.computeIfAbsent(text.substring(fromIndex, closeIndex), key -> {
 						try {
@@ -224,7 +225,6 @@ public final class JsonComponent {
 
 				obj = new JsonObject();
 				obj.addProperty("font", font);
-				font = "";
 				i = closeIndex;
 			} else {
 				builder.append(charAt);
