@@ -164,19 +164,24 @@ public final class JsonComponent {
 						int ls = endIndex - 1;
 
 						for (; g < endIndex; g++) {
-							obj.addProperty("text", text.charAt(g));
+							char ch = text.charAt(g);
 
-							// Don't know what is this but works
-							// https://www.spigotmc.org/threads/470496/
-							int red = (int) (startColor.getRed() + g * (float) (endColor.getRed() - startColor.getRed()) / ls);
-							int green = (int) (startColor.getGreen() + g * (float) (endColor.getGreen() - startColor.getGreen()) / ls);
-							int blue = (int) (startColor.getBlue() + g * (float) (endColor.getBlue() - startColor.getBlue()) / ls);
+							obj.addProperty("text", ch);
 
-							// https://stackoverflow.com/questions/4801366
-							obj.addProperty("color", String.format("#%06x", ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff)));
+							if (ch != ' ') {
 
-							if (lastColor != null && lastColor.formatter) {
-								obj.addProperty(lastColor.propertyName, true);
+								// Don't know what is this but works
+								// https://www.spigotmc.org/threads/470496/
+								int red = (int) (startColor.getRed() + g * (float) (endColor.getRed() - startColor.getRed()) / ls);
+								int green = (int) (startColor.getGreen() + g * (float) (endColor.getGreen() - startColor.getGreen()) / ls);
+								int blue = (int) (startColor.getBlue() + g * (float) (endColor.getBlue() - startColor.getBlue()) / ls);
+
+								// https://stackoverflow.com/questions/4801366
+								obj.addProperty("color", String.format("#%06x", ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff)));
+
+								if (lastColor != null && lastColor.formatter) {
+									obj.addProperty(lastColor.propertyName, true);
+								}
 							}
 
 							jsonList.add(obj);
