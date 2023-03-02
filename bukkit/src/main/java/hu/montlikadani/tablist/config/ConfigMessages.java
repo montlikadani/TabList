@@ -116,7 +116,7 @@ public final class ConfigMessages {
 		UNKNOWN_SUB_COMMAND("&cUnknown sub-command&7 %subcmd%&c."),
 		NO_CONSOLE("&cThis command '&7/%command%&c' can only be in-game."),
 
-		SET_GROUP_META_COULD_NOT_BE_EMPTY("set-group", "&cThe prefix text could not be empty!"),
+		SET_GROUP_META_COULD_NOT_BE_EMPTY("set-group", "&cThe text could not be empty!"),
 		SET_GROUP_META_SET("set-group", "&aYou have set meta for&e %team%&a, with this:&r %meta%"),
 		SET_GROUP_PRIORITY_MUST_BE_NUMBER("set-group", "&cThe priority must be a number!"),
 		SET_GROUP_NOT_FOUND("set-group", "&cThis team&7 %team%&c not found."),
@@ -131,10 +131,9 @@ public final class ConfigMessages {
 		FAKE_PLAYER_REMOVED("fake-player", "&cFake player&7 %name%&c removed"),
 		FAKE_PLAYER_ALREADY_ADDED("fake-player", "&cFake player&7 %name%&c already added."),
 		FAKE_PLAYER_NOT_EXISTS("fake-player", "&cFake player with this name not exists."),
-		FAKE_PLAYER_NO_FAKE_PLAYER("fake-player", "&cThere is no fake player either."),
+		FAKE_PLAYER_NO_FAKE_PLAYER("fake-player", "&cThere is no fake player created."),
 		FAKE_PLAYER_DISABLED("fake-player", "&cFake player option is disabled in config."),
-		FAKE_PLAYER_PING_CAN_NOT_BE_LESS("fake-player",
-				"&cThe ping amount should be greater than&e %amount%&c and the value should be a number."),
+		FAKE_PLAYER_PING_CAN_NOT_BE_LESS("fake-player", "&cThe ping amount should be a number and greater than&e %amount%"),
 		FAKE_PLAYER_LIST("fake-player", "&cFake players&7 (&e%amount%&7):", "&r%fake-players%");
 
 		public final Class<?> type;

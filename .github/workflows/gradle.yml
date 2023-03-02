@@ -28,6 +28,3 @@ jobs:
         path: |
           ${{ github.workspace }}/bukkit/build/libs/TabList-bukkit*.jar
           ${{ github.workspace }}/bungee/build/libs/TabList-bungee*.jar
-
-          ${{ github.workspace }}/sponge7/build/libs/tablist-sponge7*.jar
-          ${{ github.workspace }}/sponge8/build/libs/tablist-sponge8*.jar
