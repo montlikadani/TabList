@@ -162,38 +162,47 @@ public class TabHandler {
 		}
 
 		if (header != null) {
-			linedHeader = new TabText();
-			StringBuilder lh = new StringBuilder();
+			if (header.length == 0) {
+				header = null;
+			} else {
+				StringBuilder lh = new StringBuilder();
 
-			for (int a = 0; a < header.length; a++) {
-				if (a != 0) {
-					lh.append("\n\u00a7r");
+				for (int a = 0; a < header.length; a++) {
+					if (a != 0) {
+						lh.append("\n\u00a7r");
+					}
+
+					TabText tt = header[a];
+					lh.append(tt.plainText = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
+					header[a] = tt;
 				}
 
-				TabText tt = header[a];
-				lh.append(tt.plainText = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
-				header[a] = tt;
+				(linedHeader = new TabText()).updateText(lh.toString());
 			}
-
-			linedHeader.updateText(lh.toString());
 		}
 
-		if (footer != null) {
-			linedFooter = new TabText();
-			StringBuilder lf = new StringBuilder();
+		if (footer == null) {
+			return;
+		}
 
-			for (int a = 0; a < footer.length; a++) {
-				if (a != 0) {
-					lf.append("\n\u00a7r");
-				}
+		if (footer.length == 0) {
+			footer = null;
+			return;
+		}
 
-				TabText tt = footer[a];
-				lf.append(tt.plainText = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
-				footer[a] = tt;
+		StringBuilder lf = new StringBuilder();
+
+		for (int a = 0; a < footer.length; a++) {
+			if (a != 0) {
+				lf.append("\n\u00a7r");
 			}
 
-			linedFooter.updateText(lf.toString());
+			TabText tt = footer[a];
+			lf.append(tt.plainText = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
+			footer[a] = tt;
 		}
+
+		(linedFooter = new TabText()).updateText(lf.toString());
 	}
 
 	public void sendEmptyTab(Player player) {
@@ -218,10 +227,6 @@ public class TabHandler {
 			return;
 		}
 
-		if (header != null && header.length == 0 && footer != null && footer.length == 0) {
-			return;
-		}
-
 		TabText he = linedHeader;
 		TabText fo = linedFooter;
 
@@ -235,10 +240,6 @@ public class TabHandler {
 
 			if (footer != null)
 				fo = footer[footer.length == 1 ? 0 : random.nextInt(footer.length)];
-		}
-
-		if (he == null && fo == null) {
-			return;
 		}
 
 		if (tabEmpty) {
@@ -270,7 +271,10 @@ public class TabHandler {
 
 		if (worldList.isEmpty()) {
 			for (Player all : player.getWorld().getPlayers()) {
-				PacketNM.NMS_PACKET.sendTabTitle(all, v.replaceVariables(all, new TabText(he)).toComponent(), v.replaceVariables(all, new TabText(fo)).toComponent());
+				Object head = he == TabText.EMPTY ? TabText.EMPTY : v.replaceVariables(all, new TabText(he)).toComponent();
+				Object foot = fo == TabText.EMPTY ? TabText.EMPTY : v.replaceVariables(all, new TabText(fo)).toComponent();
+
+				PacketNM.NMS_PACKET.sendTabTitle(all, head, foot);
 			}
 
 			return;
@@ -281,7 +285,10 @@ public class TabHandler {
 		for (String l : worldList) {
 			if ((world = plugin.getServer().getWorld(l)) != null) {
 				for (Player all : world.getPlayers()) {
-					PacketNM.NMS_PACKET.sendTabTitle(all, v.replaceVariables(all, new TabText(he)).toComponent(), v.replaceVariables(all, new TabText(fo)).toComponent());
+					Object head = he == TabText.EMPTY ? TabText.EMPTY : v.replaceVariables(all, new TabText(he)).toComponent();
+					Object foot = fo == TabText.EMPTY ? TabText.EMPTY : v.replaceVariables(all, new TabText(fo)).toComponent();
+
+					PacketNM.NMS_PACKET.sendTabTitle(all, head, foot);
 				}
 			}
 		}
