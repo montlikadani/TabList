@@ -1,33 +1,32 @@
-# Tablist header & footer with animations.
-
 # Available placeholders: https://github.com/montlikadani/TabList/wiki/Placeholders
 # Available symbols: https://github.com/montlikadani/TabList/wiki/Symbols
 
 # Use %anim:animationName% placeholder to make an animation. Must be firstly created in animcreator.yml file!
 
-# How do I use this tab section? Take a look at this page: https://github.com/montlikadani/TabList/wiki/TabList-Usage
+# Documentation to learn how to use this file: https://github.com/montlikadani/TabList/wiki/TabList
 
-# Enable the tab to show for all players? (Header & footer)
+# Enables tab functionality, disabling this option will cancel all running tasks which related
 enabled: true
 
 # Save the toggled tablists to a file and load them after server restart.
 # If this false, if the file is exists, it will be deleted automatically at server restart.
 remember-toggled-tablist-to-file: true
 
-# Hide tab when the player is vanished?
+# Hide tab from vanished players
 # Requires Essentials, CMI or SuperVanish plugin!
 hide-tab-when-player-vanished: false
 
-# In these worlds tab will NOT be displayed
+# In these worlds tab won't be displayed
 disabled-worlds:
 #- "world1"
 
-# For these players tab will NOT be displayed
+# For these players tab won't be displayed
 blacklisted-players:
 #- myname
 
-# Tab update time interval. (In ticks!)
-# Set to 0 to disable tab refreshing.
+# Tablist refreshing interval in server ticks
+# Set to 0 to disable, which results a static state of tablist,
+# including placeholders which won't be updated anymore until there is no join or reload.
 interval: 4
 
 # Define if the header & footer should be randomized.
@@ -46,8 +45,7 @@ footer:
 - "&7<28> %anim:website%&7:&2 &nexample.com&7 <28>\n\n&5&m=========================="
 
 # Defines per world tablist for different worlds
-# You can separate worlds with ", " to show tablist in that worlds
-# You can create as many worlds you want
+# You can separate world names with ", " to only show tablist in those specified worlds
 per-world:
   my_nether, otherWorld: # you can add multiple worlds here
     header: "&3This is a per world plugin %anim:tablist%&3."
@@ -57,7 +55,7 @@ per-world:
     header: "%anim:perWorld%"
     footer: "&6World:&7 %world%"
 
-    # Defines per player tablist in this world
+    # Defines per player tablist in this world only
     per-player:
       playerName:
         header: "&3This is a per player plugin %anim:tablist%&3."
@@ -66,7 +64,8 @@ per-world:
         - "&aPlayer:&8 %player%"
 
   testWorld:
-    # Defines per group tablist only in the above world
+
+    # Defines per group tablist in this world only
     # Requires Vault plugin!
     per-group:
       groupName:
@@ -79,13 +78,13 @@ per-world:
 # Any player/group have tablist.name permission node will use the set of tab header/footer.
 #permissions:
 
-# Defines per player handled tablist
+# Defines per player tablist
 per-player:
   testplayer:
     header: "%anim:perPlayer%"
     footer: "&5&m======================"
 
-# Defines per-grouped tablist for players.
+# Defines per-grouped tablist for players whose having the specified group added
 # Requires Vault plugin!
 per-group:
   vaultGroup:

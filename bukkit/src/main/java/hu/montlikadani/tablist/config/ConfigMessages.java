@@ -11,7 +11,6 @@ import hu.montlikadani.tablist.utils.Util;
 public final class ConfigMessages {
 
 	private final File file;
-	private FileConfiguration messagesConfig;
 
 	public ConfigMessages(File folder) {
 		file = new File(folder, "messages.yml");
@@ -32,8 +31,7 @@ public final class ConfigMessages {
 			}
 		}
 
-		messagesConfig = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(file);
-
+		FileConfiguration messagesConfig = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(file);
 		boolean saveRequired = false;
 
 		for (MessageKeys key : MessageKeys.values()) {
