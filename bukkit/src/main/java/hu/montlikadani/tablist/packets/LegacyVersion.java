@@ -828,10 +828,5 @@ public final class LegacyVersion implements IPacketNM {
 
             super.write(ctx, msg, promise);
         }
-
-        @Override
-        public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-            super.channelRead(ctx, msg);
-        }
     }
 }

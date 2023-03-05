@@ -384,10 +384,5 @@ public final class V1_8_R3 implements IPacketNM {
 
 			super.write(ctx, msg, promise);
 		}
-
-		@Override
-		public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-			super.channelRead(ctx, msg);
-		}
 	}
 }
