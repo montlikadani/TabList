@@ -157,11 +157,24 @@ public final class JsonComponent {
 					}
 
 					if (co == 2) {
-						Color startColor = colors[0];
-						Color endColor = colors[1];
 						int g = closeIndex + 1;
 						int endIndex = text.indexOf("{/gradient}", g);
+
+						if (endIndex == -1) {
+							continue;
+						}
+
+						Color startColor = colors[0];
+						Color endColor = colors[1];
 						int ls = endIndex - 1;
+
+						if (builder.length() != 0) {
+							obj.addProperty("text", builder.toString());
+							jsonList.add(obj);
+							builder = new StringBuilder();
+						}
+
+						obj = new JsonObject();
 
 						for (; g < endIndex; g++) {
 							obj.addProperty("text", text.charAt(g));
@@ -180,10 +193,7 @@ public final class JsonComponent {
 							}
 
 							jsonList.add(obj);
-
-							if (g + 1 < endIndex) {
-								obj = new JsonObject();
-							}
+							obj = new JsonObject();
 						}
 
 						lastColor = null;
