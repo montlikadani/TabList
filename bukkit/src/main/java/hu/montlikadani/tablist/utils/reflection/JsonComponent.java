@@ -125,7 +125,7 @@ public final class JsonComponent {
 			} else if (charAt == '#') {
 				int end = i + 7;
 
-				if (!validateHex(text, i + 1, end, length)) {
+				if (end >= length || !validateHex(text, i + 1, end)) {
 					builder.append(charAt);
 				} else {
 					if (builder.length() != 0) {
@@ -147,7 +147,7 @@ public final class JsonComponent {
 					int co = 0;
 
 					for (String one : text.substring(fromIndex, closeIndex).split(":", 2)) {
-						if (one.isEmpty() || one.charAt(0) != '#' || !validateHex(one, 1, 6, one.length())) {
+						if (one.isEmpty() || one.charAt(0) != '#' || !validateHex(one, 1, 6)) {
 							closeIndex = -1;
 							break;
 						}
@@ -164,24 +164,19 @@ public final class JsonComponent {
 						int ls = endIndex - 1;
 
 						for (; g < endIndex; g++) {
-							char ch = text.charAt(g);
+							obj.addProperty("text", text.charAt(g));
 
-							obj.addProperty("text", ch);
+							// Don't know what is this but works
+							// https://www.spigotmc.org/threads/470496/
+							int red = (int) (startColor.getRed() + g * (float) (endColor.getRed() - startColor.getRed()) / ls);
+							int green = (int) (startColor.getGreen() + g * (float) (endColor.getGreen() - startColor.getGreen()) / ls);
+							int blue = (int) (startColor.getBlue() + g * (float) (endColor.getBlue() - startColor.getBlue()) / ls);
 
-							if (ch != ' ') {
+							// https://stackoverflow.com/questions/4801366
+							obj.addProperty("color", String.format("#%06x", ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff)));
 
-								// Don't know what is this but works
-								// https://www.spigotmc.org/threads/470496/
-								int red = (int) (startColor.getRed() + g * (float) (endColor.getRed() - startColor.getRed()) / ls);
-								int green = (int) (startColor.getGreen() + g * (float) (endColor.getGreen() - startColor.getGreen()) / ls);
-								int blue = (int) (startColor.getBlue() + g * (float) (endColor.getBlue() - startColor.getBlue()) / ls);
-
-								// https://stackoverflow.com/questions/4801366
-								obj.addProperty("color", String.format("#%06x", ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff)));
-
-								if (lastColor != null && lastColor.formatter) {
-									obj.addProperty(lastColor.propertyName, true);
-								}
+							if (lastColor != null && lastColor.formatter) {
+								obj.addProperty(lastColor.propertyName, true);
 							}
 
 							jsonList.add(obj);
@@ -242,9 +237,9 @@ public final class JsonComponent {
 		return PacketNM.NMS_PACKET.fromJson("[\"\"," + Global.replaceFrom(GSON.toJson(jsonList, List.class), 0, "[", "", 1));
 	}
 
-	private boolean validateHex(String text, int start, int end, int length) {
+	private boolean validateHex(String text, int start, int end) {
 		for (int b = start; b < end; b++) {
-			if (b >= length || !Character.isLetterOrDigit(text.charAt(b))) {
+			if (!Character.isLetterOrDigit(text.charAt(b))) {
 				return false;
 			}
 		}
