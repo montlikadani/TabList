@@ -147,7 +147,7 @@ public final class JsonComponent {
 					int co = 0;
 
 					for (String one : text.substring(fromIndex, closeIndex).split(":", 2)) {
-						if (one.isEmpty() || one.charAt(0) != '#' || !validateHex(one, 1, 6)) {
+						if (one.isEmpty() || one.charAt(0) != '#' || !validateHex(one, 1, one.length())) {
 							closeIndex = -1;
 							break;
 						}
@@ -166,7 +166,6 @@ public final class JsonComponent {
 
 						Color startColor = colors[0];
 						Color endColor = colors[1];
-						int ls = endIndex - 1;
 
 						if (builder.length() != 0) {
 							obj.addProperty("text", builder.toString());
@@ -179,11 +178,13 @@ public final class JsonComponent {
 						for (; g < endIndex; g++) {
 							obj.addProperty("text", text.charAt(g));
 
+							double perc = (double) g / (double) endIndex;
+
 							// Don't know what is this but works
 							// https://www.spigotmc.org/threads/470496/
-							int red = (int) (startColor.getRed() + g * (float) (endColor.getRed() - startColor.getRed()) / ls);
-							int green = (int) (startColor.getGreen() + g * (float) (endColor.getGreen() - startColor.getGreen()) / ls);
-							int blue = (int) (startColor.getBlue() + g * (float) (endColor.getBlue() - startColor.getBlue()) / ls);
+							int red = (int) (startColor.getRed() + perc * (endColor.getRed() - startColor.getRed()));
+							int green = (int) (startColor.getGreen() + perc * (endColor.getGreen() - startColor.getGreen()));
+							int blue = (int) (startColor.getBlue() + perc * (endColor.getBlue() - startColor.getBlue()));
 
 							// https://stackoverflow.com/questions/4801366
 							obj.addProperty("color", String.format("#%06x", ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff)));
