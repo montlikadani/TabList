@@ -6,6 +6,8 @@ import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
@@ -33,12 +35,13 @@ public final class fakeplayers implements ICommand {
 
 	private void sendList(String label, CommandSender sender) {
 		sendMsg(sender, Util.colorText("&6/" + label + " fakeplayers"
-				+ "\n          &6add <name> [ping] -&7 Adds a new fake player with their name."
+				+ "\n          &6add <name> [ping] -&7 Adds a new fake player with a name."
 				+ "\n          &6remove <name> -&7 Removes the given fake player."
 				+ "\n          &6list -&7 Lists all the available fake players."
 				+ "\n          &6rename <oldName> <newName> -&7 Renames the already existing fake player."
 				+ "\n          &6setdisplayname <name> \"displayName...\" -&7 Sets the display name of the given fake player."
-				+ "\n          &6setskin <name> <uuid> -&7 Sets the skin of the given fake player."
+				+ "\n          &6setskin <name> <uuid/playerName> -&7 Sets a skin of the given fake player."
+				+ "\n          &6setskin <name> <playerName> --force -&7 Sets a skin for the given fake player forcing a web request from mojang (server can hang)."
 				+ "\n          &6setping <name> <amount> -&7 Sets the ping of the given fake player."));
 	}
 
@@ -140,13 +143,34 @@ public final class fakeplayers implements ICommand {
 				return true;
 			}
 
-			if ((output = handler.setSkin(args[2], args[3])) == EditingResult.NOT_EXIST) {
-				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
+			final String nameOrId = args[3];
+			java.util.UUID id;
+
+			if (args.length == 5 && "--force".equalsIgnoreCase(args[4])) {
+				OfflinePlayer offlinePlayer = getOfflinePlayerByName(nameOrId);
+
+				// TODO Make it async maybe?
+				if (offlinePlayer == null) {
+					offlinePlayer = Bukkit.getOfflinePlayer(nameOrId);
+				}
+
+				id = offlinePlayer.getUniqueId();
+			} else {
+				id = Util.tryParseId(nameOrId).orElseGet(() -> {
+					OfflinePlayer offlinePlayer = getOfflinePlayerByName(nameOrId);
+
+					return offlinePlayer == null ? null : offlinePlayer.getUniqueId();
+				});
+			}
+
+			if (id == null) {
+				sender.sendMessage("There is no player existing with this name or id.");
 				return true;
 			}
 
-			if (output == EditingResult.UUID_MATCH_ERROR) {
-				sender.sendMessage("This uuid not matches to a real player uuid.");
+			if (handler.setSkin(args[2], id) == EditingResult.NOT_EXIST) {
+				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
+				return true;
 			}
 
 			break;
@@ -192,5 +216,24 @@ public final class fakeplayers implements ICommand {
 		}
 
 		return true;
+	}
+
+	private OfflinePlayer getOfflinePlayerByName(String nameOrId) {
+		try {
+			OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(nameOrId);
+
+			if (offlinePlayer != null) {
+				return offlinePlayer;
+			}
+		} catch (NoSuchMethodError ignored) {
+		}
+
+		for (OfflinePlayer pl : Bukkit.getOfflinePlayers()) {
+			if (nameOrId.equals(pl.getName())) {
+				return pl;
+			}
+		}
+
+		return null;
 	}
 }

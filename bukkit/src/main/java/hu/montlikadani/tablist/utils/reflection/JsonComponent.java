@@ -1,15 +1,12 @@
 package hu.montlikadani.tablist.utils.reflection;
 
 import java.awt.Color;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import org.bukkit.NamespacedKey;
 
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.packets.PacketNM;
@@ -256,53 +253,5 @@ public final class JsonComponent {
 		}
 
 		return true;
-	}
-
-	@SuppressWarnings("deprecation")
-	public CompletableFuture<Pair<String, String>> getSkinValue(String uuid) {
-		return CompletableFuture.supplyAsync(() -> {
-			try (InputStreamReader content = new InputStreamReader(
-					new java.net.URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid + "?unasigned=false").openStream())) {
-				JsonObject json;
-
-				try {
-					json = JsonParser.parseReader(content).getAsJsonObject();
-				} catch (NoSuchMethodError e) {
-					json = new JsonParser().parse(content).getAsJsonObject();
-				}
-
-				com.google.gson.JsonArray jsonArray = json.get("properties").getAsJsonArray();
-
-				if (jsonArray.isEmpty()) {
-					return null;
-				}
-
-				String value = jsonArray.get(0).getAsJsonObject().get("value").getAsString();
-				String decodedValue = new String(java.util.Base64.getDecoder().decode(value));
-
-				try {
-					json = JsonParser.parseString(decodedValue).getAsJsonObject();
-				} catch (NoSuchMethodError e) {
-					json = new JsonParser().parse(decodedValue).getAsJsonObject();
-				}
-
-				return new Pair<>(value, json.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString());
-			} catch (java.io.IOException e1) {
-				e1.printStackTrace();
-			}
-
-			return null;
-		});
-	}
-
-	public final class Pair<K, V> {
-
-		public final K key;
-		public final V value;
-
-		public Pair(K key, V value) {
-			this.key = key;
-			this.value = value;
-		}
 	}
 }

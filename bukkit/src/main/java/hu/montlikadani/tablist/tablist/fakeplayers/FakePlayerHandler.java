@@ -10,7 +10,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
-import hu.montlikadani.tablist.utils.Util;
 
 public final class FakePlayerHandler {
 
@@ -169,19 +168,14 @@ public final class FakePlayerHandler {
 		return EditingResult.OK;
 	}
 
-	public EditingResult setSkin(String name, String uuid) {
+	public EditingResult setSkin(String name, UUID uuid) {
 		Optional<IFakePlayer> fp = getFakePlayerByName(name);
 
 		if (!fp.isPresent()) {
 			return EditingResult.NOT_EXIST;
 		}
 
-		Optional<UUID> id = Util.tryParseId(uuid);
-		if (!id.isPresent()) {
-			return EditingResult.UUID_MATCH_ERROR;
-		}
-
-		plugin.getConf().getFakeplayers().set("list." + name + ".headuuid", uuid);
+		plugin.getConf().getFakeplayers().set("list." + name + ".headuuid", uuid.toString());
 
 		try {
 			plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
@@ -190,7 +184,7 @@ public final class FakePlayerHandler {
 			return EditingResult.UNKNOWN;
 		}
 
-		fp.get().setSkin(id.get());
+		fp.get().setSkin(uuid);
 		return EditingResult.OK;
 	}
 
@@ -239,6 +233,6 @@ public final class FakePlayerHandler {
 	}
 
 	public enum EditingResult {
-		NOT_EXIST, ALREADY_EXIST, UUID_MATCH_ERROR, PING_AMOUNT, UNKNOWN, OK;
+		NOT_EXIST, ALREADY_EXIST, PING_AMOUNT, UNKNOWN, OK;
 	}
 }
