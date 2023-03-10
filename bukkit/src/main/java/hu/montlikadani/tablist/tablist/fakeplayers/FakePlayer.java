@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.tablist.fakeplayers;
 
+import com.google.gson.JsonParser;
 import com.mojang.authlib.GameProfile;
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.Objects.ObjectTypes;
@@ -11,7 +12,9 @@ import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.io.InputStreamReader;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public final class FakePlayer implements IFakePlayer {
 
@@ -148,7 +151,7 @@ public final class FakePlayer implements IFakePlayer {
 
 	@Override
 	public void setSkin(UUID headId) {
-		if (profile != null && headId != null) {
+		if (headId != null) {
 			putTextureProperty(this.headId = headId, true);
 		}
 	}
@@ -166,22 +169,26 @@ public final class FakePlayer implements IFakePlayer {
 			return;
 		}
 
-		ReflectionUtils.getJsonComponent().getSkinValue(headId.toString()).thenAcceptAsync(pair -> {
-			if (pair != null) {
-				profile.getProperties().removeAll("textures");
-				profile.getProperties().put("textures", new com.mojang.authlib.properties.Property("textures", pair.key, pair.value));
+		getSkinProperties(headId.toString()).thenAcceptAsync(pair -> {
+			if (pair == null) {
+				return;
 			}
-		}).thenAccept(v -> {
-			if (fakeEntityPlayer != null) {
-				fakeEntityPlayer = PacketNM.NMS_PACKET.getNewEntityPlayer(profile);
 
-				Object removeInfo = PacketNM.NMS_PACKET.removeEntityPlayers(fakeEntityPlayer);
-				Object addInfo = PacketNM.NMS_PACKET.newPlayerInfoUpdatePacketAdd(fakeEntityPlayer);
+			profile.getProperties().removeAll("textures");
+			profile.getProperties().put("textures", new com.mojang.authlib.properties.Property("textures", pair.key, pair.value));
 
-				for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-					PacketNM.NMS_PACKET.sendPacket(player, removeInfo);
-					PacketNM.NMS_PACKET.sendPacket(player, addInfo);
-				}
+			if (fakeEntityPlayer == null) {
+				return;
+			}
+
+			//fakeEntityPlayer = PacketNM.NMS_PACKET.getNewEntityPlayer(profile);
+
+			Object removeInfo = PacketNM.NMS_PACKET.removeEntityPlayers(fakeEntityPlayer);
+			Object addInfo = PacketNM.NMS_PACKET.newPlayerInfoUpdatePacketAdd(fakeEntityPlayer);
+
+			for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+				PacketNM.NMS_PACKET.sendPacket(player, removeInfo);
+				PacketNM.NMS_PACKET.sendPacket(player, addInfo);
 			}
 		});
 	}
@@ -199,5 +206,53 @@ public final class FakePlayer implements IFakePlayer {
 		}
 
 		fakeEntityPlayer = null;
+	}
+
+	@SuppressWarnings("deprecation")
+	private CompletableFuture<Pair<String, String>> getSkinProperties(String uuid) {
+		return CompletableFuture.supplyAsync(() -> {
+			try (InputStreamReader content = new InputStreamReader(
+					new java.net.URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid).openStream())) {
+				com.google.gson.JsonObject json;
+
+				try {
+					json = JsonParser.parseReader(content).getAsJsonObject();
+				} catch (NoSuchMethodError e) {
+					json = new JsonParser().parse(content).getAsJsonObject();
+				}
+
+				com.google.gson.JsonArray jsonArray = json.get("properties").getAsJsonArray();
+
+				if (jsonArray.isEmpty()) {
+					return null;
+				}
+
+				String value = jsonArray.get(0).getAsJsonObject().get("value").getAsString();
+				String decodedValue = new String(java.util.Base64.getDecoder().decode(value));
+
+				try {
+					json = JsonParser.parseString(decodedValue).getAsJsonObject();
+				} catch (NoSuchMethodError e) {
+					json = new JsonParser().parse(decodedValue).getAsJsonObject();
+				}
+
+				return new Pair<>(value, json.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString());
+			} catch (java.io.IOException e1) {
+				e1.printStackTrace();
+			}
+
+			return null;
+		});
+	}
+
+	private static class Pair<K, V> {
+
+		public final K key;
+		public final V value;
+
+		Pair(K key, V value) {
+			this.key = key;
+			this.value = value;
+		}
 	}
 }
