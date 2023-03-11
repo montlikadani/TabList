@@ -24,7 +24,7 @@ import hu.montlikadani.tablist.utils.Util;
 
 @CommandProcessor(name = "fakeplayers",
 		desc = "General commands for setting fake players",
-		params = "add/remove/list/rename/setdisplayname/setskin",
+		params = "add/remove/list/rename/setdisplayname/setskin/setping",
 		permission = Perm.FAKEPLAYERS,
 		playerOnly = true)
 public final class fakeplayers implements ICommand {
@@ -146,7 +146,7 @@ public final class fakeplayers implements ICommand {
 			final String nameOrId = args[3];
 			java.util.UUID id;
 
-			if (args.length == 5 && "--force".equalsIgnoreCase(args[4])) {
+			if (args.length > 4 && "--force".equalsIgnoreCase(args[4])) {
 				OfflinePlayer offlinePlayer = getOfflinePlayerByName(nameOrId);
 
 				// TODO Make it async maybe?
