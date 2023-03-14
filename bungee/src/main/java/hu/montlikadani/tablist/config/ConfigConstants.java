@@ -16,7 +16,7 @@ public final class ConfigConstants {
 
 	private static TimeZone timeZone;
 
-	private static boolean isTabEnabled, isGroupsEnabled;
+	private static boolean isTabEnabled, isGroupsEnabled, ignoreVanishedPlayers;
 	private static int tabRefreshInterval, groupsRefreshInterval;
 
 	private static List<String> defaultHeader, defaultFooter, disabledServers, restrictedPlayers;
@@ -36,6 +36,8 @@ public final class ConfigConstants {
 		TAB_SETTINGS.clear();
 		GROUP_SETTINGS.clear();
 		LOGICAL_NODES.clear();
+
+		ignoreVanishedPlayers = conf.getBoolean("ignore-vanished-players-in-online-players", false);
 
 		String tf = conf.getString("placeholder-format.time.time-format", "mm:HH");
 
@@ -172,6 +174,10 @@ public final class ConfigConstants {
 
 	public static List<BaseComponent> getMessageList(MessageKeys key) {
 		return key.<List<BaseComponent>>getValue();
+	}
+
+	public static boolean isIgnoreVanishedPlayers() {
+		return ignoreVanishedPlayers;
 	}
 
 	public static TimeZone getTimeZone() {

@@ -89,12 +89,9 @@ public final class LegacyTextConverter {
 					}
 				} else {
 					if (builder.length() != 0) {
-						TextComponent old = component;
-						component = new TextComponent(old);
-
-						old.setText(builder.toString());
+						component.setText(builder.toString());
 						builder = new StringBuilder();
-						COMPONENTS.add(old);
+						COMPONENTS.add(component);
 					}
 
 					component = new TextComponent();
