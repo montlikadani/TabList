@@ -51,7 +51,7 @@ public final class Misc {
 
 	private static int getVanishedPlayers() {
 		if (PREMIUM_VANISH != null) {
-			return de.myzelyam.api.vanish.VanishAPI.getInvisiblePlayers().size();
+			return de.myzelyam.api.vanish.BungeeVanishAPI.getInvisiblePlayers().size();
 		}
 
 		return 0;
