@@ -13,6 +13,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 
 public final class Misc {
 
@@ -49,20 +50,31 @@ public final class Misc {
 		return new ComponentBuilder(s).getComponent(0);
 	}
 
-	private static int getVanishedPlayers() {
-		if (PREMIUM_VANISH != null) {
-			return de.myzelyam.api.vanish.BungeeVanishAPI.getInvisiblePlayers().size();
-		}
-
-		return 0;
-	}
-
-	private static int countVanishedPlayers(int playersCount) {
-		if (!ConfigConstants.isIgnoreVanishedPlayers()) {
+	private static int countVanishedPlayers(ServerInfo serverInfo, int playersCount) {
+		if (!ConfigConstants.isIgnoreVanishedPlayers() || PREMIUM_VANISH == null) {
 			return playersCount;
 		}
 
-		int vanishedPlayers = getVanishedPlayers();
+		int vanishedPlayers = 0;
+
+		if (serverInfo == null) {
+			vanishedPlayers = de.myzelyam.api.vanish.BungeeVanishAPI.getInvisiblePlayers().size();
+		} else {
+			for (java.util.UUID id : de.myzelyam.api.vanish.BungeeVanishAPI.getInvisiblePlayers()) {
+				ProxiedPlayer player = ProxyServer.getInstance().getPlayer(id);
+
+				if (player == null) {
+					continue;
+				}
+
+				Server server = player.getServer();
+
+				if (server != null && serverInfo.equals(server.getInfo())) {
+					vanishedPlayers++;
+				}
+			}
+		}
+
 		return vanishedPlayers == 0 ? playersCount : playersCount - vanishedPlayers;
 	}
 
@@ -83,13 +95,13 @@ public final class Misc {
 			str = Global.replace(str, "%date%", () -> getTimeAsString(ConfigConstants.getDateFormat()));
 		}
 
-		net.md_5.bungee.api.connection.Server server = p.getServer();
+		Server server = p.getServer();
 		ServerInfo info = server != null ? server.getInfo() : null;
 
 		if (info != null) {
 			str = str.replace("%server%", info.getName());
 			str = str.replace("%bungee-motd%", info.getMotd());
-			str = Global.replace(str, "%player-server-online%", () -> Integer.toString(countVanishedPlayers(info.getPlayers().size())));
+			str = Global.replace(str, "%player-server-online%", () -> Integer.toString(countVanishedPlayers(info, info.getPlayers().size())));
 		}
 
 		str = Global.replace(str, "%ip%", () -> {
@@ -109,7 +121,7 @@ public final class Misc {
 		str = str.replace("%player-name%", p.getName());
 		str = str.replace("%display-name%", p.getDisplayName());
 
-		str = Global.replace(str, "%bungee-online%", () -> Integer.toString(countVanishedPlayers(ProxyServer.getInstance().getOnlineCount())));
+		str = Global.replace(str, "%bungee-online%", () -> Integer.toString(countVanishedPlayers(null, ProxyServer.getInstance().getOnlineCount())));
 		str = Global.replace(str, "%ping%", () -> ConfigConstants.formatPing(p.getPing()));
 
 		str = Global.replace(str, "%ram-used%", () -> {
