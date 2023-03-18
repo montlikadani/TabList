@@ -13,12 +13,18 @@ repositories {
 	gradlePluginPortal()
 	mavenCentral()
 	maven("https://oss.sonatype.org/content/repositories/snapshots")
+	maven("https://jitpack.io")
 }
 
 dependencies {
 	implementation(project(":global"))
+
 	compileOnly("net.md-5:bungeecord-api:1.19-R0.1-SNAPSHOT")
 	compileOnly("net.md-5:bungeecord-chat:1.19-R0.1-SNAPSHOT")
+
+	compileOnly("com.github.LeonMangler:PremiumVanishAPI:2.7.11-2") {
+		isTransitive = true
+	}
 }
 
 version = "2.3.2"

@@ -23,7 +23,8 @@ public enum ServerVersion {
 	v1_18_R1,
 	v1_18_R2,
 	v1_19_R1,
-	v1_19_R2;
+	v1_19_R2,
+	v1_19_R3;
 
 	private final int value;
 
@@ -31,7 +32,7 @@ public enum ServerVersion {
 	private static ServerVersion current;
 
 	ServerVersion() {
-		value = Integer.valueOf(StrUtil.getNumberEscapeSequence().reset(name()).replaceAll(""));
+		value = Integer.parseInt(StrUtil.getNumberEscapeSequence().reset(name()).replaceAll(""));
 	}
 
 	public static ServerVersion getCurrent() {

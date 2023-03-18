@@ -1,3 +1,7 @@
+# If true it does not count vanished players in %online-players% placeholder.
+# Requires PremiumVanish
+ignore-vanished-players-in-online-players: false
+
 placeholder-format:
   time:
     # Time zones: https://www.mkyong.com/java/java-display-list-of-timezone-with-gmt/

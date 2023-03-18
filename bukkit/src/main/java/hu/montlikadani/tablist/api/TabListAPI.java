@@ -52,31 +52,6 @@ public final class TabListAPI {
 	}
 
 	/**
-	 * Checks whatever the tablist toggled for the specified player.
-	 * 
-	 * @param uuid Player
-	 * @return true if toggled
-	 * @deprecated Use {@link TabToggleBase#isDisabled(hu.montlikadani.tablist.user.TabListUser)}
-	 */
-	@Deprecated
-	public static boolean isTabListToggled(Player player) {
-		return isTabListToggled(player.getUniqueId());
-	}
-
-	/**
-	 * Checks whatever the tablist toggled for the specified player uuid.
-	 * 
-	 * @param uuid Player UUID
-	 * @return true if toggled
-	 * @deprecated Use {@link TabToggleBase#isDisabled(hu.montlikadani.tablist.user.TabListUser)}
-	 */
-	@Deprecated
-	public static boolean isTabListToggled(UUID uuid) {
-		hu.montlikadani.tablist.user.TabListUser user = getPlugin().getUser(uuid).orElse(null);
-		return user != null && TabToggleBase.isDisabled(user);
-	}
-
-	/**
 	 * Sends the tab header and footer to the given player
 	 * 
 	 * @param p      {@link Player}

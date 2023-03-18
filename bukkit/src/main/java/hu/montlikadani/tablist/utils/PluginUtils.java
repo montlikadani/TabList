@@ -30,7 +30,6 @@ public final class PluginUtils {
 		PREMIUM_VANISH = pm.getPlugin("PremiumVanish");
 		STAFF_FACILITIES = pm.getPlugin("StaffFacilities");
 
-		// Purpur (not a plugin) - isAfk method
 		try {
 			Player.class.getMethod("isAfk");
 			isPurpurIsAfkMethodExists = true;

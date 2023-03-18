@@ -19,7 +19,7 @@ public class ReflectionHandled {
 		this.groupPlayer = groupPlayer;
 	}
 
-	public void registerTeam() {
+	private void registerTeam() {
 		if (packetTeam != null && !tl.getGroups().isToSort()) {
 			return;
 		}
