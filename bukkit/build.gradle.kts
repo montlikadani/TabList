@@ -20,7 +20,7 @@ repositories {
     maven("https://oss.sonatype.org/content/groups/public/") // Netty
 }
 
-val nmsProjects = setOf("1_8_R3", "1_18_R2", "1_19_R1", "1_19_R2")
+val nmsProjects = setOf("1_8_R3", "1_18_R2", "1_19_R1", "1_19_R2", "1_19_R3")
 
 dependencies {
     implementation(project(":global"))
@@ -33,7 +33,7 @@ dependencies {
     implementation("org.bstats:bstats-bukkit:3.0.1")
 
     compileOnly("com.github.xtomyserrax:StaffFacilities:5.0.8")
-    compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8 so we must use this
+    compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8, so we must use this
     compileOnly("org.purpurmc.purpur:purpur-api:1.19.3-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
     }
@@ -46,7 +46,7 @@ dependencies {
         exclude(group = "org.bukkit")
     }
 
-    compileOnly("me.clip:placeholderapi:2.11.2") {
+    compileOnly("me.clip:placeholderapi:2.11.3") {
         isTransitive = false
     }
 

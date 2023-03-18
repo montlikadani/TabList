@@ -142,44 +142,6 @@ public final class Variables {
 			return str;
 		}
 
-		// TODO marked for removal, no one uses this
-		if (!ConfigValues.getMemoryBarChar().isEmpty()) {
-			str = Global.replace(str, "%memory_bar%", () -> {
-				Runtime runtime = Runtime.getRuntime();
-
-				int barSize = ConfigValues.getMemoryBarSize(), totalMemory = (int) (runtime.totalMemory() / MB), usedMemory = totalMemory - (int) (runtime.freeMemory() / MB),
-						maxMemory = (int) (runtime.maxMemory() / MB);
-
-				float usedMem = (float) usedMemory / maxMemory;
-				float totalMem = (float) totalMemory / maxMemory;
-
-				String barChar = ConfigValues.getMemoryBarChar();
-				StringBuilder builder = new StringBuilder(usedMem < 0.8 ? ConfigValues.getMemoryBarUsedColor() : ConfigValues.getMemoryBarAllocationColor());
-
-				int i = 0;
-				int totalBarSize = (int) (barSize * usedMem);
-				for (; i < totalBarSize; i++) {
-					builder.append(barChar);
-				}
-
-				builder.append(ConfigValues.getMemoryBarFreeColor());
-
-				totalBarSize = (int) (barSize * (totalMem - usedMem));
-				for (i = 0; i < totalBarSize; i++) {
-					builder.append(barChar);
-				}
-
-				builder.append(ConfigValues.getMemoryBarReleasedColor());
-
-				totalBarSize = (int) (barSize * (1 - totalMem));
-				for (i = 0; i < totalBarSize; i++) {
-					builder.append(barChar);
-				}
-
-				return builder.toString();
-			});
-		}
-
 		if (pl != null) {
 			str = setPlayerPlaceholders(pl, str);
 		}
