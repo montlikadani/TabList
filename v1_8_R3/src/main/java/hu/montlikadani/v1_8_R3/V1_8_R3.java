@@ -141,7 +141,7 @@ public final class V1_8_R3 implements IPacketNM {
 		EntityPlayer from = getPlayerHandle(source);
 		PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, Collections.singletonList(from));
 
-		setEntriesField(updatePacket, () -> updatePacket.new PlayerInfoData(from.getProfile(), from.ping, from.playerInteractManager.getGameMode(), emptyComponent));
+		setEntriesField(updatePacket, Collections.singletonList(updatePacket.new PlayerInfoData(from.getProfile(), from.ping, from.playerInteractManager.getGameMode(), emptyComponent)));
 
 		//PacketPlayInArmAnimation animatePacket = new PacketPlayInArmAnimation();
 		PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
@@ -203,7 +203,7 @@ public final class V1_8_R3 implements IPacketNM {
 		try {
 			for (PacketPlayOutPlayerInfo.PlayerInfoData playerInfo : (List<PacketPlayOutPlayerInfo.PlayerInfoData>) infoList.get(update)) {
 				if (playerInfo.a().getId().equals(id)) {
-					setEntriesField(update, () -> update.new PlayerInfoData(playerInfo.a(), ping == -2 ? playerInfo.b() : ping, playerInfo.c(), (IChatBaseComponent) component));
+					setEntriesField(update, Collections.singletonList(update.new PlayerInfoData(playerInfo.a(), ping == -2 ? playerInfo.b() : ping, playerInfo.c(), (IChatBaseComponent) component)));
 					break;
 				}
 			}
@@ -212,7 +212,7 @@ public final class V1_8_R3 implements IPacketNM {
 		}
 	}
 
-	private void setEntriesField(PacketPlayOutPlayerInfo playerInfoPacket, java.util.function.Supplier<PacketPlayOutPlayerInfo.PlayerInfoData> supplier) {
+	private void setEntriesField(PacketPlayOutPlayerInfo playerInfoPacket, List<PacketPlayOutPlayerInfo.PlayerInfoData> list) {
 		try {
 
 			// Entries list is immutable, so use reflection to bypass
@@ -221,7 +221,7 @@ public final class V1_8_R3 implements IPacketNM {
 				entriesField.setAccessible(true);
 			}
 
-			entriesField.set(playerInfoPacket, Collections.singletonList(supplier.get()));
+			entriesField.set(playerInfoPacket, list);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -372,11 +372,24 @@ public final class V1_8_R3 implements IPacketNM {
 				PacketPlayOutPlayerInfo playerInfoPacket = (PacketPlayOutPlayerInfo) msg;
 
 				if (playerInfoAction.get(playerInfoPacket) == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE) {
+					Player player = org.bukkit.Bukkit.getPlayer(listenerPlayerId);
+
+					if (player == null) {
+						break;
+					}
+
+					PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE,
+							Collections.emptyList());
+					List<PacketPlayOutPlayerInfo.PlayerInfoData> players = new ArrayList<>();
+
 					for (PacketPlayOutPlayerInfo.PlayerInfoData infoData : (List<PacketPlayOutPlayerInfo.PlayerInfoData>) infoList.get(playerInfoPacket)) {
 						if (infoData.c() == EnumGamemode.SPECTATOR && !infoData.a().getId().equals(listenerPlayerId)) {
-							setEntriesField(playerInfoPacket, () -> playerInfoPacket.new PlayerInfoData(infoData.a(), infoData.b(), EnumGamemode.SURVIVAL, infoData.d()));
+							players.add(playerInfoPacket.new PlayerInfoData(infoData.a(), infoData.b(), EnumGamemode.SURVIVAL, infoData.d()));
 						}
 					}
+
+					setEntriesField(updatePacket, players);
+					sendPacket(player, updatePacket);
 				}
 
 				break;

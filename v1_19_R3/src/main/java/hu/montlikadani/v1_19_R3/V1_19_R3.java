@@ -32,9 +32,9 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public final class V1_19_R3 implements IPacketNM {
 
@@ -135,7 +135,8 @@ public final class V1_19_R3 implements IPacketNM {
 
     @Override
     public void removePlayersFromTab(Player source, Collection<? extends Player> players) {
-        sendPacket(getPlayerHandle(source), new ClientboundPlayerInfoRemovePacket(players.stream().map(Player::getUniqueId).collect(Collectors.toList())));
+        sendPacket(getPlayerHandle(source), new ClientboundPlayerInfoRemovePacket(players.stream().map(Player::getUniqueId)
+                .collect(java.util.stream.Collectors.toList())));
     }
 
     @Override
@@ -143,8 +144,8 @@ public final class V1_19_R3 implements IPacketNM {
         EntityPlayer from = getPlayerHandle(source);
         ClientboundPlayerInfoUpdatePacket updatePacket = ClientboundPlayerInfoUpdatePacket.a(Collections.singletonList(from));
 
-        setEntriesField(updatePacket, () -> new ClientboundPlayerInfoUpdatePacket.b(from.fI().getId(), from.fI(), false, from.e, from.d.b(), emptyComponent,
-                from.X() == null ? null : from.X().b()));
+        setEntriesField(updatePacket, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.b(from.fI().getId(), from.fI(), false, from.e,
+                from.d.b(), emptyComponent, from.X() == null ? null : from.X().b())));
 
         PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
 
@@ -178,7 +179,7 @@ public final class V1_19_R3 implements IPacketNM {
             players.add((EntityPlayer) one);
         }
 
-        return new ClientboundPlayerInfoUpdatePacket(java.util.EnumSet.of(ClientboundPlayerInfoUpdatePacket.a.a,
+        return new ClientboundPlayerInfoUpdatePacket(EnumSet.of(ClientboundPlayerInfoUpdatePacket.a.a,
                 ClientboundPlayerInfoUpdatePacket.a.d, ClientboundPlayerInfoUpdatePacket.a.e, ClientboundPlayerInfoUpdatePacket.a.f), players);
     }
 
@@ -204,14 +205,14 @@ public final class V1_19_R3 implements IPacketNM {
 
         for (ClientboundPlayerInfoUpdatePacket.b playerInfo : update.c()) {
             if (playerInfo.a().equals(id)) {
-                setEntriesField(update, () -> new ClientboundPlayerInfoUpdatePacket.b(playerInfo.a(), playerInfo.b(), playerInfo.c(),
-                        ping == -2 ? playerInfo.d() : ping, playerInfo.e(), (IChatBaseComponent) component, playerInfo.g()));
+                setEntriesField(update, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.b(playerInfo.a(), playerInfo.b(), playerInfo.c(),
+                        ping == -2 ? playerInfo.d() : ping, playerInfo.e(), (IChatBaseComponent) component, playerInfo.g())));
                 break;
             }
         }
     }
 
-    private void setEntriesField(ClientboundPlayerInfoUpdatePacket playerInfoPacket, java.util.function.Supplier<ClientboundPlayerInfoUpdatePacket.b> supplier) {
+    private void setEntriesField(ClientboundPlayerInfoUpdatePacket playerInfoPacket, List<ClientboundPlayerInfoUpdatePacket.b> list) {
         try {
 
             // Entries list is immutable, so use reflection to bypass
@@ -220,7 +221,7 @@ public final class V1_19_R3 implements IPacketNM {
                 entriesField.setAccessible(true);
             }
 
-            entriesField.set(playerInfoPacket, Collections.singletonList(supplier.get()));
+            entriesField.set(playerInfoPacket, list);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -336,12 +337,25 @@ public final class V1_19_R3 implements IPacketNM {
                 ClientboundPlayerInfoUpdatePacket playerInfoPacket = (ClientboundPlayerInfoUpdatePacket) msg;
 
                 if (playerInfoPacket.a().contains(ClientboundPlayerInfoUpdatePacket.a.c)) {
+                    Player player = Bukkit.getPlayer(listenerPlayerId);
+
+                    if (player == null) {
+                        break;
+                    }
+
+                    ClientboundPlayerInfoUpdatePacket updatePacket = new ClientboundPlayerInfoUpdatePacket(EnumSet.of(ClientboundPlayerInfoUpdatePacket.a.c),
+                            Collections.emptyList());
+                    List<ClientboundPlayerInfoUpdatePacket.b> players = new ArrayList<>();
+
                     for (ClientboundPlayerInfoUpdatePacket.b entry : playerInfoPacket.c()) {
                         if (entry.e() == EnumGamemode.d && !entry.a().equals(listenerPlayerId)) {
-                            setEntriesField(playerInfoPacket, () -> new ClientboundPlayerInfoUpdatePacket.b(entry.a(), entry.b(), entry.c(), entry.d(),
+                            players.add(new ClientboundPlayerInfoUpdatePacket.b(entry.a(), entry.b(), entry.c(), entry.d(),
                                     EnumGamemode.a, entry.f(), entry.g()));
                         }
                     }
+
+                    setEntriesField(updatePacket, players);
+                    sendPacket(player, updatePacket);
                 }
 
                 break;

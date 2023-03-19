@@ -331,52 +331,58 @@ public final class LegacyVersion implements IPacketNM {
     public void appendPlayerWithoutListed(Player source) {
         Object player = getPlayerHandle(source);
 
+        if (player == null) {
+            return;
+        }
+
         try {
             Object updatePacket = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), toArray(player));
 
-            setEntriesField(updatePacket, () -> {
-                if (playerLatency == null) {
-                    playerLatency = fieldByNameAndType(player.getClass(), int.class, "latency", "ping", "g", "f", "e");
+            if (playerLatency == null && (playerLatency = fieldByNameAndType(player.getClass(), int.class, "latency", "ping", "g", "f", "e")) == null) {
+                return;
+            }
+
+            // This is why I hate
+            if (gameProfileMethod == null && (gameProfileMethod = methodByTypeAndName(player.getClass().getSuperclass(), GameProfile.class, "getProfile", "fi", "getGameProfile",
+                        "cS", "dH", "fp", "da", "cK", "eA", "ez", "ed", "do", "da", "cP", "cL")) == null) {
+                return;
+            }
+
+            if (interactManagerField == null && (interactManagerField = fieldByNameAndType(player.getClass(), interactManager,
+                    "playerInteractManager", "d", "c", "gameMode")) == null) {
+                return;
+            }
+
+            Object infoData = null;
+
+            try {
+                Object interactManagerInstance = interactManagerField.get(player);
+
+                if (interactGameModeMethod == null) {
+                    interactGameModeMethod = methodByTypeAndName(interactManagerInstance.getClass(), ClazzContainer.getGameModeSurvival().getClass(),
+                            "b", "getGameModeForPlayer", "getGameMode");
                 }
 
-                if (gameProfileMethod == null) {
-                    gameProfileMethod = methodByTypeAndName(player.getClass().getSuperclass(), GameProfile.class, "getProfile", "fi", "getGameProfile",
-                            "cS", "dH", "fp", "da", "cK", "eA", "ez", "ed", "do", "da", "cP", "cL"); // This is why I hate
-                }
+                int ping = playerLatency.getInt(player);
+                GameProfile profile = (GameProfile) gameProfileMethod.invoke(player);
+                Object gameMode = interactGameModeMethod.invoke(interactManagerInstance);
 
-                if (interactManagerField == null) {
-                    interactManagerField = fieldByNameAndType(player.getClass(), interactManager, "playerInteractManager", "d", "c", "gameMode");
-                }
-
-                try {
-                    Object interactManagerInstance = interactManagerField.get(player);
-
-                    if (interactGameModeMethod == null) {
-                        interactGameModeMethod = methodByTypeAndName(interactManagerInstance.getClass(), ClazzContainer.getGameModeSurvival().getClass(),
-                                "b", "getGameModeForPlayer", "getGameMode");
+                if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
+                    if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
+                        infoData = ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, gameMode,
+                                ReflectionUtils.EMPTY_COMPONENT, null);
+                    } else {
+                        infoData = ClazzContainer.getPlayerInfoDataConstructor().newInstance(updatePacket, profile, ping, gameMode, ReflectionUtils.EMPTY_COMPONENT);
                     }
-
-                    int ping = playerLatency.getInt(player);
-                    GameProfile profile = (GameProfile) gameProfileMethod.invoke(player);
-                    Object gameMode = interactGameModeMethod.invoke(interactManagerInstance);
-
-                    if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
-                        if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
-                            return ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, gameMode,
-                                    ReflectionUtils.EMPTY_COMPONENT, null);
-                        }
-
-                        return ClazzContainer.getPlayerInfoDataConstructor().newInstance(updatePacket, profile, ping, gameMode, ReflectionUtils.EMPTY_COMPONENT);
-                    }
-
-                    return ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, gameMode, ReflectionUtils.EMPTY_COMPONENT);
-                } catch (IllegalAccessException | InstantiationException |
-                         java.lang.reflect.InvocationTargetException e) {
-                    e.printStackTrace();
+                } else {
+                    infoData = ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, gameMode, ReflectionUtils.EMPTY_COMPONENT);
                 }
+            } catch (IllegalAccessException | InstantiationException |
+                     java.lang.reflect.InvocationTargetException e) {
+                e.printStackTrace();
+            }
 
-                return null;
-            });
+            setEntriesField(updatePacket, Collections.singletonList(infoData));
 
             if (packetPlayOutAnimation == null) {
                 packetPlayOutAnimation = ClazzContainer.classByName("net.minecraft.network.protocol.game", "PacketPlayOutAnimation")
@@ -508,7 +514,7 @@ public final class LegacyVersion implements IPacketNM {
             for (Object infoData : (List<Object>) ClazzContainer.getInfoList().get(info)) {
                 GameProfile profile = ClazzContainer.getPlayerInfoDataProfile(infoData);
 
-                if (!profile.getId().equals(id)) {
+                if (profile == null || !profile.getId().equals(id)) {
                     continue;
                 }
 
@@ -534,9 +540,9 @@ public final class LegacyVersion implements IPacketNM {
         }
     }
 
-    private void setEntriesField(Object playerInfoPacket, java.util.function.Supplier<Object> supplier) {
+    private void setEntriesField(Object playerInfoPacket, List<Object> list) {
         try {
-            ClazzContainer.getInfoList().set(playerInfoPacket, Collections.singletonList(supplier.get()));
+            ClazzContainer.getInfoList().set(playerInfoPacket, list);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -788,6 +794,15 @@ public final class LegacyVersion implements IPacketNM {
                 }
 
                 if (ClazzContainer.getActionField().get(msg) == ClazzContainer.getEnumUpdateGameMode()) {
+                    Player player = Bukkit.getPlayer(listenerPlayerId);
+
+                    if (player == null) {
+                        break;
+                    }
+
+                    Object updatePacket = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateLatency(), new Object[0]);
+                    List<Object> players = new ArrayList<>();
+
                     for (Object entry : (List<Object>) ClazzContainer.getInfoList().get(msg)) {
                         if (ClazzContainer.getPlayerInfoDataGameMode().get(entry) != ClazzContainer.getGameModeSpectator()) {
                             continue;
@@ -795,31 +810,30 @@ public final class LegacyVersion implements IPacketNM {
 
                         GameProfile profile = ClazzContainer.getPlayerInfoDataProfile(entry);
 
-                        if (profile.getId().equals(listenerPlayerId)) {
+                        if (profile == null || profile.getId().equals(listenerPlayerId)) {
                             continue;
                         }
 
-                        setEntriesField(msg, () -> {
-                            try {
-                                int ping = ClazzContainer.getPlayerInfoDataPing().getInt(entry);
-                                Object component = ClazzContainer.getPlayerInfoDisplayName().get(entry);
+                        try {
+                            int ping = ClazzContainer.getPlayerInfoDataPing().getInt(entry);
+                            Object component = ClazzContainer.getPlayerInfoDisplayName().get(entry);
 
-                                if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
-                                    if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
-                                        return ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeSurvival(), component, null);
-                                    }
-
-                                    return ClazzContainer.getPlayerInfoDataConstructor().newInstance(msg, profile, ping, ClazzContainer.getGameModeSurvival(), component);
+                            if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
+                                if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
+                                    players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeSurvival(), component, null));
+                                } else {
+                                    players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(msg, profile, ping, ClazzContainer.getGameModeSurvival(), component));
                                 }
-
-                                return ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeSurvival(), component);
-                            } catch (IllegalAccessException | InstantiationException |
-                                     java.lang.reflect.InvocationTargetException e) {
-                                e.printStackTrace();
+                            } else {
+                                players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeSurvival(), component));
                             }
+                        } catch (IllegalAccessException | InstantiationException |
+                                 java.lang.reflect.InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
 
-                            return null;
-                        });
+                        setEntriesField(updatePacket, players);
+                        sendPacket(player, updatePacket);
                     }
                 }
 

@@ -115,8 +115,8 @@ public final class V1_19_R2 implements IPacketNM {
         EntityPlayer from = getPlayerHandle(source);
         ClientboundPlayerInfoUpdatePacket updatePacket = ClientboundPlayerInfoUpdatePacket.a(Collections.singletonList(from));
 
-        setEntriesField(updatePacket, () -> new ClientboundPlayerInfoUpdatePacket.b(from.fD().getId(), from.fD(), false, from.e, from.d.b(), emptyComponent,
-                from.Y() == null ? null : from.Y().b()));
+        setEntriesField(updatePacket, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.b(from.fD().getId(), from.fD(), false, from.e, from.d.b(),
+                emptyComponent, from.Y() == null ? null : from.Y().b())));
 
         //PacketPlayInArmAnimation animatePacket = new PacketPlayInArmAnimation(net.minecraft.world.EnumHand.a);
         PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
@@ -177,14 +177,14 @@ public final class V1_19_R2 implements IPacketNM {
 
         for (ClientboundPlayerInfoUpdatePacket.b playerInfo : update.c()) {
             if (playerInfo.a().equals(id)) {
-                setEntriesField(update, () -> new ClientboundPlayerInfoUpdatePacket.b(playerInfo.a(), playerInfo.b(), playerInfo.c(),
-                        ping == -2 ? playerInfo.d() : ping, playerInfo.e(), (IChatBaseComponent) component, playerInfo.g()));
+                setEntriesField(update, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.b(playerInfo.a(), playerInfo.b(), playerInfo.c(),
+                        ping == -2 ? playerInfo.d() : ping, playerInfo.e(), (IChatBaseComponent) component, playerInfo.g())));
                 break;
             }
         }
     }
 
-    private void setEntriesField(ClientboundPlayerInfoUpdatePacket playerInfoPacket, java.util.function.Supplier<ClientboundPlayerInfoUpdatePacket.b> supplier) {
+    private void setEntriesField(ClientboundPlayerInfoUpdatePacket playerInfoPacket, List<ClientboundPlayerInfoUpdatePacket.b> list) {
         try {
 
             // Entries list is immutable, so use reflection to bypass
@@ -193,7 +193,7 @@ public final class V1_19_R2 implements IPacketNM {
                 entriesField.setAccessible(true);
             }
 
-            entriesField.set(playerInfoPacket, Collections.singletonList(supplier.get()));
+            entriesField.set(playerInfoPacket, list);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -309,12 +309,25 @@ public final class V1_19_R2 implements IPacketNM {
                 ClientboundPlayerInfoUpdatePacket playerInfoPacket = (ClientboundPlayerInfoUpdatePacket) msg;
 
                 if (playerInfoPacket.b().contains(ClientboundPlayerInfoUpdatePacket.a.c)) {
+                    Player player = Bukkit.getPlayer(listenerPlayerId);
+
+                    if (player == null) {
+                        break;
+                    }
+
+                    ClientboundPlayerInfoUpdatePacket updatePacket = new ClientboundPlayerInfoUpdatePacket(
+                            java.util.EnumSet.of(ClientboundPlayerInfoUpdatePacket.a.c), java.util.Collections.emptyList());
+                    List<ClientboundPlayerInfoUpdatePacket.b> players = new ArrayList<>();
+
                     for (ClientboundPlayerInfoUpdatePacket.b entry : playerInfoPacket.c()) {
                         if (entry.e() == EnumGamemode.d && !entry.a().equals(listenerPlayerId)) {
-                            setEntriesField(playerInfoPacket, () -> new ClientboundPlayerInfoUpdatePacket.b(entry.a(), entry.b(), entry.c(), entry.d(),
+                            players.add(new ClientboundPlayerInfoUpdatePacket.b(entry.a(), entry.b(), entry.c(), entry.d(),
                                     EnumGamemode.a, entry.f(), entry.g()));
                         }
                     }
+
+                    setEntriesField(updatePacket, players);
+                    sendPacket(player, updatePacket);
                 }
 
                 break;
