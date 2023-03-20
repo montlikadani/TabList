@@ -27,7 +27,7 @@ dependencies {
 	}
 }
 
-version = "2.3.2"
+version = "2.3.3"
 
 // All of these is required to include :global project class files
 tasks {
