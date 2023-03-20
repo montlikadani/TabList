@@ -271,8 +271,8 @@ public class TabHandler {
 
 		if (worldList.isEmpty()) {
 			for (Player all : player.getWorld().getPlayers()) {
-				Object head = he == TabText.EMPTY ? TabText.EMPTY : v.replaceVariables(all, new TabText(he)).toComponent();
-				Object foot = fo == TabText.EMPTY ? TabText.EMPTY : v.replaceVariables(all, new TabText(fo)).toComponent();
+				Object head = he == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : v.replaceVariables(all, new TabText(he)).toComponent();
+				Object foot = fo == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : v.replaceVariables(all, new TabText(fo)).toComponent();
 
 				PacketNM.NMS_PACKET.sendTabTitle(all, head, foot);
 			}
@@ -285,8 +285,8 @@ public class TabHandler {
 		for (String l : worldList) {
 			if ((world = plugin.getServer().getWorld(l)) != null) {
 				for (Player all : world.getPlayers()) {
-					Object head = he == TabText.EMPTY ? TabText.EMPTY : v.replaceVariables(all, new TabText(he)).toComponent();
-					Object foot = fo == TabText.EMPTY ? TabText.EMPTY : v.replaceVariables(all, new TabText(fo)).toComponent();
+					Object head = he == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : v.replaceVariables(all, new TabText(he)).toComponent();
+					Object foot = fo == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : v.replaceVariables(all, new TabText(fo)).toComponent();
 
 					PacketNM.NMS_PACKET.sendTabTitle(all, head, foot);
 				}
