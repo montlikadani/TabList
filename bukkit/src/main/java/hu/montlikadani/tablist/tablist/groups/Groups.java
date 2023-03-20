@@ -199,13 +199,10 @@ public final class Groups {
 	}
 
 	/**
-	 * Adds a new player to groups.
-	 * <p>
-	 * After adding/or the player existing, their groups will get updated once to retrieve the approximately group and
-	 * sets the prefix/suffix to be shown in player list.
+	 * Updates the specified player's group and sorts in the player list
 	 * 
 	 * @param player {@link Player}
-	 * @return {@link GroupPlayer} if ever exists or not
+	 * @return {@link GroupPlayer} or null if player is not exist
 	 */
 	public GroupPlayer addPlayer(Player player) {
 		TabListUser user = plugin.getUser(player).orElse(null);

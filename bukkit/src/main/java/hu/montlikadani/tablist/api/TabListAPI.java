@@ -1,7 +1,5 @@
 package hu.montlikadani.tablist.api;
 
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -9,7 +7,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.TabText;
-import hu.montlikadani.tablist.tablist.TabToggleBase;
 
 /**
  * The API methods for TabList.

@@ -21,8 +21,8 @@ import hu.montlikadani.tablist.tablist.groups.TeamHandler;
 import hu.montlikadani.tablist.utils.Util;
 
 @CommandProcessor(name = "player",
-		params = "<name> prefix/suffix/tabname <displayTag>",
-		desc = "Sets the given player's prefix/suffix or tabname",
+		params = "<name> prefix/suffix/tabname/priority/remove",
+		desc = "Sets a meta specifically for the given player's",
 		permission = Perm.PLAYER_META)
 public final class player implements ICommand {
 
@@ -34,8 +34,14 @@ public final class player implements ICommand {
 		}
 
 		if (args.length < 3) {
-			sendMsg(sender, Util.colorText("&6/" + label + " player\n          &6prefix <prefix> -&7 Changes the prefix of an existing player."
-					+ "\n          &6suffix <suffix> -&7 Changes the suffix of an existing player.\n          &6tabname -&7 Changes the tabname of an existing player."));
+			sendMsg(sender, Util.colorText("&6/" + label + " player\n"
+					+ "          &6prefix <prefix> -&7 Changes the prefix of an existing player.\n"
+					+ "          &6suffix <suffix> -&7 Changes the suffix of an existing player.\n"
+					+ "          &6tabname -&7 Changes the tab name of an existing player.\n"
+					+ "          &6priority -&7 Sets a priority for the given player's.\n"
+					+ "          &6 remove -&7 Removes the specified player's meta"
+			));
+
 			return false;
 		}
 

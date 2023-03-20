@@ -19,8 +19,8 @@ import hu.montlikadani.tablist.tablist.groups.TeamHandler;
 import hu.montlikadani.tablist.utils.Util;
 
 @CommandProcessor(name = "group",
-	params = "<name> prefix/suffix/tabname <displayTag>",
-	desc = "Sets the given group's prefix/suffix or tabname",
+	params = "<name> prefix/suffix/tabname/priority/remove",
+	desc = "Sets a meta for the given group's",
 	permission = Perm.GROUP_META)
 public final class group implements ICommand {
 
@@ -32,8 +32,14 @@ public final class group implements ICommand {
 		}
 
 		if (args.length < 3) {
-			sendMsg(sender, Util.colorText("&6/" + label + " group\n          &6prefix <prefix> -&7 Changes the prefix of an existing group."
-					+ "\n          &6suffix <suffix> -&7 Changes the suffix of an existing group.\n          &6tabname -&7 Changes the tabname of an existing group."));
+			sendMsg(sender, Util.colorText("&6/" + label + " group\n"
+					+ "          &6prefix <prefix> -&7 Changes the prefix of an existing group.\n"
+					+ "          &6suffix <suffix> -&7 Changes the suffix of an existing group.\n"
+					+ "          &6tabname -&7 Changes the tab name of an existing group.\n"
+					+ "          &6priority -&7 Sets a priority for the given group.\n"
+					+ "          &6 remove -&7 Removes the specified group meta"
+			));
+
 			return false;
 		}
 
