@@ -265,7 +265,10 @@ public class TabHandler {
 		final Variables v = plugin.getPlaceholders();
 
 		if (!worldEnabled) {
-			PacketNM.NMS_PACKET.sendTabTitle(player, v.replaceVariables(player, he).toComponent(), v.replaceVariables(player, fo).toComponent());
+			Object head = he == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : v.replaceVariables(player, he).toComponent();
+			Object foot = fo == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : v.replaceVariables(player, fo).toComponent();
+
+			PacketNM.NMS_PACKET.sendTabTitle(player, head, foot);
 			return;
 		}
 

@@ -42,7 +42,16 @@ public final class VaultPermission {
 
 	public boolean playerInGroup(Player player, String group) {
 		try {
-			return perm.playerInGroup(player, group);
+			if (perm.playerInGroup(player, group)) {
+				return true;
+			}
+
+			// Secondary check because the above may fail at some cases
+			for (String playerGroup : perm.getPlayerGroups(player)) {
+				if (group.equalsIgnoreCase(playerGroup)) {
+					return true;
+				}
+			}
 		} catch (UnsupportedOperationException e) {
 		}
 
