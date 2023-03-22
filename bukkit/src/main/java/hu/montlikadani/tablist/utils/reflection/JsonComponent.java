@@ -45,17 +45,18 @@ public final class JsonComponent {
 		StringBuilder builder = new StringBuilder(length);
 
 		for (int i = 0; i < length; i++) {
-			boolean containsHex = false;
-			int count = i + 13; // = #§a§a§e§2§a§5
 
 			// Finds hex colours that may be coming from essentials (&x&f ..) and removes "&" character to match the correct hex colour
-			for (int j = i + 1; j < count && j < length; j += 2) {
-				if (!(containsHex = text.charAt(j) == '&')) {
+			int count = i + 13; // = #§a§a§e§2§a§5
+			int j = i + 1;
+
+			for (; j < count && j < length; j += 2) {
+				if (text.charAt(j) != '&') {
 					break;
 				}
 			}
 
-			if (containsHex) {
+			if (j == count) {
 				text = Global.replaceFrom(text, i, "&", "", 6);
 				length = text.length();
 			}
