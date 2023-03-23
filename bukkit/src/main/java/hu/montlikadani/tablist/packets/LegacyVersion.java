@@ -741,24 +741,12 @@ public final class LegacyVersion implements IPacketNM {
 
     @Override
     public Object changeScoreboardScorePacket(String objectiveName, String scoreName, int score) {
-        try {
-            return ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(ClazzContainer.getEnumScoreboardActionChange(), objectiveName, scoreName, score);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return ClazzContainer.newInstanceOfPacketPlayOutScoreboardScore(ClazzContainer.getEnumScoreboardActionChange(), objectiveName, scoreName, score);
     }
 
     @Override
     public Object removeScoreboardScorePacket(String objectiveName, String scoreName, int score) {
-        try {
-            return ClazzContainer.getPacketPlayOutScoreboardScoreConstructor().newInstance(ClazzContainer.getEnumScoreboardActionRemove(), objectiveName, scoreName, score);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return ClazzContainer.newInstanceOfPacketPlayOutScoreboardScore(ClazzContainer.getEnumScoreboardActionRemove(), objectiveName, scoreName, score);
     }
 
     @Override

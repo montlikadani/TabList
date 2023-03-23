@@ -145,32 +145,35 @@ public final class ClazzContainer {
 			}
 
 			firstScoreboardObjectiveConstructor = scoreboardObjective.getConstructors()[0];
+			packetPlayOutScoreboardObjectiveConstructor = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardObjective")
+					.getConstructor(scoreboardObjective, int.class);
 
-			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
-				Class<?> enumScoreboardAction;
+			Class<?> enumScoreboardAction;
 
+			try {
+				enumScoreboardAction = classByName("net.minecraft.server", "ScoreboardServer$Action");
+			} catch (ClassNotFoundException e) {
 				try {
-					enumScoreboardAction = classByName("net.minecraft.server", "ScoreboardServer$Action");
-				} catch (ClassNotFoundException e) {
-					try {
-						enumScoreboardAction = classByName("net.minecraft.server", "PacketPlayOutScoreboardScore$EnumScoreboardAction");
-					} catch (ClassNotFoundException ex) {
-						enumScoreboardAction = classByName("net.minecraft.server", "EnumScoreboardAction");
-					}
+					enumScoreboardAction = classByName("net.minecraft.server", "PacketPlayOutScoreboardScore$EnumScoreboardAction");
+				} catch (ClassNotFoundException ex) {
+					enumScoreboardAction = classByName("net.minecraft.server", "EnumScoreboardAction");
 				}
+			}
 
-				try {
-					enumScoreboardActionChange = enumScoreboardAction.getDeclaredField("a").get(enumScoreboardAction);
-					enumScoreboardActionRemove = enumScoreboardAction.getDeclaredField("b").get(enumScoreboardAction);
-				} catch (NoSuchFieldException e) {
-					enumScoreboardActionChange = enumScoreboardAction.getDeclaredField("CHANGE").get(enumScoreboardAction);
-					enumScoreboardActionRemove = enumScoreboardAction.getDeclaredField("REMOVE").get(enumScoreboardAction);
-				}
+			try {
+				enumScoreboardActionChange = enumScoreboardAction.getDeclaredField("a").get(enumScoreboardAction);
+				enumScoreboardActionRemove = enumScoreboardAction.getDeclaredField("b").get(enumScoreboardAction);
+			} catch (NoSuchFieldException e) {
+				enumScoreboardActionChange = enumScoreboardAction.getDeclaredField("CHANGE").get(enumScoreboardAction);
+				enumScoreboardActionRemove = enumScoreboardAction.getDeclaredField("REMOVE").get(enumScoreboardAction);
+			}
 
-				packetPlayOutScoreboardObjectiveConstructor = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardObjective")
-						.getConstructor(scoreboardObjective, int.class);
+			try {
 				packetPlayOutScoreboardScoreConstructor = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardScore")
 						.getConstructor(enumScoreboardAction, String.class, String.class, int.class);
+			} catch (NoSuchMethodException excep) {
+				packetPlayOutScoreboardScoreConstructor = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardScore")
+						.getConstructor(String.class);
 			}
 
 			(infoList = packetPlayOutPlayerInfo.getDeclaredField("b")).setAccessible(true);
@@ -252,6 +255,20 @@ public final class ClazzContainer {
 				field.setAccessible(true);
 				return field;
 			}
+		}
+
+		return null;
+	}
+
+	public static Object newInstanceOfPacketPlayOutScoreboardScore(Object action, String objectiveName, String scoreName, int score) {
+		try {
+			if (packetPlayOutScoreboardScoreConstructor.getParameterCount() == 1) {
+				return packetPlayOutScoreboardScoreConstructor.newInstance(objectiveName);
+			}
+
+			return packetPlayOutScoreboardScoreConstructor.newInstance(action, objectiveName, scoreName, score);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 
 		return null;
@@ -378,10 +395,6 @@ public final class ClazzContainer {
 
 	public static Field getNameTagVisibilityNameField() {
 		return nameTagVisibilityNameField;
-	}
-
-	public static Constructor<?> getPacketPlayOutScoreboardScoreConstructor() {
-		return packetPlayOutScoreboardScoreConstructor;
 	}
 
 	public static Constructor<?> getPacketPlayOutScoreboardObjectiveConstructor() {
