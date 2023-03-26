@@ -16,16 +16,10 @@ public final class Global {
 		while (matcher.find()) {
 			String group = matcher.group(0);
 
-			// Actually this is useless, convert hex to hex, congrats for me
-			/*try {
-				s = s.replace(group, TextColor.color(Integer.parseInt(group.substring(1), 16)).asHexString());
-			} catch (NumberFormatException e) {
-			} catch (Error er) {*/
-				try {
-					s = s.replace(group, net.md_5.bungee.api.ChatColor.of(group).toString());
-				} catch (IllegalArgumentException ignored) {
-				}
-			//}
+			try {
+				s = s.replace(group, net.md_5.bungee.api.ChatColor.of(group).toString());
+			} catch (IllegalArgumentException ignored) {
+			}
 		}
 
 		return s;
@@ -102,7 +96,7 @@ public final class Global {
 			builder.replace(index, index + 1, replacement);
 
 			if (--max <= 0) {
-				break;
+				return builder.toString();
 			}
 
 			index = builder.indexOf(search, start);
