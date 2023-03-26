@@ -1,28 +1,10 @@
 package hu.montlikadani.tablist;
 
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 
 public final class Global {
 
 	private Global() {
-	}
-
-	public static final Pattern HEX_PATTERN = Pattern.compile("#[a-fA-F0-9]{6}");
-
-	public static String matchHexColour(String s) {
-		java.util.regex.Matcher matcher = HEX_PATTERN.matcher(s);
-
-		while (matcher.find()) {
-			String group = matcher.group(0);
-
-			try {
-				s = s.replace(group, net.md_5.bungee.api.ChatColor.of(group).toString());
-			} catch (IllegalArgumentException ignored) {
-			}
-		}
-
-		return s;
 	}
 
 	public static String setSymbols(String s) {

@@ -5,6 +5,7 @@ import java.net.SocketAddress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import hu.montlikadani.tablist.config.ConfigConstants;
 import net.md_5.bungee.api.ChatColor;
@@ -30,9 +31,26 @@ public final class Misc {
 		PREMIUM_VANISH = ProxyServer.getInstance().getPluginManager().getPlugin("PremiumVanish");
 	}
 
+	private static final Pattern HEX_PATTERN = Pattern.compile("#[a-fA-F0-9]{6}");
+
+	private static String matchHexColour(String s) {
+		java.util.regex.Matcher matcher = HEX_PATTERN.matcher(s);
+
+		while (matcher.find()) {
+			String group = matcher.group(0);
+
+			try {
+				s = s.replace(group, ChatColor.of(group).toString());
+			} catch (IllegalArgumentException ignored) {
+			}
+		}
+
+		return s;
+	}
+
 	public static String colorMsg(String s) {
 		if (s.indexOf('#') != -1) {
-			s = Global.matchHexColour(s);
+			s = matchHexColour(s);
 		}
 
 		return ChatColor.translateAlternateColorCodes('&', s);

@@ -39,11 +39,12 @@ import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode;
 
 public final class V1_8_R3 implements IPacketNM {
 
-	private final List<ScoreboardTeam> playerTeams = new ArrayList<>();
 	private final List<ObjectiveStorage> objectiveStorage = new ArrayList<>();
 
 	private Field headerField, footerField, entriesField, infoList, playerInfoAction;
 	private final IChatBaseComponent emptyComponent = IChatBaseComponent.ChatSerializer.a("");
+
+	private final Scoreboard scoreboard = new Scoreboard();
 
 	public V1_8_R3() {
 		try {
@@ -229,7 +230,6 @@ public final class V1_8_R3 implements IPacketNM {
 
 	@Override
 	public PacketPlayOutScoreboardTeam createBoardTeam(Object teamNameComponent, String teamName, Player player, boolean followNameTagVisibility) {
-		Scoreboard scoreboard = new Scoreboard();
 		ScoreboardTeam playerTeam = scoreboard.createTeam(teamName);
 
 		scoreboard.addPlayerToTeam(player.getName(), teamName);
@@ -262,21 +262,20 @@ public final class V1_8_R3 implements IPacketNM {
 			}
 		}
 
-		playerTeams.add(playerTeam);
 		return new PacketPlayOutScoreboardTeam(playerTeam, 0);
 	}
 
 	@Override
 	public PacketPlayOutScoreboardTeam unregisterBoardTeam(Object playerTeam) {
 		ScoreboardTeam team = (ScoreboardTeam) playerTeam;
-		playerTeams.remove(team);
+		scoreboard.removeTeam(team);
 
 		return new PacketPlayOutScoreboardTeam(team, 1);
 	}
 
 	@Override
 	public ScoreboardTeam findBoardTeamByName(String teamName) {
-		for (ScoreboardTeam team : playerTeams) {
+		for (ScoreboardTeam team : scoreboard.getTeams()) {
 			if (team.getName().equals(teamName)) {
 				return team;
 			}

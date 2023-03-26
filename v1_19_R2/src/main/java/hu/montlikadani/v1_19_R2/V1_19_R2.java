@@ -36,10 +36,10 @@ import java.util.stream.Collectors;
 
 public final class V1_19_R2 implements IPacketNM {
 
-    private final List<ScoreboardTeam> playerTeams = new ArrayList<>();
-
     private Field entriesField;
     private final IChatBaseComponent emptyComponent = IChatBaseComponent.ChatSerializer.a("");
+
+    private final Scoreboard scoreboard = new Scoreboard();
 
     @Override
     public void sendPacket(Player player, Object packet) {
@@ -201,7 +201,6 @@ public final class V1_19_R2 implements IPacketNM {
 
     @Override
     public PacketPlayOutScoreboardTeam createBoardTeam(Object teamNameComponent, String teamName, Player player, boolean followNameTagVisibility) {
-        Scoreboard scoreboard = new Scoreboard();
         ScoreboardTeam playerTeam = scoreboard.g(teamName);
 
         scoreboard.a(player.getName(), playerTeam);
@@ -234,21 +233,20 @@ public final class V1_19_R2 implements IPacketNM {
             }
         }
 
-        playerTeams.add(playerTeam);
         return PacketPlayOutScoreboardTeam.a(playerTeam, true);
     }
 
     @Override
     public PacketPlayOutScoreboardTeam unregisterBoardTeam(Object playerTeam) {
         ScoreboardTeam team = (ScoreboardTeam) playerTeam;
-        playerTeams.remove(team);
+        scoreboard.d(team);
 
         return PacketPlayOutScoreboardTeam.a(team);
     }
 
     @Override
     public ScoreboardTeam findBoardTeamByName(String teamName) {
-        for (ScoreboardTeam team : playerTeams) {
+        for (ScoreboardTeam team : scoreboard.g()) {
             if (team.b().equals(teamName)) {
                 return team;
             }
