@@ -58,7 +58,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	private final Set<TextAnimation> animations = new HashSet<>(8);
 	private final Set<TabListUser> users = Collections.newSetFromMap(new ConcurrentHashMap<>());
-	private Class<?>[] packetClasses;
 
 	@Override
 	public void onEnable() {
@@ -213,24 +212,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	private void loadPacketListener() {
 		if (!ConfigValues.isRemoveGrayColorFromTabInSpec() && !ConfigValues.isHidePlayersFromTab()) {
 			getServer().getOnlinePlayers().forEach(PacketNM.NMS_PACKET::removePlayerChannelListener);
-			packetClasses = null;
-			return;
-		}
-
-		packetClasses = new Class<?>[1];
-
-		try {
-			packetClasses[0] = Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket");
-		} catch (ClassNotFoundException e) {
-			try {
-				packetClasses[0] = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo");
-			} catch (ClassNotFoundException ex) {
-				try {
-					packetClasses[0] = Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".PacketPlayOutPlayerInfo");
-				} catch (ClassNotFoundException c) {
-					packetClasses = null;
-				}
-			}
 		}
 	}
 
@@ -404,8 +385,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			groups.startTask();
 		}
 
-		if (packetClasses != null) {
-			PacketNM.NMS_PACKET.addPlayerChannelListener(player, packetClasses);
+		if (ConfigValues.isRemoveGrayColorFromTabInSpec() || ConfigValues.isHidePlayersFromTab()) {
+			PacketNM.NMS_PACKET.addPlayerChannelListener(player);
 		}
 
 		if (ConfigValues.isHidePlayersFromTab()) {

@@ -50,12 +50,12 @@ public final class V1_18_R2 implements IPacketNM {
     }
 
     @Override
-    public void addPlayerChannelListener(Player player, Class<?>... classesToListen) {
+    public void addPlayerChannelListener(Player player) {
         EntityPlayer entityPlayer = getPlayerHandle(player);
 
         if (entityPlayer.b.a.m.pipeline().get(PACKET_INJECTOR_NAME) == null) {
             try {
-                entityPlayer.b.a.m.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(entityPlayer.fq().getId(), classesToListen));
+                entityPlayer.b.a.m.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(entityPlayer.fq().getId()));
             } catch (java.util.NoSuchElementException ex) {
                 // packet_handler not exists, sure then, ignore
             }
@@ -286,45 +286,33 @@ public final class V1_18_R2 implements IPacketNM {
     private final class PacketReceivingListener extends io.netty.channel.ChannelDuplexHandler {
 
         private final UUID listenerPlayerId;
-        private final Class<?>[] classesToListen;
 
-        public PacketReceivingListener(UUID listenerPlayerId, Class<?>... classesToListen) {
+        public PacketReceivingListener(UUID listenerPlayerId) {
             this.listenerPlayerId = listenerPlayerId;
-            this.classesToListen = classesToListen;
         }
 
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
-            Class<?> receivingClass = msg.getClass();
-
-            for (Class<?> cl : classesToListen) {
-                if (cl != receivingClass) {
-                    continue;
-                }
-
+            if (msg.getClass() == PacketPlayOutPlayerInfo.class) {
                 PacketPlayOutPlayerInfo playerInfoPacket = (PacketPlayOutPlayerInfo) msg;
 
                 if (playerInfoPacket.c() == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.b) {
                     Player player = Bukkit.getPlayer(listenerPlayerId);
 
-                    if (player == null) {
-                        break;
-                    }
+                    if (player != null) {
+                        PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.c, Collections.emptyList());
+                        List<PacketPlayOutPlayerInfo.PlayerInfoData> players = new ArrayList<>();
 
-                    PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.c, Collections.emptyList());
-                    List<PacketPlayOutPlayerInfo.PlayerInfoData> players = new ArrayList<>();
-
-                    for (PacketPlayOutPlayerInfo.PlayerInfoData entry : playerInfoPacket.b()) {
-                        if (entry.c() == EnumGamemode.d && !entry.a().getId().equals(listenerPlayerId)) {
-                            players.add(new PacketPlayOutPlayerInfo.PlayerInfoData(entry.a(), entry.b(), EnumGamemode.a, entry.d()));
+                        for (PacketPlayOutPlayerInfo.PlayerInfoData entry : playerInfoPacket.b()) {
+                            if (entry.c() == EnumGamemode.d && !entry.a().getId().equals(listenerPlayerId)) {
+                                players.add(new PacketPlayOutPlayerInfo.PlayerInfoData(entry.a(), entry.b(), EnumGamemode.a, entry.d()));
+                            }
                         }
+
+                        setEntriesField(updatePacket, players);
+                        sendPacket(player, updatePacket);
                     }
-
-                    setEntriesField(updatePacket, players);
-                    sendPacket(player, updatePacket);
                 }
-
-                break;
             }
 
             super.write(ctx, msg, promise);

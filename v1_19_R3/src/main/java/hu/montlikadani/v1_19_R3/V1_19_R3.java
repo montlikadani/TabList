@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundPlayerChatPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.protocol.game.PacketPlayOutAnimation;
@@ -25,6 +26,7 @@ import net.minecraft.world.scores.ScoreboardTeam;
 import net.minecraft.world.scores.criteria.IScoreboardCriteria;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -53,13 +55,13 @@ public final class V1_19_R3 implements IPacketNM {
     }
 
     @Override
-    public void addPlayerChannelListener(Player player, Class<?>... classesToListen) {
+    public void addPlayerChannelListener(Player player) {
         EntityPlayer entityPlayer = getPlayerHandle(player);
         Channel channel = playerChannel(entityPlayer.b);
 
         if (channel != null && channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
             try {
-                channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(entityPlayer.fI().getId(), classesToListen));
+                channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(entityPlayer.fI().getId()));
             } catch (java.util.NoSuchElementException ex) {
                 // packet_handler not exists, sure then, ignore
             }
@@ -102,7 +104,7 @@ public final class V1_19_R3 implements IPacketNM {
 
     @Override
     public EntityPlayer getPlayerHandle(Player player) {
-        return ((org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer) player).getHandle();
+        return ((CraftPlayer) player).getHandle();
     }
 
     @Override
@@ -316,47 +318,61 @@ public final class V1_19_R3 implements IPacketNM {
     private final class PacketReceivingListener extends io.netty.channel.ChannelDuplexHandler {
 
         private final UUID listenerPlayerId;
-        private final Class<?>[] classesToListen;
 
-        public PacketReceivingListener(UUID listenerPlayerId, Class<?>... classesToListen) {
+        public PacketReceivingListener(UUID listenerPlayerId) {
             this.listenerPlayerId = listenerPlayerId;
-            this.classesToListen = classesToListen;
         }
 
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
             Class<?> receivingClass = msg.getClass();
 
-            for (Class<?> cl : classesToListen) {
-                if (cl != receivingClass) {
-                    continue;
+            if (receivingClass == ClientboundPlayerChatPacket.class) {
+                Player player = Bukkit.getPlayer(listenerPlayerId);
+
+                if (player == null) {
+                    super.write(ctx, msg, promise);
+                    return;
                 }
 
+                ClientboundPlayerChatPacket chatPacket = (ClientboundPlayerChatPacket) msg;
+                IChatBaseComponent content = chatPacket.f();
+
+                if (content == null) {
+                    content = IChatBaseComponent.b(chatPacket.e().a());
+                }
+
+                java.util.Optional<net.minecraft.network.chat.ChatMessageType.a> chatType = chatPacket.h().a(((CraftServer) Bukkit.getServer()).getServer().aX());
+
+                if (chatType.isPresent()) {
+                    sendPacket(player, new net.minecraft.network.protocol.game.ClientboundSystemChatPacket(chatType.get().a(content), false));
+                }
+
+                return;
+            }
+
+            if (receivingClass == ClientboundPlayerInfoUpdatePacket.class) {
                 ClientboundPlayerInfoUpdatePacket playerInfoPacket = (ClientboundPlayerInfoUpdatePacket) msg;
 
                 if (playerInfoPacket.a().contains(ClientboundPlayerInfoUpdatePacket.a.c)) {
                     Player player = Bukkit.getPlayer(listenerPlayerId);
 
-                    if (player == null) {
-                        break;
-                    }
+                    if (player != null) {
+                        ClientboundPlayerInfoUpdatePacket updatePacket = new ClientboundPlayerInfoUpdatePacket(EnumSet.of(ClientboundPlayerInfoUpdatePacket.a.c),
+                                Collections.emptyList());
+                        List<ClientboundPlayerInfoUpdatePacket.b> players = new ArrayList<>();
 
-                    ClientboundPlayerInfoUpdatePacket updatePacket = new ClientboundPlayerInfoUpdatePacket(EnumSet.of(ClientboundPlayerInfoUpdatePacket.a.c),
-                            Collections.emptyList());
-                    List<ClientboundPlayerInfoUpdatePacket.b> players = new ArrayList<>();
-
-                    for (ClientboundPlayerInfoUpdatePacket.b entry : playerInfoPacket.c()) {
-                        if (entry.e() == EnumGamemode.d && !entry.a().equals(listenerPlayerId)) {
-                            players.add(new ClientboundPlayerInfoUpdatePacket.b(entry.a(), entry.b(), entry.c(), entry.d(),
-                                    EnumGamemode.a, entry.f(), entry.g()));
+                        for (ClientboundPlayerInfoUpdatePacket.b entry : playerInfoPacket.c()) {
+                            if (entry.e() == EnumGamemode.d && !entry.a().equals(listenerPlayerId)) {
+                                players.add(new ClientboundPlayerInfoUpdatePacket.b(entry.a(), entry.b(), entry.c(), entry.d(),
+                                        EnumGamemode.a, entry.f(), entry.g()));
+                            }
                         }
+
+                        setEntriesField(updatePacket, players);
+                        sendPacket(player, updatePacket);
                     }
-
-                    setEntriesField(updatePacket, players);
-                    sendPacket(player, updatePacket);
                 }
-
-                break;
             }
 
             super.write(ctx, msg, promise);

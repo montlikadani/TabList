@@ -67,13 +67,13 @@ public final class V1_8_R3 implements IPacketNM {
 	}
 
 	@Override
-	public void addPlayerChannelListener(Player player, Class<?>... classesToListen) {
+	public void addPlayerChannelListener(Player player) {
 		EntityPlayer entityPlayer = getPlayerHandle(player);
 
 		if (entityPlayer.playerConnection.networkManager.channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
 			try {
 				entityPlayer.playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
-						new PacketReceivingListener(entityPlayer.getUniqueID(), classesToListen));
+						new PacketReceivingListener(entityPlayer.getUniqueID()));
 			} catch (java.util.NoSuchElementException ex) {
 				// packet_handler not exists, sure then, ignore
 			}
@@ -351,47 +351,35 @@ public final class V1_8_R3 implements IPacketNM {
 	private final class PacketReceivingListener extends io.netty.channel.ChannelDuplexHandler {
 
 		private final UUID listenerPlayerId;
-		private final Class<?>[] classesToListen;
 
-		public PacketReceivingListener(UUID listenerPlayerId, Class<?>... classesToListen) {
+		public PacketReceivingListener(UUID listenerPlayerId) {
 			this.listenerPlayerId = listenerPlayerId;
-			this.classesToListen = classesToListen;
 		}
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
-			Class<?> receivingClass = msg.getClass();
-
-			for (Class<?> cl : classesToListen) {
-				if (cl != receivingClass) {
-					continue;
-				}
-
+			if (msg.getClass() == PacketPlayOutPlayerInfo.class) {
 				PacketPlayOutPlayerInfo playerInfoPacket = (PacketPlayOutPlayerInfo) msg;
 
 				if (playerInfoAction.get(playerInfoPacket) == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE) {
 					Player player = org.bukkit.Bukkit.getPlayer(listenerPlayerId);
 
-					if (player == null) {
-						break;
-					}
+					if (player != null) {
+						PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE,
+								Collections.emptyList());
+						List<PacketPlayOutPlayerInfo.PlayerInfoData> players = new ArrayList<>();
 
-					PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE,
-							Collections.emptyList());
-					List<PacketPlayOutPlayerInfo.PlayerInfoData> players = new ArrayList<>();
-
-					for (PacketPlayOutPlayerInfo.PlayerInfoData infoData : (List<PacketPlayOutPlayerInfo.PlayerInfoData>) infoList.get(playerInfoPacket)) {
-						if (infoData.c() == EnumGamemode.SPECTATOR && !infoData.a().getId().equals(listenerPlayerId)) {
-							players.add(playerInfoPacket.new PlayerInfoData(infoData.a(), infoData.b(), EnumGamemode.SURVIVAL, infoData.d()));
+						for (PacketPlayOutPlayerInfo.PlayerInfoData infoData : (List<PacketPlayOutPlayerInfo.PlayerInfoData>) infoList.get(playerInfoPacket)) {
+							if (infoData.c() == EnumGamemode.SPECTATOR && !infoData.a().getId().equals(listenerPlayerId)) {
+								players.add(playerInfoPacket.new PlayerInfoData(infoData.a(), infoData.b(), EnumGamemode.SURVIVAL, infoData.d()));
+							}
 						}
+
+						setEntriesField(updatePacket, players);
+						sendPacket(player, updatePacket);
 					}
-
-					setEntriesField(updatePacket, players);
-					sendPacket(player, updatePacket);
 				}
-
-				break;
 			}
 
 			super.write(ctx, msg, promise);
