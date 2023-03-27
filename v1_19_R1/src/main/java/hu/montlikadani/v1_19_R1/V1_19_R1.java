@@ -51,12 +51,12 @@ public final class V1_19_R1 implements IPacketNM {
     }
 
     @Override
-    public void addPlayerChannelListener(Player player) {
+    public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
         EntityPlayer entityPlayer = getPlayerHandle(player);
 
         if (entityPlayer.b.b.m.pipeline().get(PACKET_INJECTOR_NAME) == null) {
             try {
-                entityPlayer.b.b.m.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(entityPlayer.fy().getId()));
+                entityPlayer.b.b.m.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(entityPlayer.fy().getId(), classesToListen));
             } catch (java.util.NoSuchElementException ex) {
                 // packet_handler not exists, sure then, ignore
             }
@@ -288,46 +288,56 @@ public final class V1_19_R1 implements IPacketNM {
     private final class PacketReceivingListener extends io.netty.channel.ChannelDuplexHandler {
 
         private final UUID listenerPlayerId;
+        private final List<Class<?>> classesToListen;
 
-        public PacketReceivingListener(UUID listenerPlayerId) {
+        public PacketReceivingListener(UUID listenerPlayerId, List<Class<?>> classesToListen) {
             this.listenerPlayerId = listenerPlayerId;
+            this.classesToListen = classesToListen;
         }
 
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
             Class<?> receivingClass = msg.getClass();
 
-            if (receivingClass == ClientboundPlayerChatPacket.class) {
-                Player player = Bukkit.getPlayer(listenerPlayerId);
+            for (Class<?> cl : classesToListen) {
+                if (cl != receivingClass) {
+                    continue;
+                }
 
-                if (player == null) {
-                    super.write(ctx, msg, promise);
+                if (cl == ClientboundPlayerChatPacket.class) {
+                    Player player = Bukkit.getPlayer(listenerPlayerId);
+
+                    if (player == null) {
+                        super.write(ctx, msg, promise);
+                        return;
+                    }
+
+                    ClientboundPlayerChatPacket chatPacket = (ClientboundPlayerChatPacket) msg;
+                    IChatBaseComponent content = chatPacket.b().c();
+
+                    if (content == null) {
+                        content = IChatBaseComponent.b(chatPacket.b().b().b());
+                    }
+
+                    java.util.Optional<net.minecraft.network.chat.ChatMessageType.a> chatType = chatPacket.c().a(((CraftServer) Bukkit.getServer()).getServer().aX());
+
+                    if (chatType.isPresent()) {
+                        sendPacket(player, new net.minecraft.network.protocol.game.ClientboundSystemChatPacket(chatType.get().a(content), false));
+                    }
+
                     return;
                 }
 
-                ClientboundPlayerChatPacket chatPacket = (ClientboundPlayerChatPacket) msg;
-                IChatBaseComponent content = chatPacket.b().c();
+                if (cl == PacketPlayOutPlayerInfo.class) {
+                    PacketPlayOutPlayerInfo playerInfoPacket = (PacketPlayOutPlayerInfo) msg;
 
-                if (content == null) {
-                    content = IChatBaseComponent.b(chatPacket.b().b().b());
-                }
+                    if (playerInfoPacket.c() == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.b) {
+                        Player player = Bukkit.getPlayer(listenerPlayerId);
 
-                java.util.Optional<net.minecraft.network.chat.ChatMessageType.a> chatType = chatPacket.c().a(((CraftServer) Bukkit.getServer()).getServer().aX());
+                        if (player == null) {
+                            break;
+                        }
 
-                if (chatType.isPresent()) {
-                    sendPacket(player, new net.minecraft.network.protocol.game.ClientboundSystemChatPacket(chatType.get().a(content), false));
-                }
-
-                return;
-            }
-
-            if (receivingClass == PacketPlayOutPlayerInfo.class) {
-                PacketPlayOutPlayerInfo playerInfoPacket = (PacketPlayOutPlayerInfo) msg;
-
-                if (playerInfoPacket.c() == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.b) {
-                    Player player = Bukkit.getPlayer(listenerPlayerId);
-
-                    if (player != null) {
                         PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.c, Collections.emptyList());
                         List<PacketPlayOutPlayerInfo.PlayerInfoData> players = new ArrayList<>();
 
@@ -340,6 +350,8 @@ public final class V1_19_R1 implements IPacketNM {
                         setEntriesField(updatePacket, players);
                         sendPacket(player, updatePacket);
                     }
+
+                    break;
                 }
             }
 

@@ -10,7 +10,7 @@ public interface IPacketNM {
 
     void sendPacket(Player player, Object packet);
 
-    void addPlayerChannelListener(Player player);
+    void addPlayerChannelListener(Player player, java.util.List<Class<?>> classesToListen);
 
     void removePlayerChannelListener(Player player);
 

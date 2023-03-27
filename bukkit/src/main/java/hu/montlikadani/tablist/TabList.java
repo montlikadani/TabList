@@ -58,6 +58,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	private final Set<TextAnimation> animations = new HashSet<>(8);
 	private final Set<TabListUser> users = Collections.newSetFromMap(new ConcurrentHashMap<>());
+	private List<Class<?>> packetClasses;
 
 	@Override
 	public void onEnable() {
@@ -212,6 +213,32 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	private void loadPacketListener() {
 		if (!ConfigValues.isRemoveGrayColorFromTabInSpec() && !ConfigValues.isHidePlayersFromTab()) {
 			getServer().getOnlinePlayers().forEach(PacketNM.NMS_PACKET::removePlayerChannelListener);
+			packetClasses = null;
+			return;
+		}
+
+		packetClasses = new java.util.ArrayList<>(2);
+
+		try {
+			packetClasses.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket"));
+
+			if (ConfigValues.isHidePlayersFromTab()) {
+				packetClasses.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerChatPacket"));
+			}
+		} catch (ClassNotFoundException e) {
+			try {
+				packetClasses.add(Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo"));
+
+				if (ConfigValues.isHidePlayersFromTab()) {
+					packetClasses.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerChatPacket"));
+				}
+			} catch (ClassNotFoundException ex) {
+				try {
+					packetClasses.add(Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".PacketPlayOutPlayerInfo"));
+				} catch (ClassNotFoundException c) {
+					packetClasses = null;
+				}
+			}
 		}
 	}
 
@@ -385,8 +412,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			groups.startTask();
 		}
 
-		if (ConfigValues.isRemoveGrayColorFromTabInSpec() || ConfigValues.isHidePlayersFromTab()) {
-			PacketNM.NMS_PACKET.addPlayerChannelListener(player);
+		if (packetClasses != null) {
+			PacketNM.NMS_PACKET.addPlayerChannelListener(player, packetClasses);
 		}
 
 		if (ConfigValues.isHidePlayersFromTab()) {

@@ -93,7 +93,7 @@ public final class LegacyVersion implements IPacketNM {
     }
 
     @Override
-    public void addPlayerChannelListener(Player player) {
+    public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
         Object entityPlayer = getPlayerHandle(player);
         Channel channel;
 
@@ -106,7 +106,7 @@ public final class LegacyVersion implements IPacketNM {
 
         if (channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
             try {
-                channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(player.getUniqueId()));
+                channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(player.getUniqueId(), classesToListen));
             } catch (java.util.NoSuchElementException ex) {
                 // packet_handler not exists, sure then, ignore
             }
@@ -764,18 +764,30 @@ public final class LegacyVersion implements IPacketNM {
     private final class PacketReceivingListener extends io.netty.channel.ChannelDuplexHandler {
 
         private final UUID listenerPlayerId;
+        private final List<Class<?>> classesToListen;
 
-        public PacketReceivingListener(UUID listenerPlayerId) {
+        public PacketReceivingListener(UUID listenerPlayerId, List<Class<?>> classesToListen) {
             this.listenerPlayerId = listenerPlayerId;
+            this.classesToListen = classesToListen;
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
-            if (ClazzContainer.getPacketPlayOutPlayerInfo() == msg.getClass() && ClazzContainer.getActionField().get(msg) == ClazzContainer.getEnumUpdateGameMode()) {
-                Player player = Bukkit.getPlayer(listenerPlayerId);
+            Class<?> receivingClass = msg.getClass();
 
-                if (player != null) {
+            for (Class<?> cl : classesToListen) {
+                if (cl != receivingClass) {
+                    continue;
+                }
+
+                if (ClazzContainer.getActionField().get(msg) == ClazzContainer.getEnumUpdateGameMode()) {
+                    Player player = Bukkit.getPlayer(listenerPlayerId);
+
+                    if (player == null) {
+                        break;
+                    }
+
                     Object updatePacket = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateLatency(), new Object[0]);
                     List<Object> players = new ArrayList<>();
 
