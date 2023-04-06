@@ -4,14 +4,10 @@ import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.user.TabListUser;
+import hu.montlikadani.tablist.utils.Pair;
 import hu.montlikadani.tablist.utils.PluginUtils;
-import hu.montlikadani.tablist.utils.StrUtil;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
-import hu.montlikadani.tablist.utils.variables.Variables;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.permissions.Permission;
-import org.bukkit.permissions.PermissionDefault;
 
 import java.util.Random;
 
@@ -20,9 +16,7 @@ public class TabHandler {
 	private final TabList plugin;
 	private final TabListUser user;
 
-	private boolean worldEnabled = false, tabEmpty = false;
-
-	private final java.util.List<String> worldList = new java.util.ArrayList<>();
+	private boolean tabEmpty = false;
 
 	private Random random;
 	private TabText[] header, footer;
@@ -34,8 +28,7 @@ public class TabHandler {
 	}
 
 	public void loadTabComponents() {
-		worldList.clear();
-		worldEnabled = tabEmpty = false;
+		tabEmpty = false;
 		header = footer = null;
 
 		final Player player = user.getPlayer();
@@ -61,99 +54,48 @@ public class TabHandler {
 			return;
 		}
 
-		final FileConfiguration c = plugin.getConf().getTablist();
-		String path = "";
+		TabConfigValues.OptionSeparator optionSeparator = TabConfigValues.SEPARATOR_MAP.get(world);
 
-		if (c.get("per-world", null) != null) {
-			if (c.get("per-world." + world + ".per-player." + pName, null) != null) {
-				path = "per-world." + world + ".per-player." + pName + ".";
-				worldEnabled = true;
-			} else {
-				t: for (String s : TabConfigValues.getPerWorldkeys()) {
-					for (String split : StrUtil.getCommaSpaceSeparatedPattern().split(s)) {
-						if (world.equals(split)) {
-							if (plugin.hasVault() && c.get("per-world." + s + ".per-group", null) != null) {
-								String group = plugin.getVaultPerm().getPrimaryGroup(split, player);
+		if (optionSeparator != null) {
+			Pair<TabText[], TabText[]> pair = optionSeparator.getConfigKeyMap().get(pName);
 
-								if (group != null) {
-									group = group.toLowerCase();
-
-									if (c.get("per-world." + s + ".per-group." + group, null) != null) {
-										path = "per-world." + s + ".per-group." + group + ".";
-										worldEnabled = true;
-									}
-								}
-							}
-
-							if (path.isEmpty()) {
-								path = "per-world." + s + '.';
-								worldEnabled = worldList.add(split);
-							}
-
-							break t;
-						}
-					}
-				}
-
-				if (worldList.isEmpty() && c.get("per-world." + world, null) != null) {
-					path = "per-world." + world + '.';
-					worldEnabled = true;
-				}
-			}
-
-			if (plugin.hasVault() && c.get("per-world." + world + ".per-group", null) != null) {
-				String group = plugin.getVaultPerm().getPrimaryGroup(world, player);
-
-				if (group != null) {
-					group = group.toLowerCase();
-
-					if (c.get("per-world." + world + ".per-group." + group, null) != null) {
-						path = "per-world." + world + ".per-group." + group + ".";
-						worldEnabled = true;
+			if (pair == null && plugin.hasVault()) {
+				for (String one : plugin.getVaultPerm().getGroups()) {
+					if (plugin.getVaultPerm().playerInGroup(player, world, one) && (pair = optionSeparator.getConfigKeyMap().get(one)) != null) {
+						break;
 					}
 				}
 			}
+
+			if (pair == null) {
+				pair = optionSeparator.pair;
+			}
+
+			header = pair.key;
+			footer = pair.value;
 		}
 
-		for (java.util.Map.Entry<String, String> map : TabConfigValues.getPermissionkeys().entrySet()) {
-			Permission perm = plugin.getServer().getPluginManager().getPermission(map.getValue());
-
-			// Hacky solution: permission should be added before we checks for the player,
-			// because operator players have all permissions by default
-			if (perm != null) {
-
-				// Set and recalculate existing permission
-				perm.setDefault(PermissionDefault.FALSE);
-			} else {
-				perm = new Permission(map.getValue(), PermissionDefault.NOT_OP);
-				plugin.getServer().getPluginManager().addPermission(perm);
-			}
-
-			if (PluginUtils.hasPermission(player, perm.getName())) {
-				path = "permissions." + map.getKey() + '.';
+		for (java.util.Map.Entry<org.bukkit.permissions.Permission, Pair<TabText[], TabText[]>> map : TabConfigValues.PERMISSION_MAP.entrySet()) {
+			if (PluginUtils.hasPermission(player, map.getKey().getName())) {
+				header = map.getValue().key;
+				footer = map.getValue().value;
 				break;
 			}
 		}
 
-		if (c.get("per-player." + pName, null) != null) {
-			path = "per-player." + pName + ".";
+		if ((optionSeparator = TabConfigValues.SEPARATOR_MAP.get(pName)) != null) {
+			header = optionSeparator.pair.key;
+			footer = optionSeparator.pair.value;
 		}
 
-		if (plugin.hasVault() && c.get("per-group", null) != null) {
-			String group = plugin.getVaultPerm().getPrimaryGroup(player);
-
-			if (group != null) {
-				group = group.toLowerCase();
-
-				if (c.get("per-group." + group, null) != null) {
-					path = "per-group." + group + ".";
+		if (plugin.hasVault()) {
+			for (String one : plugin.getVaultPerm().getGroups()) {
+				if (plugin.getVaultPerm().playerInGroup(player, one) && (optionSeparator = TabConfigValues.SEPARATOR_MAP.get(one)) != null) {
+					header = optionSeparator.pair.key;
+					footer = optionSeparator.pair.value;
+					break;
 				}
 			}
-		}
-
-		if (!path.isEmpty()) {
-			header = TabConfigValues.objectToArrayConversion(c.get(path + "header", null));
-			footer = TabConfigValues.objectToArrayConversion(c.get(path + "footer", null));
 		}
 
 		if ((header == null || header.length == 0) && (footer == null || footer.length == 0)) {
@@ -262,38 +204,9 @@ public class TabHandler {
 			fo = TabText.EMPTY;
 		}
 
-		final Variables v = plugin.getPlaceholders();
+		Object head = he == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : plugin.getPlaceholders().replaceVariables(player, he).toComponent();
+		Object foot = fo == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : plugin.getPlaceholders().replaceVariables(player, fo).toComponent();
 
-		if (!worldEnabled) {
-			Object head = he == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : v.replaceVariables(player, he).toComponent();
-			Object foot = fo == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : v.replaceVariables(player, fo).toComponent();
-
-			PacketNM.NMS_PACKET.sendTabTitle(player, head, foot);
-			return;
-		}
-
-		if (worldList.isEmpty()) {
-			for (Player all : player.getWorld().getPlayers()) {
-				Object head = he == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : v.replaceVariables(all, new TabText(he)).toComponent();
-				Object foot = fo == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : v.replaceVariables(all, new TabText(fo)).toComponent();
-
-				PacketNM.NMS_PACKET.sendTabTitle(all, head, foot);
-			}
-
-			return;
-		}
-
-		org.bukkit.World world;
-
-		for (String l : worldList) {
-			if ((world = plugin.getServer().getWorld(l)) != null) {
-				for (Player all : world.getPlayers()) {
-					Object head = he == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : v.replaceVariables(all, new TabText(he)).toComponent();
-					Object foot = fo == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : v.replaceVariables(all, new TabText(fo)).toComponent();
-
-					PacketNM.NMS_PACKET.sendTabTitle(all, head, foot);
-				}
-			}
-		}
+		PacketNM.NMS_PACKET.sendTabTitle(player, head, foot);
 	}
 }

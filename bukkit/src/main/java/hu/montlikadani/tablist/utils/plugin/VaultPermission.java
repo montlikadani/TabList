@@ -1,7 +1,6 @@
 package hu.montlikadani.tablist.utils.plugin;
 
 import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import net.milkbowl.vault.permission.Permission;
@@ -22,15 +21,6 @@ public final class VaultPermission {
 		return perm;
 	}
 
-	public String getPrimaryGroup(String world, OfflinePlayer player) {
-		try {
-			return perm.getPrimaryGroup(world, player);
-		} catch (UnsupportedOperationException e) {
-		}
-
-		return null;
-	}
-
 	public String getPrimaryGroup(Player player) {
 		try {
 			return perm.getPrimaryGroup(player);
@@ -48,6 +38,24 @@ public final class VaultPermission {
 
 			// Secondary check because the above may fail at some cases
 			for (String playerGroup : perm.getPlayerGroups(player)) {
+				if (group.equalsIgnoreCase(playerGroup)) {
+					return true;
+				}
+			}
+		} catch (UnsupportedOperationException e) {
+		}
+
+		return false;
+	}
+
+	public boolean playerInGroup(Player player, String world, String group) {
+		try {
+			if (perm.playerInGroup(world, player, group)) {
+				return true;
+			}
+
+			// Secondary check because the above may fail at some cases
+			for (String playerGroup : perm.getPlayerGroups(world, player)) {
 				if (group.equalsIgnoreCase(playerGroup)) {
 					return true;
 				}

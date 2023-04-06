@@ -69,15 +69,15 @@ public final class V1_19_R3 implements IPacketNM {
     }
 
     private Channel playerChannel(net.minecraft.server.network.PlayerConnection connection) {
+
+        // Congratulations for moyeng for making networkManager field private
+        if (playerNetworkManagerField == null && (playerNetworkManagerField = fieldByType(connection.getClass(), NetworkManager.class)) == null) {
+            return null;
+        }
+
         try {
-
-            // Congratulations for moyeng for making networkManager field private
-            if (playerNetworkManagerField == null) {
-                playerNetworkManagerField = fieldByType(connection.getClass(), Class.forName("net.minecraft.network.NetworkManager"));
-            }
-
-            return playerNetworkManagerField == null ? null : ((NetworkManager) playerNetworkManagerField.get(connection)).m;
-        } catch (IllegalAccessException | ClassNotFoundException ignored) {
+            return ((NetworkManager) playerNetworkManagerField.get(connection)).m;
+        } catch (IllegalAccessException ignored) {
             return null;
         }
     }

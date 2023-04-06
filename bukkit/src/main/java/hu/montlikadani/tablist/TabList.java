@@ -455,9 +455,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				}
 
 				groups.removePlayerGroup(user);
-
-				objects.unregisterObjective(Objects.ObjectTypes.PING, user);
-				objects.unregisterObjective(Objects.ObjectTypes.CUSTOM, user);
+				objects.unregisterObjective(ConfigValues.getObjectType(), user);
 
 				iterator.remove();
 				break;

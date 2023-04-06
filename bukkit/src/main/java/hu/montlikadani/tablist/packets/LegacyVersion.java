@@ -824,6 +824,8 @@ public final class LegacyVersion implements IPacketNM {
                         sendPacket(player, updatePacket);
                     }
                 }
+
+                break;
             }
 
             super.write(ctx, msg, promise);

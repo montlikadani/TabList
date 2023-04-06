@@ -6,6 +6,7 @@ import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.Objects.ObjectTypes;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.packets.PacketNM;
+import hu.montlikadani.tablist.utils.Pair;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.Util;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
@@ -243,16 +244,5 @@ public final class FakePlayer implements IFakePlayer {
 
 			return null;
 		});
-	}
-
-	private static class Pair<K, V> {
-
-		public final K key;
-		public final V value;
-
-		Pair(K key, V value) {
-			this.key = key;
-			this.value = value;
-		}
 	}
 }
