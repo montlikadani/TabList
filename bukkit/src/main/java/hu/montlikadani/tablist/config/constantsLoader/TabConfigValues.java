@@ -152,7 +152,7 @@ public final class TabConfigValues {
 				return;
 			}
 
-			(configKeyMap = new HashMap<>()).put(name, pair);
+			(configKeyMap = new HashMap<>(1)).put(name, pair);
 
 			readFromConfig(section.getConfigurationSection(configPath + ".per-player"));
 			readFromConfig(section.getConfigurationSection(configPath + ".per-group"));
