@@ -137,13 +137,19 @@ public final class V1_19_R3 implements IPacketNM {
 
     @Override
     public void removePlayersFromTab(Player source, Collection<? extends Player> players) {
-        sendPacket(getPlayerHandle(source), new ClientboundPlayerInfoRemovePacket(players.stream().map(Player::getUniqueId)
+        EntityPlayer player = getPlayerHandle(source);
+
+        sendPacket(player, new ClientboundPlayerInfoRemovePacket(players.stream().map(Player::getUniqueId)
                 .collect(java.util.stream.Collectors.toList())));
+        sendUpdatePacket(player);
     }
 
     @Override
     public void appendPlayerWithoutListed(Player source) {
-        EntityPlayer from = getPlayerHandle(source);
+        sendUpdatePacket(getPlayerHandle(source));
+    }
+
+    private void sendUpdatePacket(EntityPlayer from) {
         ClientboundPlayerInfoUpdatePacket updatePacket = ClientboundPlayerInfoUpdatePacket.a(Collections.singletonList(from));
 
         setEntriesField(updatePacket, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.b(from.fI().getId(), from.fI(), false, from.e,
@@ -338,8 +344,7 @@ public final class V1_19_R3 implements IPacketNM {
                     Player player = Bukkit.getPlayer(listenerPlayerId);
 
                     if (player == null) {
-                        super.write(ctx, msg, promise);
-                        return;
+                        break;
                     }
 
                     ClientboundPlayerChatPacket chatPacket = (ClientboundPlayerChatPacket) msg;

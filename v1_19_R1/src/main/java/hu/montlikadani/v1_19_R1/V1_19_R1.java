@@ -107,19 +107,24 @@ public final class V1_19_R1 implements IPacketNM {
 
     @Override
     public void removePlayersFromTab(Player source, Collection<? extends Player> players) {
-        sendPacket(getPlayerHandle(source), new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.e,
+        EntityPlayer entityPlayer = getPlayerHandle(source);
+
+        sendPacket(entityPlayer, new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.e,
                 players.stream().map(this::getPlayerHandle).collect(Collectors.toList())));
+        sendUpdatePacket(entityPlayer);
     }
 
     @Override
     public void appendPlayerWithoutListed(Player source) {
-        EntityPlayer from = getPlayerHandle(source);
+        sendUpdatePacket(getPlayerHandle(source));
+    }
+
+    private void sendUpdatePacket(EntityPlayer from) {
         PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a, Collections.singletonList(from));
 
         setEntriesField(updatePacket, Collections.singletonList(new PacketPlayOutPlayerInfo.PlayerInfoData(from.fy(), from.e, from.d.b(),
                 emptyComponent, from.fz() == null ? null : from.fz().b())));
 
-        //PacketPlayInArmAnimation animatePacket = new PacketPlayInArmAnimation(net.minecraft.world.EnumHand.a);
         PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
 
         for (Player player : Bukkit.getServer().getOnlinePlayers()) {
@@ -308,8 +313,7 @@ public final class V1_19_R1 implements IPacketNM {
                     Player player = Bukkit.getPlayer(listenerPlayerId);
 
                     if (player == null) {
-                        super.write(ctx, msg, promise);
-                        return;
+                        break;
                     }
 
                     ClientboundPlayerChatPacket chatPacket = (ClientboundPlayerChatPacket) msg;
