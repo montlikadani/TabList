@@ -217,21 +217,15 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			return;
 		}
 
-		packetClasses = new java.util.ArrayList<>(2);
+		packetClasses = new java.util.ArrayList<>(1);
 
 		try {
-			packetClasses.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket"));
-
-			if (ConfigValues.isHidePlayersFromTab()) {
-				packetClasses.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerChatPacket"));
-			}
+			packetClasses.add(Class.forName("net.minecraft.network.protocol.game." + (ConfigValues.isHidePlayersFromTab() ? "ClientboundPlayerChatPacket"
+					: "ClientboundPlayerInfoUpdatePacket")));
 		} catch (ClassNotFoundException e) {
 			try {
-				packetClasses.add(Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo"));
-
-				if (ConfigValues.isHidePlayersFromTab()) {
-					packetClasses.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerChatPacket"));
-				}
+				packetClasses.add(Class.forName("net.minecraft.network.protocol.game." + (ConfigValues.isHidePlayersFromTab() ? "ClientboundPlayerChatPacket"
+						: "PacketPlayOutPlayerInfo")));
 			} catch (ClassNotFoundException ex) {
 				try {
 					packetClasses.add(Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".PacketPlayOutPlayerInfo"));
