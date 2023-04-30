@@ -122,7 +122,7 @@ public final class Variables {
 		str = str.replace("%mc-version%", plugin.getServer().getBukkitVersion());
 		str = hu.montlikadani.tablist.Global.setSymbols(str);
 
-		return str;
+		return Util.applyMinimessageFormat(str);
 	}
 
 	public TabText replaceVariables(Player pl, TabText text) {

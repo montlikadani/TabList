@@ -12,7 +12,7 @@ public final class ClazzContainer {
 	private static Field infoList, scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamNames, scoreboardTeamMode, nameTagVisibility,
 			playerInfoDataProfileField, playerInfoDataGameMode, nameTagVisibilityNameField, actionField, playerInfoDataPing, playerInfoDisplayName;
 
-	private static Class<?> iChatBaseComponent, packet, enumPlayerInfoAction, packetPlayOutScoreboardTeam, packetPlayOutPlayerInfo;
+	private static Class<?> iChatBaseComponent, packet, enumPlayerInfoAction, packetPlayOutScoreboardTeam;
 
 	private static Object addPlayer, removePlayer, updateLatency, updateDisplayName, updateGameMode, enumScoreboardHealthDisplayInteger, enumScoreboardActionChange,
 			enumScoreboardActionRemove, iScoreboardCriteriaDummy, gameModeSpectator, gameModeSurvival;
@@ -32,8 +32,8 @@ public final class ClazzContainer {
 		try {
 			iChatBaseComponent = classByName("net.minecraft.network.chat", "IChatBaseComponent");
 			packet = classByName("net.minecraft.network.protocol", "Packet");
-			packetPlayOutPlayerInfo = classByName("net.minecraft.network.protocol.game", "PacketPlayOutPlayerInfo");
 			packetPlayOutScoreboardTeam = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardTeam");
+			Class<?> packetPlayOutPlayerInfo = classByName("net.minecraft.network.protocol.game", "PacketPlayOutPlayerInfo");
 
 			// Somehow the 1.8.8 server realizes that Team.OptionStatus enum class is exists
 			//Class.forName("org.bukkit.scoreboard.Team$OptionStatus");
@@ -447,9 +447,5 @@ public final class ClazzContainer {
 
 	public static Object getGameModeSurvival() {
 		return gameModeSurvival;
-	}
-
-	public static Class<?> getPacketPlayOutPlayerInfo() {
-		return packetPlayOutPlayerInfo;
 	}
 }

@@ -116,7 +116,7 @@ public class TabHandler {
 					}
 
 					TabText tt = header[a];
-					lh.append(tt.plainText = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
+					lh.append(tt.plainText);
 					header[a] = tt;
 				}
 
@@ -141,7 +141,7 @@ public class TabHandler {
 			}
 
 			TabText tt = footer[a];
-			lf.append(tt.plainText = plugin.getPlaceholders().replaceMiscVariables(tt.plainText));
+			lf.append(tt.plainText);
 			footer[a] = tt;
 		}
 

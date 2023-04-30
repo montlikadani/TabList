@@ -1,7 +1,5 @@
 package hu.montlikadani.tablist.commands.list;
 
-import static hu.montlikadani.tablist.utils.Util.sendMsg;
-
 import java.io.IOException;
 
 import org.bukkit.command.Command;
@@ -34,7 +32,7 @@ public final class player implements ICommand {
 		}
 
 		if (args.length < 3) {
-			sendMsg(sender, Util.colorText("&6/" + label + " player\n"
+			plugin.getComplement().sendMessage(sender, Util.colorText("&6/" + label + " player\n"
 					+ "          &6prefix <prefix> -&7 Changes the prefix of an existing player.\n"
 					+ "          &6suffix <suffix> -&7 Changes the suffix of an existing player.\n"
 					+ "          &6tabname -&7 Changes the tab name of an existing player.\n"
@@ -62,7 +60,7 @@ public final class player implements ICommand {
 
 			String result = builder.toString().replace("\"", "");
 			if (result.trim().isEmpty()) {
-				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_COULD_NOT_BE_EMPTY));
+				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_COULD_NOT_BE_EMPTY));
 				return false;
 			}
 
@@ -72,7 +70,7 @@ public final class player implements ICommand {
 			try {
 				priority = Integer.parseInt(args[3]);
 			} catch (NumberFormatException e) {
-				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_PRIORITY_MUST_BE_NUMBER));
+				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_PRIORITY_MUST_BE_NUMBER));
 				return false;
 			}
 
@@ -84,7 +82,7 @@ public final class player implements ICommand {
 				plugin.getUser(plugin.getServer().getPlayer(target)).ifPresent(plugin.getGroups()::removePlayerGroup);
 				plugin.getGroups().removeGroup(target);
 
-				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_REMOVED, "%team%", target));
+				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_REMOVED, "%team%", target));
 
 				try {
 					config.save(plugin.getConf().getGroupsFile());
@@ -95,7 +93,7 @@ public final class player implements ICommand {
 				return true;
 			}
 
-			sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_NOT_FOUND, "%team%", target));
+			plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_NOT_FOUND, "%team%", target));
 			return false;
 		default:
 			return false;
@@ -159,7 +157,7 @@ public final class player implements ICommand {
 			plugin.getGroups().setPlayerTeam(groupPlayer, priority);
 		}
 
-		sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_SET, "%team%", target, "%meta%", prefix + tabName + suffix));
+		plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_SET, "%team%", target, "%meta%", prefix + tabName + suffix));
 		return false;
 	}
 }

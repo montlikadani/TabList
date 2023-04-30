@@ -94,8 +94,7 @@ public final class V1_19_R3 implements IPacketNM {
 
     @Override
     public void removePlayerChannelListener(Player player) {
-        EntityPlayer entityPlayer = getPlayerHandle(player);
-        Channel channel = playerChannel(entityPlayer.b);
+        Channel channel = playerChannel(getPlayerHandle(player).b);
 
         if (channel != null && channel.pipeline().get(PACKET_INJECTOR_NAME) != null) {
             channel.pipeline().remove(PACKET_INJECTOR_NAME);

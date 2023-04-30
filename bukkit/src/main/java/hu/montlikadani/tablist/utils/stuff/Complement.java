@@ -7,6 +7,8 @@ import org.bukkit.scoreboard.Scoreboard;
 
 public interface Complement {
 
+	void sendMessage(org.bukkit.command.CommandSender sender, String text);
+
 	void playerListName(Player player, String text);
 
 	String displayName(Player player);

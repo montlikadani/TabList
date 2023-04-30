@@ -14,14 +14,14 @@ import hu.montlikadani.tablist.config.CommentedConfig;
 
 public final class ConfigValues {
 
-	private static boolean logConsole = true, placeholderAPI, perWorldPlayerList, fakePlayers, countFakePlayersToOnlinePlayers, removeGrayColorFromTabInSpec, ignoreVanishedPlayers,
+	private static boolean logConsole, placeholderAPI, perWorldPlayerList, fakePlayers, countFakePlayersToOnlinePlayers, removeGrayColorFromTabInSpec, ignoreVanishedPlayers,
 			countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, pingFormatEnabled,
 			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish, preferPrimaryVaultGroup, assignGlobalGroup,
 			followNameTagVisibility;
 
 	private static TimeZone timeZone;
 
-	private static String afkFormatYes, afkFormatNo, customObjectSetting, memoryBarChar, memoryBarUsedColor, memoryBarFreeColor, memoryBarAllocationColor, memoryBarReleasedColor;
+	private static String afkFormatYes, afkFormatNo, customObjectSetting;
 
 	private static DateTimeFormatter timeFormat, dateFormat;
 
@@ -29,13 +29,12 @@ public final class ConfigValues {
 
 	private static List<String> tpsColorFormats, pingColorFormats, groupsDisabledWorlds, healthObjectRestricted, objectsDisabledWorlds;
 
-	private static int tpsDigits, groupsRefreshInterval, objectRefreshInterval, memoryBarSize;
+	private static int tpsDigits, groupsRefreshInterval, objectRefreshInterval;
 
 	private static double tpsPerformanceObservationValue;
 
 	public static final List<List<String>> PER_WORLD_LIST_NAMES = new java.util.ArrayList<>();
 
-	@SuppressWarnings("serial")
 	public static void loadValues(CommentedConfig c) {
 		org.bukkit.configuration.file.YamlConfigurationOptions options = c.options();
 		options.copyDefaults(true);
@@ -212,16 +211,6 @@ public final class ConfigValues {
 			}
 		}
 
-		if (!(memoryBarChar = c.getString("placeholder-format.memory-bar.char", "|")).isEmpty()) {
-			c.addComment("placeholder-format.memory-bar", "Memory bar settings for %memory_bar% variable");
-			c.addComment("placeholder-format.memory-bar.colors.allocation", "When the server memory less than 80");
-			c.addComment("placeholder-format.memory-bar.colors.released", "When the server memory is on critical level (less than 40) and some resource need memory to run.");
-		}
-		memoryBarUsedColor = c.getString("placeholder-format.memory-bar.colors.used", "&c");
-		memoryBarFreeColor = c.getString("placeholder-format.memory-bar.colors.free", "&a");
-		memoryBarAllocationColor = c.getString("placeholder-format.memory-bar.colors.allocation", "&e");
-		memoryBarReleasedColor = c.getString("placeholder-format.memory-bar.colors.released", "&6");
-
 		if ((customObjectSetting = c.getString("tablist-object-type.object-settings.custom.value", null)) == null) {
 			c.addComment("tablist-object-type.custom-value", "The unique integer variable to be displayed.");
 			customObjectSetting = c.get("tablist-object-type.custom-value", "%level%");
@@ -265,8 +254,6 @@ public final class ConfigValues {
 		}
 
 		groupsDisabledWorlds = c.get("change-prefix-suffix-in-tablist.disabled-worlds.list", Collections.singletonList("myWorldWithUpper"));
-
-		memoryBarSize = c.getInt("placeholder-format.memory-bar.size", 80);
 		groupsRefreshInterval = c.get("change-prefix-suffix-in-tablist.refresh-interval", 30);
 
 		if ((objectRefreshInterval = c.get("tablist-object-type.refresh-interval", 3)) < 1) {
@@ -283,36 +270,13 @@ public final class ConfigValues {
 
 		// Here comes the options that removed
 		c.set("change-prefix-suffix-in-tablist.hide-group-when-player-afk", null);
+		c.set("placeholder-format.memory-bar", null);
 
 		c.save();
 	}
 
 	public static boolean isLogConsole() {
 		return logConsole;
-	}
-
-	public static String getMemoryBarChar() {
-		return memoryBarChar;
-	}
-
-	public static String getMemoryBarUsedColor() {
-		return memoryBarUsedColor;
-	}
-
-	public static String getMemoryBarFreeColor() {
-		return memoryBarFreeColor;
-	}
-
-	public static String getMemoryBarAllocationColor() {
-		return memoryBarAllocationColor;
-	}
-
-	public static String getMemoryBarReleasedColor() {
-		return memoryBarReleasedColor;
-	}
-
-	public static int getMemoryBarSize() {
-		return memoryBarSize;
 	}
 
 	public static boolean isPlaceholderAPI() {

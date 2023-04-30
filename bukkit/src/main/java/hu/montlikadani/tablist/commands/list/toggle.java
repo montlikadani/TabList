@@ -1,7 +1,5 @@
 package hu.montlikadani.tablist.commands.list;
 
-import static hu.montlikadani.tablist.utils.Util.sendMsg;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,14 +19,15 @@ public final class toggle implements ICommand {
 	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length == 1) {
 			if (!(sender instanceof Player)) {
-				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.TOGGLE_CONSOLE_USAGE, "%command%", label));
+				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.TOGGLE_CONSOLE_USAGE, "%command%", label));
 				return false;
 			}
 
 			Player player = (Player) sender;
 
 			plugin.getUser(player).ifPresent(
-					user -> sendMsg(player, ConfigMessages.get(toggleTab(user, player) ? ConfigMessages.MessageKeys.TOGGLE_ENABLED : ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
+					user -> plugin.getComplement().sendMessage(player, ConfigMessages.get(toggleTab(user, player) ? ConfigMessages.MessageKeys.TOGGLE_ENABLED
+							: ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
 			return true;
 		}
 
@@ -37,7 +36,7 @@ public final class toggle implements ICommand {
 
 			if (first.equalsIgnoreCase("all")) {
 				if (sender instanceof Player && !sender.hasPermission(Perm.TOGGLEALL.permission)) {
-					sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.TOGGLEALL.permission));
+					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.TOGGLEALL.permission));
 					return false;
 				}
 
@@ -54,12 +53,13 @@ public final class toggle implements ICommand {
 
 			Player player = plugin.getServer().getPlayer(first);
 			if (player == null) {
-				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.TOGGLE_PLAYER_NOT_FOUND, "%player%", first));
+				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.TOGGLE_PLAYER_NOT_FOUND, "%player%", first));
 				return false;
 			}
 
 			plugin.getUser(player).ifPresent(
-					user -> sendMsg(player, ConfigMessages.get(toggleTab(user, player) ? ConfigMessages.MessageKeys.TOGGLE_ENABLED : ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
+					user -> plugin.getComplement().sendMessage(player, ConfigMessages.get(toggleTab(user, player) ? ConfigMessages.MessageKeys.TOGGLE_ENABLED
+							: ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
 		}
 
 		return true;

@@ -58,7 +58,7 @@ public class CommentedConfig extends YamlConfiguration {
 		}
 
 		StringBuilder newContents = new StringBuilder(), currentPath = new StringBuilder();
-		boolean commentedPath = false, node = false;
+		boolean commentedPath = false, node;
 		int depth = 0;
 
 		for (String line : content.split('[' + System.lineSeparator() + ']')) {

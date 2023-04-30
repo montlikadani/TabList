@@ -20,6 +20,11 @@ public final class Complement1 implements Complement {
 	}
 
 	@Override
+	public void sendMessage(org.bukkit.command.CommandSender sender, String text) {
+		sender.sendMessage(text);
+	}
+
+	@Override
 	public void playerListName(Player player, String text) {
 		player.setPlayerListName(text);
 	}

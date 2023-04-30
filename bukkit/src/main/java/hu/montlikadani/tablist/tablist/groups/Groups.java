@@ -11,7 +11,6 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
-import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -131,9 +130,7 @@ public final class Groups {
 
 		// Automatically add existing groups to the list for "lazy peoples"
 		if (ConfigValues.isSyncPluginsGroups() && plugin.hasVault()) {
-			boolean have = false;
-			ChatColor[] colors = ChatColor.values();
-			java.util.Random random = new java.util.Random();
+			boolean saveRequired = false;
 
 			me: for (String s : plugin.getVaultPerm().getGroups()) {
 				for (String g : keys) {
@@ -142,12 +139,11 @@ public final class Groups {
 					}
 				}
 
-				// This again for lazy peoples
-				cs.set(s + ".prefix", "&" + colors[random.nextInt(colors.length)].getChar() + s + "&r - ");
-				have = true;
+				cs.set(s + ".prefix", "[" + s + "] - ");
+				saveRequired = true;
 			}
 
-			if (have) {
+			if (saveRequired) {
 				try {
 					gr.save(plugin.getConf().getGroupsFile());
 				} catch (java.io.IOException e) {

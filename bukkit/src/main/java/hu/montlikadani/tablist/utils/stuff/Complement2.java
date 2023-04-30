@@ -32,6 +32,11 @@ public final class Complement2 implements Complement {
 	}
 
 	@Override
+	public void sendMessage(org.bukkit.command.CommandSender sender, String text) {
+		sender.sendMessage(deserialize(text));
+	}
+
+	@Override
 	public void playerListName(Player player, String text) {
 		player.playerListName(deserialize(text));
 	}

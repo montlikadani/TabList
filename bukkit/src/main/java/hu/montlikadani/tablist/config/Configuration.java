@@ -46,7 +46,7 @@ public class Configuration {
 		tablist = createFile(tablistFile, tablistFile.getName(), false);
 
 		ConfigValues.loadValues(config);
-		TabConfigValues.loadValues(tablist);
+		TabConfigValues.loadValues(plugin, tablist);
 		messages.createAndLoad();
 
 		animCreator = createFile(animationFile, animationFile.getName(), false);
@@ -86,10 +86,6 @@ public class Configuration {
 		return config;
 	}
 
-	public ConfigMessages getMessages() {
-		return messages;
-	}
-
 	public FileConfiguration getGroups() {
 		if (groups == null || !groupsFile.exists()) {
 			groups = createFile(groupsFile, groupsFile.getName(), false);
@@ -112,14 +108,6 @@ public class Configuration {
 
 	public FileConfiguration getTablist() {
 		return tablist;
-	}
-
-	public File getAnimationFile() {
-		return animationFile;
-	}
-
-	public File getTablistFile() {
-		return tablistFile;
 	}
 
 	public File getGroupsFile() {

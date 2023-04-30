@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.config.constantsLoader;
 
+import hu.montlikadani.tablist.TabList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +27,7 @@ public final class TabConfigValues {
 	public static final Map<String, OptionSeparator> SEPARATOR_MAP = new HashMap<>();
 	public static final Map<Permission, Pair<TabText[], TabText[]>> PERMISSION_MAP = new HashMap<>();
 
-	public static void loadValues(FileConfiguration c) {
+	public static void loadValues(TabList tl, FileConfiguration c) {
 		SEPARATOR_MAP.clear();
 		PERMISSION_MAP.clear();
 
@@ -41,8 +42,8 @@ public final class TabConfigValues {
 			updateInterval = 10000;
 		}
 
-		defaultHeader = objectToArrayConversion(c.get("header", null));
-		defaultFooter = objectToArrayConversion(c.get("footer", null));
+		defaultHeader = objectToArrayConversion(tl, c.get("header", null));
+		defaultFooter = objectToArrayConversion(tl, c.get("footer", null));
 
 		ConfigurationSection section = c.getConfigurationSection("per-world");
 		if (section != null) {
@@ -50,10 +51,10 @@ public final class TabConfigValues {
 				String[] split = one.split(", ");
 
 				if (split.length == 0) {
-					SEPARATOR_MAP.put(one, new OptionSeparator(one, one, section, true));
+					SEPARATOR_MAP.put(one, new OptionSeparator(tl, one, one, section, true));
 				} else {
 					for (String worldName : split) {
-						SEPARATOR_MAP.put(worldName, new OptionSeparator(one, worldName, section, true));
+						SEPARATOR_MAP.put(worldName, new OptionSeparator(tl, one, worldName, section, true));
 					}
 				}
 			}
@@ -82,7 +83,7 @@ public final class TabConfigValues {
 					Bukkit.getServer().getPluginManager().addPermission(perm);
 				}
 
-				PERMISSION_MAP.put(perm, new Pair<>(objectToArrayConversion(header), objectToArrayConversion(footer)));
+				PERMISSION_MAP.put(perm, new Pair<>(objectToArrayConversion(tl, header), objectToArrayConversion(tl, footer)));
 			}
 		}
 
@@ -91,10 +92,10 @@ public final class TabConfigValues {
 				String[] split = key.split(", ");
 
 				if (split.length == 0) {
-					SEPARATOR_MAP.put(key, new OptionSeparator(key, key, section, false));
+					SEPARATOR_MAP.put(key, new OptionSeparator(tl, key, key, section, false));
 				} else {
 					for (String playerName : split) {
-						SEPARATOR_MAP.put(playerName, new OptionSeparator(key, playerName, section, false));
+						SEPARATOR_MAP.put(playerName, new OptionSeparator(tl, key, playerName, section, false));
 					}
 				}
 			}
@@ -105,24 +106,24 @@ public final class TabConfigValues {
 				String[] split = key.split(", ");
 
 				if (split.length == 0) {
-					SEPARATOR_MAP.put(key, new OptionSeparator(key, key, section, false));
+					SEPARATOR_MAP.put(key, new OptionSeparator(tl, key, key, section, false));
 				} else {
 					for (String groupName : split) {
-						SEPARATOR_MAP.put(groupName, new OptionSeparator(key, groupName, section, false));
+						SEPARATOR_MAP.put(groupName, new OptionSeparator(tl, key, groupName, section, false));
 					}
 				}
 			}
 		}
 	}
 
-	private static TabText[] objectToArrayConversion(Object obj) {
+	private static TabText[] objectToArrayConversion(TabList tl, Object obj) {
 		if (obj instanceof List) {
 			String[] array = ((List<?>) obj).toArray(new String[0]);
 			TabText[] tt = new TabText[array.length];
 
 			for (int i = 0; i < array.length; i++) {
 				TabText text = new TabText();
-				text.setPlainText(array[i]);
+				text.setPlainText(tl.getPlaceholders().replaceMiscVariables(array[i]));
 				tt[i] = text;
 			}
 
@@ -131,7 +132,7 @@ public final class TabConfigValues {
 
 		if (obj instanceof String) {
 			TabText text = new TabText();
-			text.setPlainText((String) obj);
+			text.setPlainText(tl.getPlaceholders().replaceMiscVariables((String) obj));
 
 			return new TabText[] { text };
 		}
@@ -142,11 +143,15 @@ public final class TabConfigValues {
 	public static final class OptionSeparator {
 
 		private Map<String, Pair<TabText[], TabText[]>> configKeyMap;
-		public final Pair<TabText[], TabText[]> pair;
+		public Pair<TabText[], TabText[]> pair;
 
-		OptionSeparator(String configPath, String name, ConfigurationSection section, boolean extraContent) {
-			pair = new Pair<>(objectToArrayConversion(section.get(configPath + ".header", null)),
-					objectToArrayConversion(section.get(configPath + ".footer", null)));
+		OptionSeparator(TabList tl, String configPath, String name, ConfigurationSection section, boolean extraContent) {
+			TabText[] key = objectToArrayConversion(tl, section.get(configPath + ".header", null));
+			TabText[] value = objectToArrayConversion(tl, section.get(configPath + ".footer", null));
+
+			if (key != null || value != null) {
+				pair = new Pair<>(key, value);
+			}
 
 			if (!extraContent) {
 				return;
@@ -154,15 +159,15 @@ public final class TabConfigValues {
 
 			(configKeyMap = new HashMap<>(1)).put(name, pair);
 
-			readFromConfig(section.getConfigurationSection(configPath + ".per-player"));
-			readFromConfig(section.getConfigurationSection(configPath + ".per-group"));
+			readFromConfig(tl, section.getConfigurationSection(configPath + ".per-player"));
+			readFromConfig(tl, section.getConfigurationSection(configPath + ".per-group"));
 		}
 
 		public Map<String, Pair<TabText[], TabText[]>> getConfigKeyMap() {
 			return configKeyMap;
 		}
 
-		private void readFromConfig(ConfigurationSection configSection) {
+		private void readFromConfig(TabList tl, ConfigurationSection configSection) {
 			if (configSection == null) {
 				return;
 			}
@@ -171,12 +176,12 @@ public final class TabConfigValues {
 				String[] split = one.split(", ");
 
 				if (split.length == 0) {
-					configKeyMap.put(one, new Pair<>(objectToArrayConversion(configSection.get(one + ".header", null)),
-							objectToArrayConversion(configSection.get(one + ".footer", null))));
+					configKeyMap.put(one, new Pair<>(objectToArrayConversion(tl, configSection.get(one + ".header", null)),
+							objectToArrayConversion(tl, configSection.get(one + ".footer", null))));
 				} else {
 					for (String name : split) {
-						configKeyMap.put(name, new Pair<>(objectToArrayConversion(configSection.get(one + ".header", null)),
-								objectToArrayConversion(configSection.get(one + ".footer", null))));
+						configKeyMap.put(name, new Pair<>(objectToArrayConversion(tl, configSection.get(one + ".header", null)),
+								objectToArrayConversion(tl, configSection.get(one + ".footer", null))));
 					}
 				}
 			}

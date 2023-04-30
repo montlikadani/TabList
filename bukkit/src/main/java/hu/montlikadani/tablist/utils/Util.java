@@ -4,8 +4,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
-import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
-
 public final class Util {
 
 	public static void logConsole(String msg) {
@@ -13,29 +11,26 @@ public final class Util {
 	}
 
 	public static void logConsole(Level level, String msg) {
-		if (ConfigValues.isLogConsole()) {
+		if (hu.montlikadani.tablist.config.constantsLoader.ConfigValues.isLogConsole()) {
 			org.bukkit.Bukkit.getServer().getLogger().log(level, "[TabList] " + msg);
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	public static String colorText(String msg) {
 		return org.bukkit.ChatColor.translateAlternateColorCodes('&', msg);
 	}
 
-	public static void sendMsg(org.bukkit.command.CommandSender sender, String s) {
-		if (s.isEmpty()) {
-			return;
+	public static String applyMinimessageFormat(String value) {
+		value = value.replace("&", "-{-}-").replace("§", "-{-}-");
+
+		try {
+			value = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(net.kyori.adventure.text.minimessage.MiniMessage
+					.miniMessage().deserialize(value));
+		} catch (Error ignored) {
 		}
 
-		String[] split = s.split("\n");
-
-		if (split.length != 0) {
-			for (String msg : split) {
-				sender.sendMessage(msg);
-			}
-		} else {
-			sender.sendMessage(s);
-		}
+		return value.replace("-{-}-", "&");
 	}
 
 	public static Optional<UUID> tryParseId(String uuid) {

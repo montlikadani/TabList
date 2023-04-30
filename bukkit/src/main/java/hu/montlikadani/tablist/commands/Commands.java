@@ -18,7 +18,6 @@ import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
 
 import static hu.montlikadani.tablist.utils.Util.colorText;
-import static hu.montlikadani.tablist.utils.Util.sendMsg;
 
 public final class Commands implements CommandExecutor, TabCompleter {
 
@@ -51,11 +50,11 @@ public final class Commands implements CommandExecutor, TabCompleter {
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
 		if (args.length == 0) {
-			sendMsg(sender, colorText("&9&lTab&4&lList"));
-			sendMsg(sender, colorText("&5Version:&a " + plugin.getDescription().getVersion()));
-			sendMsg(sender, colorText("&5Author, created by:&a montlikadani"));
-			sendMsg(sender, colorText("&5List of commands:&7 /" + label + " help"));
-			sendMsg(sender, colorText("&4Report bugs/features here:&e &nhttps://github.com/montlikadani/TabList/issues"));
+			plugin.getComplement().sendMessage(sender, colorText("&9&lTab&4&lList"));
+			plugin.getComplement().sendMessage(sender, colorText("&5Version:&a " + plugin.getDescription().getVersion()));
+			plugin.getComplement().sendMessage(sender, colorText("&5Author, created by:&a montlikadani"));
+			plugin.getComplement().sendMessage(sender, colorText("&5List of commands:&7 /" + label + " help"));
+			plugin.getComplement().sendMessage(sender, colorText("&4Report bugs/features here:&e &nhttps://github.com/montlikadani/TabList/issues"));
 			return true;
 		}
 
@@ -64,7 +63,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 		boolean isHelp;
 		if ((isHelp = "help".equalsIgnoreCase(first)) && isPlayer && !sender.hasPermission(Perm.HELP.permission)) {
-			sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.HELP.permission));
+			plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.HELP.permission));
 			return true;
 		}
 
@@ -78,7 +77,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			if (isHelp) {
 				if (!isPlayer || sender.hasPermission(proc.permission().permission)) {
 					String params = proc.params().isEmpty() ? "" : ' ' + proc.params();
-					sendMsg(sender, colorText("&7/" + label + " " + proc.name() + params + " -&6 " + proc.desc()));
+					plugin.getComplement().sendMessage(sender, colorText("&7/" + label + " " + proc.name() + params + " -&6 " + proc.desc()));
 				}
 
 				continue;
@@ -89,12 +88,12 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			}
 
 			if (proc.playerOnly() && !isPlayer) {
-				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_CONSOLE, "%command%", label + " " + first));
+				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_CONSOLE, "%command%", label + " " + first));
 				return true;
 			}
 
 			if (isPlayer && !sender.hasPermission(proc.permission().permission)) {
-				sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", proc.permission().permission));
+				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", proc.permission().permission));
 				return true;
 			}
 
@@ -103,7 +102,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 		}
 
 		if (!isHelp) {
-			sendMsg(sender, ConfigMessages.get(ConfigMessages.MessageKeys.UNKNOWN_SUB_COMMAND, "%subcmd%", first));
+			plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.UNKNOWN_SUB_COMMAND, "%subcmd%", first));
 		}
 
 		return true;
