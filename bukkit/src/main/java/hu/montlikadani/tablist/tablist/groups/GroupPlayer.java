@@ -339,7 +339,7 @@ public final class GroupPlayer {
 		String full = tl.getPlaceholders().replaceVariables(player, tl.makeAnim(prefix + tabName + suffix));
 
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {
-			full = org.bukkit.ChatColor.translateAlternateColorCodes('&', full);
+			full = hu.montlikadani.tablist.utils.Util.colorText(full);
 		}
 
 		if (fullName == null) {

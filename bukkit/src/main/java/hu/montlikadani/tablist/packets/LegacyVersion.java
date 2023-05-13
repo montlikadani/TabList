@@ -550,7 +550,7 @@ public final class LegacyVersion implements IPacketNM {
 
     @SuppressWarnings("deprecation")
     @Override
-    public Object createBoardTeam(Object teamNameComponent, String teamName, Player player, boolean followNameTagVisibility) {
+    public void createBoardTeam(Object teamNameComponent, String teamName, Player player, boolean followNameTagVisibility) {
         Object newTeamPacket = null, scoreTeam = null;
 
         try {
@@ -634,12 +634,10 @@ public final class LegacyVersion implements IPacketNM {
             }
 
             playerTeams.add(scoreTeam == null ? newTeamPacket : scoreTeam);
-            return newTeamPacket;
+            sendPacket(player, newTeamPacket);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        return null;
     }
 
     @Override

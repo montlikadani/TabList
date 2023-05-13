@@ -16,11 +16,11 @@ import hu.montlikadani.tablist.user.TabListUser;
 public final class toggle implements ICommand {
 
 	@Override
-	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
+	public void run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length == 1) {
 			if (!(sender instanceof Player)) {
 				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.TOGGLE_CONSOLE_USAGE, "%command%", label));
-				return false;
+				return;
 			}
 
 			Player player = (Player) sender;
@@ -28,7 +28,7 @@ public final class toggle implements ICommand {
 			plugin.getUser(player).ifPresent(
 					user -> plugin.getComplement().sendMessage(player, ConfigMessages.get(toggleTab(user, player) ? ConfigMessages.MessageKeys.TOGGLE_ENABLED
 							: ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
-			return true;
+			return;
 		}
 
 		if (args.length == 2) {
@@ -37,7 +37,7 @@ public final class toggle implements ICommand {
 			if (first.equalsIgnoreCase("all")) {
 				if (sender instanceof Player && !sender.hasPermission(Perm.TOGGLEALL.permission)) {
 					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.TOGGLEALL.permission));
-					return false;
+					return;
 				}
 
 				if (!(TabToggleBase.globallySwitched = !TabToggleBase.globallySwitched)) {
@@ -48,21 +48,19 @@ public final class toggle implements ICommand {
 					TabToggleBase.TEMPORAL_PLAYER_CACHE.clear();
 				}
 
-				return true;
+				return;
 			}
 
 			Player player = plugin.getServer().getPlayer(first);
 			if (player == null) {
 				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.TOGGLE_PLAYER_NOT_FOUND, "%player%", first));
-				return false;
+				return;
 			}
 
 			plugin.getUser(player).ifPresent(
 					user -> plugin.getComplement().sendMessage(player, ConfigMessages.get(toggleTab(user, player) ? ConfigMessages.MessageKeys.TOGGLE_ENABLED
 							: ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
 		}
-
-		return true;
 	}
 
 	private boolean toggleTab(TabListUser user, Player player) {

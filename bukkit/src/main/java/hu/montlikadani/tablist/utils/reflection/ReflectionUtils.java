@@ -46,7 +46,7 @@ public final class ReflectionUtils {
 		return jsonComponentMethod;
 	}
 
-	public static JsonComponent getJsonComponent() {
+	private static JsonComponent getJsonComponent() {
 		if (jsonComponent == null) {
 			try {
 				jsonComponent = new JsonComponent();

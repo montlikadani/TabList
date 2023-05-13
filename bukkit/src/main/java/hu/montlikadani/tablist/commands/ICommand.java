@@ -7,5 +7,6 @@ import hu.montlikadani.tablist.TabList;
 
 public interface ICommand {
 
-	boolean run(final TabList plugin, final CommandSender sender, final Command cmd, final String label, final String[] args);
+	void run(final TabList plugin, final CommandSender sender, final Command cmd, final String label, final String[] args);
+
 }

@@ -23,24 +23,23 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 	private final TabList plugin;
 
-	private final Set<ICommand> cmds = new HashSet<>(5);
+	private final Set<ICommand> commands = new HashSet<>(5);
 
 	public Commands(TabList plugin) {
 		this.plugin = plugin;
 
 		for (String s : new String[] { "reload", "fakeplayers", "player", "group", "toggle" }) {
 			try {
-				Class<?> c = null;
+				Class<?> clazz;
 
 				try {
-					c = TabList.class.getClassLoader().loadClass("hu.montlikadani.tablist.commands.list." + s);
+					clazz = TabList.class.getClassLoader().loadClass("hu.montlikadani.tablist.commands.list." + s);
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
+					continue;
 				}
 
-				if (c != null) {
-					cmds.add((ICommand) c.getDeclaredConstructor().newInstance());
-				}
+				commands.add((ICommand) clazz.getDeclaredConstructor().newInstance());
 			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
@@ -67,7 +66,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
-		for (ICommand command : cmds) {
+		for (ICommand command : commands) {
 			CommandProcessor proc = command.getClass().getAnnotation(CommandProcessor.class);
 
 			if (proc == null) {
@@ -110,11 +109,11 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		List<String> cmds = new ArrayList<>(this.cmds.size());
+		List<String> cmds = new ArrayList<>(this.commands.size());
 
 		switch (args.length) {
 		case 1:
-			cmds.addAll(getCmds(sender));
+			cmds.addAll(availableSubCommands(sender));
 			break;
 		case 2:
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
@@ -147,20 +146,18 @@ public final class Commands implements CommandExecutor, TabCompleter {
 		return cmds.isEmpty() ? null : cmds; // Suggest player names
 	}
 
-	private Set<String> getCmds(CommandSender sender) {
-		// Try to avoid using stream for tab-complete
-		Set<String> c = new HashSet<>(cmds.size());
-
+	private Set<String> availableSubCommands(CommandSender sender) {
+		Set<String> set = new HashSet<>(commands.size());
 		boolean isPlayer = sender instanceof Player;
 
-		for (ICommand cmd : cmds) {
+		for (ICommand cmd : commands) {
 			CommandProcessor proc = cmd.getClass().getAnnotation(CommandProcessor.class);
 
 			if (proc != null && (!isPlayer || sender.hasPermission(proc.permission().permission))) {
-				c.add(proc.name());
+				set.add(proc.name());
 			}
 		}
 
-		return c;
+		return set;
 	}
 }

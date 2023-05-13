@@ -25,7 +25,7 @@ import hu.montlikadani.tablist.utils.Util;
 public final class player implements ICommand {
 
 	@Override
-	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
+	public void run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
 		if (!ConfigValues.isPrefixSuffixEnabled()) {
 			plugin.getConfig().set("change-prefix-suffix-in-tablist.enable", true);
 			plugin.saveConfig();
@@ -40,7 +40,7 @@ public final class player implements ICommand {
 					+ "          &6 remove -&7 Removes the specified player's meta"
 			));
 
-			return false;
+			return;
 		}
 
 		String target = args[1];
@@ -61,7 +61,7 @@ public final class player implements ICommand {
 			String result = builder.toString().replace("\"", "");
 			if (result.trim().isEmpty()) {
 				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_COULD_NOT_BE_EMPTY));
-				return false;
+				return;
 			}
 
 			config.set("groups." + target + "." + type, result);
@@ -71,7 +71,7 @@ public final class player implements ICommand {
 				priority = Integer.parseInt(args[3]);
 			} catch (NumberFormatException e) {
 				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_PRIORITY_MUST_BE_NUMBER));
-				return false;
+				return;
 			}
 
 			config.set("groups." + target + ".sort-priority", priority);
@@ -90,13 +90,13 @@ public final class player implements ICommand {
 					e.printStackTrace();
 				}
 
-				return true;
+				return;
 			}
 
 			plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_NOT_FOUND, "%team%", target));
-			return false;
+			return;
 		default:
-			return false;
+			return;
 		}
 
 		try {
@@ -158,6 +158,5 @@ public final class player implements ICommand {
 		}
 
 		plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_SET, "%team%", target, "%meta%", prefix + tabName + suffix));
-		return false;
 	}
 }

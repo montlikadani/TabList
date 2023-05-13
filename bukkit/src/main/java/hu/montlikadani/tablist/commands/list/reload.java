@@ -13,9 +13,8 @@ import hu.montlikadani.tablist.config.ConfigMessages;
 public final class reload implements ICommand {
 
 	@Override
-	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
+	public void run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
 		plugin.reload();
 		plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.RELOAD_CONFIG));
-		return true;
 	}
 }

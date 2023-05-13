@@ -44,15 +44,15 @@ public final class fakeplayers implements ICommand {
 	}
 
 	@Override
-	public boolean run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
+	public void run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
 		if (!ConfigValues.isFakePlayers()) {
 			plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_DISABLED));
-			return true;
+			return;
 		}
 
 		if (args.length == 1) {
 			sendList(plugin, label, sender);
-			return true;
+			return;
 		}
 
 		Actions action = Actions.ADD;
@@ -63,7 +63,7 @@ public final class fakeplayers implements ICommand {
 
 		if (action != Actions.LIST && args.length < 3) {
 			sendList(plugin, label, sender);
-			return true;
+			return;
 		}
 
 		final FakePlayerHandler handler = plugin.getFakePlayerHandler();
@@ -75,7 +75,7 @@ public final class fakeplayers implements ICommand {
 
 			if ((output = handler.createPlayer(name, name, "", -1)) == EditingResult.ALREADY_EXIST) {
 				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_ALREADY_ADDED, "%name%", name));
-				return true;
+				return;
 			}
 
 			if (output == EditingResult.OK) {
@@ -86,7 +86,7 @@ public final class fakeplayers implements ICommand {
 		case REMOVE:
 			if ((output = handler.removePlayer(args[2])) == EditingResult.NOT_EXIST) {
 				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
-				return true;
+				return;
 			}
 
 			if (output == EditingResult.OK) {
@@ -97,7 +97,7 @@ public final class fakeplayers implements ICommand {
 		case RENAME:
 			if (args.length < 4) {
 				sendList(plugin, label, sender);
-				return true;
+				return;
 			}
 
 			String oldName = args[2];
@@ -105,7 +105,7 @@ public final class fakeplayers implements ICommand {
 
 			if ((output = handler.renamePlayer(oldName, newName)) == EditingResult.NOT_EXIST) {
 				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
-				return true;
+				return;
 			}
 
 			if (output == EditingResult.OK) {
@@ -118,7 +118,7 @@ public final class fakeplayers implements ICommand {
 
 			if (list.isEmpty()) {
 				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NO_FAKE_PLAYER));
-				return true;
+				return;
 			}
 
 			Collections.sort(list.stream().map(IFakePlayer::getName).collect(Collectors.toList()));
@@ -138,7 +138,7 @@ public final class fakeplayers implements ICommand {
 		case SETSKIN:
 			if (args.length < 4) {
 				sendList(plugin, label, sender);
-				return true;
+				return;
 			}
 
 			final String nameOrId = args[3];
@@ -163,19 +163,19 @@ public final class fakeplayers implements ICommand {
 
 			if (id == null) {
 				plugin.getComplement().sendMessage(sender, "There is no player existing with this name or id.");
-				return true;
+				return;
 			}
 
 			if (handler.setSkin(args[2], id) == EditingResult.NOT_EXIST) {
 				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
-				return true;
+				return;
 			}
 
 			break;
 		case SETPING:
 			if (args.length < 4) {
 				sendList(plugin, label, sender);
-				return true;
+				return;
 			}
 
 			int amount;
@@ -187,7 +187,7 @@ public final class fakeplayers implements ICommand {
 
 			if ((output = handler.setPing(args[2], amount)) == EditingResult.NOT_EXIST) {
 				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
-				return true;
+				return;
 			}
 
 			if (output == EditingResult.PING_AMOUNT) {
@@ -212,8 +212,6 @@ public final class fakeplayers implements ICommand {
 		default:
 			break;
 		}
-
-		return true;
 	}
 
 	private OfflinePlayer getOfflinePlayerByName(String nameOrId) {

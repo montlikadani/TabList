@@ -4,11 +4,15 @@ import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import net.minecraft.server.v1_8_R3.EnumChatFormat;
 import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Team;
@@ -41,10 +45,14 @@ public final class V1_8_R3 implements IPacketNM {
 
 	private final List<ObjectiveStorage> objectiveStorage = new ArrayList<>();
 
-	private Field headerField, footerField, entriesField, infoList, playerInfoAction;
+	private Field headerField, footerField, entriesField, infoList, playerInfoAction, scoreboardTeamPlayers, scoreboardTeamPrefix, scoreboardTeamSuffix,
+		scoreboardTeamNameTagVisibility, scoreboardTeamEnumChatFormat, scoreboardTeamName;
 	private final IChatBaseComponent emptyComponent = IChatBaseComponent.ChatSerializer.a("");
 
 	private final Scoreboard scoreboard = new Scoreboard();
+
+	private final Set<ScoreboardTeam> scoreboardTeams = new HashSet<>();
+	private final Set<TagTeam> tagTeams = new HashSet<>();
 
 	public V1_8_R3() {
 		try {
@@ -52,6 +60,13 @@ public final class V1_8_R3 implements IPacketNM {
 			(footerField = PacketPlayOutPlayerListHeaderFooter.class.getDeclaredField("b")).setAccessible(true);
 			(infoList = PacketPlayOutPlayerInfo.class.getDeclaredField("b")).setAccessible(true);
 			(playerInfoAction = PacketPlayOutPlayerInfo.class.getDeclaredField("a")).setAccessible(true);
+
+			(scoreboardTeamPlayers = PacketPlayOutScoreboardTeam.class.getDeclaredField("g")).setAccessible(true);
+			(scoreboardTeamPrefix = PacketPlayOutScoreboardTeam.class.getDeclaredField("c")).setAccessible(true);
+			(scoreboardTeamSuffix = PacketPlayOutScoreboardTeam.class.getDeclaredField("d")).setAccessible(true);
+			(scoreboardTeamNameTagVisibility = PacketPlayOutScoreboardTeam.class.getDeclaredField("e")).setAccessible(true);
+			(scoreboardTeamEnumChatFormat = PacketPlayOutScoreboardTeam.class.getDeclaredField("f")).setAccessible(true);
+			(scoreboardTeamName = PacketPlayOutScoreboardTeam.class.getDeclaredField("a")).setAccessible(true);
 		} catch (NoSuchFieldException | SecurityException e) {
 			e.printStackTrace();
 		}
@@ -144,10 +159,9 @@ public final class V1_8_R3 implements IPacketNM {
 
 		setEntriesField(updatePacket, Collections.singletonList(updatePacket.new PlayerInfoData(from.getProfile(), from.ping, from.playerInteractManager.getGameMode(), emptyComponent)));
 
-		//PacketPlayInArmAnimation animatePacket = new PacketPlayInArmAnimation();
 		PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
 
-		for (Player player : org.bukkit.Bukkit.getServer().getOnlinePlayers()) {
+		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			EntityPlayer entityPlayer = getPlayerHandle(player);
 
 			sendPacket(entityPlayer, updatePacket);
@@ -229,11 +243,10 @@ public final class V1_8_R3 implements IPacketNM {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardTeam createBoardTeam(Object teamNameComponent, String teamName, Player player, boolean followNameTagVisibility) {
-		ScoreboardTeam playerTeam = scoreboard.createTeam(teamName);
+	public void createBoardTeam(Object teamNameComponent, String teamName, Player player, boolean followNameTagVisibility) {
+		ScoreboardTeam playerTeam = new ScoreboardTeam(scoreboard, teamName);
 
-		scoreboard.addPlayerToTeam(player.getName(), teamName);
-		playerTeam.setDisplayName(teamName);
+		playerTeam.getPlayerNameSet().add(player.getName());
 
 		if (followNameTagVisibility) {
 			ScoreboardTeamBase.EnumNameTagVisibility visibility = null;
@@ -262,20 +275,35 @@ public final class V1_8_R3 implements IPacketNM {
 			}
 		}
 
-		return new PacketPlayOutScoreboardTeam(playerTeam, 0);
+		scoreboardTeams.add(playerTeam);
+
+		for (TagTeam tagTeam : tagTeams) {
+			if (!tagTeam.playerName.equals(player.getName())) {
+				continue;
+			}
+
+			tagTeam.scoreboardTeam.setDisplayName(playerTeam.getDisplayName());
+			tagTeam.scoreboardTeam.setNameTagVisibility(playerTeam.getNameTagVisibility());
+
+			EntityPlayer handle = getPlayerHandle(player);
+
+			sendPacket(handle, new PacketPlayOutScoreboardTeam(playerTeam, 0));
+			sendPacket(handle, new PacketPlayOutScoreboardTeam(tagTeam.scoreboardTeam, 0));
+			break;
+		}
 	}
 
 	@Override
 	public PacketPlayOutScoreboardTeam unregisterBoardTeam(Object playerTeam) {
 		ScoreboardTeam team = (ScoreboardTeam) playerTeam;
-		scoreboard.removeTeam(team);
+		scoreboardTeams.remove(team);
 
 		return new PacketPlayOutScoreboardTeam(team, 1);
 	}
 
 	@Override
 	public ScoreboardTeam findBoardTeamByName(String teamName) {
-		for (ScoreboardTeam team : scoreboard.getTeams()) {
+		for (ScoreboardTeam team : scoreboardTeams) {
 			if (team.getName().equals(teamName)) {
 				return team;
 			}
@@ -305,16 +333,16 @@ public final class V1_8_R3 implements IPacketNM {
 
 	@Override
 	public PacketPlayOutScoreboardScore changeScoreboardScorePacket(String objectiveName, String scoreName, int score) {
-		ObjectiveStorage objectiveStorage = findByObjective(objectiveName);
+		for (ObjectiveStorage objectiveStorage : objectiveStorage) {
+			if (objectiveStorage.objective.getName().equals(objectiveName)) {
+				ScoreboardScore scoreboardScore = new ScoreboardScore(objectiveStorage.scoreboard, objectiveStorage.objective, scoreName);
+				scoreboardScore.setScore(score);
 
-		if (objectiveStorage == null) {
-			return null;
+				return new PacketPlayOutScoreboardScore(scoreboardScore);
+			}
 		}
 
-		ScoreboardScore scoreboardScore = new ScoreboardScore(objectiveStorage.scoreboard, objectiveStorage.objective, scoreName);
-		scoreboardScore.setScore(score);
-
-		return new PacketPlayOutScoreboardScore(scoreboardScore);
+		return null;
 	}
 
 	@Override
@@ -327,17 +355,7 @@ public final class V1_8_R3 implements IPacketNM {
 		return new ScoreboardObjective(null, objectiveName, IScoreboardCriteria.g);
 	}
 
-	private ObjectiveStorage findByObjective(String name) {
-		for (ObjectiveStorage objectiveStorage : objectiveStorage) {
-			if (objectiveStorage.objective.getName().equals(name)) {
-				return objectiveStorage;
-			}
-		}
-
-		return null;
-	}
-
-	private final class ObjectiveStorage {
+	private static class ObjectiveStorage {
 
 		private final Scoreboard scoreboard;
 		private final ScoreboardObjective objective;
@@ -368,10 +386,68 @@ public final class V1_8_R3 implements IPacketNM {
 					continue;
 				}
 
+				// Temporal and disgusting solution to fix players name tag overwriting
+				if (cl == PacketPlayOutScoreboardTeam.class) {
+					PacketPlayOutScoreboardTeam packetScoreboardTeam = (PacketPlayOutScoreboardTeam) msg;
+					Collection<String> players = (Collection<String>) scoreboardTeamPlayers.get(packetScoreboardTeam);
+
+					if (!players.isEmpty()) {
+						ScoreboardTeamBase.EnumNameTagVisibility enumNameTagVisibility = ScoreboardTeamBase.EnumNameTagVisibility
+								.a((String) scoreboardTeamNameTagVisibility.get(packetScoreboardTeam));
+
+						if (enumNameTagVisibility == null) {
+							enumNameTagVisibility = ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS;
+						}
+
+						if (enumNameTagVisibility == ScoreboardTeamBase.EnumNameTagVisibility.NEVER) {
+							return;
+						}
+
+						String prefix = (String) scoreboardTeamPrefix.get(packetScoreboardTeam);
+						String suffix = (String) scoreboardTeamSuffix.get(packetScoreboardTeam);
+
+						if (!prefix.isEmpty() || !suffix.isEmpty()) {
+							String playerName = players.iterator().next();
+
+							for (TagTeam team : tagTeams) {
+								if (team.playerName.equals(playerName)) {
+									return;
+								}
+							}
+
+							Player player = Bukkit.getPlayer(playerName);
+
+							if (player == null) {
+								return;
+							}
+
+							EnumChatFormat enumChatFormat = EnumChatFormat.a((int) scoreboardTeamEnumChatFormat.get(packetScoreboardTeam));
+
+							if (enumChatFormat == null) {
+								enumChatFormat = EnumChatFormat.RESET;
+							}
+
+							ScoreboardTeam scoreboardTeam = new ScoreboardTeam(((org.bukkit.craftbukkit.v1_8_R3.scoreboard.CraftScoreboard) player.getScoreboard()).getHandle(),
+									(String) scoreboardTeamName.get(packetScoreboardTeam));
+
+							scoreboardTeam.setPrefix(prefix);
+							scoreboardTeam.setSuffix(suffix);
+							scoreboardTeam.setNameTagVisibility(enumNameTagVisibility);
+							scoreboardTeam.a(enumChatFormat);
+							scoreboardTeam.getPlayerNameSet().add(playerName);
+
+							tagTeams.add(new TagTeam(playerName, scoreboardTeam));
+						}
+					}
+
+					super.write(ctx, msg, promise);
+					return;
+				}
+
 				PacketPlayOutPlayerInfo playerInfoPacket = (PacketPlayOutPlayerInfo) msg;
 
 				if (playerInfoAction.get(playerInfoPacket) == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE) {
-					Player player = org.bukkit.Bukkit.getPlayer(listenerPlayerId);
+					Player player = Bukkit.getPlayer(listenerPlayerId);
 
 					if (player == null) {
 						break;
@@ -395,6 +471,27 @@ public final class V1_8_R3 implements IPacketNM {
 			}
 
 			super.write(ctx, msg, promise);
+		}
+	}
+
+	private static class TagTeam {
+
+		public final String playerName;
+		public final ScoreboardTeam scoreboardTeam;
+
+		public TagTeam(String playerName, ScoreboardTeam scoreboardTeam) {
+			this.playerName = playerName;
+			this.scoreboardTeam = scoreboardTeam;
+		}
+
+		@Override
+		public boolean equals(Object other) {
+			return other != null && getClass() == other.getClass() && playerName.equals(((TagTeam) other).playerName);
+		}
+
+		@Override
+		public int hashCode() {
+			return java.util.Objects.hash(playerName);
 		}
 	}
 }

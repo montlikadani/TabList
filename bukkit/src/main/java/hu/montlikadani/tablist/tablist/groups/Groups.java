@@ -191,7 +191,7 @@ public final class Groups {
 	 */
 	public void setPlayerTeam(GroupPlayer groupPlayer, int safePriority) {
 		groupPlayer.setSafePriority(safePriority);
-		groupPlayer.getTabTeam().setTeam();
+		groupPlayer.getTabTeam().createAndUpdateTeam();
 	}
 
 	/**

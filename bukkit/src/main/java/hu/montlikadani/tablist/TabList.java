@@ -211,7 +211,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	}
 
 	private void loadPacketListener() {
-		if (!ConfigValues.isRemoveGrayColorFromTabInSpec() && !ConfigValues.isHidePlayersFromTab()) {
+		if (!ConfigValues.isRemoveGrayColorFromTabInSpec() && !ConfigValues.isHidePlayersFromTab() && !ConfigValues.isPrefixSuffixEnabled()) {
 			getServer().getOnlinePlayers().forEach(PacketNM.NMS_PACKET::removePlayerChannelListener);
 			packetClasses = null;
 			return;
@@ -219,20 +219,42 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		packetClasses = new java.util.ArrayList<>(1);
 
-		try {
-			packetClasses.add(Class.forName("net.minecraft.network.protocol.game." + (ConfigValues.isHidePlayersFromTab() ? "ClientboundPlayerChatPacket"
-					: "ClientboundPlayerInfoUpdatePacket")));
-		} catch (ClassNotFoundException e) {
+		if (ConfigValues.isPrefixSuffixEnabled()) {
 			try {
-				packetClasses.add(Class.forName("net.minecraft.network.protocol.game." + (ConfigValues.isHidePlayersFromTab() ? "ClientboundPlayerChatPacket"
-						: "PacketPlayOutPlayerInfo")));
+				packetClasses.add(Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam"));
 			} catch (ClassNotFoundException ex) {
 				try {
-					packetClasses.add(Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".PacketPlayOutPlayerInfo"));
-				} catch (ClassNotFoundException c) {
-					packetClasses = null;
+					packetClasses.add(Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".PacketPlayOutScoreboardTeam"));
+				} catch (ClassNotFoundException ignored) {
 				}
 			}
+		}
+
+		try {
+			if (ConfigValues.isHidePlayersFromTab()) {
+				packetClasses.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerChatPacket"));
+			} else if (ConfigValues.isRemoveGrayColorFromTabInSpec()) {
+				packetClasses.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket"));
+			}
+		} catch (ClassNotFoundException e) {
+			try {
+				if (ConfigValues.isHidePlayersFromTab()) {
+					packetClasses.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerChatPacket"));
+				} else if (ConfigValues.isRemoveGrayColorFromTabInSpec()) {
+					packetClasses.add(Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo"));
+				}
+			} catch (ClassNotFoundException ex) {
+				if (ConfigValues.isRemoveGrayColorFromTabInSpec()) {
+					try {
+						packetClasses.add(Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".PacketPlayOutPlayerInfo"));
+					} catch (ClassNotFoundException ignored) {
+					}
+				}
+			}
+		}
+
+		if (packetClasses.isEmpty()) {
+			packetClasses = null;
 		}
 	}
 
