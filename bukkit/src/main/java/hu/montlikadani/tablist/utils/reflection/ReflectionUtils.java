@@ -4,7 +4,6 @@ import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.utils.ServerVersion;
 
-import java.lang.reflect.Method;
 import java.util.concurrent.locks.ReentrantLock;
 
 public final class ReflectionUtils {
@@ -12,8 +11,6 @@ public final class ReflectionUtils {
 	public static final Object EMPTY_COMPONENT;
 
 	private static JsonComponent jsonComponent;
-	private static Method chatSerializerMethodA, jsonComponentMethod;
-	private static Class<?> chatSerializer;
 
 	private static ReentrantLock LOCK;
 
@@ -28,29 +25,11 @@ public final class ReflectionUtils {
 	private ReflectionUtils() {
 	}
 
-	public static Method jsonComponentMethod() {
-		if (jsonComponentMethod != null) {
-			return jsonComponentMethod;
-		}
-
-		try {
-			Class<?>[] declaredClasses = ClazzContainer.getIChatBaseComponent().getDeclaredClasses();
-
-			if (declaredClasses.length != 0) {
-				return jsonComponentMethod = declaredClasses[0].getMethod("a", String.class);
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return jsonComponentMethod;
-	}
-
 	private static JsonComponent getJsonComponent() {
 		if (jsonComponent == null) {
 			try {
 				jsonComponent = new JsonComponent();
-			} catch (NoClassDefFoundError e) {
+			} catch (NoClassDefFoundError ignored) {
 			}
 		}
 
@@ -104,21 +83,7 @@ public final class ReflectionUtils {
 
 		result.append(",{\"text\":\"").append(plainText.substring(jsonStartingIndex + strJson.length())).append("\"}]");
 
-		try {
-			return PacketNM.NMS_PACKET.fromJson(result.toString());
-		} catch (Exception ex) {
-			try {
-				if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
-					return asChatSerializer(result.toString());
-				}
-
-				return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), result.toString());
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		return null;
+		return PacketNM.NMS_PACKET.fromJson(result.toString());
 	}
 
 	public static Object asComponent(final String text) {
@@ -135,32 +100,6 @@ public final class ReflectionUtils {
 			return component;
 		}
 
-		try {
-			return PacketNM.NMS_PACKET.fromJson("{\"text\":\"" + text + "\"}");
-		} catch (Exception ex) {
-			try {
-				if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
-					return asChatSerializer("{\"text\":\"" + text + "\"}");
-				}
-
-				return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), "{\"text\":\"" + text + "\"}");
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-		return null;
-	}
-
-	private static Object asChatSerializer(String json) throws Exception {
-		if (chatSerializer == null) {
-			chatSerializer = Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".ChatSerializer");
-		}
-
-		if (chatSerializerMethodA == null) {
-			chatSerializerMethodA = chatSerializer.getMethod("a", String.class);
-		}
-
-		return ClazzContainer.getIChatBaseComponent().cast(chatSerializerMethodA.invoke(chatSerializer, json));
+		return PacketNM.NMS_PACKET.fromJson("{\"text\":\"" + text + "\"}");
 	}
 }

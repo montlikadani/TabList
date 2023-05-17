@@ -211,7 +211,7 @@ public final class V1_19_R1 implements IPacketNM {
     }
 
     @Override
-    public void createBoardTeam(Object teamNameComponent, String teamName, Player player, boolean followNameTagVisibility) {
+    public void createBoardTeam(String teamName, Player player, boolean followNameTagVisibility) {
         ScoreboardTeam playerTeam = new ScoreboardTeam(scoreboard, teamName);
 
         playerTeam.g().add(player.getName());
@@ -244,6 +244,11 @@ public final class V1_19_R1 implements IPacketNM {
         }
 
         scoreboardTeams.add(playerTeam);
+
+        if (tagTeams.isEmpty()) {
+            sendPacket(getPlayerHandle(player), PacketPlayOutScoreboardTeam.a(playerTeam, true));
+            return;
+        }
 
         for (TagTeam tagTeam : tagTeams) {
             if (!tagTeam.playerName.equals(player.getName())) {

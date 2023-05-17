@@ -3,28 +3,30 @@ package hu.montlikadani.tablist.utils.reflection;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Optional;
 
 import com.mojang.authlib.GameProfile;
 import hu.montlikadani.tablist.utils.ServerVersion;
 
 public final class ClazzContainer {
 
-	private static Field infoList, scoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamNames, scoreboardTeamMode, nameTagVisibility,
-			playerInfoDataProfileField, playerInfoDataGameMode, nameTagVisibilityNameField, actionField, playerInfoDataPing, playerInfoDisplayName;
+	private static Field infoList, packetScoreboardTeamName, scoreboardTeamDisplayName, scoreboardTeamNames, packetScoreboardTeamMode, nameTagVisibility,
+			playerInfoDataProfileField, playerInfoDataGameMode, actionField, playerInfoDataPing, playerInfoDisplayName, packetScoreboardTeamPrefix,
+			packetScoreboardTeamSuffix, packetScoreboardTeamChatFormatColorField;
 
 	private static Class<?> iChatBaseComponent, packet, enumPlayerInfoAction, packetPlayOutScoreboardTeam;
 
 	private static Object addPlayer, removePlayer, updateLatency, updateDisplayName, updateGameMode, enumScoreboardHealthDisplayInteger, enumScoreboardActionChange,
-			enumScoreboardActionRemove, iScoreboardCriteriaDummy, gameModeSpectator, gameModeSurvival;
+			enumScoreboardActionRemove, iScoreboardCriteriaDummy, gameModeSpectator, gameModeSurvival, nameTagVisibilityAlways, nameTagVisibilityNever;
 
 	private static Method scoreboardTeamSetNameTagVisibility, scoreboardTeamSetDisplayName, packetScoreboardTeamRemove, packetScoreboardTeamUpdateCreate,
-			playerInfoDataProfileMethod, playerNameSetMethod;
+			playerInfoDataProfileMethod, playerNameSetMethod, nameTagVisibilityByNameMethod, iChatBaseComponentGetStringMethod, enumChatFormatByIntMethod,
+			scoreboardTeamSetPrefix, scoreboardTeamSetSuffix, scoreboardTeamSetChatFormat, parametersNameTagVisibility, parametersTeamPrefix, parametersTeamSuffix,
+			packetScoreboardTeamParametersMethod, scoreboardTeamName, scoreboardTeamColor;
 
 	private static Constructor<?> playerInfoDataConstr, playOutPlayerInfoConstructor, scoreboardConstructor, scoreboardTeamConstructor, packetPlayOutScoreboardTeamConstructor,
 			packetPlayOutScoreboardScoreConstructor, packetPlayOutScoreboardObjectiveConstructor, firstScoreboardObjectiveConstructor,
 			packetPlayOutScoreboardDisplayObjectiveConstructor;
-
-	private static Object[] scoreboardNameTagVisibilityEnumConstants;
 
 	private static boolean isTeamOptionStatusEnumExist = false;
 
@@ -40,8 +42,10 @@ public final class ClazzContainer {
 			try {
 				org.bukkit.scoreboard.Team.class.getDeclaredMethod("getOption", org.bukkit.scoreboard.Team.Option.class);
 				isTeamOptionStatusEnumExist = true;
-			} catch (Throwable t) {
+			} catch (Throwable ignored) {
 			}
+
+			iChatBaseComponentGetStringMethod = iChatBaseComponent.getDeclaredMethod("getString");
 
 			try {
 				enumPlayerInfoAction = classByName(null, "EnumPlayerInfoAction");
@@ -53,6 +57,9 @@ public final class ClazzContainer {
 					}
 				}
 			}
+
+			Class<?> enumChatFormat = classByName("net.minecraft", "EnumChatFormat");
+			enumChatFormatByIntMethod = methodByTypeAndName(enumChatFormat, enumChatFormat, new Class<?>[] { String.class }, "getById", "a");
 
 			try {
 				addPlayer = enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction);
@@ -68,43 +75,65 @@ public final class ClazzContainer {
 				removePlayer = enumPlayerInfoAction.getDeclaredField("e").get(enumPlayerInfoAction);
 			}
 
+			packetScoreboardTeamParametersMethod = methodByTypeAndName(packetPlayOutScoreboardTeam, Optional.class, null, "f", "k", "parameters");
+
 			Class<?> scoreboardClass = classByName("net.minecraft.world.scores", "Scoreboard");
 			scoreboardConstructor = scoreboardClass.getConstructor();
 
+			Class<?> scoreboardNameTagVisibility = classByName("net.minecraft.world.scores", "ScoreboardTeamBase$EnumNameTagVisibility");
+			nameTagVisibilityByNameMethod = methodByTypeAndName(scoreboardNameTagVisibility, String.class, new Class<?>[] { String.class }, "a", "byName");
+
+			try {
+				nameTagVisibilityAlways = scoreboardNameTagVisibility.getDeclaredField("a").get(scoreboardNameTagVisibility);
+				nameTagVisibilityNever = scoreboardNameTagVisibility.getDeclaredField("b").get(scoreboardNameTagVisibility);
+			} catch (NoSuchFieldException ex) {
+				nameTagVisibilityAlways = scoreboardNameTagVisibility.getDeclaredField("ALWAYS").get(scoreboardNameTagVisibility);
+				nameTagVisibilityNever = scoreboardNameTagVisibility.getDeclaredField("NEVER").get(scoreboardNameTagVisibility);
+			}
+
+			Class<?> parameters = packetPlayOutScoreboardTeam.getDeclaredClasses()[1];
+
+			parametersNameTagVisibility = methodByTypeAndName(parameters, scoreboardNameTagVisibility, null, "getNametagVisibility", "d");
+			parametersTeamPrefix = methodByTypeAndName(parameters, iChatBaseComponent, null, "getPlayerPrefix", "f");
+			parametersTeamSuffix = methodByTypeAndName(parameters, iChatBaseComponent, null, "getPlayerSuffix", "g");
+
+			try {
+				packetScoreboardTeamPrefix = packetPlayOutScoreboardTeam.getDeclaredField("c");
+				packetScoreboardTeamSuffix = packetPlayOutScoreboardTeam.getDeclaredField("d");
+			} catch (NoSuchFieldException ex) {
+				packetScoreboardTeamPrefix = packetPlayOutScoreboardTeam.getDeclaredField("playerPrefix");
+				packetScoreboardTeamSuffix = packetPlayOutScoreboardTeam.getDeclaredField("playerSuffix");
+			}
+
+			Class<?> scoreboardTeamClass = classByName("net.minecraft.world.scores", "ScoreboardTeam");
+			scoreboardTeamConstructor = scoreboardTeamClass.getConstructor(scoreboardClass, String.class);
+
+			scoreboardTeamName = methodByTypeAndName(scoreboardTeamClass, String.class, null, "getName", "b");
+
+			playerNameSetMethod = methodByTypeAndName(scoreboardTeamClass, java.util.Collection.class, null, "g", "getPlayers", "getPlayerNameSet");
+			scoreboardTeamSetNameTagVisibility = methodByTypeAndName(scoreboardTeamClass, null, new Class<?>[] { scoreboardNameTagVisibility },
+					"a", "setNameTagVisibility");
+
+			scoreboardTeamSetPrefix = methodByTypeAndName(scoreboardTeamClass, null, new Class<?>[] { iChatBaseComponent }, "b", "setPlayerPrefix");
+			if ((scoreboardTeamSetSuffix = methodByTypeAndName(scoreboardTeamClass, null, new Class<?>[] { iChatBaseComponent }, "c", "setPlayerSuffix")) == null) {
+				scoreboardTeamSetPrefix = methodByTypeAndName(scoreboardTeamClass, null, new Class<?>[] { String.class }, "b", "setPrefix");
+				scoreboardTeamSetSuffix = methodByTypeAndName(scoreboardTeamClass, null, new Class<?>[] { String.class }, "c", "setSuffix");
+			}
+
+			scoreboardTeamSetChatFormat = methodByTypeAndName(scoreboardTeamClass, null, new Class<?>[] { enumChatFormat }, "a", "m", "setColor");
+			scoreboardTeamColor = methodByTypeAndName(scoreboardTeamClass, null, null, "getColor", "n");
+
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-				Class<?> scoreboardNameTagVisibility = classByName("net.minecraft.world.scores", "ScoreboardTeamBase$EnumNameTagVisibility");
-				Class<?> scoreboardTeamClass = classByName("net.minecraft.world.scores", "ScoreboardTeam");
+				scoreboardTeamSetDisplayName = methodByTypeAndName(scoreboardTeamClass, null, new Class<?>[] { iChatBaseComponent }, "a", "setDisplayName");
 
 				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_18_R1)) {
-					scoreboardTeamSetDisplayName = scoreboardTeamClass.getMethod("a", iChatBaseComponent);
-					scoreboardTeamSetNameTagVisibility = scoreboardTeamClass.getMethod("a", scoreboardNameTagVisibility);
-					playerNameSetMethod = scoreboardTeamClass.getMethod("g"); // getPlayers
 					(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("e")).setAccessible(true); // players
 				} else {
-					scoreboardTeamSetDisplayName = scoreboardTeamClass.getMethod("setDisplayName", iChatBaseComponent);
-					scoreboardTeamSetNameTagVisibility = scoreboardTeamClass.getMethod("setNameTagVisibility", scoreboardNameTagVisibility);
-					playerNameSetMethod = scoreboardTeamClass.getMethod("getPlayerNameSet");
 					(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("f")).setAccessible(true);
 				}
 
 				packetScoreboardTeamRemove = packetPlayOutScoreboardTeam.getMethod("a", scoreboardTeamClass);
 				packetScoreboardTeamUpdateCreate = packetPlayOutScoreboardTeam.getMethod("a", scoreboardTeamClass, boolean.class);
-
-				scoreboardNameTagVisibilityEnumConstants = scoreboardNameTagVisibility.getEnumConstants();
-
-				Class<?> enumConstantClass = scoreboardNameTagVisibilityEnumConstants[0].getClass();
-				try {
-					nameTagVisibilityNameField = enumConstantClass.getDeclaredField("name");
-				} catch (NoSuchFieldException ns) { // In case if name field not exist
-					for (Field fields : enumConstantClass.getDeclaredFields()) {
-						if (fields.getType() == String.class) {
-							nameTagVisibilityNameField = fields;
-							break;
-						}
-					}
-				}
-
-				scoreboardTeamConstructor = scoreboardTeamClass.getConstructor(scoreboardClass, String.class);
 			} else {
 				try {
 					packetPlayOutScoreboardTeamConstructor = packetPlayOutScoreboardTeam.getDeclaredConstructor();
@@ -114,11 +143,12 @@ public final class ClazzContainer {
 
 				packetPlayOutScoreboardTeamConstructor.setAccessible(true);
 
-				(scoreboardTeamName = packetPlayOutScoreboardTeam.getDeclaredField("a")).setAccessible(true);
+				(packetScoreboardTeamName = packetPlayOutScoreboardTeam.getDeclaredField("a")).setAccessible(true);
 				(scoreboardTeamDisplayName = packetPlayOutScoreboardTeam.getDeclaredField("b")).setAccessible(true);
 				(nameTagVisibility = packetPlayOutScoreboardTeam.getDeclaredField("e")).setAccessible(true);
-				(scoreboardTeamMode = packetPlayOutScoreboardTeam.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "i" : "h")).setAccessible(true);
+				(packetScoreboardTeamMode = packetPlayOutScoreboardTeam.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "i" : "h")).setAccessible(true);
 				(scoreboardTeamNames = packetPlayOutScoreboardTeam.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "h" : "e")).setAccessible(true); // players
+				(packetScoreboardTeamChatFormatColorField = packetPlayOutScoreboardTeam.getDeclaredField("g")).setAccessible(true); // color
 			}
 
 			// Objectives
@@ -249,6 +279,48 @@ public final class ClazzContainer {
 		return Class.forName(newPackageName + "." + name);
 	}
 
+	public static Method methodByTypeAndName(Class<?> from, Class<?> returnType, Class<?>[] parameters, String... names) {
+		Method[] methods = from.getDeclaredMethods();
+
+		if (parameters != null) {
+			for (Method method : methods) {
+				if (java.util.Arrays.equals(method.getParameterTypes(), parameters)) {
+					return method;
+				}
+			}
+		}
+
+		if (returnType == null) {
+			for (Method method : methods) {
+				for (String name : names) {
+					if (method.getName().equals(name)) {
+						return method;
+					}
+				}
+			}
+
+			return null;
+		}
+
+		for (Method method : methods) {
+			if (method.getReturnType() != returnType) {
+				continue;
+			}
+
+			if (names.length == 0) {
+				return method;
+			}
+
+			for (String name : names) {
+				if (method.getName().equals(name)) {
+					return method;
+				}
+			}
+		}
+
+		return null;
+	}
+
 	public static Field getFieldByType(Class<?> from, Class<?> type) {
 		for (Field field : from.getDeclaredFields()) {
 			if (field.getType() == type) {
@@ -361,8 +433,8 @@ public final class ClazzContainer {
 		return scoreboardTeamSetDisplayName;
 	}
 
-	public static Field getScoreboardTeamName() {
-		return scoreboardTeamName;
+	public static Field getPacketScoreboardTeamName() {
+		return packetScoreboardTeamName;
 	}
 
 	public static Field getScoreboardTeamDisplayName() {
@@ -373,16 +445,8 @@ public final class ClazzContainer {
 		return scoreboardTeamNames;
 	}
 
-	public static Field getScoreboardTeamMode() {
-		return scoreboardTeamMode;
-	}
-
 	public static Field getNameTagVisibility() {
 		return nameTagVisibility;
-	}
-
-	public static Object[] getScoreboardNameTagVisibilityEnumConstants() {
-		return scoreboardNameTagVisibilityEnumConstants;
 	}
 
 	public static Field getPlayerInfoDataGameMode() {
@@ -391,10 +455,6 @@ public final class ClazzContainer {
 
 	public static Method getPlayerNameSetMethod() {
 		return playerNameSetMethod;
-	}
-
-	public static Field getNameTagVisibilityNameField() {
-		return nameTagVisibilityNameField;
 	}
 
 	public static Constructor<?> getPacketPlayOutScoreboardObjectiveConstructor() {
@@ -447,5 +507,81 @@ public final class ClazzContainer {
 
 	public static Object getGameModeSurvival() {
 		return gameModeSurvival;
+	}
+
+	public static Class<?> packetPlayOutScoreboardTeam() {
+		return packetPlayOutScoreboardTeam;
+	}
+
+	public static Method getNameTagVisibilityByNameMethod() {
+		return nameTagVisibilityByNameMethod;
+	}
+
+	public static Object getNameTagVisibilityAlways() {
+		return nameTagVisibilityAlways;
+	}
+
+	public static Object getNameTagVisibilityNever() {
+		return nameTagVisibilityNever;
+	}
+
+	public static Field getPacketScoreboardTeamPrefix() {
+		return packetScoreboardTeamPrefix;
+	}
+
+	public static Field getPacketScoreboardTeamSuffix() {
+		return packetScoreboardTeamSuffix;
+	}
+
+	public static Method getiChatBaseComponentGetStringMethod() {
+		return iChatBaseComponentGetStringMethod;
+	}
+
+	public static Method getEnumChatFormatByIntMethod() {
+		return enumChatFormatByIntMethod;
+	}
+
+	public static Field getPacketScoreboardTeamChatFormatColorField() {
+		return packetScoreboardTeamChatFormatColorField;
+	}
+
+	public static Method getScoreboardTeamSetPrefix() {
+		return scoreboardTeamSetPrefix;
+	}
+
+	public static Method getScoreboardTeamSetSuffix() {
+		return scoreboardTeamSetSuffix;
+	}
+
+	public static Method getScoreboardTeamSetChatFormat() {
+		return scoreboardTeamSetChatFormat;
+	}
+
+	public static Method getParametersNameTagVisibility() {
+		return parametersNameTagVisibility;
+	}
+
+	public static Method getParametersTeamPrefix() {
+		return parametersTeamPrefix;
+	}
+
+	public static Method getParametersTeamSuffix() {
+		return parametersTeamSuffix;
+	}
+
+	public static Method getPacketScoreboardTeamParametersMethod() {
+		return packetScoreboardTeamParametersMethod;
+	}
+
+	public static Field getPacketScoreboardTeamMode() {
+		return packetScoreboardTeamMode;
+	}
+
+	public static Method getScoreboardTeamName() {
+		return scoreboardTeamName;
+	}
+
+	public static Method getScoreboardTeamColor() {
+		return scoreboardTeamColor;
 	}
 }

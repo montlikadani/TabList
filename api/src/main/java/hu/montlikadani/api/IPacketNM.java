@@ -40,7 +40,7 @@ public interface IPacketNM {
 
     void setInfoData(Object info, java.util.UUID id, int ping, Object component);
 
-    void createBoardTeam(Object teamNameComponent, String teamName, Player player, boolean followNameTagVisibility);
+    void createBoardTeam(String teamName, Player player, boolean followNameTagVisibility);
 
     Object unregisterBoardTeam(Object playerTeam);
 

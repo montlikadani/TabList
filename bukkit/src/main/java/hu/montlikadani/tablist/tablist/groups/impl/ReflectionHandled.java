@@ -28,10 +28,7 @@ public class ReflectionHandled {
 		if (tl.getGroups().isToSort()) {
 			unregisterTeam(false);
 
-			String teamName = groupPlayer.getFullGroupTeamName();
-
-			PacketNM.NMS_PACKET.createBoardTeam(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1) ? null : ReflectionUtils.asComponent(teamName), teamName,
-					player, ConfigValues.isFollowNameTagVisibility());
+			PacketNM.NMS_PACKET.createBoardTeam(groupPlayer.getFullGroupTeamName(), player, ConfigValues.isFollowNameTagVisibility());
 		}
 
 		Object updatePacket = PacketNM.NMS_PACKET.updateDisplayNamePacket(PacketNM.NMS_PACKET.getPlayerHandle(player), null, false);
