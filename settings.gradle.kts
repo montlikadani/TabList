@@ -14,6 +14,7 @@ include(
 		"v1_19_R2",
 		"v1_19_R1",
 		"v1_18_R2",
+		"v1_17_R1",
 		"v1_8_R3",
 		"bukkit",
 		"bungee")
