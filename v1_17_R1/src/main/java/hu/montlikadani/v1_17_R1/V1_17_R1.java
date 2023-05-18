@@ -21,7 +21,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -33,7 +32,6 @@ import java.util.stream.Collectors;
 
 public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
-    private Field entriesField;
     private final IChatBaseComponent emptyComponent = IChatBaseComponent.ChatSerializer.a("");
 
     private final Scoreboard scoreboard = new Scoreboard();
@@ -183,15 +181,8 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
     }
 
     private void setEntriesField(PacketPlayOutPlayerInfo playerInfoPacket, List<PacketPlayOutPlayerInfo.PlayerInfoData> list) {
-        try {
-            if (entriesField == null) {
-                (entriesField = playerInfoPacket.getClass().getDeclaredField("b")).setAccessible(true);
-            }
-
-            entriesField.set(playerInfoPacket, list);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        playerInfoPacket.b().clear();
+        playerInfoPacket.b().addAll(list);
     }
 
     @Override

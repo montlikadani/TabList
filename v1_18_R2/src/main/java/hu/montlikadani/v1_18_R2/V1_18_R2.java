@@ -28,7 +28,6 @@ import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -38,7 +37,6 @@ import java.util.stream.Collectors;
 
 public final class V1_18_R2 implements IPacketNM {
 
-    private Field entriesField;
     private final IChatBaseComponent emptyComponent = IChatBaseComponent.ChatSerializer.a("");
 
     private final Scoreboard scoreboard = new Scoreboard();
@@ -188,18 +186,8 @@ public final class V1_18_R2 implements IPacketNM {
     }
 
     private void setEntriesField(PacketPlayOutPlayerInfo playerInfoPacket, List<PacketPlayOutPlayerInfo.PlayerInfoData> list) {
-        try {
-
-            // Entries list is immutable, so use reflection to bypass
-            if (entriesField == null) {
-                entriesField = playerInfoPacket.getClass().getDeclaredField("b");
-                entriesField.setAccessible(true);
-            }
-
-            entriesField.set(playerInfoPacket, list);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        playerInfoPacket.b().clear();
+        playerInfoPacket.b().addAll(list);
     }
 
     @Override
