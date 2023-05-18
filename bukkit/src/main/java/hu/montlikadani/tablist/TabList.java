@@ -347,7 +347,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		while (i < animations.size()) {
 			for (TextAnimation ac : animations) {
-				hu.montlikadani.tablist.Global.replace(builder, "%anim:" + ac.name + "%", ac::getText);
+				hu.montlikadani.tablist.Global.replace(builder, "%anim:" + ac.name + "%", ac::next);
 			}
 
 			i++;
