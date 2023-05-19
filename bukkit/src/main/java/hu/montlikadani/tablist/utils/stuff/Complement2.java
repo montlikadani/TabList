@@ -1,5 +1,7 @@
 package hu.montlikadani.tablist.utils.stuff;
 
+import hu.montlikadani.tablist.utils.Util;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Objective;
@@ -7,7 +9,6 @@ import org.bukkit.scoreboard.RenderType;
 import org.bukkit.scoreboard.Scoreboard;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 
 public final class Complement2 implements Complement {
 
@@ -22,18 +23,28 @@ public final class Complement2 implements Complement {
 		}
 	}
 
-	private Component deserialize(String t) {
-		// legacySection is used to deserialize hex colors from plain text too
-		return LegacyComponentSerializer.legacySection().deserialize(t);
+	private Component deserialize(String text) {
+		return Util.MINIMESSAGE_SUPPORTED ? net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(text)
+				: LegacyComponentSerializer.legacyAmpersand().deserialize(text);
 	}
 
 	private String serialize(Component component) {
-		return component != null ? LegacyComponentSerializer.legacyAmpersand().serialize(component) : "";
+		if (component == null) {
+			return "";
+		}
+
+		if (Util.MINIMESSAGE_SUPPORTED) {
+			return net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().serialize(component);
+		}
+
+		return LegacyComponentSerializer.legacySection().serialize(component);
 	}
 
 	@Override
 	public void sendMessage(org.bukkit.command.CommandSender sender, String text) {
-		sender.sendMessage(deserialize(text));
+		if (!text.isEmpty()) {
+			sender.sendMessage(deserialize(text));
+		}
 	}
 
 	@Override
@@ -58,25 +69,25 @@ public final class Complement2 implements Complement {
 
 	@SuppressWarnings("deprecation")
 	@Override
-	public Objective registerNewObjective(Scoreboard board, String name, String criteria, String displayName,
+	public Objective registerNewObjective(Scoreboard board, String name, String criteriaName, String displayName,
 			RenderType renderType) {
 		if (isCriteriaExists) {
-			org.bukkit.scoreboard.Criteria crit;
+			org.bukkit.scoreboard.Criteria criteria;
 
-			switch (criteria) {
+			switch (criteriaName) {
 			case "health":
-				crit = org.bukkit.scoreboard.Criteria.HEALTH;
+				criteria = org.bukkit.scoreboard.Criteria.HEALTH;
 				break;
-			case "dummy": // not used
-				crit = org.bukkit.scoreboard.Criteria.DUMMY;
+			case "dummy":
+				criteria = org.bukkit.scoreboard.Criteria.DUMMY;
 				break;
 			default:
 				return null; // prob not
 			}
 
-			return board.registerNewObjective(name, crit, deserialize(displayName), renderType);
+			return board.registerNewObjective(name, criteria, deserialize(displayName), renderType);
 		}
 
-		return board.registerNewObjective(name, criteria, deserialize(displayName), renderType);
+		return board.registerNewObjective(name, criteriaName, deserialize(displayName), renderType);
 	}
 }

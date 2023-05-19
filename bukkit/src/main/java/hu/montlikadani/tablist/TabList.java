@@ -111,7 +111,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		if (ConfigValues.isLogConsole()) {
 			getServer().getConsoleSender().sendMessage(hu.montlikadani.tablist.utils.Util
-					.colorText("&6[&5Tab&cList&6]&7 >&a Enabled&6 v" + getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
+					.colorizeText("&6[&5Tab&cList&6]&7 >&a Enabled&6 v" + getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
 		}
 	}
 

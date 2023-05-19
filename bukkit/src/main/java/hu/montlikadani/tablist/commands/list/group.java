@@ -30,7 +30,7 @@ public final class group implements ICommand {
 		}
 
 		if (args.length < 3) {
-			plugin.getComplement().sendMessage(sender, Util.colorText("&6/" + label + " group\n"
+			plugin.getComplement().sendMessage(sender, Util.colorizeText("&6/" + label + " group\n"
 					+ "          &6prefix <prefix> -&7 Changes the prefix of an existing group.\n"
 					+ "          &6suffix <suffix> -&7 Changes the suffix of an existing group.\n"
 					+ "          &6tabname -&7 Changes the tab name of an existing group.\n"

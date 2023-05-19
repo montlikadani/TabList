@@ -126,7 +126,7 @@ public final class Variables {
 		if (!text.getPlainText().isEmpty()) {
 			String str = replaceVariables(pl, text.getPlainText());
 
-			text.updateText(ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2) ? Util.colorText(str) : str);
+			text.updateText(ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2) ? Util.colorizeText(str) : str);
 		}
 
 		return text;

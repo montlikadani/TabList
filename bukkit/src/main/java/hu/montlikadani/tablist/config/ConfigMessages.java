@@ -43,7 +43,7 @@ public final class ConfigMessages {
 					saveRequired = true;
 				}
 
-				key.value = str;
+				key.value = Util.applyMinimessageFormat(str);
 			} else if (key.type == String[].class) {
 				if (!fileWasExisted) {
 					messagesConfig.set(key.path, key.defaultValue);
@@ -51,18 +51,25 @@ public final class ConfigMessages {
 					continue;
 				}
 
-				List<String> list = null;
+				List<String> list;
 
 				try {
 					list = (List<String>) messagesConfig.getList(key.path, null);
-				} catch (ClassCastException ccast) {
+				} catch (ClassCastException ignored) {
+					continue;
 				}
 
 				if (list == null) {
 					messagesConfig.set(key.path, key.value = key.defaultValue);
 					saveRequired = true;
+
+					String[] arr = (String[]) key.value;
+
+					for (int i = 0; i < arr.length; i++) {
+						arr[i] = Util.applyMinimessageFormat(arr[i]);
+					}
 				} else {
-					key.value = list.toArray(new String[0]);
+					key.value = Util.applyMinimessageFormat(list).toArray(new String[0]);
 				}
 			}
 		}
@@ -83,8 +90,6 @@ public final class ConfigMessages {
 			for (int i = 0; i < variables.length; i += 2) {
 				text = text.replace(String.valueOf(variables[i]), String.valueOf(variables[i + 1]));
 			}
-
-			text = Util.colorText(text);
 		}
 
 		return text;
@@ -100,7 +105,7 @@ public final class ConfigMessages {
 					msg = msg.replace(String.valueOf(variables[y]), String.valueOf(variables[y + 1]));
 				}
 
-				list.add(Util.colorText(msg));
+				list.add(msg);
 			}
 		}
 

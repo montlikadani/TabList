@@ -1,10 +1,26 @@
 package hu.montlikadani.tablist.utils;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 
 public final class Util {
+
+	public static final boolean MINIMESSAGE_SUPPORTED;
+
+	static {
+		boolean supported;
+
+		try {
+			Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
+			supported = true;
+		} catch (ClassNotFoundException cn) {
+			supported = false;
+		}
+
+		MINIMESSAGE_SUPPORTED = supported;
+	}
 
 	public static void logConsole(String msg) {
 		logConsole(Level.INFO, msg);
@@ -17,20 +33,33 @@ public final class Util {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static String colorText(String msg) {
+	public static String colorizeText(String msg) {
 		return org.bukkit.ChatColor.translateAlternateColorCodes('&', msg);
 	}
 
 	public static String applyMinimessageFormat(String value) {
-		value = value.replace("&", "-{-}-").replace("§", "-{-}-");
+		return applyMinimessageFormat(value, true);
+	}
 
-		try {
+	public static String applyMinimessageFormat(String value, boolean applyLegacyColours) {
+		if (MINIMESSAGE_SUPPORTED) {
+			value = value.replace("&", "-{-}-").replace("§", "-{-}-");
+
 			value = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(net.kyori.adventure.text.minimessage.MiniMessage
-					.miniMessage().deserialize(value));
-		} catch (Error ignored) {
+					.miniMessage().deserialize(value)).replace("-{-}-", "&");
 		}
 
-		return value.replace("-{-}-", "&");
+		return applyLegacyColours ? colorizeText(value) : value;
+	}
+
+	public static List<String> applyMinimessageFormat(List<String> list) {
+		return applyMinimessageFormat(list, true);
+	}
+
+	public static List<String> applyMinimessageFormat(List<String> list, boolean applyLegacyColours) {
+		list.replaceAll(value -> applyMinimessageFormat(value, applyLegacyColours));
+
+		return list;
 	}
 
 	public static Optional<UUID> tryParseId(String uuid) {
