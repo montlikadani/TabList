@@ -27,7 +27,7 @@ public final class TextAnimation {
 	public String next() {
 		int index = (int) ((System.currentTimeMillis() % (texts.length * time)) / time);
 
-		if (randomized && last != index) {
+		if (last != index && randomized) {
 
 			// We're using Fisher–Yates shuffle algorithm to randomize
 			for (int i = texts.length - 1; i > 0; i--) {
