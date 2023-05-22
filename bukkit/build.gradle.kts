@@ -50,7 +50,7 @@ dependencies {
         isTransitive = false
     }
 
-    compileOnly("com.github.LeonMangler:SuperVanish:6.2.12") {
+    compileOnly("com.github.LeonMangler:SuperVanish:6.2.16") {
         isTransitive = false
     }
 
