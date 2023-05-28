@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist.utils.stuff;
 
-import hu.montlikadani.tablist.utils.Util;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -24,20 +23,11 @@ public final class Complement2 implements Complement {
 	}
 
 	private Component deserialize(String text) {
-		return Util.MINIMESSAGE_SUPPORTED ? net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(text)
-				: LegacyComponentSerializer.legacyAmpersand().deserialize(text);
+		return LegacyComponentSerializer.legacySection().deserialize(text);
 	}
 
 	private String serialize(Component component) {
-		if (component == null) {
-			return "";
-		}
-
-		if (Util.MINIMESSAGE_SUPPORTED) {
-			return net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().serialize(component);
-		}
-
-		return LegacyComponentSerializer.legacySection().serialize(component);
+		return component == null ? "" : LegacyComponentSerializer.legacySection().serialize(component);
 	}
 
 	@Override

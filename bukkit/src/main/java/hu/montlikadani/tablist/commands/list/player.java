@@ -32,7 +32,7 @@ public final class player implements ICommand {
 		}
 
 		if (args.length < 3) {
-			plugin.getComplement().sendMessage(sender, Util.colorizeText("&6/" + label + " player\n"
+			plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&6/" + label + " player\n"
 					+ "          &6prefix <prefix> -&7 Changes the prefix of an existing player.\n"
 					+ "          &6suffix <suffix> -&7 Changes the suffix of an existing player.\n"
 					+ "          &6tabname -&7 Changes the tab name of an existing player.\n"

@@ -32,7 +32,7 @@ public final class fakeplayers implements ICommand {
 	}
 
 	private void sendList(TabList tl, String label, CommandSender sender) {
-		tl.getComplement().sendMessage(sender, Util.colorizeText("&6/" + label + " fakeplayers"
+		tl.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&6/" + label + " fakeplayers"
 				+ "\n          &6add <name> [ping] -&7 Adds a new fake player with a name."
 				+ "\n          &6remove <name> -&7 Removes the given fake player."
 				+ "\n          &6list -&7 Lists all the available fake players."
@@ -109,7 +109,7 @@ public final class fakeplayers implements ICommand {
 			}
 
 			if (output == EditingResult.OK) {
-				plugin.getComplement().sendMessage(sender, Util.colorizeText("&2Old name: &e" + oldName + "&2, new name: &e" + newName));
+				plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&2Old name: &e" + oldName + "&2, new name: &e" + newName));
 			}
 
 			break;

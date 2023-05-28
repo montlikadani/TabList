@@ -126,13 +126,14 @@ public final class Variables {
 		if (!text.getPlainText().isEmpty()) {
 			String str = replaceVariables(pl, text.getPlainText());
 
-			text.updateText(ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2) ? Util.colorizeText(str) : str);
+			text.updateText(ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2) ? Util.applyMinimessageFormat(str) : str);
 		}
 
 		return text;
 	}
 
 	private final long MB = 1024 * 1024;
+	private String fixedTpsString;
 
 	public String replaceVariables(Player pl, String str) {
 		if (str.isEmpty()) {
@@ -166,7 +167,10 @@ public final class Variables {
 		});
 
 		str = Global.replace(str, "%tps-overflow%", () -> roundTpsDigits(TabListAPI.getTPS()));
-		str = Global.replace(str, "%tps%", () -> roundTpsDigits(TabListAPI.getTPS()));
+		str = Global.replace(str, "%tps%", () -> {
+			double tps = TabListAPI.getTPS();
+			return tps >= 21.0 ? (fixedTpsString == null ? fixedTpsString = roundTpsDigits(20.0) : fixedTpsString) : roundTpsDigits(tps);
+		});
 
 		return str;
 	}

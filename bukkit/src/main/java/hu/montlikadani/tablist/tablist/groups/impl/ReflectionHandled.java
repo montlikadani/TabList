@@ -4,8 +4,6 @@ import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.groups.GroupPlayer;
-import hu.montlikadani.tablist.utils.ServerVersion;
-import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 import org.bukkit.entity.Player;
 
 public class ReflectionHandled {

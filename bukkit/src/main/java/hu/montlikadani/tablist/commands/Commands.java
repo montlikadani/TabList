@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import hu.montlikadani.tablist.utils.Util;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -16,8 +17,6 @@ import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.ConfigMessages;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
-
-import static hu.montlikadani.tablist.utils.Util.colorizeText;
 
 public final class Commands implements CommandExecutor, TabCompleter {
 
@@ -49,11 +48,11 @@ public final class Commands implements CommandExecutor, TabCompleter {
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
 		if (args.length == 0) {
-			plugin.getComplement().sendMessage(sender, colorizeText("&9&lTab&4&lList"));
-			plugin.getComplement().sendMessage(sender, colorizeText("&5Version:&a " + plugin.getDescription().getVersion()));
-			plugin.getComplement().sendMessage(sender, colorizeText("&5Author, created by:&a montlikadani"));
-			plugin.getComplement().sendMessage(sender, colorizeText("&5List of commands:&7 /" + label + " help"));
-			plugin.getComplement().sendMessage(sender, colorizeText("&4Report bugs/features here:&e &nhttps://github.com/montlikadani/TabList/issues"));
+			plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&9&lTab&4&lList"));
+			plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&5Version:&a " + plugin.getDescription().getVersion()));
+			plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&5Author, created by:&a montlikadani"));
+			plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&5List of commands:&7 /" + label + " help"));
+			plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&4Report bugs/features here:&e &nhttps://github.com/montlikadani/TabList/issues"));
 			return true;
 		}
 
@@ -76,7 +75,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			if (isHelp) {
 				if (!isPlayer || sender.hasPermission(proc.permission().permission)) {
 					String params = proc.params().isEmpty() ? "" : ' ' + proc.params();
-					plugin.getComplement().sendMessage(sender, colorizeText("&7/" + label + " " + proc.name() + params + " -&6 " + proc.desc()));
+					plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&7/" + label + " " + proc.name() + params + " -&6 " + proc.desc()));
 				}
 
 				continue;

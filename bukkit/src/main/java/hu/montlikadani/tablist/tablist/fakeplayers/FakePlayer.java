@@ -79,7 +79,7 @@ public final class FakePlayer implements IFakePlayer {
 	}
 
 	private Object displayNameComponent() {
-		return displayName.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT : ReflectionUtils.asComponent(Util.colorizeText(Global.setSymbols(displayName)));
+		return displayName.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT : ReflectionUtils.asComponent(Util.applyMinimessageFormat(Global.setSymbols(displayName)));
 	}
 
 	@Override
@@ -91,7 +91,7 @@ public final class FakePlayer implements IFakePlayer {
 		if (displayName == null) {
 			displayName = "";
 		} else if (!displayName.isEmpty()) {
-			displayName = Util.colorizeText(Global.setSymbols(displayName));
+			displayName = Util.applyMinimessageFormat(Global.setSymbols(displayName));
 		}
 
 		Object packet = PacketNM.NMS_PACKET.updateDisplayNamePacket(fakeEntityPlayer, ReflectionUtils.asComponent(displayName), true);

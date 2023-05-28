@@ -1,7 +1,5 @@
 package hu.montlikadani.tablist;
 
-import static hu.montlikadani.tablist.utils.Util.logConsole;
-
 import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
@@ -13,6 +11,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
 import hu.montlikadani.tablist.tablist.TabToggleBase;
+import hu.montlikadani.tablist.utils.Util;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -65,7 +64,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		long load = System.currentTimeMillis();
 
 		if (ServerVersion.getCurrent() == null) {
-			logConsole(Level.SEVERE, "Your server version does not supported " + ServerVersion.getArrayVersion()[3]);
+			Util.logConsole(Level.SEVERE, "Your server version does not supported " + ServerVersion.getArrayVersion()[3]);
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
@@ -91,7 +90,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		loadPacketListener();
 
 		if (ConfigValues.isPlaceholderAPI() && (papi = getServer().getPluginManager().getPlugin("PlaceholderAPI")) != null && papi.isEnabled()) {
-			logConsole("Hooked " + papi.getName() + " version: " + papi.getDescription().getVersion());
+			Util.logConsole("Hooked " + papi.getName() + " version: " + papi.getDescription().getVersion());
 		}
 
 		hasVault = isPluginEnabled("Vault") && (vaultPermission = new VaultPermission()).getPermission() != null;
@@ -110,8 +109,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		beginDataCollection();
 
 		if (ConfigValues.isLogConsole()) {
-			getServer().getConsoleSender().sendMessage(hu.montlikadani.tablist.utils.Util
-					.colorizeText("&6[&5Tab&cList&6]&7 >&a Enabled&6 v" + getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
+			complement.sendMessage(getServer().getConsoleSender(), Util
+					.applyMinimessageFormat("&6[&5Tab&cList&6]&7 >&a Enabled&6 v" + getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
 		}
 	}
 

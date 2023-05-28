@@ -17,7 +17,7 @@ abstract class AfkPlayers {
 			String prop = value ? ConfigValues.getAfkFormatYes() : ConfigValues.getAfkFormatNo();
 
 			tl.getComplement().playerListName(player, Util
-					.colorizeText(tl.getPlaceholders().replaceVariables(player, ConfigValues.isAfkStatusShowInRightLeftSide() ? player.getName() + prop : prop + player.getName())));
+					.applyMinimessageFormat(tl.getPlaceholders().replaceVariables(player, ConfigValues.isAfkStatusShowInRightLeftSide() ? player.getName() + prop : prop + player.getName())));
 		}
 	}
 }

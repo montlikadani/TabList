@@ -32,24 +32,21 @@ public final class Util {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
-	public static String colorizeText(String msg) {
-		return org.bukkit.ChatColor.translateAlternateColorCodes('&', msg);
-	}
-
 	public static String applyMinimessageFormat(String value) {
 		return applyMinimessageFormat(value, true);
 	}
 
+	@SuppressWarnings("deprecation")
 	public static String applyMinimessageFormat(String value, boolean applyLegacyColours) {
 		if (MINIMESSAGE_SUPPORTED) {
 			value = value.replace("&", "-{-}-").replace("§", "-{-}-");
 
-			value = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacySection().serialize(net.kyori.adventure.text.minimessage.MiniMessage
-					.miniMessage().deserialize(value)).replace("-{-}-", "&");
+			value = net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand()
+					.serialize(net.kyori.adventure.text.minimessage.MiniMessage.miniMessage().deserialize(value))
+					.replace("-{-}-", "&");
 		}
 
-		return applyLegacyColours ? colorizeText(value) : value;
+		return applyLegacyColours ? org.bukkit.ChatColor.translateAlternateColorCodes('&', value) : value;
 	}
 
 	public static List<String> applyMinimessageFormat(List<String> list) {
