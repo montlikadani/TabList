@@ -38,7 +38,7 @@ dependencies {
         exclude("junit", "junit")
     }
 
-    compileOnly("net.essentialsx:EssentialsX:2.20.0-SNAPSHOT") {
+    compileOnly("net.essentialsx:EssentialsX:2.20.1-SNAPSHOT") {
         isTransitive = false
     }
 
