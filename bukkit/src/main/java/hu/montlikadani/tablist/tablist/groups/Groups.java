@@ -28,7 +28,8 @@ public final class Groups {
 
 	private BukkitTask animationTask;
 
-	private final List<TeamHandler> groupsList = new ArrayList<>();
+	private final List<TeamHandler> teams = new ArrayList<>();
+	private final List<TeamHandler> orderedGroupsByWeight = new ArrayList<>();
 	private final Deque<GroupPlayer> sortedPlayers = new ConcurrentLinkedDeque<>();
 	private final Set<GroupPlayer> afkPlayersCache = new HashSet<>();
 
@@ -40,12 +41,16 @@ public final class Groups {
 	}
 
 	/**
-	 * Returns the list of teams
+	 * Returns a copy list of teams
 	 * 
 	 * @return {@link List}
 	 */
-	public List<TeamHandler> getGroupsList() {
-		return groupsList;
+	public List<TeamHandler> getTeams() {
+		return new ArrayList<>(teams);
+	}
+
+	public List<TeamHandler> orderedGroupsByWeight() {
+		return orderedGroupsByWeight;
 	}
 
 	/**
@@ -69,7 +74,7 @@ public final class Groups {
 			throw new IllegalArgumentException("The team name can not be empty");
 		}
 
-		for (TeamHandler handler : groupsList) {
+		for (TeamHandler handler : teams) {
 			if (handler.team.equalsIgnoreCase(name)) {
 				return Optional.of(handler);
 			}
@@ -87,7 +92,8 @@ public final class Groups {
 	}
 
 	public void load() {
-		groupsList.clear();
+		teams.clear();
+		orderedGroupsByWeight.clear();
 
 		if (!ConfigValues.isPrefixSuffixEnabled()) {
 			return;
@@ -106,12 +112,12 @@ public final class Groups {
 			team.global = true;
 			team.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(globTabName));
 
-			groupsList.add(team);
+			teams.add(team);
 		}
 
 		ConfigurationSection cs = gr.getConfigurationSection("groups");
 		if (cs == null) {
-			if (!groupsList.isEmpty()) {
+			if (!teams.isEmpty()) {
 				startTask();
 			}
 
@@ -121,7 +127,7 @@ public final class Groups {
 		Set<String> keys = cs.getKeys(false);
 
 		if (keys.isEmpty()) {
-			if (!groupsList.isEmpty()) {
+			if (!teams.isEmpty()) {
 				startTask();
 			}
 
@@ -129,10 +135,10 @@ public final class Groups {
 		}
 
 		// Automatically add existing groups to the list for "lazy peoples"
-		if (ConfigValues.isSyncPluginsGroups() && plugin.hasVault()) {
+		if (ConfigValues.isSyncPluginsGroups() && plugin.hasPermissionService()) {
 			boolean saveRequired = false;
 
-			me: for (String s : plugin.getVaultPerm().getGroups()) {
+			me: for (String s : plugin.getPermissionService().getGroups()) {
 				for (String g : keys) {
 					if (s.equalsIgnoreCase(g)) {
 						continue me;
@@ -168,19 +174,55 @@ public final class Groups {
 			th.setAfkSortPriority(cs.getInt(g + ".afk-sort-priority", -1));
 			th.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(cs.getString(g + ".tabname", "")));
 
-			groupsList.add(th);
+			teams.add(th);
 		}
 
-		groupsList.add(defaultAssignedGroup = new TeamHandler("defaultLast", TabText.EMPTY, TabText.EMPTY, "", 0));
+		teams.add(defaultAssignedGroup = new TeamHandler("defaultLast", TabText.EMPTY, TabText.EMPTY, "", 0));
 
 		// Sort groups by priority to match the lowest priority firstly (highest
 		// priority is on the top of other)
-		List<TeamHandler> newSortedList = groupsList.stream()
-				.sorted(Comparator.<TeamHandler>comparingInt(t -> t.priority).reversed()).collect(Collectors.toList());
-		groupsList.clear();
-		groupsList.addAll(newSortedList);
+		teams.sort(Comparator.<TeamHandler>comparingInt(t -> t.priority).reversed());
 
+		orderGroupsByWeight();
 		startTask();
+	}
+
+	private void orderGroupsByWeight() {
+		orderedGroupsByWeight.clear();
+
+		if (ConfigValues.isPreferPrimaryVaultGroup() || !plugin.hasPermissionService() || !plugin.getPermissionService().hasLuckPerms) {
+			return;
+		}
+
+		orderedGroupsByWeight.addAll(teams);
+
+		orderedGroupsByWeight.sort((team, team2) -> {
+			if (team.global || team2.global) {
+				return 0;
+			}
+
+			net.luckperms.api.model.group.Group group1 = (net.luckperms.api.model.group.Group) plugin.getPermissionService().groupObjectByName(team.team);
+
+			if (group1 == null) {
+				return 0;
+			}
+
+			net.luckperms.api.model.group.Group group2 = (net.luckperms.api.model.group.Group) plugin.getPermissionService().groupObjectByName(team2.team);
+
+			if (group2 == null) {
+				return 0;
+			}
+
+			java.util.OptionalInt optionalInt1 = group1.getWeight();
+
+			if (!optionalInt1.isPresent()) {
+				return 0;
+			}
+
+			java.util.OptionalInt optionalInt2 = group2.getWeight();
+
+			return optionalInt2.isPresent() ? optionalInt2.getAsInt() - optionalInt1.getAsInt() : 0;
+		});
 	}
 
 	/**
@@ -231,13 +273,16 @@ public final class Groups {
 		groupPlayer.removeGroup();
 	}
 
-	/**
-	 * Removes the given group by name.
-	 * 
-	 * @param teamName Name of team.
-	 */
-	public void removeGroup(String teamName) {
-		getTeam(teamName).ifPresent(groupsList::remove);
+	public void removeTeam(String teamName) {
+		getTeam(teamName).ifPresent(team -> {
+			teams.remove(team);
+			orderGroupsByWeight();
+		});
+	}
+
+	public void addTeam(TeamHandler team) {
+		teams.add(team);
+		orderGroupsByWeight();
 	}
 
 	/**

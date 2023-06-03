@@ -18,7 +18,7 @@ public final class GroupPlayer {
 
 	private transient TeamHandler group, globalGroup;
 
-	private String customPrefix, customSuffix, playerVaultGroup;
+	private String customPrefix, customSuffix, playerPrimaryGroup;
 
 	private int customPriority = Integer.MIN_VALUE;
 	private int safePriority = 0;
@@ -62,7 +62,7 @@ public final class GroupPlayer {
 	 */
 	public void removeGroup() {
 		group = globalGroup = null;
-		playerVaultGroup = null;
+		playerPrimaryGroup = null;
 	}
 
 	public TabListUser getUser() {
@@ -124,13 +124,13 @@ public final class GroupPlayer {
 	 * prevents luckperms verbose spam as the group will be checked at
 	 * every tick when enabled.
 	 */
-	private void refreshPlayerVaultGroup(Player player) {
-		if (!tl.hasVault() || !ConfigValues.isPreferPrimaryVaultGroup()) {
+	private void refreshPlayerPrimaryGroup(Player player) {
+		if (!tl.hasPermissionService() || !ConfigValues.isPreferPrimaryVaultGroup()) {
 			return;
 		}
 
-		if (playerVaultGroup == null || !tl.getVaultPerm().playerInGroup(player, playerVaultGroup)) {
-			playerVaultGroup = tl.getVaultPerm().getPrimaryGroup(player);
+		if (playerPrimaryGroup == null || !tl.getPermissionService().playerInGroup(player, playerPrimaryGroup)) {
+			playerPrimaryGroup = tl.getPermissionService().getPrimaryGroup(player);
 		}
 	}
 
@@ -143,11 +143,9 @@ public final class GroupPlayer {
 
 		// Initial inspections to remove group from player, if one of condition is true
 		if (!isPlayerCanSeeGroup(player)) {
-
-			// Make sure the group or global is exists and remove only once
 			if (group != null || globalGroup != null) {
 				tl.getGroups().removePlayerGroup(tabListUser);
-				tl.getGroups().setToSort(false); // Refuse to sort by this player
+				tl.getGroups().setToSort(false);
 				return true;
 			}
 
@@ -155,78 +153,60 @@ public final class GroupPlayer {
 			return false;
 		}
 
-		boolean update = false;
 		Groups groups = tl.getGroups();
 		String playerName = player.getName();
-		java.util.List<TeamHandler> teams = groups.getGroupsList();
+		java.util.List<TeamHandler> teams = groups.getTeams();
 
-		// Search for player name
-		for (TeamHandler team : teams) {
-			if (playerName.equalsIgnoreCase(team.team)) {
-
-				// Player can have two groups assigned
-				// globalGroup + normalGroup
-				if (!team.global) {
-					for (TeamHandler t : teams) {
-						if (t.global && globalGroup != t) {
-							globalGroup = t;
-							groups.setToSort(true);
-							break;
-						}
-					}
-				}
-
-				if (group != team) { // Player group was changed
-					update = true;
-					setGroup(team);
-				}
-
-				return update;
+		// Search for global group
+		for (TeamHandler gl : teams) {
+			if (gl.global && globalGroup != gl) {
+				globalGroup = gl;
+				groups.setToSort(true);
+				break;
 			}
 		}
 
-		refreshPlayerVaultGroup(player);
-
+		// Search for player name
 		for (TeamHandler team : teams) {
-
-			// Primary group found
-			if (playerVaultGroup != null && playerVaultGroup.equalsIgnoreCase(team.team)) {
-
-				// Search for global group and cache if exists to allow assigning multiple
-				// prefixes for primary group
-				if (!team.global) {
-					for (TeamHandler t : teams) {
-						if (t.global && globalGroup != t) {
-							groups.setToSort(true);
-							globalGroup = t;
-							break;
-						}
-					}
-				}
-
-				if (group != team) { // Player group was changed or not set
-					update = true;
-					setGroup(team);
-				}
-
-				return update;
-			}
-
-			if (team.global && globalGroup != team) {
-				globalGroup = team;
-				groups.setToSort(true);
-
-				// Users can also display the global group without any other group specified
-				//if (teams.size() == 1) {
-					update = true;
-				//}
-
+			if (team.global || !playerName.equalsIgnoreCase(team.team)) {
 				continue;
 			}
 
-			if (!team.permission.isEmpty()) {
+			if (group != team) { // Player group was changed
+				setGroup(team);
+				return true;
+			}
 
-				// Permission based groups
+			return false;
+		}
+
+		refreshPlayerPrimaryGroup(player);
+
+		if (!groups.orderedGroupsByWeight().isEmpty()) {
+			teams = groups.orderedGroupsByWeight();
+		}
+
+		boolean update = false;
+
+		for (TeamHandler team : teams) {
+			if (team.global) {
+				continue;
+			}
+
+			if (playerPrimaryGroup != null) {
+				if (playerPrimaryGroup.equalsIgnoreCase(team.team)) {
+					if (group != team) { // Player group was changed or not set
+						update = true;
+						setGroup(team);
+					}
+
+					return update;
+				}
+
+				continue; // Only check primary
+			}
+
+			if (!team.permission.isEmpty()) {
 				if (PluginUtils.hasPermission(player, team.permission)) {
 					if (group != team) {
 						update = true;
@@ -235,26 +215,12 @@ public final class GroupPlayer {
 
 					return update;
 				}
-			} else if (tl.hasVault() && tl.getVaultPerm().playerInGroup(player, team.team)) {
-
-				// Search for global group and cache if exists to allow assigning multiple
-				// prefixes for this group
-				if (!team.global) {
-					for (TeamHandler t : teams) {
-						if (t.global && globalGroup != t) {
-							globalGroup = t;
-							groups.setToSort(true);
-							break;
-						}
-					}
-				}
-
+			} else if (tl.hasPermissionService() && tl.getPermissionService().playerInGroup(player, team.team)) {
 				if (group != team) {
 					update = true;
 					setGroup(team);
 				}
 
-				// Player group found
 				return update;
 			}
 		}

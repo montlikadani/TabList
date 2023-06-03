@@ -55,14 +55,14 @@ public class TabHandler {
 		}
 
 		TabConfigValues.OptionSeparator optionSeparator = TabConfigValues.SEPARATOR_MAP.get(world);
-		String[] vaultGroups = null;
+		String[] playerGroups = null;
 
 		if (optionSeparator != null) {
 			Pair<TabText[], TabText[]> pair = optionSeparator.getConfigKeyMap().get(pName);
 
-			if (pair == null && plugin.hasVault()) {
-				for (String one : vaultGroups = plugin.getVaultPerm().getGroups()) {
-					if (plugin.getVaultPerm().playerInGroup(player, world, one) && (pair = optionSeparator.getConfigKeyMap().get(one)) != null) {
+			if (pair == null && plugin.hasPermissionService()) {
+				for (String one : playerGroups = plugin.getPermissionService().getGroups()) {
+					if (plugin.getPermissionService().playerInGroup(player, world, one) && (pair = optionSeparator.getConfigKeyMap().get(one)) != null) {
 						break;
 					}
 				}
@@ -89,9 +89,9 @@ public class TabHandler {
 			footer = optionSeparator.pair.value;
 		}
 
-		if (plugin.hasVault()) {
-			for (String one : vaultGroups == null ? plugin.getVaultPerm().getGroups() : vaultGroups) {
-				if (plugin.getVaultPerm().playerInGroup(player, one) && (optionSeparator = TabConfigValues.SEPARATOR_MAP.get(one)) != null) {
+		if (plugin.hasPermissionService()) {
+			for (String one : playerGroups == null ? plugin.getPermissionService().getGroups() : playerGroups) {
+				if (plugin.getPermissionService().playerInGroup(player, one) && (optionSeparator = TabConfigValues.SEPARATOR_MAP.get(one)) != null) {
 					header = optionSeparator.pair.key;
 					footer = optionSeparator.pair.value;
 					break;

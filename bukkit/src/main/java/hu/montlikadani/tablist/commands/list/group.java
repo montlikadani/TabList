@@ -77,7 +77,7 @@ public final class group implements ICommand {
 		case "remove":
 			if (config.contains("groups." + target)) {
 				config.set("groups." + target, null);
-				plugin.getGroups().removeGroup(target);
+				plugin.getGroups().removeTeam(target);
 
 				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_REMOVED, "%team%", target));
 
@@ -105,21 +105,16 @@ public final class group implements ICommand {
 		String prefix = config.getString("groups." + target + ".prefix", ""), suffix = config.getString("groups." + target + ".suffix", ""),
 				tabName = config.getString("groups." + target + ".tabname", "");
 
-		java.util.List<TeamHandler> teams = plugin.getGroups().getGroupsList();
 		TeamHandler team = null;
 
-		for (int i = 0; i < teams.size(); i++) {
-			TeamHandler t = teams.get(i);
-
-			if (t.team.equalsIgnoreCase(target)) {
-				t.team = target;
-				t.prefix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(prefix));
-				t.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(tabName));
-				t.suffix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(suffix));
-				t.priority = priority;
-
-				teams.set(i, t);
-				team = t;
+		for (TeamHandler one : plugin.getGroups().getTeams()) {
+			if (one.team.equalsIgnoreCase(target)) {
+				team = one;
+				team.team = target;
+				team.prefix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(prefix));
+				team.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(tabName));
+				team.suffix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(suffix));
+				team.priority = priority;
 				break;
 			}
 		}
@@ -133,7 +128,7 @@ public final class group implements ICommand {
 			team.suffix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(suffix));
 			team.priority = priority;
 
-			teams.add(team);
+			plugin.getGroups().addTeam(team);
 		}
 
 		plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_SET, "%team%", target, "%meta%", prefix + tabName + suffix));

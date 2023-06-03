@@ -29,5 +29,5 @@ dependencies {
         exclude("org.yaml", "snakeyaml")
     }
 
-    implementation("io.netty:netty-all:4.1.92.Final")
+    implementation("io.netty:netty-all:4.1.93.Final")
 }

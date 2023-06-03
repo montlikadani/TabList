@@ -5,26 +5,34 @@ import org.bukkit.entity.Player;
 
 import net.milkbowl.vault.permission.Permission;
 
-public final class VaultPermission {
+public final class PermissionService {
+
+	public final boolean hasLuckPerms;
 
 	private Permission perm;
 
-	public VaultPermission() {
+	public PermissionService() {
 		org.bukkit.plugin.RegisteredServiceProvider<Permission> rsp = Bukkit.getServer().getServicesManager().getRegistration(Permission.class);
 
 		if (rsp != null) {
 			perm = rsp.getProvider();
 		}
+
+		hasLuckPerms = Bukkit.getServer().getPluginManager().isPluginEnabled("LuckPerms");
 	}
 
 	public Permission getPermission() {
 		return perm;
 	}
 
+	public Object groupObjectByName(String groupName) {
+		return hasLuckPerms ? net.luckperms.api.LuckPermsProvider.get().getGroupManager().getGroup(groupName) : null;
+	}
+
 	public String getPrimaryGroup(Player player) {
 		try {
 			return perm.getPrimaryGroup(player);
-		} catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException ignored) {
 		}
 
 		return null;
@@ -42,7 +50,7 @@ public final class VaultPermission {
 					return true;
 				}
 			}
-		} catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException ignored) {
 		}
 
 		return false;
@@ -60,7 +68,7 @@ public final class VaultPermission {
 					return true;
 				}
 			}
-		} catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException ignored) {
 		}
 
 		return false;
@@ -69,7 +77,7 @@ public final class VaultPermission {
 	public String[] getGroups() {
 		try {
 			return perm.getGroups();
-		} catch (UnsupportedOperationException e) {
+		} catch (UnsupportedOperationException ignored) {
 		}
 
 		return new String[0];

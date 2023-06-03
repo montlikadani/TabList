@@ -33,7 +33,7 @@ import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.PluginUtils;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.UpdateDownloader;
-import hu.montlikadani.tablist.utils.plugin.VaultPermission;
+import hu.montlikadani.tablist.utils.plugin.PermissionService;
 import hu.montlikadani.tablist.utils.stuff.Complement;
 import hu.montlikadani.tablist.utils.stuff.Complement1;
 import hu.montlikadani.tablist.utils.stuff.Complement2;
@@ -42,7 +42,7 @@ import hu.montlikadani.tablist.utils.variables.Variables;
 
 public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
-	private transient VaultPermission vaultPermission;
+	private transient PermissionService permissionService;
 	private transient Objects objects;
 	private transient Variables variables;
 	private transient Groups groups;
@@ -93,7 +93,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			Util.logConsole("Hooked " + papi.getName() + " version: " + papi.getDescription().getVersion());
 		}
 
-		hasVault = isPluginEnabled("Vault") && (vaultPermission = new VaultPermission()).getPermission() != null;
+		hasVault = isPluginEnabled("Vault") && (permissionService = new PermissionService()).getPermission() != null;
 
 		fakePlayerHandler.load();
 		loadAnimations();
@@ -527,9 +527,9 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	}
 
 	/**
-	 * @return true if the Vault resource is installed and recognised by this plugin.
+	 * @return true if there is a permission service installed
 	 */
-	public boolean hasVault() {
+	public boolean hasPermissionService() {
 		return hasVault;
 	}
 
@@ -564,8 +564,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		return conf;
 	}
 
-	public VaultPermission getVaultPerm() {
-		return vaultPermission;
+	public PermissionService getPermissionService() {
+		return permissionService;
 	}
 
 	public Complement getComplement() {

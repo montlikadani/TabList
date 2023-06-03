@@ -10,6 +10,7 @@ java {
 }
 
 repositories {
+    mavenCentral()
     maven("https://repo.purpurmc.org/snapshots")
     maven("https://repo.codemc.org/repository/maven-public")
     maven("https://oss.sonatype.org/content/repositories/snapshots")
@@ -34,6 +35,7 @@ dependencies {
 
     compileOnly("com.github.xtomyserrax:StaffFacilities:5.0.8")
     compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8, so we must use this
+    compileOnly("net.luckperms:api:5.4")
     compileOnly("org.purpurmc.purpur:purpur-api:1.19.4-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
     }
