@@ -144,7 +144,7 @@ public final class LegacyVersion implements IPacketNM {
 
         try {
             if (craftServerClass == null) {
-                craftServerClass = Class.forName("org.bukkit.craftbukkit." + ServerVersion.getArrayVersion()[3] + ".CraftServer");
+                craftServerClass = Class.forName("org.bukkit.craftbukkit." + ServerVersion.nmsVersion() + ".CraftServer");
             }
 
             return getServerMethod.invoke(craftServerClass.cast(Bukkit.getServer()));
@@ -217,7 +217,7 @@ public final class LegacyVersion implements IPacketNM {
 
     private Object asChatSerializer(String json) throws Exception {
         if (chatSerializer == null) {
-            chatSerializer = Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".ChatSerializer");
+            chatSerializer = Class.forName("net.minecraft.server." + ServerVersion.nmsVersion() + ".ChatSerializer");
         }
 
         if (chatSerializerMethodA == null) {

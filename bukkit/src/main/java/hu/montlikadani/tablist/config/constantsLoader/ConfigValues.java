@@ -227,6 +227,7 @@ public final class ConfigValues {
 			try {
 				objectType = Objects.ObjectTypes.valueOf(c.get("tablist-object-type.type", "ping").toUpperCase(java.util.Locale.ENGLISH));
 			} catch (IllegalArgumentException e) {
+				objectType = Objects.ObjectTypes.NONE;
 			}
 		}
 

@@ -3,21 +3,19 @@ package hu.montlikadani.tablist.logicalOperators;
 public class Condition {
 
 	public final RelationalOperators operator;
-	public final String[] parseable;
 
 	private String color = "";
 	private double secondCondition = 0D;
 
-	public Condition(RelationalOperators operator, String[] parseable) {
+	public Condition(RelationalOperators operator, String[] content) {
 		this.operator = operator;
-		this.parseable = parseable;
 
-		if (parseable.length < 2) {
+		if (content.length < 2) {
 			return;
 		}
 
-		String first = parseable[0];
-		String second = parseable[1];
+		String first = content[0];
+		String second = content[1];
 
 		try {
 			secondCondition = Double.parseDouble(

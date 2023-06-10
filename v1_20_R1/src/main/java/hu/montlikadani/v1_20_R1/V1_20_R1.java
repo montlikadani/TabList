@@ -1,9 +1,6 @@
-package hu.montlikadani.v1_19_R3;
+package hu.montlikadani.v1_20_R1;
 
-import com.mojang.authlib.GameProfile;
-import hu.montlikadani.api.IPacketNM;
 import io.netty.channel.Channel;
-import io.netty.channel.ChannelHandlerContext;
 import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.network.NetworkManager;
@@ -18,7 +15,6 @@ import net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjecti
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ScoreboardServer;
 import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.world.level.EnumGamemode;
@@ -28,8 +24,7 @@ import net.minecraft.world.scores.ScoreboardTeam;
 import net.minecraft.world.scores.ScoreboardTeamBase;
 import net.minecraft.world.scores.criteria.IScoreboardCriteria;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -41,7 +36,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
-public final class V1_19_R3 implements IPacketNM {
+public final class V1_20_R1 implements hu.montlikadani.api.IPacketNM {
 
     private Field entriesField, playerNetworkManagerField;
     private final IChatBaseComponent emptyComponent = IChatBaseComponent.ChatSerializer.a("");
@@ -53,21 +48,21 @@ public final class V1_19_R3 implements IPacketNM {
 
     @Override
     public void sendPacket(Player player, Object packet) {
-        getPlayerHandle(player).b.a((Packet<?>) packet);
+        getPlayerHandle(player).c.a((Packet<?>) packet);
     }
 
     private void sendPacket(EntityPlayer player, Packet<?> packet) {
-        player.b.a(packet);
+        player.c.a(packet);
     }
 
     @Override
     public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
         EntityPlayer entityPlayer = getPlayerHandle(player);
-        Channel channel = playerChannel(entityPlayer.b);
+        Channel channel = playerChannel(entityPlayer.c);
 
         if (channel != null && channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
             try {
-                channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(entityPlayer.fI().getId(), classesToListen));
+                channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(entityPlayer.fM().getId(), classesToListen));
             } catch (java.util.NoSuchElementException ex) {
                 // packet_handler not exists, sure then, ignore
             }
@@ -75,8 +70,6 @@ public final class V1_19_R3 implements IPacketNM {
     }
 
     private Channel playerChannel(net.minecraft.server.network.PlayerConnection connection) {
-
-        // Congratulations for moyeng for making networkManager field private
         if (playerNetworkManagerField == null && (playerNetworkManagerField = fieldByType(connection.getClass(), NetworkManager.class)) == null) {
             return null;
         }
@@ -100,7 +93,7 @@ public final class V1_19_R3 implements IPacketNM {
 
     @Override
     public void removePlayerChannelListener(Player player) {
-        Channel channel = playerChannel(getPlayerHandle(player).b);
+        Channel channel = playerChannel(getPlayerHandle(player).c);
 
         if (channel != null && channel.pipeline().get(PACKET_INJECTOR_NAME) != null) {
             channel.pipeline().remove(PACKET_INJECTOR_NAME);
@@ -109,7 +102,7 @@ public final class V1_19_R3 implements IPacketNM {
 
     @Override
     public EntityPlayer getPlayerHandle(Player player) {
-        return ((CraftPlayer) player).getHandle();
+        return ((org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer) player).getHandle();
     }
 
     @Override
@@ -123,8 +116,8 @@ public final class V1_19_R3 implements IPacketNM {
     }
 
     @Override
-    public EntityPlayer getNewEntityPlayer(GameProfile profile) {
-        MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+    public EntityPlayer getNewEntityPlayer(com.mojang.authlib.GameProfile profile) {
+        net.minecraft.server.MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
 
         return new EntityPlayer(server, server.D(), profile);
     }
@@ -158,8 +151,8 @@ public final class V1_19_R3 implements IPacketNM {
         ClientboundPlayerInfoUpdatePacket updatePacket = ClientboundPlayerInfoUpdatePacket.a(Collections.singletonList(from));
         net.minecraft.network.chat.RemoteChatSession chatSession = from.X();
 
-        setEntriesField(updatePacket, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.b(from.fI().getId(), from.fI(), false, from.e,
-                from.d.b(), emptyComponent, chatSession == null ? null : chatSession.b())));
+        setEntriesField(updatePacket, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.b(from.fM().getId(), from.fM(), false, from.f,
+                from.e.b(), emptyComponent, chatSession == null ? null : chatSession.b())));
 
         PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
 
@@ -207,7 +200,7 @@ public final class V1_19_R3 implements IPacketNM {
         List<UUID> players = new ArrayList<>(entityPlayers.length);
 
         for (Object one : entityPlayers) {
-            players.add(((EntityPlayer) one).fI().getId());
+            players.add(((EntityPlayer) one).fM().getId());
         }
 
         return new ClientboundPlayerInfoRemovePacket(players);
@@ -229,7 +222,7 @@ public final class V1_19_R3 implements IPacketNM {
     private void setEntriesField(ClientboundPlayerInfoUpdatePacket playerInfoPacket, List<ClientboundPlayerInfoUpdatePacket.b> list) {
         try {
 
-            // Entries list is immutable, so use reflection to bypass
+            // Entries list is unmodifiable, so use reflection to bypass
             if (entriesField == null) {
                 entriesField = playerInfoPacket.getClass().getDeclaredField("b");
                 entriesField.setAccessible(true);
@@ -357,7 +350,7 @@ public final class V1_19_R3 implements IPacketNM {
         }
 
         @Override
-        public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
+        public void write(io.netty.channel.ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
             Class<?> receivingClass = msg.getClass();
 
             for (Class<?> cl : classesToListen) {
@@ -405,7 +398,7 @@ public final class V1_19_R3 implements IPacketNM {
                                     enumTeamPush = ScoreboardTeamBase.EnumTeamPush.a;
                                 }
 
-                                ScoreboardTeam scoreboardTeam = new ScoreboardTeam(((org.bukkit.craftbukkit.v1_19_R3.scoreboard.CraftScoreboard) player.getScoreboard()).getHandle(),
+                                ScoreboardTeam scoreboardTeam = new ScoreboardTeam(((org.bukkit.craftbukkit.v1_20_R1.scoreboard.CraftScoreboard) player.getScoreboard()).getHandle(),
                                         packetTeam.a().getString());
                                 scoreboardTeam.b(prefix);
                                 scoreboardTeam.c(suffix);
@@ -437,7 +430,7 @@ public final class V1_19_R3 implements IPacketNM {
                         content = IChatBaseComponent.b(chatPacket.e().a());
                     }
 
-                    java.util.Optional<net.minecraft.network.chat.ChatMessageType.a> chatType = chatPacket.h().a(((CraftServer) Bukkit.getServer()).getServer().aX());
+                    java.util.Optional<net.minecraft.network.chat.ChatMessageType.a> chatType = chatPacket.h().a(((CraftServer) Bukkit.getServer()).getServer().aV());
 
                     if (chatType.isPresent()) {
                         sendPacket(player, new net.minecraft.network.protocol.game.ClientboundSystemChatPacket(chatType.get().a(content), false));

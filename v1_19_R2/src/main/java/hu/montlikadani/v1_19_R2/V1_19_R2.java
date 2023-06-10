@@ -127,9 +127,10 @@ public final class V1_19_R2 implements IPacketNM {
 
     private void sendUpdatePacket(EntityPlayer from) {
         ClientboundPlayerInfoUpdatePacket updatePacket = ClientboundPlayerInfoUpdatePacket.a(Collections.singletonList(from));
+        net.minecraft.network.chat.RemoteChatSession chatSession = from.Y();
 
         setEntriesField(updatePacket, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.b(from.fD().getId(), from.fD(), false, from.e, from.d.b(),
-                emptyComponent, from.Y() == null ? null : from.Y().b())));
+                emptyComponent, chatSession == null ? null : chatSession.b())));
 
         PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
 

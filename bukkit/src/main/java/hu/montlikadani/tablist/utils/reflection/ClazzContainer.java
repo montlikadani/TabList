@@ -273,7 +273,7 @@ public final class ClazzContainer {
 
 	public static Class<?> classByName(String newPackageName, String name) throws ClassNotFoundException {
 		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
-			newPackageName = "net.minecraft.server." + ServerVersion.getArrayVersion()[3];
+			newPackageName = "net.minecraft.server." + ServerVersion.nmsVersion();
 		}
 
 		return Class.forName(newPackageName + "." + name);

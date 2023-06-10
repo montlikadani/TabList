@@ -64,7 +64,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		long load = System.currentTimeMillis();
 
 		if (ServerVersion.getCurrent() == null) {
-			Util.logConsole(Level.SEVERE, "Your server version does not supported " + ServerVersion.getArrayVersion()[3]);
+			Util.logConsole(Level.SEVERE, "Your server version does not supported " + ServerVersion.nmsVersion());
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
@@ -223,7 +223,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				packetClasses.add(Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam"));
 			} catch (ClassNotFoundException ex) {
 				try {
-					packetClasses.add(Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".PacketPlayOutScoreboardTeam"));
+					packetClasses.add(Class.forName("net.minecraft.server." + ServerVersion.nmsVersion() + ".PacketPlayOutScoreboardTeam"));
 				} catch (ClassNotFoundException ignored) {
 				}
 			}
@@ -245,7 +245,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			} catch (ClassNotFoundException ex) {
 				if (ConfigValues.isRemoveGrayColorFromTabInSpec()) {
 					try {
-						packetClasses.add(Class.forName("net.minecraft.server." + ServerVersion.getArrayVersion()[3] + ".PacketPlayOutPlayerInfo"));
+						packetClasses.add(Class.forName("net.minecraft.server." + ServerVersion.nmsVersion() + ".PacketPlayOutPlayerInfo"));
 					} catch (ClassNotFoundException ignored) {
 					}
 				}

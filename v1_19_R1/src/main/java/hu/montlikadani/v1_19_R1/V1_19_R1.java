@@ -125,9 +125,10 @@ public final class V1_19_R1 implements IPacketNM {
 
     private void sendUpdatePacket(EntityPlayer from) {
         PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a, Collections.singletonList(from));
+        net.minecraft.world.entity.player.ProfilePublicKey publicKey = from.fz();
 
         setEntriesField(updatePacket, Collections.singletonList(new PacketPlayOutPlayerInfo.PlayerInfoData(from.fy(), from.e, from.d.b(),
-                emptyComponent, from.fz() == null ? null : from.fz().b())));
+                emptyComponent, publicKey == null ? null : publicKey.b())));
 
         PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
 
