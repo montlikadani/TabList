@@ -61,7 +61,7 @@ dependencies {
 }
 
 group = "hu.montlikadani.tablist"
-version = "5.7.0"
+version = "5.7.1"
 
 tasks {
     withType<JavaCompile> {
