@@ -299,18 +299,11 @@ public final class V1_8_R3 implements IPacketNM {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardTeam unregisterBoardTeam(Object playerTeam) {
-		ScoreboardTeam team = (ScoreboardTeam) playerTeam;
-		scoreboardTeams.remove(team);
-
-		return new PacketPlayOutScoreboardTeam(team, 1);
-	}
-
-	@Override
-	public ScoreboardTeam findBoardTeamByName(String teamName) {
-		for (ScoreboardTeam team : scoreboardTeams) {
+	public PacketPlayOutScoreboardTeam unregisterBoardTeam(String teamName) {
+		for (ScoreboardTeam team : new HashSet<>(scoreboardTeams)) {
 			if (team.getName().equals(teamName)) {
-				return team;
+				scoreboardTeams.remove(team);
+				return new PacketPlayOutScoreboardTeam(team, 1);
 			}
 		}
 

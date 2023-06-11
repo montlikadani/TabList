@@ -42,9 +42,7 @@ public interface IPacketNM {
 
     void createBoardTeam(String teamName, Player player, boolean followNameTagVisibility);
 
-    Object unregisterBoardTeam(Object playerTeam);
-
-    Object findBoardTeamByName(String teamName);
+    Object unregisterBoardTeam(String teamName);
 
     Object createObjectivePacket(String objectiveName, Object nameComponent);
 

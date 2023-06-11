@@ -291,18 +291,11 @@ public final class V1_20_R1 implements hu.montlikadani.api.IPacketNM {
     }
 
     @Override
-    public PacketPlayOutScoreboardTeam unregisterBoardTeam(Object playerTeam) {
-        ScoreboardTeam team = (ScoreboardTeam) playerTeam;
-        scoreboardTeams.remove(team);
-
-        return PacketPlayOutScoreboardTeam.a(team);
-    }
-
-    @Override
-    public ScoreboardTeam findBoardTeamByName(String teamName) {
-        for (ScoreboardTeam team : scoreboardTeams) {
+    public PacketPlayOutScoreboardTeam unregisterBoardTeam(String teamName) {
+        for (ScoreboardTeam team : new HashSet<>(scoreboardTeams)) {
             if (team.b().equals(teamName)) {
-                return team;
+                scoreboardTeams.remove(team);
+                return PacketPlayOutScoreboardTeam.a(team);
             }
         }
 

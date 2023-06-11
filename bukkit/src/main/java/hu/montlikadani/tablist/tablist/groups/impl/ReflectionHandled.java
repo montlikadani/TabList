@@ -43,13 +43,12 @@ public class ReflectionHandled {
 	}
 
 	private void unregisterTeam(boolean clearName) {
-		Object team = PacketNM.NMS_PACKET.findBoardTeamByName(groupPlayer.getFullGroupTeamName());
+		Object removeTeamPacket = PacketNM.NMS_PACKET.unregisterBoardTeam(groupPlayer.getFullGroupTeamName());
 
-		if (team == null) {
+		if (removeTeamPacket == null) {
 			return;
 		}
 
-		Object removeTeamPacket = PacketNM.NMS_PACKET.unregisterBoardTeam(team);
 		Object updateNamePacket = null;
 
 		if (clearName) {

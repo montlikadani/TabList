@@ -679,40 +679,28 @@ public final class LegacyVersion implements IPacketNM {
     }
 
     @Override
-    public Object unregisterBoardTeam(Object playerTeam) {
-        playerTeams.remove(playerTeam);
-
-        try {
-            if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
-                return ClazzContainer.scoreboardTeamPacketByAction(playerTeam, 1);
-            }
-
-            Object oldTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
-
-            ClazzContainer.getPacketScoreboardTeamName().set(oldTeamPacket, playerTeamName(playerTeam));
-            ClazzContainer.getPacketScoreboardTeamMode().set(oldTeamPacket, 1);
-
-            return oldTeamPacket;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    @Override
-    public Object findBoardTeamByName(String teamName) {
+    public Object unregisterBoardTeam(String teamName) {
         try {
 
             // We use indexed loop to prevent concurrent modification exception
             for (int i = 0; i < playerTeams.size(); i++) {
                 Object team = playerTeams.get(i);
+                Object playerTeamName = playerTeamName(team);
 
-                if (playerTeamName(team).equals(teamName)) {
-                    return team;
+                if (playerTeamName.equals(teamName)) {
+                    if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+                        return ClazzContainer.scoreboardTeamPacketByAction(team, 1);
+                    }
+
+                    Object oldTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
+
+                    ClazzContainer.getPacketScoreboardTeamName().set(oldTeamPacket, playerTeamName);
+                    ClazzContainer.getPacketScoreboardTeamMode().set(oldTeamPacket, 1);
+
+                    return oldTeamPacket;
                 }
             }
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
