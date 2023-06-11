@@ -389,7 +389,7 @@ public final class V1_8_R3 implements IPacketNM {
 					PacketPlayOutScoreboardTeam packetScoreboardTeam = (PacketPlayOutScoreboardTeam) msg;
 					Collection<String> players = (Collection<String>) scoreboardTeamPlayers.get(packetScoreboardTeam);
 
-					if (!players.isEmpty()) {
+					if (players != null && !players.isEmpty()) {
 						ScoreboardTeamBase.EnumNameTagVisibility enumNameTagVisibility = ScoreboardTeamBase.EnumNameTagVisibility
 								.a((String) scoreboardTeamNameTagVisibility.get(packetScoreboardTeam));
 

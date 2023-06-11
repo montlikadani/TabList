@@ -355,7 +355,9 @@ public final class V1_20_R1 implements hu.montlikadani.api.IPacketNM {
                 if (cl == PacketPlayOutScoreboardTeam.class) {
                     PacketPlayOutScoreboardTeam packetScoreboardTeam = (PacketPlayOutScoreboardTeam) msg;
 
-                    if (!packetScoreboardTeam.e().isEmpty()) {
+                    // Some plugins are using this packet in wrong way and the return value of this method "e" is null
+                    // which shouldn't be that way but ok, nothing I can do about this only to add an extra condition
+                    if (packetScoreboardTeam.e() != null && !packetScoreboardTeam.e().isEmpty()) {
                         packetScoreboardTeam.f().ifPresent(packetTeam -> {
                             ScoreboardTeamBase.EnumNameTagVisibility enumNameTagVisibility = ScoreboardTeamBase.EnumNameTagVisibility.a(packetTeam.d());
 

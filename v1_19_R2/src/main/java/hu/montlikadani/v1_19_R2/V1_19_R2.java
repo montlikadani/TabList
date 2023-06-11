@@ -333,7 +333,7 @@ public final class V1_19_R2 implements IPacketNM {
                 if (cl == PacketPlayOutScoreboardTeam.class) {
                     PacketPlayOutScoreboardTeam packetScoreboardTeam = (PacketPlayOutScoreboardTeam) msg;
 
-                    if (!packetScoreboardTeam.e().isEmpty()) {
+                    if (packetScoreboardTeam.e() != null && !packetScoreboardTeam.e().isEmpty()) {
                         packetScoreboardTeam.f().ifPresent(packetTeam -> {
                             ScoreboardTeamBase.EnumNameTagVisibility enumNameTagVisibility = ScoreboardTeamBase.EnumNameTagVisibility.a(packetTeam.d());
 

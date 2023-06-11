@@ -814,7 +814,7 @@ public final class LegacyVersion implements IPacketNM {
                 if (cl == ClazzContainer.packetPlayOutScoreboardTeam()) {
                     Collection<Object> players = (Collection<Object>) ClazzContainer.getScoreboardTeamNames().get(msg);
 
-                    if (!players.isEmpty()) {
+                    if (players != null && !players.isEmpty()) {
                         if (ClazzContainer.getPacketScoreboardTeamParametersMethod() == null) {
                             Object nameTagVisibility = ClazzContainer.getNameTagVisibility().get(msg);
 
