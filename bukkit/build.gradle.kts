@@ -26,7 +26,6 @@ val nmsProjects = setOf("1_8_R3", "1_18_R2", "1_19_R1", "1_19_R2", "1_19_R3", "1
 dependencies {
     implementation(project(":global"))
     api(project(":api"))
-    api(project(":purpur"))
 
     nmsProjects.forEach {
         api(project(":v$it"))

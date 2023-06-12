@@ -15,6 +15,7 @@ import net.ess3.api.IEssentials;
 public final class PluginUtils {
 
 	private static final Plugin ESSENTIALS, CMIP, PEX, SUPER_VANISH, PREMIUM_VANISH, STAFF_FACILITIES;
+	private static java.lang.reflect.Method purpurPlayerAfkStatusMethod;
 
 	static {
 		org.bukkit.plugin.PluginManager pm = Bukkit.getServer().getPluginManager();
@@ -25,6 +26,11 @@ public final class PluginUtils {
 		SUPER_VANISH = pm.getPlugin("SuperVanish");
 		PREMIUM_VANISH = pm.getPlugin("PremiumVanish");
 		STAFF_FACILITIES = pm.getPlugin("StaffFacilities");
+
+		try {
+			purpurPlayerAfkStatusMethod = Player.class.getDeclaredMethod("isAfk");
+		} catch (NoSuchMethodException ignored) {
+		}
 	}
 
 	public static boolean isAfk(Player player) {
@@ -41,11 +47,15 @@ public final class PluginUtils {
 			return user != null && user.isAfk();
 		}
 
-		try {
-			return hu.montlikadani.tablist.PurpurMethods.isPlayerAfk(player);
-		} catch (NoSuchMethodError err) {
-			return false;
+		if (purpurPlayerAfkStatusMethod != null) {
+			try {
+				return (boolean) purpurPlayerAfkStatusMethod.invoke(player);
+			} catch (java.lang.reflect.InvocationTargetException | IllegalAccessException ex) {
+				ex.printStackTrace();
+			}
 		}
+
+		return false;
 	}
 
 	public static boolean isVanished(Player player) {
