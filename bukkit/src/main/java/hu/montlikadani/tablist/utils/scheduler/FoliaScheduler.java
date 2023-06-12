@@ -22,6 +22,11 @@ public final class FoliaScheduler implements TLScheduler {
     }
 
     @Override
+    public void runDelayed(Runnable task, org.bukkit.Location location, long delay) {
+        plugin.getServer().getRegionScheduler().runDelayed(plugin, location, consumer -> task.run(), delay);
+    }
+
+    @Override
     public <V> V submitSync(Supplier<V> supplier) {
         return supplier.get();
     }

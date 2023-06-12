@@ -72,7 +72,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		verifyServerSoftware();
 
 		conf = new Configuration(this);
-		objects = new Objects(this);
 		groups = new Groups(this);
 		variables = new Variables(this);
 		tabManager = new TabManager(this);
@@ -123,12 +122,15 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	@Override
 	public void onDisable() {
 		groups.cancelUpdate();
-		objects.cancelTask();
 		tabManager.cancelTask();
+
+		if (objects != null) {
+			objects.cancelTask();
+		}
 
 		getServer().getScheduler().cancelTasks(this);
 
-		// Async tasks can't be cancelled sometimes, with this we forcedly interrupts the active ones
+		// Async tasks can't be cancelled sometimes, with this the active threads will be interrupted
 		for (org.bukkit.scheduler.BukkitWorker worker : getServer().getScheduler().getActiveWorkers()) {
 			if (equals(worker.getOwner())) {
 				worker.getThread().interrupt();
@@ -136,13 +138,15 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		}
 
 		if (!users.isEmpty()) {
-			for (Objects.ObjectTypes t : Objects.ObjectTypes.values()) {
-				if (t == Objects.ObjectTypes.NONE) {
-					continue;
-				}
+			if (objects != null) {
+				for (Objects.ObjectTypes t : Objects.ObjectTypes.values()) {
+					if (t == Objects.ObjectTypes.NONE) {
+						continue;
+					}
 
-				for (TabListUser user : users) {
-					objects.unregisterObjective(t, user);
+					for (TabListUser user : users) {
+						objects.unregisterObjective(t, user);
+					}
 				}
 			}
 
@@ -306,10 +310,12 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		fakePlayerHandler.load();
 		groups.load();
 
-		Objects.ObjectTypes current = ConfigValues.getObjectType();
+		if (objects != null) {
+			Objects.ObjectTypes current = ConfigValues.getObjectType();
 
-		if (current == Objects.ObjectTypes.NONE || current == Objects.ObjectTypes.HEALTH) {
-			objects.cancelTask();
+			if (current == Objects.ObjectTypes.NONE || current == Objects.ObjectTypes.HEALTH) {
+				objects.cancelTask();
+			}
 		}
 
 		getServer().getOnlinePlayers().forEach(pl -> updateAll(pl, true));
@@ -379,46 +385,51 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	void updateAll(Player player, boolean reload) {
 		TabListUser user = getOrLoadUser(player);
 
-		if (reload) { // Reset player score for integer objectives
-			user.getPlayerScore().setLastScore(-1);
+		if (objects == null && ConfigValues.getObjectType() != Objects.ObjectTypes.NONE) {
+			objects = new Objects(this);
 		}
 
-		switch (ConfigValues.getObjectType()) {
-		case PING:
-		case CUSTOM:
-			if (reload) {
-				objects.unregisterHealthObjective(player);
+		if (objects != null) {
+			if (reload) { // Reset player score for integer objectives
+				user.getPlayerScore().setLastScore(-1);
 			}
 
-			if (reload || objects.isCancelled()) {
-				objects.startTask();
-
-				if (reload) {
-					objects.unregisterObjective(Objects.ObjectTypes.PING, user);
-					objects.unregisterObjective(Objects.ObjectTypes.CUSTOM, user);
-				}
-			}
-
-			break;
-		case HEALTH:
-			if (reload) {
-				objects.unregisterObjective(Objects.ObjectTypes.PING, user);
-				objects.unregisterObjective(Objects.ObjectTypes.CUSTOM, user);
-			} else {
-				objects.registerHealthTab(player);
-			}
-
-			break;
-		default:
-			if (reload) {
-				for (Objects.ObjectTypes type : Objects.ObjectTypes.values()) {
-					if (type != Objects.ObjectTypes.NONE) {
-						objects.unregisterObjective(type, user);
+			switch (ConfigValues.getObjectType()) {
+				case PING:
+				case CUSTOM:
+					if (reload) {
+						objects.unregisterHealthObjective(player);
 					}
-				}
-			}
 
-			break;
+					if (reload || objects.isCancelled()) {
+						objects.startTask();
+
+						if (reload) {
+							objects.unregisterObjective(Objects.ObjectTypes.PING, user);
+							objects.unregisterObjective(Objects.ObjectTypes.CUSTOM, user);
+						}
+					}
+
+					break;
+				case HEALTH:
+					if (reload) {
+						objects.unregisterObjective(Objects.ObjectTypes.PING, user);
+						objects.unregisterObjective(Objects.ObjectTypes.CUSTOM, user);
+					}
+
+					objects.registerHealthTab(player);
+					break;
+				default:
+					if (reload) {
+						for (Objects.ObjectTypes type : Objects.ObjectTypes.values()) {
+							if (type != Objects.ObjectTypes.NONE) {
+								objects.unregisterObjective(type, user);
+							}
+						}
+					}
+
+					break;
+			}
 		}
 
 		if (ConfigValues.isFakePlayers()) {
@@ -474,7 +485,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				}
 
 				groups.removePlayerGroup(user);
-				objects.unregisterObjective(ConfigValues.getObjectType(), user);
+
+				if (objects != null) {
+					objects.unregisterObjective(ConfigValues.getObjectType(), user);
+				}
 
 				iterator.remove();
 				break;
@@ -489,7 +503,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	public boolean performanceIsUnderValue() {
 		if (ConfigValues.getTpsPerformanceObservationValue() != -1.0 && hu.montlikadani.tablist.api.TabListAPI.getTPS() <= ConfigValues.getTpsPerformanceObservationValue()) {
 			if (!printed) {
-				getLogger().log(Level.INFO, "All {0} schedulers has been cancelled. (Low performance)", getName());
+				getLogger().log(Level.INFO, "All {0} schedulers has been terminated. (Low performance)", getName());
 				printed = true;
 			}
 

@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist;
 
+import hu.montlikadani.tablist.utils.scheduler.TLScheduler;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -20,7 +21,7 @@ public final class Objects {
 
 	private transient final TabList plugin;
 
-	private hu.montlikadani.tablist.utils.scheduler.TLScheduler scheduler;
+	private TLScheduler scheduler;
 
 	Objects(TabList plugin) {
 		this.plugin = plugin;
@@ -40,7 +41,9 @@ public final class Objects {
 			return;
 		}
 
-		plugin.newTLScheduler().submitSync(() -> {
+		TLScheduler tlsched = plugin.newTLScheduler();
+
+		tlsched.submitSync(() -> {
 			Objective objective;
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
@@ -51,9 +54,30 @@ public final class Objects {
 			}
 
 			objective.setDisplaySlot(DisplaySlot.PLAYER_LIST);
-			pl.setHealth(pl.getHealth());
+
+			adjustMaxHealth(pl, 1);
+			pl.setHealth(pl.getHealth() + 1);
+
+			tlsched.runDelayed(() -> {
+				adjustMaxHealth(pl, -1);
+				pl.setHealth(pl.getHealth() - 1);
+			}, pl.getLocation(), 2);
+
 			return 1;
 		});
+	}
+
+	@SuppressWarnings("deprecation")
+	private void adjustMaxHealth(Player player, double value) {
+		try {
+			org.bukkit.attribute.AttributeInstance maxHealth = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
+
+			if (maxHealth != null) {
+				maxHealth.setBaseValue(maxHealth.getBaseValue() + value);
+			}
+		} catch (Error err) {
+			player.setMaxHealth(player.getMaxHealth() + value);
+		}
 	}
 
 	private PluginPlaceholders customPlaceholder;
