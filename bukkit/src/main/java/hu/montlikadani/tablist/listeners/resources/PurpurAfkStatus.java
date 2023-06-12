@@ -6,8 +6,8 @@ public final class PurpurAfkStatus extends AfkPlayers {
         java.lang.reflect.Method playerMethod, isGoingAfkMethod;
 
         try {
-            playerMethod = afkEvent.getDeclaredMethod("getPlayer");
-            isGoingAfkMethod = afkEvent.getDeclaredMethod("isGoingAfk");
+            playerMethod = afkEvent.getMethod("getPlayer");
+            isGoingAfkMethod = afkEvent.getMethod("isGoingAfk");
         } catch (NoSuchMethodException ex) {
             ex.printStackTrace();
             return;
