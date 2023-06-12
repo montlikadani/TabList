@@ -1,18 +1,16 @@
 package hu.montlikadani.tablist.tablist;
 
-import org.bukkit.scheduler.BukkitTask;
-
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.user.TabListUser;
-import hu.montlikadani.tablist.utils.task.Tasks;
+import hu.montlikadani.tablist.utils.scheduler.TLScheduler;
 
 public final class TabManager {
 
 	private transient final TabList plugin;
 	public transient final TabToggleBase toggleBase;
 
-	private BukkitTask task;
+	private TLScheduler scheduler;
 
 	public TabManager(TabList plugin) {
 		this.plugin = plugin;
@@ -20,9 +18,9 @@ public final class TabManager {
 	}
 
 	public void cancelTask() {
-		if (task != null) {
-			task.cancel();
-			task = null;
+		if (scheduler != null) {
+			scheduler.cancelTask();
+			scheduler = null;
 		}
 	}
 
@@ -39,8 +37,8 @@ public final class TabManager {
 			return;
 		}
 
-		if (task == null) {
-			task = Tasks.submitAsync(() -> {
+		if (scheduler == null) {
+			scheduler = plugin.newTLScheduler().submitAsync(() -> {
 				if (plugin.performanceIsUnderValue() || plugin.getUsers().isEmpty()) {
 					cancelTask();
 					return;

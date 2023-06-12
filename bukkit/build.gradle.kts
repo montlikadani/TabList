@@ -26,6 +26,7 @@ val nmsProjects = setOf("1_8_R3", "1_18_R2", "1_19_R1", "1_19_R2", "1_19_R3", "1
 dependencies {
     implementation(project(":global"))
     api(project(":api"))
+    api(project(":purpur"))
 
     nmsProjects.forEach {
         api(project(":v$it"))
@@ -36,7 +37,9 @@ dependencies {
     compileOnly("com.github.xtomyserrax:StaffFacilities:5.0.8")
     compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8, so we must use this
     compileOnly("net.luckperms:api:5.4")
-    compileOnly("org.purpurmc.purpur:purpur-api:1.20-R0.1-SNAPSHOT") {
+
+    api("dev.folia:folia-api:1.19.4-R0.1-SNAPSHOT") {
+        exclude("org.yaml", "snakeyaml")
         exclude("junit", "junit")
     }
 

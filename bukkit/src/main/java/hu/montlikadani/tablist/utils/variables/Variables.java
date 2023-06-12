@@ -187,7 +187,7 @@ public final class Variables {
 			if (stc != -1 || ste != -1 || stl != -1) {
 				final String st = s;
 
-				s = hu.montlikadani.tablist.utils.task.Tasks.submitSync(() -> {
+				s = plugin.newTLScheduler().submitSync(() -> {
 					String str = st;
 
 					if (stc != -1) {

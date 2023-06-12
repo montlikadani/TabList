@@ -12,6 +12,7 @@ import java.util.logging.Level;
 
 import hu.montlikadani.tablist.tablist.TabToggleBase;
 import hu.montlikadani.tablist.utils.Util;
+import hu.montlikadani.tablist.utils.scheduler.TLScheduler;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -30,14 +31,12 @@ import hu.montlikadani.tablist.tablist.fakeplayers.FakePlayerHandler;
 import hu.montlikadani.tablist.tablist.groups.Groups;
 import hu.montlikadani.tablist.user.TabListPlayer;
 import hu.montlikadani.tablist.user.TabListUser;
-import hu.montlikadani.tablist.utils.PluginUtils;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.UpdateDownloader;
 import hu.montlikadani.tablist.utils.plugin.PermissionService;
 import hu.montlikadani.tablist.utils.stuff.Complement;
 import hu.montlikadani.tablist.utils.stuff.Complement1;
 import hu.montlikadani.tablist.utils.stuff.Complement2;
-import hu.montlikadani.tablist.utils.task.Tasks;
 import hu.montlikadani.tablist.utils.variables.Variables;
 
 public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
@@ -54,6 +53,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	private transient org.bukkit.plugin.Plugin papi;
 
 	private transient boolean hasVault = false;
+	private transient boolean isFoliaServer = false;
 
 	private final Set<TextAnimation> animations = new HashSet<>(8);
 	private final Set<TabListUser> users = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -77,6 +77,12 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		variables = new Variables(this);
 		tabManager = new TabManager(this);
 		fakePlayerHandler = new FakePlayerHandler(this);
+
+		try {
+			Class.forName("io.papermc.paper.threadedregions.scheduler.RegionScheduler");
+			isFoliaServer = true;
+		} catch (ClassNotFoundException ignored) {
+		}
 
 		// Load static references
 		try {
@@ -275,12 +281,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				getServer().getPluginManager().registerEvents(new hu.montlikadani.tablist.listeners.resources.CMIAfkStatus(this), this);
 			}
 
-			if (PluginUtils.isPurpur()) {
-				try {
-					Class.forName("org.purpurmc.purpur.event.PlayerAFKEvent");
-					new hu.montlikadani.tablist.listeners.resources.PurpurAfkStatus(this);
-				} catch (ClassNotFoundException e) {
-				}
+			try {
+				Class.forName("org.purpurmc.purpur.event.PlayerAFKEvent");
+				new hu.montlikadani.tablist.PurpurAfkStatus(this);
+			} catch (ClassNotFoundException ignored) {
 			}
 		}
 	}
@@ -437,7 +441,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			user.addToPlayerList();
 
 			if (ConfigValues.isPerWorldPlayerList()) {
-				Tasks.submitSync(() -> {
+				newTLScheduler().submitSync(() -> {
 					user.setHidden(true);
 
 					if (user.isHidden()) {
@@ -447,7 +451,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 					return 1;
 				});
 			} else if (user.isHidden()) {
-				Tasks.submitSync(() -> {
+				newTLScheduler().submitSync(() -> {
 					user.setHidden(false);
 					return 1;
 				});
@@ -517,6 +521,11 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		}
 
 		return Optional.empty();
+	}
+
+	public TLScheduler newTLScheduler() {
+		return isFoliaServer ? new hu.montlikadani.tablist.utils.scheduler.FoliaScheduler(this)
+				: new hu.montlikadani.tablist.utils.scheduler.BukkitScheduler(this);
 	}
 
 	/**

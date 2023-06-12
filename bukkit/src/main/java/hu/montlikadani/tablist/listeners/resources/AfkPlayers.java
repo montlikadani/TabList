@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.utils.Util;
 
-abstract class AfkPlayers {
+public abstract class AfkPlayers {
 
 	protected void goAfk(hu.montlikadani.tablist.TabList tl, Player player, boolean value) {
 		if (ConfigValues.isHidePlayerFromTabAfk()) {

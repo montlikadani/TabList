@@ -11,22 +11,21 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
+import hu.montlikadani.tablist.utils.scheduler.TLScheduler;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.PluginUtils;
-import hu.montlikadani.tablist.utils.task.Tasks;
 
 public final class Groups {
 
 	private final TabList plugin;
 
-	private BukkitTask animationTask;
+	private TLScheduler animationTask;
 
 	private final List<TeamHandler> teams = new ArrayList<>();
 	private final List<TeamHandler> orderedGroupsByWeight = new ArrayList<>();
@@ -304,7 +303,7 @@ public final class Groups {
 
 	public void cancelTask() {
 		if (animationTask != null) {
-			animationTask.cancel();
+			animationTask.cancelTask();
 			animationTask = null;
 		}
 	}
@@ -321,7 +320,7 @@ public final class Groups {
 		}
 
 		if (animationTask == null) {
-			animationTask = Tasks.submitAsync(() -> {
+			animationTask = plugin.newTLScheduler().submitAsync(() -> {
 				if (plugin.performanceIsUnderValue() || plugin.getUsers().isEmpty()) {
 					cancelTask();
 					return;

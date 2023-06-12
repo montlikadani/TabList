@@ -1,7 +1,6 @@
 package hu.montlikadani.tablist;
 
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.RenderType;
@@ -14,14 +13,14 @@ import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.StrUtil;
-import hu.montlikadani.tablist.utils.task.Tasks;
-import hu.montlikadani.tablist.utils.variables.simplePlaceholder.PluginPlaceholders;
+
+import java.util.Locale;
 
 public final class Objects {
 
 	private transient final TabList plugin;
 
-	private BukkitTask task;
+	private hu.montlikadani.tablist.utils.scheduler.TLScheduler scheduler;
 
 	Objects(TabList plugin) {
 		this.plugin = plugin;
@@ -41,7 +40,7 @@ public final class Objects {
 			return;
 		}
 
-		Tasks.submitSync(() -> {
+		plugin.newTLScheduler().submitSync(() -> {
 			Objective objective;
 
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
@@ -80,7 +79,7 @@ public final class Objects {
 			return;
 		}
 
-		task = Tasks.submitAsync(() -> {
+		scheduler = plugin.newTLScheduler().submitAsync(() -> {
 			if (plugin.performanceIsUnderValue() || plugin.getUsers().isEmpty()) {
 				cancelTask();
 			} else {
@@ -178,13 +177,13 @@ public final class Objects {
 
 	public void cancelTask() {
 		if (!isCancelled()) {
-			task.cancel();
-			task = null;
+			scheduler.cancelTask();
+			scheduler = null;
 		}
 	}
 
 	public boolean isCancelled() {
-		return task == null;
+		return scheduler == null;
 	}
 
 	public void unregisterHealthObjective(Player player) {
@@ -245,6 +244,18 @@ public final class Objects {
 
 		public String getObjectName() {
 			return objectName;
+		}
+	}
+
+	private enum PluginPlaceholders {
+
+		// Player placeholders
+		PING, EXP_TO_LEVEL, LEVEL, LIGHT_LEVEL;
+
+		public final String name;
+
+		PluginPlaceholders() {
+			name = '%' + name().replace('_', '-').toLowerCase(Locale.ENGLISH) + '%';
 		}
 	}
 }

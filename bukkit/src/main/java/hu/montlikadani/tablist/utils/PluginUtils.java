@@ -16,31 +16,15 @@ public final class PluginUtils {
 
 	private static final Plugin ESSENTIALS, CMIP, PEX, SUPER_VANISH, PREMIUM_VANISH, STAFF_FACILITIES;
 
-	private static boolean isPurpurIsAfkMethodExists;
-
 	static {
 		org.bukkit.plugin.PluginManager pm = Bukkit.getServer().getPluginManager();
 
-		// Some people still uses "PlugMan" things so we caches the plugin's object and
-		// checks with isEnabled if its enabled
 		ESSENTIALS = pm.getPlugin("Essentials");
 		CMIP = pm.getPlugin("CMI");
 		PEX = pm.getPlugin("PermissionsEx");
 		SUPER_VANISH = pm.getPlugin("SuperVanish");
 		PREMIUM_VANISH = pm.getPlugin("PremiumVanish");
 		STAFF_FACILITIES = pm.getPlugin("StaffFacilities");
-
-		try {
-			Player.class.getMethod("isAfk");
-			isPurpurIsAfkMethodExists = true;
-		} catch (NoSuchMethodException e) {
-			isPurpurIsAfkMethodExists = false;
-		}
-	}
-
-	// Just a fast check instead of caching if the software is purpur
-	public static boolean isPurpur() {
-		return isPurpurIsAfkMethodExists;
 	}
 
 	public static boolean isAfk(Player player) {
@@ -57,7 +41,11 @@ public final class PluginUtils {
 			return user != null && user.isAfk();
 		}
 
-		return isPurpurIsAfkMethodExists && player.isAfk();
+		try {
+			return hu.montlikadani.tablist.PurpurMethods.isPlayerAfk(player);
+		} catch (NoSuchMethodError err) {
+			return false;
+		}
 	}
 
 	public static boolean isVanished(Player player) {
@@ -118,8 +106,7 @@ public final class PluginUtils {
 		if (PEX != null && PEX.isEnabled()) {
 			try {
 				return ru.tehkode.permissions.bukkit.PermissionsEx.getPermissionManager().has(player, perm);
-			} catch (Throwable e) {
-				// Pex2 supports bukkit provided "hasPermission" check
+			} catch (Throwable ignored) {
 			}
 		}
 
