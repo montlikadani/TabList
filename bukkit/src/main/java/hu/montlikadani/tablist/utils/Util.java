@@ -7,13 +7,14 @@ import java.util.logging.Level;
 
 public final class Util {
 
-	public static final boolean MINIMESSAGE_SUPPORTED;
+	private static final boolean MINIMESSAGE_SUPPORTED;
 
 	static {
 		boolean supported;
 
 		try {
 			Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
+			Class.forName("net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer");
 			supported = true;
 		} catch (ClassNotFoundException cn) {
 			supported = false;
