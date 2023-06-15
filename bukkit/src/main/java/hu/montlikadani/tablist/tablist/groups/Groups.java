@@ -189,7 +189,8 @@ public final class Groups {
 	private void orderGroupsByWeight() {
 		orderedGroupsByWeight.clear();
 
-		if (ConfigValues.isPreferPrimaryVaultGroup() || !plugin.hasPermissionService() || !plugin.getPermissionService().hasLuckPerms) {
+		if (!ConfigValues.isUseLPWeightToOrderGroupsFirst() || ConfigValues.isPreferPrimaryVaultGroup()
+				|| !plugin.hasPermissionService() || !plugin.getPermissionService().hasLuckPerms) {
 			return;
 		}
 

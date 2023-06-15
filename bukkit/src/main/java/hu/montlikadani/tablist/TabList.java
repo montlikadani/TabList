@@ -539,16 +539,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		return fakePlayerHandler;
 	}
 
-	public TabManager getTabManager() {
-		return tabManager;
-	}
-
 	public Groups getGroups() {
 		return groups;
-	}
-
-	public Objects getObjects() {
-		return objects;
 	}
 
 	public Configuration getConf() {

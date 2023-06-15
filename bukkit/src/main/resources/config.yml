@@ -87,6 +87,8 @@ change-prefix-suffix-in-tablist:
 
   prefer-primary-vault-group: false
 
+  use-luckperms-weight-to-order-groups-to-first-place: true
+
   followNameTagVisibility: false
 
 tablist-object-type:

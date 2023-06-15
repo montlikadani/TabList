@@ -17,7 +17,7 @@ public final class ConfigValues {
 	private static boolean logConsole, placeholderAPI, perWorldPlayerList, fakePlayers, countFakePlayersToOnlinePlayers, removeGrayColorFromTabInSpec, ignoreVanishedPlayers,
 			countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, pingFormatEnabled,
 			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish, preferPrimaryVaultGroup, assignGlobalGroup,
-			followNameTagVisibility;
+			followNameTagVisibility, useLPWeightToOrderGroupsFirst;
 
 	private static TimeZone timeZone;
 
@@ -55,26 +55,28 @@ public final class ConfigValues {
 				"The values should be between 5-18", "If the value is below 5 or above 18, the default value will be 16.0", "To disable this feature set to -1");
 
 		c.addComment("fake-players", "Fake players that can be added to the player list.");
-		c.addComment("fake-players.count-fake-players-to-online-players", "Do we count the added fake players to the %online-players% placeholder?");
+		c.addComment("fake-players.count-fake-players-to-online-players", "Count the added fake players to the %online-players% placeholder?");
 		c.addComment("remove-gray-color-from-tab-in-spectator", "If enabled, the gray color will not appear to other players when the player's game mode is spectator.",
 				"The gray color will only show for the spectator player.");
-		c.addComment("ignore-vanished-players-in-online-players", "true - does not count vanished players in %online-players% placeholder.",
-				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!");
-		c.addComment("count-vanished-staffs", "true - count vanished staff in %staff-online% placeholder,", "but they need to have \"tablist.onlinestaff\" permission set.",
-				"false - does not count vanished staff in the %staff-online% placeholder", "Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!");
-		c.addComment("hide-player-from-tab-when-afk", "Hide player from player list when a player is AFK?", "Requires Essentials or CMI plugin!");
-		c.addComment("hide-players-from-tablist", "Hide all players from the player list?", "This removes all players from the player list,",
-				"resulting to only display the tablist with header and footer without players.");
+		c.addComment("ignore-vanished-players-in-online-players", "If enabled, vanished players in %online-players% placeholder won't be counted.",
+				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin");
+		c.addComment("count-vanished-staffs", "If enabled, vanished players with \"tablist.onlinestaff\" permission added will be counted in %staff-online% placeholder",
+				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin");
+		c.addComment("hide-player-from-tab-when-afk", "Hide player from player list when a player is AFK?", "Requires Essentials or CMI plugin");
+		c.addComment("hide-players-from-tablist", "If enabled, all players will be removed from the player list, resulting to only",
+				"display the tablist with header and footer without players.");
 
 		c.addComment("per-world-player-list", "Different player list in different world.");
 		c.addComment("per-world-player-list.world-groups", "You can specify worlds, which will share the same list of players");
 		c.addComment("per-world-player-list.world-groups.example1", "The key name, can be anything");
 
 		c.addComment("placeholder-format", "Placeholders formatting");
-		c.addComment("placeholder-format.afk-status", "When the player changes the AFK status, change his tablist name format?");
-		c.addComment("placeholder-format.afk-status.show-in-right-or-left-side", "Should the AFK format display in right or left side?", "true - displays in right side",
-				"false - displays in left side");
-		c.addComment("placeholder-format.afk-status.show-player-group", "Show player's group if the player is AFK?");
+		c.addComment("placeholder-format.afk-status", "Applied when the player's afk state changed, this will result to include",
+				"a prefix or suffix after or before the player name");
+		c.addComment("placeholder-format.afk-status.show-in-right-or-left-side", "Should the AFK format display in right or left side?",
+				"true - displays in right side (after the player name)",
+				"false - displays in left side (before the player name)");
+		c.addComment("placeholder-format.afk-status.show-player-group", "Also display player's group together with the afk status");
 		c.addComment("placeholder-format.afk-status.format-yes", "Format when the player is AFK.");
 		c.addComment("placeholder-format.afk-status.format-no", "Format when the player is not AFK.");
 		c.addComment("placeholder-format.afk-status.sort-last", "Sort AFK players to the bottom of the player list?");
@@ -88,22 +90,27 @@ public final class ConfigValues {
 		c.addComment("placeholder-format.ping.formats", "https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
 		c.addComment("placeholder-format.tps", "TPS color format for %tps% placeholder.");
 		c.addComment("placeholder-format.tps.formats", "https://github.com/montlikadani/TabList/wiki/Ping-or-tps-formatting");
-		c.addComment("placeholder-format.tps.size", "How many numbers do you want to display after \".\" in %tps% placeholder?", "The number should be higher than 0.",
+		c.addComment("placeholder-format.tps.size", "The amount of decimal to display after \".\" in %tps% placeholder",
+				"The size should be higher than 0",
 				"Example: 3 = 19.14");
 
 		c.addComment("change-prefix-suffix-in-tablist", "Enable changing of prefix & suffix in player list?");
-		c.addComment("change-prefix-suffix-in-tablist.refresh-interval", "Refresh interval in server ticks.", "Set to 0 if you don't want to refresh the groups.",
-				"If 0, then you will need to execute the /tl reload command to refresh the groups.");
+		c.addComment("change-prefix-suffix-in-tablist.refresh-interval", "Refresh interval in server ticks.",
+				"Set to 0 to disable refreshing the groups automatically.");
 		c.addComment("change-prefix-suffix-in-tablist.disabled-worlds", "Disable groups in these worlds.");
 		c.addComment("change-prefix-suffix-in-tablist.disabled-worlds.use-as-whitelist", "Use the list as whitelist?");
 		c.addComment("change-prefix-suffix-in-tablist.sync-plugins-groups-with-tablist", "Automatically add groups from another plugins to the tablist groups.yml on every reload?",
 				"If a plugin does not support Vault, it will not be added.");
 		c.addComment("change-prefix-suffix-in-tablist.hide-group-when-player-vanished", "Hide player's group in player list when the player is vanished?",
-				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin!");
+				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin");
 		c.addComment("change-prefix-suffix-in-tablist.assign-global-group-to-normal", "Do you want to assign global group to normal groups?",
 				"true - \"globalGroupPrefix + normalGroupPrefix\"", "false - \"normalGroupPrefix\"");
 		c.addComment("change-prefix-suffix-in-tablist.prefer-primary-vault-group", "Prefer player's primary Vault group when assigning tablist group from groups.yml?",
-				"true - player will be assigned their primary vault group where possible", "false - applies the group that has the higher priority in the permission plugin");
+				"true - player will be assigned their primary vault group where possible", "false - applies one of the group from the permission plugin");
+		c.addComment("change-prefix-suffix-in-tablist.use-luckperms-weight-to-order-groups-to-first-place",
+				"If true, groups will be sorted using LuckPerms weight if those are set.",
+				"Groups with higher weight set, will appear first to the player.",
+				"If the weights are not set or this option is disabled, the first group with higher priority will appear first.");
 		c.addComment("change-prefix-suffix-in-tablist.followNameTagVisibility", "Follow the name tag visibility for players to show the name tag above player or not,",
 				"depending if a scoreboard team with visibility 'hidden' is exist.",
 				"true - Follows the name tag visibility and hides if there is a scoreboard team created with visibility 'hidden'",
@@ -111,14 +118,20 @@ public final class ConfigValues {
 
 		c.addComment("tablist-object-type", "Tablist objective types", "Shows your current health (with life indicator), your current ping or any NUMBER placeholder",
 				"after the player's name (before the ping indicator).");
-		c.addComment("tablist-object-type.type", "Types:", "none - disables tablist objects", "ping - player's ping", "health - player's health", "custom - custom placeholder");
-		c.addComment("tablist-object-type.refresh-interval", "How often should it refresh the values in seconds?");
+		c.addComment("tablist-object-type.type", "Types:",
+				"none - disables tablist objects",
+				"ping - player's ping",
+				"health - player's health",
+				"custom - one of the number-ending placeholder");
+		c.addComment("tablist-object-type.refresh-interval", "How often should it refresh the values in seconds?",
+				"Set to 0 to disable refreshing automatically");
 		c.addComment("tablist-object-type.disabled-worlds", "In these worlds the objects will not be displayed");
 		c.addComment("tablist-object-type.object-settings.custom", "Custom placeholder - accepts only number-ending placeholders, like %level%");
 
-		c.addComment("check-update", "Check for updates?");
-		c.addComment("download-updates", "Download new releases to \"releases\" folder?", "This only works if the \"check-update\" is true.");
-		c.addComment("logconsole", "Log plugin messages to console?");
+		c.addComment("check-update", "Checks for plugin updates after server start");
+		c.addComment("download-updates", "Download new releases if updates found?",
+				"This only works if the \"check-update\" option is enabled.");
+		c.addComment("logconsole", "Plugin debug log messages");
 
 		placeholderAPI = c.get("hook.placeholderapi", true);
 		tpsPerformanceObservationValue = c.get("tps-performance-observation-value", -1.0);
@@ -171,6 +184,7 @@ public final class ConfigValues {
 		hideGroupInVanish = c.get("change-prefix-suffix-in-tablist.hide-group-when-player-vanished", false);
 		assignGlobalGroup = c.get("change-prefix-suffix-in-tablist.assign-global-group-to-normal", false);
 		preferPrimaryVaultGroup = c.get("change-prefix-suffix-in-tablist.prefer-primary-vault-group", false);
+		useLPWeightToOrderGroupsFirst = c.get("change-prefix-suffix-in-tablist.use-luckperms-weight-to-order-groups-to-first-place", true);
 		followNameTagVisibility = c.get("change-prefix-suffix-in-tablist.followNameTagVisibility", false);
 
 		afkFormatYes = Global.setSymbols(c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r "));
@@ -235,12 +249,6 @@ public final class ConfigValues {
 
 		tpsColorFormats = c.get("placeholder-format.tps.formats", Arrays.asList("&a%tps% > 18.0", "&6%tps% == 16.0", "&c%tps% < 16.0"));
 		pingColorFormats = c.get("placeholder-format.ping.formats", Arrays.asList("&a%ping% <= 200", "&6%ping% >= 200", "&c%ping% > 500"));
-		for (String f : pingColorFormats) { // TODO remove in the future
-			if (!f.contains("%ping%")) {
-				c.set("placeholder-format.ping.formats", Arrays.asList("&a%ping% <= 200", "&6%ping% >= 200", "&c%ping% > 500"));
-				break;
-			}
-		}
 
 		tpsDigits = 10;
 
@@ -430,5 +438,9 @@ public final class ConfigValues {
 
 	public static double getTpsPerformanceObservationValue() {
 		return tpsPerformanceObservationValue;
+	}
+
+	public static boolean isUseLPWeightToOrderGroupsFirst() {
+		return useLPWeightToOrderGroupsFirst;
 	}
 }

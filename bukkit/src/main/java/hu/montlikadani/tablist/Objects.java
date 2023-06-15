@@ -67,7 +67,7 @@ public final class Objects {
 	}
 
 	@SuppressWarnings("deprecation")
-	void registerHealthTab(Player pl) {
+	private void registerHealthTab(Player pl) {
 		if (ConfigValues.getObjectsDisabledWorlds().contains(pl.getWorld().getName()) || ConfigValues.getHealthObjectRestricted().contains(pl.getName())) {
 			unregisterHealthObjective(pl);
 			return;
