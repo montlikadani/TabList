@@ -38,6 +38,11 @@ public final class BukkitScheduler implements TLScheduler {
     }
 
     @Override
+    public void runTaskAsynchronously(Runnable task) {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, task);
+    }
+
+    @Override
     public void cancelTask() {
         if (bukkitTask != null) {
             bukkitTask.cancel();

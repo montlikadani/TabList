@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist;
 
+import hu.montlikadani.tablist.user.PlayerScore;
 import hu.montlikadani.tablist.utils.scheduler.TLScheduler;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -22,9 +23,47 @@ public final class Objects {
 	private transient final TabList plugin;
 
 	private TLScheduler scheduler;
+	private PluginPlaceholders customPlaceholder;
 
 	Objects(TabList plugin) {
 		this.plugin = plugin;
+	}
+
+	void load() {
+		ObjectTypes type = ConfigValues.getObjectType();
+
+		customPlaceholder = null;
+
+		if (type == Objects.ObjectTypes.NONE || type == Objects.ObjectTypes.HEALTH) {
+			cancelTask();
+			return;
+		}
+
+		if (type == ObjectTypes.CUSTOM) {
+			for (PluginPlaceholders placeholder : PluginPlaceholders.values()) {
+				if (ConfigValues.getCustomObjectSetting().indexOf(placeholder.name) != -1) {
+					customPlaceholder = placeholder;
+					break;
+				}
+			}
+		}
+	}
+
+	void load(Player player) {
+		ObjectTypes type = ConfigValues.getObjectType();
+
+		if (type == Objects.ObjectTypes.HEALTH) {
+			cancelTask();
+			registerHealthTab(player);
+		} else {
+			unregisterHealthObjective(player);
+
+			if (type != ObjectTypes.NONE) {
+				startTask();
+			} else {
+				cancelTask();
+			}
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -80,26 +119,13 @@ public final class Objects {
 		}
 	}
 
-	private PluginPlaceholders customPlaceholder;
-
-	void startTask() {
-
-		// Load object setting in every case (even if the task is running)
-		if (ConfigValues.getObjectType() == ObjectTypes.CUSTOM) {
-			for (PluginPlaceholders placeholder : PluginPlaceholders.values()) {
-				if (ConfigValues.getCustomObjectSetting().indexOf(placeholder.name) != -1) {
-					customPlaceholder = placeholder;
-					break;
-				}
-			}
-		}
-
-		if (!isCancelled()) {
+	private void startTask() {
+		if (ConfigValues.getObjectRefreshInterval() == 0) {
+			update();
 			return;
 		}
 
-		if (ConfigValues.getObjectRefreshInterval() == 0) {
-			update();
+		if (!isCancelled()) {
 			return;
 		}
 
@@ -114,7 +140,9 @@ public final class Objects {
 
 	private void update() {
 		for (TabListUser user : plugin.getUsers()) {
-			if (user.getPlayerScore().getScoreName().isEmpty()) {
+			PlayerScore playerScore = user.getPlayerScore(true);
+
+			if (playerScore == null || playerScore.getScoreName().isEmpty()) {
 				continue;
 			}
 
@@ -126,7 +154,7 @@ public final class Objects {
 
 			ObjectTypes type = ConfigValues.getObjectType();
 
-			if (!user.getPlayerScore().isObjectiveCreated()) {
+			if (!playerScore.isObjectiveCreated()) {
 				Object objectiveInstance = PacketNM.NMS_PACKET.createObjectivePacket(type.objectName, type.chatBaseComponent);
 
 				// Create objective, 0 - create
@@ -145,7 +173,7 @@ public final class Objects {
 					}
 				}
 
-				user.getPlayerScore().setObjectiveCreated();
+				playerScore.setObjectiveCreated();
 			}
 
 			int lastScore = 0;
@@ -153,24 +181,24 @@ public final class Objects {
 			if (type == ObjectTypes.PING) {
 				lastScore = TabListAPI.getPing(player);
 			} else if (type == ObjectTypes.CUSTOM) {
-				lastScore = getValue(player, ConfigValues.getCustomObjectSetting());
+				lastScore = getValue(player);
 			}
 
 			// Update objective value
 
-			if (lastScore != user.getPlayerScore().getLastScore()) {
-				user.getPlayerScore().setLastScore(lastScore);
+			if (lastScore != playerScore.getLastScore()) {
+				playerScore.setLastScore(lastScore);
 
 				for (Player pl : plugin.getServer().getOnlinePlayers()) {
-					PacketNM.NMS_PACKET.sendPacket(pl, PacketNM.NMS_PACKET.changeScoreboardScorePacket(type.objectName, user.getPlayerScore().getScoreName(), lastScore));
+					PacketNM.NMS_PACKET.sendPacket(pl, PacketNM.NMS_PACKET.changeScoreboardScorePacket(type.objectName, playerScore.getScoreName(), lastScore));
 				}
 			}
 		}
 	}
 
-	private int getValue(Player player, final String text) {
+	private int getValue(Player player) {
 		if (customPlaceholder == null) {
-			return parsePapi(player, text);
+			return parsePapi(player);
 		}
 
 		switch (customPlaceholder) {
@@ -183,16 +211,19 @@ public final class Objects {
 			case LIGHT_LEVEL:
 				return player.getLocation().getBlock().getLightLevel();
 			default:
-				return parsePapi(player, text);
+				return parsePapi(player);
 		}
 	}
 
-	private int parsePapi(Player player, String from) {
+	private int parsePapi(Player player) {
 		if (plugin.hasPapi()) {
+			String value = ConfigValues.getCustomObjectSetting();
+
 			try {
-				return Integer.parseInt(StrUtil.getNumberEscapeSequence().reset(me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, from)).replaceAll(""));
+				return Integer.parseInt(StrUtil.getNumberEscapeSequence().reset(me.clip.placeholderapi.PlaceholderAPI
+						.setPlaceholders(player, value)).replaceAll(""));
 			} catch (NumberFormatException e) {
-				hu.montlikadani.tablist.utils.Util.logConsole("Invalid custom objective with " + ConfigValues.getCustomObjectSetting() + " value.");
+				hu.montlikadani.tablist.utils.Util.logConsole("Invalid custom objective with " + value + " value.");
 			}
 		}
 
@@ -219,7 +250,9 @@ public final class Objects {
 	}
 
 	public void unregisterObjective(ObjectTypes type, TabListUser source) {
-		if (type != ObjectTypes.HEALTH && !source.getPlayerScore().isObjectiveCreated()) {
+		PlayerScore playerScore = source.getPlayerScore();
+
+		if (playerScore == null) {
 			return;
 		}
 
@@ -234,10 +267,12 @@ public final class Objects {
 			return;
 		}
 
-		source.getPlayerScore().setObjectiveCreated();
+		if (playerScore.isObjectiveCreated()) {
+			playerScore.setObjectiveCreated();
+		}
 
 		// Send remove action
-		PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.removeScoreboardScorePacket(type.objectName, source.getPlayerScore().getScoreName(), 0));
+		PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.removeScoreboardScorePacket(type.objectName, playerScore.getScoreName(), 0));
 
 		// Unregister objective
 		PacketNM.NMS_PACKET.sendPacket(player,

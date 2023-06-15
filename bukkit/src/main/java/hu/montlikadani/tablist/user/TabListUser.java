@@ -1,75 +1,146 @@
 package hu.montlikadani.tablist.user;
 
-/**
- * The interface which holds users tablist information
- */
-public interface TabListUser {
+import hu.montlikadani.tablist.Objects;
+import hu.montlikadani.tablist.TabList;
+import hu.montlikadani.tablist.tablist.TabHandler;
+import hu.montlikadani.tablist.tablist.groups.GroupPlayer;
+import hu.montlikadani.tablist.tablist.playerlist.HidePlayers;
+import hu.montlikadani.tablist.tablist.playerlist.PlayerList;
+import hu.montlikadani.tablist.utils.ServerVersion;
+import org.bukkit.entity.Player;
 
-	/**
-	 * @return {@link org.bukkit.entity.Player}
-	 */
-	org.bukkit.entity.Player getPlayer();
+import java.util.UUID;
 
-	/**
-	 * @return true if the tablist for this player is visible
-	 */
-	boolean isTabVisible();
+public final class TabListUser {
 
-	/**
-	 * Sets the tablist visibility for this player.
-	 * 
-	 * @param visibility true if visible, false otherwise
-	 */
-	void setTabVisibility(boolean visibility);
+	private final TabList plugin;
+	private final UUID uniqueId;
 
-	/**
-	 * @return true if this player is hidden from other players
-	 */
-	boolean isHidden();
+	private transient final GroupPlayer groupPlayer;
+	private transient final TabHandler tabHandler;
+	private transient PlayerScore playerScore;
 
-	/**
-	 * Makes this player hidden from other players.
-	 * 
-	 * @param hidden true to hide, false to make it visible
-	 */
-	void setHidden(boolean hidden);
+	private transient HidePlayers hidePlayers;
+	private transient PlayerList playerList;
 
-	/**
-	 * @return true if this player removed from player list
-	 */
-	boolean isRemovedFromPlayerList();
+	private boolean tabVisible = true;
 
-	/**
-	 * Removes this player from the player list. This method including {@link #addToPlayerList()} should be avoided from
-	 * calling as it might produce client side issues.
-	 */
-	void removeFromPlayerList();
+	public TabListUser(TabList plugin, UUID uniqueId) {
+		this.plugin = plugin;
+		this.uniqueId = uniqueId;
 
-	/**
-	 * Adds this player back to the player list. This method including {@link #removeFromPlayerList()} should be avoided
-	 * from calling as it might produce client side issues.
-	 */
-	void addToPlayerList();
+		tabHandler = new TabHandler(plugin, this);
+		groupPlayer = new GroupPlayer(plugin, this);
 
-	/**
-	 * @return the {@link java.util.UUID} of this player
-	 */
-	java.util.UUID getUniqueId();
+		String entry = plugin.getServer().getOfflinePlayer(uniqueId).getName();
 
-	/**
-	 * @return {@link hu.montlikadani.tablist.tablist.groups.GroupPlayer}
-	 */
-	hu.montlikadani.tablist.tablist.groups.GroupPlayer getGroupPlayer();
+		if (entry != null) {
+			initScore(entry);
+		}
+	}
 
-	/**
-	 * @return {@link hu.montlikadani.tablist.tablist.TabHandler}
-	 */
-	hu.montlikadani.tablist.tablist.TabHandler getTabHandler();
+	public Player getPlayer() {
+		return plugin.getServer().getPlayer(uniqueId);
+	}
 
-	/**
-	 * @return {@link PlayerScore}
-	 */
-	PlayerScore getPlayerScore();
+	public UUID getUniqueId() {
+		return uniqueId;
+	}
 
+	public GroupPlayer getGroupPlayer() {
+		return groupPlayer;
+	}
 
+	public TabHandler getTabHandler() {
+		return tabHandler;
+	}
+
+	public boolean isHidden() {
+		return playerList != null;
+	}
+
+	public void setHidden(boolean hidden) {
+		if (hidden) {
+			if (playerList == null) {
+				playerList = new PlayerList(plugin, this);
+			}
+
+			playerList.hide();
+		} else if (playerList != null) {
+			playerList.showEveryone();
+			playerList = null;
+		}
+	}
+
+	public boolean isRemovedFromPlayerList() {
+		return hidePlayers != null;
+	}
+
+	public void removeFromPlayerList() {
+		if (hidePlayers == null) {
+			hidePlayers = new HidePlayers(uniqueId);
+			hidePlayers.removePlayerFromTab();
+		}
+	}
+
+	public void addToPlayerList() {
+		if (hidePlayers != null) {
+			hidePlayers.addPlayerToTab();
+			hidePlayers = null;
+		}
+	}
+
+	public PlayerList getPlayerList() {
+		return playerList;
+	}
+
+	public PlayerScore getPlayerScore() {
+		return playerScore;
+	}
+
+	public PlayerScore getPlayerScore(boolean initPlayerScore) {
+		if (!initPlayerScore) {
+			return playerScore;
+		}
+
+		if (hu.montlikadani.tablist.config.constantsLoader.ConfigValues.getObjectType() == Objects.ObjectTypes.NONE) {
+			playerScore.setObjectiveCreated();
+			playerScore = null;
+			return null;
+		}
+
+		if (playerScore != null) {
+			return playerScore;
+		}
+
+		Player player = getPlayer();
+
+		initScore(player == null ? "" : player.getName());
+		return playerScore;
+	}
+
+	private void initScore(String entry) {
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_18_R1)) {
+			if (entry.length() > 40) {
+				entry = entry.substring(0, 40);
+			}
+		} else if (entry.length() > Short.MAX_VALUE) {
+			entry = entry.substring(0, Short.MAX_VALUE);
+		}
+
+		playerScore = new PlayerScore(entry);
+	}
+
+	public boolean isTabVisible() {
+		return tabVisible;
+	}
+
+	public void setTabVisibility(boolean visibility) {
+		tabVisible = visibility;
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		return o != null && o.getClass() == getClass() && uniqueId.equals(((TabListUser) o).uniqueId);
+	}
 }

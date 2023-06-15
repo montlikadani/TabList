@@ -8,6 +8,8 @@ public interface TLScheduler {
 
     <V> V submitSync(java.util.function.Supplier<V> sup);
 
+    void runTaskAsynchronously(Runnable task);
+
     void cancelTask();
 
 }

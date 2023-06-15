@@ -32,6 +32,11 @@ public final class FoliaScheduler implements TLScheduler {
     }
 
     @Override
+    public void runTaskAsynchronously(Runnable task) {
+        plugin.getServer().getAsyncScheduler().runNow(plugin, schedule -> task.run());
+    }
+
+    @Override
     public void cancelTask() {
         if (scheduledTask != null) {
             scheduledTask.cancel();

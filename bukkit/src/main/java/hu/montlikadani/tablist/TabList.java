@@ -29,7 +29,6 @@ import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.TabManager;
 import hu.montlikadani.tablist.tablist.fakeplayers.FakePlayerHandler;
 import hu.montlikadani.tablist.tablist.groups.Groups;
-import hu.montlikadani.tablist.user.TabListPlayer;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.UpdateDownloader;
@@ -311,11 +310,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		groups.load();
 
 		if (objects != null) {
-			Objects.ObjectTypes current = ConfigValues.getObjectType();
-
-			if (current == Objects.ObjectTypes.NONE || current == Objects.ObjectTypes.HEALTH) {
-				objects.cancelTask();
-			}
+			objects.load();
 		}
 
 		getServer().getOnlinePlayers().forEach(pl -> updateAll(pl, true));
@@ -367,7 +362,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	private TabListUser getOrLoadUser(Player player) {
 		return getUser(player.getUniqueId()).orElseGet(() -> {
-			TabListUser tlu = new TabListPlayer(this, player.getUniqueId());
+			TabListUser tlu = new TabListUser(this, player.getUniqueId());
 
 			if (TabToggleBase.TEMPORAL_PLAYER_CACHE.remove(tlu.getUniqueId())) {
 				tlu.setTabVisibility(false);
@@ -386,50 +381,23 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		TabListUser user = getOrLoadUser(player);
 
 		if (objects == null && ConfigValues.getObjectType() != Objects.ObjectTypes.NONE) {
-			objects = new Objects(this);
+			(objects = new Objects(this)).load();
 		}
 
 		if (objects != null) {
-			if (reload) { // Reset player score for integer objectives
-				user.getPlayerScore().setLastScore(-1);
+			if (reload) {
+				objects.unregisterObjective(Objects.ObjectTypes.PING, user);
+				objects.unregisterObjective(Objects.ObjectTypes.CUSTOM, user);
+
+				// Reset player score for integer objectives
+				hu.montlikadani.tablist.user.PlayerScore playerScore = user.getPlayerScore(true);
+
+				if (playerScore != null) {
+					playerScore.setLastScore(-1);
+				}
 			}
 
-			switch (ConfigValues.getObjectType()) {
-				case PING:
-				case CUSTOM:
-					if (reload) {
-						objects.unregisterHealthObjective(player);
-					}
-
-					if (reload || objects.isCancelled()) {
-						objects.startTask();
-
-						if (reload) {
-							objects.unregisterObjective(Objects.ObjectTypes.PING, user);
-							objects.unregisterObjective(Objects.ObjectTypes.CUSTOM, user);
-						}
-					}
-
-					break;
-				case HEALTH:
-					if (reload) {
-						objects.unregisterObjective(Objects.ObjectTypes.PING, user);
-						objects.unregisterObjective(Objects.ObjectTypes.CUSTOM, user);
-					}
-
-					objects.registerHealthTab(player);
-					break;
-				default:
-					if (reload) {
-						for (Objects.ObjectTypes type : Objects.ObjectTypes.values()) {
-							if (type != Objects.ObjectTypes.NONE) {
-								objects.unregisterObjective(type, user);
-							}
-						}
-					}
-
-					break;
-			}
+			objects.load(player);
 		}
 
 		if (ConfigValues.isFakePlayers()) {
@@ -456,7 +424,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 					user.setHidden(true);
 
 					if (user.isHidden()) {
-						((TabListPlayer) user).getPlayerList().displayInWorld();
+						user.getPlayerList().displayInWorld();
 					}
 
 					return 1;
