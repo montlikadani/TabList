@@ -36,7 +36,7 @@ dependencies {
     compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8, so we must use this
     compileOnly("net.luckperms:api:5.4")
 
-    api("dev.folia:folia-api:1.19.4-R0.1-SNAPSHOT") {
+    api("dev.folia:folia-api:1.20.1-R0.1-SNAPSHOT") {
         exclude("org.yaml", "snakeyaml")
         exclude("junit", "junit")
     }

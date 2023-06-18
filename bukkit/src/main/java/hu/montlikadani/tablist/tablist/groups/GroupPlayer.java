@@ -154,17 +154,20 @@ public final class GroupPlayer {
 		}
 
 		Groups groups = tl.getGroups();
-		String playerName = player.getName();
 		java.util.List<TeamHandler> teams = groups.getTeams();
+		boolean update = false;
 
 		// Search for global group
 		for (TeamHandler gl : teams) {
 			if (gl.global && globalGroup != gl) {
 				globalGroup = gl;
 				groups.setToSort(true);
+				update = true;
 				break;
 			}
 		}
+
+		String playerName = player.getName();
 
 		// Search for player name
 		for (TeamHandler team : teams) {
@@ -172,12 +175,12 @@ public final class GroupPlayer {
 				continue;
 			}
 
-			if (group != team) { // Player group was changed
+			if (group != team) {
 				setGroup(team);
 				return true;
 			}
 
-			return false;
+			return update;
 		}
 
 		refreshPlayerPrimaryGroup(player);
@@ -186,8 +189,6 @@ public final class GroupPlayer {
 			teams = groups.orderedGroupsByWeight();
 		}
 
-		boolean update = false;
-
 		for (TeamHandler team : teams) {
 			if (team.global) {
 				continue;
@@ -195,7 +196,7 @@ public final class GroupPlayer {
 
 			if (playerPrimaryGroup != null) {
 				if (playerPrimaryGroup.equalsIgnoreCase(team.team)) {
-					if (group != team) { // Player group was changed or not set
+					if (group != team) {
 						update = true;
 						setGroup(team);
 					}
