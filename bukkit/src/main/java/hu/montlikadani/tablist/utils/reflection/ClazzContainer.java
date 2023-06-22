@@ -45,7 +45,7 @@ public final class ClazzContainer {
 			} catch (Throwable ignored) {
 			}
 
-			iChatBaseComponentGetStringMethod = iChatBaseComponent.getDeclaredMethod("getString");
+			iChatBaseComponentGetStringMethod = methodByTypeAndName(iChatBaseComponent, String.class, null, "getString", "getText", "e");
 
 			try {
 				enumPlayerInfoAction = classByName(null, "EnumPlayerInfoAction");
@@ -61,19 +61,11 @@ public final class ClazzContainer {
 			Class<?> enumChatFormat = classByName("net.minecraft", "EnumChatFormat");
 			enumChatFormatByIntMethod = methodByTypeAndName(enumChatFormat, enumChatFormat, new Class<?>[] { String.class }, "getById", "a");
 
-			try {
-				addPlayer = enumPlayerInfoAction.getDeclaredField("ADD_PLAYER").get(enumPlayerInfoAction);
-				updateLatency = enumPlayerInfoAction.getDeclaredField("UPDATE_LATENCY").get(enumPlayerInfoAction);
-				updateDisplayName = enumPlayerInfoAction.getDeclaredField("UPDATE_DISPLAY_NAME").get(enumPlayerInfoAction);
-				updateGameMode = enumPlayerInfoAction.getDeclaredField("UPDATE_GAME_MODE").get(enumPlayerInfoAction);
-				removePlayer = enumPlayerInfoAction.getDeclaredField("REMOVE_PLAYER").get(enumPlayerInfoAction);
-			} catch (NoSuchFieldException ex) {
-				addPlayer = enumPlayerInfoAction.getDeclaredField("a").get(enumPlayerInfoAction);
-				updateLatency = enumPlayerInfoAction.getDeclaredField("c").get(enumPlayerInfoAction);
-				updateDisplayName = enumPlayerInfoAction.getDeclaredField("d").get(enumPlayerInfoAction);
-				updateGameMode = enumPlayerInfoAction.getDeclaredField("b").get(enumPlayerInfoAction);
-				removePlayer = enumPlayerInfoAction.getDeclaredField("e").get(enumPlayerInfoAction);
-			}
+			addPlayer = fieldObjectByTypeOrName(enumPlayerInfoAction, null, null, "ADD_PLAYER", "a");
+			updateLatency = fieldObjectByTypeOrName(enumPlayerInfoAction, null, null, "UPDATE_LATENCY", "c");
+			updateDisplayName = fieldObjectByTypeOrName(enumPlayerInfoAction, null, null, "UPDATE_DISPLAY_NAME", "d");
+			updateGameMode = fieldObjectByTypeOrName(enumPlayerInfoAction, null, null, "UPDATE_GAME_MODE", "b");
+			removePlayer = fieldObjectByTypeOrName(enumPlayerInfoAction, null, null, "REMOVE_PLAYER", "e");
 
 			packetScoreboardTeamParametersMethod = methodByTypeAndName(packetPlayOutScoreboardTeam, Optional.class, null, "f", "k", "parameters");
 
@@ -83,27 +75,21 @@ public final class ClazzContainer {
 			Class<?> scoreboardNameTagVisibility = classByName("net.minecraft.world.scores", "ScoreboardTeamBase$EnumNameTagVisibility");
 			nameTagVisibilityByNameMethod = methodByTypeAndName(scoreboardNameTagVisibility, String.class, new Class<?>[] { String.class }, "a", "byName");
 
-			try {
-				nameTagVisibilityAlways = scoreboardNameTagVisibility.getDeclaredField("a").get(scoreboardNameTagVisibility);
-				nameTagVisibilityNever = scoreboardNameTagVisibility.getDeclaredField("b").get(scoreboardNameTagVisibility);
-			} catch (NoSuchFieldException ex) {
-				nameTagVisibilityAlways = scoreboardNameTagVisibility.getDeclaredField("ALWAYS").get(scoreboardNameTagVisibility);
-				nameTagVisibilityNever = scoreboardNameTagVisibility.getDeclaredField("NEVER").get(scoreboardNameTagVisibility);
+			nameTagVisibilityAlways = fieldObjectByTypeOrName(scoreboardNameTagVisibility, null, null, "a", "ALWAYS");
+			nameTagVisibilityNever = fieldObjectByTypeOrName(scoreboardNameTagVisibility, null, null, "b", "NEVER");
+
+			Class<?>[] classes = packetPlayOutScoreboardTeam.getDeclaredClasses();
+
+			if (classes.length > 1) {
+				Class<?> parameterType = classes[1];
+
+				parametersNameTagVisibility = methodByTypeAndName(parameterType, scoreboardNameTagVisibility, null, "getNametagVisibility", "d");
+				parametersTeamPrefix = methodByTypeAndName(parameterType, iChatBaseComponent, null, "getPlayerPrefix", "f");
+				parametersTeamSuffix = methodByTypeAndName(parameterType, iChatBaseComponent, null, "getPlayerSuffix", "g");
 			}
 
-			Class<?> parameters = packetPlayOutScoreboardTeam.getDeclaredClasses()[1];
-
-			parametersNameTagVisibility = methodByTypeAndName(parameters, scoreboardNameTagVisibility, null, "getNametagVisibility", "d");
-			parametersTeamPrefix = methodByTypeAndName(parameters, iChatBaseComponent, null, "getPlayerPrefix", "f");
-			parametersTeamSuffix = methodByTypeAndName(parameters, iChatBaseComponent, null, "getPlayerSuffix", "g");
-
-			try {
-				packetScoreboardTeamPrefix = packetPlayOutScoreboardTeam.getDeclaredField("c");
-				packetScoreboardTeamSuffix = packetPlayOutScoreboardTeam.getDeclaredField("d");
-			} catch (NoSuchFieldException ex) {
-				packetScoreboardTeamPrefix = packetPlayOutScoreboardTeam.getDeclaredField("playerPrefix");
-				packetScoreboardTeamSuffix = packetPlayOutScoreboardTeam.getDeclaredField("playerSuffix");
-			}
+			packetScoreboardTeamPrefix = fieldByTypeOrName(packetPlayOutScoreboardTeam, null, "c", "playerPrefix");
+			packetScoreboardTeamSuffix = fieldByTypeOrName(packetPlayOutScoreboardTeam, null, "d", "playerSuffix");
 
 			Class<?> scoreboardTeamClass = classByName("net.minecraft.world.scores", "ScoreboardTeam");
 			scoreboardTeamConstructor = scoreboardTeamClass.getConstructor(scoreboardClass, String.class);
@@ -126,12 +112,7 @@ public final class ClazzContainer {
 			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
 				scoreboardTeamSetDisplayName = methodByTypeAndName(scoreboardTeamClass, null, new Class<?>[] { iChatBaseComponent }, "a", "setDisplayName");
 
-				if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_18_R1)) {
-					(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("e")).setAccessible(true); // players
-				} else {
-					(scoreboardTeamNames = scoreboardTeamClass.getDeclaredField("f")).setAccessible(true);
-				}
-
+				scoreboardTeamNames = fieldByTypeOrName(scoreboardTeamClass, null, "e", "f", "players");
 				packetScoreboardTeamRemove = packetPlayOutScoreboardTeam.getMethod("a", scoreboardTeamClass);
 				packetScoreboardTeamUpdateCreate = packetPlayOutScoreboardTeam.getMethod("a", scoreboardTeamClass, boolean.class);
 			} else {
@@ -156,6 +137,9 @@ public final class ClazzContainer {
 
 			packetPlayOutScoreboardDisplayObjectiveConstructor = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardDisplayObjective")
 					.getConstructor(int.class, scoreboardObjective);
+			firstScoreboardObjectiveConstructor = scoreboardObjective.getConstructors()[0];
+			packetPlayOutScoreboardObjectiveConstructor = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardObjective")
+					.getConstructor(scoreboardObjective, int.class);
 
 			Class<?> enumScoreboardHealthDisplay;
 			try {
@@ -163,20 +147,10 @@ public final class ClazzContainer {
 			} catch (ClassNotFoundException e) {
 				enumScoreboardHealthDisplay = classByName("net.minecraft.world.scores.criteria", "EnumScoreboardHealthDisplay");
 			}
+			enumScoreboardHealthDisplayInteger = fieldObjectByTypeOrName(enumScoreboardHealthDisplay, null, null, "a", "INTEGER");
 
 			Class<?> iScoreboardCriteria = classByName("net.minecraft.world.scores.criteria", "IScoreboardCriteria");
-
-			iScoreboardCriteriaDummy = getFieldByType(iScoreboardCriteria, iScoreboardCriteria).get(iScoreboardCriteria);
-
-			try {
-				enumScoreboardHealthDisplayInteger = enumScoreboardHealthDisplay.getDeclaredField("a").get(enumScoreboardHealthDisplay);
-			} catch (NoSuchFieldException e) {
-				enumScoreboardHealthDisplayInteger = enumScoreboardHealthDisplay.getDeclaredField("INTEGER").get(enumScoreboardHealthDisplay);
-			}
-
-			firstScoreboardObjectiveConstructor = scoreboardObjective.getConstructors()[0];
-			packetPlayOutScoreboardObjectiveConstructor = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardObjective")
-					.getConstructor(scoreboardObjective, int.class);
+			iScoreboardCriteriaDummy = fieldObjectByTypeOrName(iScoreboardCriteria, null, iScoreboardCriteria);
 
 			Class<?> enumScoreboardAction;
 
@@ -190,13 +164,8 @@ public final class ClazzContainer {
 				}
 			}
 
-			try {
-				enumScoreboardActionChange = enumScoreboardAction.getDeclaredField("a").get(enumScoreboardAction);
-				enumScoreboardActionRemove = enumScoreboardAction.getDeclaredField("b").get(enumScoreboardAction);
-			} catch (NoSuchFieldException e) {
-				enumScoreboardActionChange = enumScoreboardAction.getDeclaredField("CHANGE").get(enumScoreboardAction);
-				enumScoreboardActionRemove = enumScoreboardAction.getDeclaredField("REMOVE").get(enumScoreboardAction);
-			}
+			enumScoreboardActionChange = fieldObjectByTypeOrName(enumScoreboardAction, null, null, "a", "CHANGE");
+			enumScoreboardActionRemove = fieldObjectByTypeOrName(enumScoreboardAction, null, null, "b", "REMOVE");
 
 			try {
 				packetPlayOutScoreboardScoreConstructor = classByName("net.minecraft.network.protocol.game", "PacketPlayOutScoreboardScore")
@@ -251,18 +220,8 @@ public final class ClazzContainer {
 				enumGameMode = classByName(null, "WorldSettings$EnumGamemode");
 			}
 
-			try {
-				gameModeSurvival = enumGameMode.getDeclaredField("SURVIVAL").get(enumGameMode);
-				gameModeSpectator = enumGameMode.getDeclaredField("SPECTATOR").get(enumGameMode);
-			} catch (NoSuchFieldException ex) {
-				Field field = enumGameMode.getDeclaredField("d");
-				field.setAccessible(true);
-
-				gameModeSpectator = field.get(enumGameMode);
-
-				(field = enumGameMode.getDeclaredField("a")).setAccessible(true);
-				gameModeSurvival = field.get(enumGameMode);
-			}
+			gameModeSurvival = fieldObjectByTypeOrName(enumGameMode, null, null, "SURVIVAL", "a");
+			gameModeSpectator = fieldObjectByTypeOrName(enumGameMode, null, null, "SPECTATOR", "d");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -277,6 +236,57 @@ public final class ClazzContainer {
 		}
 
 		return Class.forName(newPackageName + "." + name);
+	}
+
+	public static Field fieldByTypeOrName(Class<?> from, Class<?> type, String... names) {
+		Field[] fields = from.getDeclaredFields();
+
+		if (type == null) {
+			for (Field field : fields) {
+				for (String name : names) {
+					if (field.getName().equals(name)) {
+						field.setAccessible(true);
+						return field;
+					}
+				}
+			}
+
+			return null;
+		}
+
+		for (Field field : fields) {
+			if (field.getType() != type) {
+				continue;
+			}
+
+			if (names.length == 0) {
+				field.setAccessible(true);
+				return field;
+			}
+
+			for (String name : names) {
+				if (field.getName().equals(name)) {
+					field.setAccessible(true);
+					return field;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	private static Object fieldObjectByTypeOrName(Class<?> from, Object obj, Class<?> type, String... names) {
+		Field field = fieldByTypeOrName(from, type, names);
+
+		if (field != null) {
+			try {
+				return field.get(obj == null ? from : obj);
+			} catch (IllegalAccessException ex) {
+				ex.printStackTrace();
+			}
+		}
+
+		return null;
 	}
 
 	public static Method methodByTypeAndName(Class<?> from, Class<?> returnType, Class<?>[] parameters, String... names) {
@@ -315,17 +325,6 @@ public final class ClazzContainer {
 				if (method.getName().equals(name)) {
 					return method;
 				}
-			}
-		}
-
-		return null;
-	}
-
-	public static Field getFieldByType(Class<?> from, Class<?> type) {
-		for (Field field : from.getDeclaredFields()) {
-			if (field.getType() == type) {
-				field.setAccessible(true);
-				return field;
 			}
 		}
 

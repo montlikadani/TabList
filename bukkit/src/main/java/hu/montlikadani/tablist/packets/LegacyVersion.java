@@ -46,15 +46,15 @@ public final class LegacyVersion implements IPacketNM {
                 networkManagerClass = ClazzContainer.classByName("net.minecraft.network", "NetworkManager");
             }
 
-            networkManager = ClazzContainer.getFieldByType(ClazzContainer.classByName("net.minecraft.server.network", "PlayerConnection"),
+            networkManager = ClazzContainer.fieldByTypeOrName(ClazzContainer.classByName("net.minecraft.server.network", "PlayerConnection"),
                     networkManagerClass);
-            channel = ClazzContainer.getFieldByType(networkManagerClass, Channel.class);
+            channel = ClazzContainer.fieldByTypeOrName(networkManagerClass, Channel.class);
 
-            playerConnectionField = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer")
-                    .getDeclaredField((ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1) ? "b" : "playerConnection"));
+            playerConnectionField = ClazzContainer.fieldByTypeOrName(ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer"),
+                    null, "b", "playerConnection", "connection", "a");
 
             interactManager = ClazzContainer.classByName("net.minecraft.server.level", "PlayerInteractManager");
-        } catch (ClassNotFoundException | NoSuchFieldException e) {
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 

@@ -351,8 +351,7 @@ public final class Groups {
 	private final ReentrantLock lock = new ReentrantLock();
 
 	/**
-	 * This method is used to sort and update players' groups. Includes sorting of AFK players. If there is no need to
-	 * change the places of groups, they will only be updated in the custom name, prefix, suffix and others.
+	 * This method is used to sort and update players' groups. Includes sorting of AFK players.
 	 */
 	private void sortPlayers() {
 		// Pauses the current thread until the stream unlocks.
