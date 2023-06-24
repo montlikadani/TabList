@@ -88,7 +88,7 @@ public final class LegacyVersion implements IPacketNM {
             }
 
             return playerHandleMethod.invoke(player);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
             e.printStackTrace();
         }
 
@@ -189,7 +189,7 @@ public final class LegacyVersion implements IPacketNM {
                 }
 
                 return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), json);
-            } catch (Exception e) {
+            } catch (IllegalAccessException | InvocationTargetException | ClassNotFoundException | NoSuchMethodException e) {
                 e.printStackTrace();
             }
         }
@@ -208,14 +208,15 @@ public final class LegacyVersion implements IPacketNM {
             if (declaredClasses.length != 0) {
                 return jsonComponentMethod = declaredClasses[0].getMethod("a", String.class);
             }
-        } catch (Exception e) {
+        } catch (NoSuchMethodException e) {
             e.printStackTrace();
         }
 
         return jsonComponentMethod;
     }
 
-    private Object asChatSerializer(String json) throws Exception {
+    private Object asChatSerializer(String json) throws ClassNotFoundException, NoSuchMethodException,
+            IllegalAccessException, InvocationTargetException {
         if (chatSerializer == null) {
             chatSerializer = Class.forName("net.minecraft.server." + ServerVersion.nmsVersion() + ".ChatSerializer");
         }
@@ -356,11 +357,7 @@ public final class LegacyVersion implements IPacketNM {
             players.add(getPlayerHandle(player));
         }
 
-        try {
-            sendPacket(source, newPlayerInfoUpdatePacketAdd(players));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        sendPacket(source, newPlayerInfoUpdatePacketAdd(players));
     }
 
     @Override
@@ -380,7 +377,7 @@ public final class LegacyVersion implements IPacketNM {
         try {
             Object updatePacket = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), toArray(player));
 
-            if (playerLatency == null && (playerLatency = fieldByNameAndType(player.getClass(), int.class, "latency", "ping", "g", "f", "e")) == null) {
+            if (playerLatency == null && (playerLatency = ClazzContainer.fieldByTypeOrName(player.getClass(), int.class, "latency", "ping", "g", "f", "e")) == null) {
                 return;
             }
 
@@ -390,7 +387,7 @@ public final class LegacyVersion implements IPacketNM {
                 return;
             }
 
-            if (interactManagerField == null && (interactManagerField = fieldByNameAndType(player.getClass(), interactManager,
+            if (interactManagerField == null && (interactManagerField = ClazzContainer.fieldByTypeOrName(player.getClass(), interactManager,
                     "playerInteractManager", "d", "c", "gameMode")) == null) {
                 return;
             }
@@ -419,8 +416,7 @@ public final class LegacyVersion implements IPacketNM {
                 } else {
                     infoData = ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, gameMode, ReflectionUtils.EMPTY_COMPONENT);
                 }
-            } catch (IllegalAccessException | InstantiationException |
-                     java.lang.reflect.InvocationTargetException e) {
+            } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
                 e.printStackTrace();
             }
 
@@ -450,7 +446,7 @@ public final class LegacyVersion implements IPacketNM {
             }
 
             return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateDisplayName(), toArray(entityPlayer));
-        } catch (Exception e) {
+        } catch (InvocationTargetException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
 
@@ -465,7 +461,7 @@ public final class LegacyVersion implements IPacketNM {
             }
 
             listNameField.set(entityPlayer, component);
-        } catch (Exception ex) {
+        } catch (NoSuchFieldException | IllegalAccessException ex) {
             ex.printStackTrace();
         }
     }
@@ -562,7 +558,7 @@ public final class LegacyVersion implements IPacketNM {
     private void setEntriesField(Object playerInfoPacket, List<Object> list) {
         try {
             ClazzContainer.getInfoList().set(playerInfoPacket, list);
-        } catch (Exception e) {
+        } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
     }
@@ -687,7 +683,7 @@ public final class LegacyVersion implements IPacketNM {
                 Object team = playerTeams.get(i);
                 Object playerTeamName = playerTeamName(team);
 
-                if (playerTeamName.equals(teamName)) {
+                if (teamName.equals(playerTeamName)) {
                     if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
                         return ClazzContainer.scoreboardTeamPacketByAction(team, 1);
                     }
@@ -709,24 +705,10 @@ public final class LegacyVersion implements IPacketNM {
 
     private Object playerTeamName(Object team) throws IllegalAccessException {
         if (playerTeamNameField == null) {
-            (playerTeamNameField = fieldByNameAndType(team.getClass(), String.class, "d", "a", "e", "i")).setAccessible(true);
+            playerTeamNameField = ClazzContainer.fieldByTypeOrName(team.getClass(), String.class, "d", "a", "e", "i");
         }
 
-        return playerTeamNameField.get(team);
-    }
-
-    private Field fieldByNameAndType(Class<?> where, Class<?> type, String... names) {
-        for (Field field : where.getDeclaredFields()) {
-            if (type == null || field.getType() == type) {
-                for (String name : names) {
-                    if (field.getName().equals(name)) {
-                        return field;
-                    }
-                }
-            }
-        }
-
-        return null;
+        return playerTeamNameField == null ? null : playerTeamNameField.get(team);
     }
 
     @Override
@@ -738,7 +720,7 @@ public final class LegacyVersion implements IPacketNM {
 
             return ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null, objectiveName, ClazzContainer.getiScoreboardCriteriaDummy(), nameComponent,
                     ClazzContainer.getEnumScoreboardHealthDisplayInteger());
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
         }
 
@@ -749,7 +731,7 @@ public final class LegacyVersion implements IPacketNM {
     public Object scoreboardObjectivePacket(Object objective, int mode) {
         try {
             return ClazzContainer.getPacketPlayOutScoreboardObjectiveConstructor().newInstance(objective, mode);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
         }
 
@@ -760,7 +742,7 @@ public final class LegacyVersion implements IPacketNM {
     public Object scoreboardDisplayObjectivePacket(Object objective, int slot) {
         try {
             return ClazzContainer.getPacketPlayOutScoreboardDisplayObjectiveConstructor().newInstance(slot, objective);
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
         }
 
@@ -780,9 +762,15 @@ public final class LegacyVersion implements IPacketNM {
     @Override
     public Object createScoreboardHealthObjectivePacket(String objectiveName, Object nameComponent) {
         try {
-            return ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null, objectiveName, ClazzContainer.getiScoreboardCriteriaDummy(), nameComponent,
+            Constructor<?> constructor = ClazzContainer.getFirstScoreboardObjectiveConstructor();
+
+            if (constructor.getParameterCount() == 3) {
+                return constructor.newInstance(null, objectiveName, ClazzContainer.getiScoreboardCriteriaDummy());
+            }
+
+            return constructor.newInstance(null, objectiveName, ClazzContainer.getiScoreboardCriteriaDummy(), nameComponent,
                     ClazzContainer.getEnumScoreboardHealthDisplayInteger());
-        } catch (Exception e) {
+        } catch (IllegalAccessException | InvocationTargetException | InstantiationException e) {
             e.printStackTrace();
         }
 

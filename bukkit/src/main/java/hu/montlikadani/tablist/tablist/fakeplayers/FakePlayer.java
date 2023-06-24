@@ -169,7 +169,7 @@ public final class FakePlayer implements IFakePlayer {
 			if (playerSkinProperties.textureRawValue == null || playerSkinProperties.decodedTextureValue == null) {
 				return;
 			}
-			
+
 			profile.getProperties().removeAll("textures");
 			profile.getProperties().put("textures", new com.mojang.authlib.properties.Property("textures",
 					playerSkinProperties.textureRawValue, playerSkinProperties.decodedTextureValue));
