@@ -3,6 +3,7 @@ package hu.montlikadani.tablist.tablist.fakeplayers;
 import java.util.UUID;
 
 import com.mojang.authlib.GameProfile;
+import hu.montlikadani.tablist.utils.PlayerSkinProperties;
 
 /**
  * The interface for creating fake players
@@ -42,9 +43,9 @@ public interface IFakePlayer {
 	void setDisplayName(String displayName);
 
 	/**
-	 * @return the head {@link UUID} of this fake player
+	 * @return the profile properties of this fake player
 	 */
-	UUID getHeadId();
+	hu.montlikadani.tablist.utils.PlayerSkinProperties profileProperties();
 
 	/**
 	 * Gets the fake player' ping. This does not change each time, as this fake
@@ -75,12 +76,12 @@ public interface IFakePlayer {
 	void setPing(int ping);
 
 	/**
-	 * Sets a valid user skin {@link UUID} for this fake player. You need to re-send
+	 * Sets a valid user skin for this fake player. You need to re-send
 	 * the fake player to apply the skin.
-	 * 
-	 * @param skinId a valid user skin {@link UUID}
+	 *
+	 * @param skinProperties an instance of {@link PlayerSkinProperties} containing player's skin data
 	 */
-	void setSkin(UUID skinId);
+	void setSkin(PlayerSkinProperties skinProperties);
 
 	/**
 	 * Removes this fake player from the tab if present.

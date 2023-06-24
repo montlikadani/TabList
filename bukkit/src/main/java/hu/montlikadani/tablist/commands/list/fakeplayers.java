@@ -2,8 +2,11 @@ package hu.montlikadani.tablist.commands.list;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
+import hu.montlikadani.tablist.utils.PlayerSkinProperties;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
@@ -142,33 +145,41 @@ public final class fakeplayers implements ICommand {
 			}
 
 			final String nameOrId = args[3];
-			java.util.UUID id;
+			java.util.Optional<UUID> optional = Util.tryParseId(nameOrId);
 
-			if (args.length > 4 && "--force".equalsIgnoreCase(args[4])) {
-				OfflinePlayer offlinePlayer = getOfflinePlayerByName(nameOrId);
-
-				// TODO Make it async maybe?
-				if (offlinePlayer == null) {
-					offlinePlayer = Bukkit.getOfflinePlayer(nameOrId);
+			if (optional.isPresent()) {
+				if (handler.setSkin(args[2], new PlayerSkinProperties(null, optional.get())) == EditingResult.NOT_EXIST) {
+					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
 				}
-
-				id = offlinePlayer.getUniqueId();
 			} else {
-				id = Util.tryParseId(nameOrId).orElseGet(() -> {
-					OfflinePlayer offlinePlayer = getOfflinePlayerByName(nameOrId);
+				idOfPlayer(nameOrId).whenComplete((skinProperties, t) -> {
+					if (skinProperties == null && args.length > 4 && "--force".equalsIgnoreCase(args[4])) {
 
-					return offlinePlayer == null ? null : offlinePlayer.getUniqueId();
+						// Load and retrieve from disk
+						for (OfflinePlayer pl : Bukkit.getOfflinePlayers()) {
+							if (nameOrId.equals(pl.getName())) {
+								skinProperties = new PlayerSkinProperties(nameOrId, pl.getUniqueId());
+								break;
+							}
+						}
+
+						// Retrieve from blocking web request as a last resort
+						if (skinProperties == null) {
+							org.bukkit.OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(nameOrId);
+
+							skinProperties = new PlayerSkinProperties(nameOrId, offlinePlayer.getUniqueId());
+						}
+					}
+
+					if (skinProperties == null) {
+						plugin.getComplement().sendMessage(sender, "There is no player existing with this name or id.");
+						return;
+					}
+
+					if (handler.setSkin(args[2], skinProperties) == EditingResult.NOT_EXIST) {
+						plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
+					}
 				});
-			}
-
-			if (id == null) {
-				plugin.getComplement().sendMessage(sender, "There is no player existing with this name or id.");
-				return;
-			}
-
-			if (handler.setSkin(args[2], id) == EditingResult.NOT_EXIST) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
-				return;
 			}
 
 			break;
@@ -214,22 +225,19 @@ public final class fakeplayers implements ICommand {
 		}
 	}
 
-	private OfflinePlayer getOfflinePlayerByName(String nameOrId) {
+	private CompletableFuture<PlayerSkinProperties> idOfPlayer(String playerName) {
 		try {
-			OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(nameOrId);
+			OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(playerName);
 
 			if (offlinePlayer != null) {
-				return offlinePlayer;
+				CompletableFuture<PlayerSkinProperties> future = new CompletableFuture<>();
+
+				future.complete(new PlayerSkinProperties(offlinePlayer.getName(), offlinePlayer.getUniqueId(), null, null));
+				return future;
 			}
 		} catch (NoSuchMethodError ignored) {
 		}
 
-		for (OfflinePlayer pl : Bukkit.getOfflinePlayers()) {
-			if (nameOrId.equals(pl.getName())) {
-				return pl;
-			}
-		}
-
-		return null;
+		return hu.montlikadani.tablist.utils.datafetcher.URLDataFetcher.fetchProfile(playerName);
 	}
 }

@@ -61,13 +61,13 @@ public final class Util {
 	}
 
 	public static Optional<UUID> tryParseId(String uuid) {
-		if (uuid == null || uuid.length() < 36) {
+		if (uuid == null) {
 			return Optional.empty();
 		}
 
 		try {
 			return Optional.of(UUID.fromString(uuid));
-		} catch (IllegalArgumentException e) {
+		} catch (IllegalArgumentException ignored) {
 		}
 
 		return Optional.empty();

@@ -3,7 +3,6 @@ package hu.montlikadani.tablist.tablist.fakeplayers;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -168,14 +167,14 @@ public final class FakePlayerHandler {
 		return EditingResult.OK;
 	}
 
-	public EditingResult setSkin(String name, UUID uuid) {
+	public EditingResult setSkin(String name, hu.montlikadani.tablist.utils.PlayerSkinProperties skinProperties) {
 		Optional<IFakePlayer> fp = getFakePlayerByName(name);
 
 		if (!fp.isPresent()) {
 			return EditingResult.NOT_EXIST;
 		}
 
-		plugin.getConf().getFakeplayers().set("list." + name + ".headuuid", uuid.toString());
+		plugin.getConf().getFakeplayers().set("list." + name + ".headuuid", skinProperties.playerId.toString());
 
 		try {
 			plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
@@ -184,7 +183,7 @@ public final class FakePlayerHandler {
 			return EditingResult.UNKNOWN;
 		}
 
-		fp.get().setSkin(uuid);
+		fp.get().setSkin(skinProperties);
 		return EditingResult.OK;
 	}
 
