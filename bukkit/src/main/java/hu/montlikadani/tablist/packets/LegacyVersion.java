@@ -321,10 +321,6 @@ public final class LegacyVersion implements IPacketNM {
                     }
                 }
 
-                if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
-                    return entityPlayerConstructor.newInstance(getServer(minecraftServer), worldServer, profile, null);
-                }
-
                 return entityPlayerConstructor.newInstance(getServer(minecraftServer), worldServer, profile);
             }
 
@@ -407,12 +403,7 @@ public final class LegacyVersion implements IPacketNM {
                 Object gameMode = interactGameModeMethod.invoke(interactManagerInstance);
 
                 if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
-                    if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
-                        infoData = ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, gameMode,
-                                ReflectionUtils.EMPTY_COMPONENT, null);
-                    } else {
-                        infoData = ClazzContainer.getPlayerInfoDataConstructor().newInstance(updatePacket, profile, ping, gameMode, ReflectionUtils.EMPTY_COMPONENT);
-                    }
+                    infoData = ClazzContainer.getPlayerInfoDataConstructor().newInstance(updatePacket, profile, ping, gameMode, ReflectionUtils.EMPTY_COMPONENT);
                 } else {
                     infoData = ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, gameMode, ReflectionUtils.EMPTY_COMPONENT);
                 }
@@ -538,11 +529,7 @@ public final class LegacyVersion implements IPacketNM {
                 Object packet;
 
                 if (playerInfoDataConstr.getParameterCount() == 5) {
-                    if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
-                        packet = playerInfoDataConstr.newInstance(profile, ping, gameMode, component, null);
-                    } else {
-                        packet = playerInfoDataConstr.newInstance(info, profile, ping, gameMode, component);
-                    }
+                    packet = playerInfoDataConstr.newInstance(info, profile, ping, gameMode, component);
                 } else {
                     packet = playerInfoDataConstr.newInstance(profile, ping, gameMode, component);
                 }
@@ -947,11 +934,7 @@ public final class LegacyVersion implements IPacketNM {
                             Object component = ClazzContainer.getPlayerInfoDisplayName().get(entry);
 
                             if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
-                                if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
-                                    players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeSurvival(), component, null));
-                                } else {
-                                    players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(msg, profile, ping, ClazzContainer.getGameModeSurvival(), component));
-                                }
+                                players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(msg, profile, ping, ClazzContainer.getGameModeSurvival(), component));
                             } else {
                                 players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeSurvival(), component));
                             }

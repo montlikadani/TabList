@@ -10,6 +10,7 @@ public final class URLDataFetcher {
 
     static {
         DATA_FETCHERS.add(new hu.montlikadani.tablist.utils.datafetcher.impl.AshconProfile());
+        DATA_FETCHERS.add(new hu.montlikadani.tablist.utils.datafetcher.impl.MineToolsProfile());
         DATA_FETCHERS.add(new hu.montlikadani.tablist.utils.datafetcher.impl.SessionServerProfile());
     }
 

@@ -26,7 +26,7 @@ public final class AshconProfile implements hu.montlikadani.tablist.utils.datafe
             return null;
         }
 
-        com.google.gson.JsonElement rawTextureObject = texturesElement.getAsJsonObject().get("raw");
+        JsonElement rawTextureObject = texturesElement.getAsJsonObject().get("raw");
 
         if (rawTextureObject == null) {
             return null;
@@ -35,8 +35,9 @@ public final class AshconProfile implements hu.montlikadani.tablist.utils.datafe
         String value = rawTextureObject.getAsJsonObject().get("value").getAsString();
         json = UrlDataReader.decodeSkinValue(value);
 
-        return new PlayerSkinProperties(playerIdOrName,
-                hu.montlikadani.tablist.utils.Util.tryParseId(playerIdElement.getAsString()).orElse(null), value,
+        java.util.UUID id = hu.montlikadani.tablist.utils.Util.tryParseId(playerIdElement.getAsString()).orElse(null);
+
+        return new PlayerSkinProperties(id == null ? playerIdOrName : null, id, value,
                 json.get("textures").getAsJsonObject().get("SKIN").getAsJsonObject().get("url").getAsString());
     }
 }

@@ -152,7 +152,7 @@ public final class fakeplayers implements ICommand {
 					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
 				}
 			} else {
-				idOfPlayer(nameOrId).whenComplete((skinProperties, t) -> {
+				fetchPlayerProfile(nameOrId).whenComplete((skinProperties, t) -> {
 					if (skinProperties == null && args.length > 4 && "--force".equalsIgnoreCase(args[4])) {
 
 						// Load and retrieve from disk
@@ -225,14 +225,14 @@ public final class fakeplayers implements ICommand {
 		}
 	}
 
-	private CompletableFuture<PlayerSkinProperties> idOfPlayer(String playerName) {
+	private CompletableFuture<PlayerSkinProperties> fetchPlayerProfile(String playerName) {
 		try {
 			OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(playerName);
 
 			if (offlinePlayer != null) {
 				CompletableFuture<PlayerSkinProperties> future = new CompletableFuture<>();
 
-				future.complete(new PlayerSkinProperties(offlinePlayer.getName(), offlinePlayer.getUniqueId(), null, null));
+				future.complete(new PlayerSkinProperties(offlinePlayer.getName(), offlinePlayer.getUniqueId()));
 				return future;
 			}
 		} catch (NoSuchMethodError ignored) {
