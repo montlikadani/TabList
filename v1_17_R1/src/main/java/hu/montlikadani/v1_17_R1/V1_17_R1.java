@@ -243,10 +243,12 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public PacketPlayOutScoreboardTeam unregisterBoardTeam(String teamName) {
-        for (ScoreboardTeam team : new HashSet<>(scoreboardTeams)) {
-            if (team.getName().equals(teamName)) {
-                scoreboardTeams.remove(team);
-                return PacketPlayOutScoreboardTeam.a(team);
+        synchronized (scoreboardTeams) {
+            for (ScoreboardTeam team : new HashSet<>(scoreboardTeams)) {
+                if (team.getName().equals(teamName)) {
+                    scoreboardTeams.remove(team);
+                    return PacketPlayOutScoreboardTeam.a(team);
+                }
             }
         }
 

@@ -299,10 +299,12 @@ public final class V1_19_R3 implements IPacketNM {
 
     @Override
     public PacketPlayOutScoreboardTeam unregisterBoardTeam(String teamName) {
-        for (ScoreboardTeam team : new HashSet<>(scoreboardTeams)) {
-            if (team.b().equals(teamName)) {
-                scoreboardTeams.remove(team);
-                return PacketPlayOutScoreboardTeam.a(team);
+        synchronized (scoreboardTeams) {
+            for (ScoreboardTeam team : new HashSet<>(scoreboardTeams)) {
+                if (team.b().equals(teamName)) {
+                    scoreboardTeams.remove(team);
+                    return PacketPlayOutScoreboardTeam.a(team);
+                }
             }
         }
 
