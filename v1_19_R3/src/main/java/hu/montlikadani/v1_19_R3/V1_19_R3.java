@@ -9,10 +9,8 @@ import java.util.Set;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundPlayerChatPacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
-import net.minecraft.network.protocol.game.PacketPlayOutAnimation;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective;
@@ -35,7 +33,6 @@ import org.bukkit.scoreboard.Team;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -44,7 +41,6 @@ import java.util.UUID;
 public final class V1_19_R3 implements IPacketNM {
 
     private Field entriesField, playerNetworkManagerField;
-    private final IChatBaseComponent emptyComponent = IChatBaseComponent.ChatSerializer.a("");
 
     private final Scoreboard scoreboard = new Scoreboard();
 
@@ -127,48 +123,6 @@ public final class V1_19_R3 implements IPacketNM {
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
 
         return new EntityPlayer(server, server.D(), profile);
-    }
-
-    @Override
-    public void addPlayersToTab(Player source, Player... targets) {
-        List<EntityPlayer> players = new ArrayList<>(targets.length);
-
-        for (Player player : targets) {
-            players.add(getPlayerHandle(player));
-        }
-
-        sendPacket(source, ClientboundPlayerInfoUpdatePacket.a(players));
-    }
-
-    @Override
-    public void removePlayersFromTab(Player source, Collection<? extends Player> players) {
-        EntityPlayer player = getPlayerHandle(source);
-
-        sendPacket(player, new ClientboundPlayerInfoRemovePacket(players.stream().map(Player::getUniqueId)
-                .collect(java.util.stream.Collectors.toList())));
-        sendUpdatePacket(player);
-    }
-
-    @Override
-    public void appendPlayerWithoutListed(Player source) {
-        sendUpdatePacket(getPlayerHandle(source));
-    }
-
-    private void sendUpdatePacket(EntityPlayer from) {
-        ClientboundPlayerInfoUpdatePacket updatePacket = ClientboundPlayerInfoUpdatePacket.a(Collections.singletonList(from));
-        net.minecraft.network.chat.RemoteChatSession chatSession = from.X();
-
-        setEntriesField(updatePacket, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.b(from.fI().getId(), from.fI(), false, from.e,
-                from.d.b(), emptyComponent, chatSession == null ? null : chatSession.b())));
-
-        PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
-
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            EntityPlayer entityPlayer = getPlayerHandle(player);
-
-            sendPacket(entityPlayer, updatePacket);
-            sendPacket(entityPlayer, animatePacket);
-        }
     }
 
     @Override
@@ -415,29 +369,6 @@ public final class V1_19_R3 implements IPacketNM {
                     }
 
                     super.write(ctx, msg, promise);
-                    return;
-                }
-
-                if (cl == ClientboundPlayerChatPacket.class) {
-                    Player player = Bukkit.getPlayer(listenerPlayerId);
-
-                    if (player == null) {
-                        break;
-                    }
-
-                    ClientboundPlayerChatPacket chatPacket = (ClientboundPlayerChatPacket) msg;
-                    IChatBaseComponent content = chatPacket.f();
-
-                    if (content == null) {
-                        content = IChatBaseComponent.b(chatPacket.e().a());
-                    }
-
-                    java.util.Optional<net.minecraft.network.chat.ChatMessageType.a> chatType = chatPacket.h().a(((CraftServer) Bukkit.getServer()).getServer().aX());
-
-                    if (chatType.isPresent()) {
-                        sendPacket(player, new net.minecraft.network.protocol.game.ClientboundSystemChatPacket(chatType.get().a(content), false));
-                    }
-
                     return;
                 }
 

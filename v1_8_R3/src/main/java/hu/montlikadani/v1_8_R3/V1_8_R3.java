@@ -8,10 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import net.minecraft.server.v1_8_R3.EnumChatFormat;
-import net.minecraft.server.v1_8_R3.PacketPlayOutAnimation;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.NameTagVisibility;
@@ -47,7 +45,6 @@ public final class V1_8_R3 implements IPacketNM {
 
 	private Field headerField, footerField, entriesField, infoList, playerInfoAction, scoreboardTeamPlayers, scoreboardTeamPrefix, scoreboardTeamSuffix,
 		scoreboardTeamNameTagVisibility, scoreboardTeamEnumChatFormat, scoreboardTeamName;
-	private final IChatBaseComponent emptyComponent = IChatBaseComponent.ChatSerializer.a("");
 
 	private final Scoreboard scoreboard = new Scoreboard();
 
@@ -133,40 +130,6 @@ public final class V1_8_R3 implements IPacketNM {
 		WorldServer worldServer = MinecraftServer.getServer().getWorldServer(0);
 
 		return new EntityPlayer(MinecraftServer.getServer(), worldServer, profile, new PlayerInteractManager(worldServer));
-	}
-
-	@Override
-	public void addPlayersToTab(Player source, Player... targets) {
-		List<EntityPlayer> players = new ArrayList<>(targets.length);
-
-		for (Player player : targets) {
-			players.add(getPlayerHandle(player));
-		}
-
-		sendPacket(source, new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, players));
-	}
-
-	@Override
-	public void removePlayersFromTab(Player source, Collection<? extends Player> players) {
-		sendPacket(getPlayerHandle(source),
-				new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, players.stream().map(this::getPlayerHandle).collect(Collectors.toList())));
-	}
-
-	@Override
-	public void appendPlayerWithoutListed(Player source) {
-		EntityPlayer from = getPlayerHandle(source);
-		PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, Collections.singletonList(from));
-
-		setEntriesField(updatePacket, Collections.singletonList(updatePacket.new PlayerInfoData(from.getProfile(), from.ping, from.playerInteractManager.getGameMode(), emptyComponent)));
-
-		PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
-
-		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-			EntityPlayer entityPlayer = getPlayerHandle(player);
-
-			sendPacket(entityPlayer, updatePacket);
-			sendPacket(entityPlayer, animatePacket);
-		}
 	}
 
 	@Override

@@ -2,8 +2,6 @@ package hu.montlikadani.api;
 
 import org.bukkit.entity.Player;
 
-import java.util.Collection;
-
 public interface IPacketNM {
 
     String PACKET_INJECTOR_NAME = "TLPacketInjector";
@@ -21,12 +19,6 @@ public interface IPacketNM {
     void sendTabTitle(Player player, Object header, Object footer);
 
     Object getNewEntityPlayer(com.mojang.authlib.GameProfile profile);
-
-    void addPlayersToTab(Player source, Player... targets);
-
-    void appendPlayerWithoutListed(Player source);
-
-    void removePlayersFromTab(Player source, Collection<? extends Player> players);
 
     Object updateDisplayNamePacket(Object entityPlayer, Object component, boolean listName);
 

@@ -26,11 +26,10 @@ import java.util.UUID;
 
 public final class LegacyVersion implements IPacketNM {
 
-    private Method playerHandleMethod, sendPacketMethod, getHandleWorldMethod, getServerMethod, interactGameModeMethod, gameProfileMethod, jsonComponentMethod,
+    private Method playerHandleMethod, sendPacketMethod, getHandleWorldMethod, getServerMethod, jsonComponentMethod,
             chatSerializerMethodA;
-    private Field playerConnectionField, headerField, footerField, listNameField, playerTeamNameField, networkManager, channel, playerLatency,
-            interactManagerField;
-    private Constructor<?> playerListHeaderFooterConstructor, entityPlayerConstructor, interactManagerConstructor, packetPlayOutAnimation;
+    private Field playerConnectionField, headerField, footerField, listNameField, playerTeamNameField, networkManager, channel;
+    private Constructor<?> playerListHeaderFooterConstructor, entityPlayerConstructor, interactManagerConstructor;
     private Class<?> minecraftServer, interactManager, craftServerClass, chatSerializer;
 
     private final List<Object> playerTeams = new ArrayList<>();
@@ -343,90 +342,6 @@ public final class LegacyVersion implements IPacketNM {
         }
 
         return null;
-    }
-
-    @Override
-    public void addPlayersToTab(Player source, Player... targets) {
-        List<Object> players = new ArrayList<>(targets.length);
-
-        for (Player player : targets) {
-            players.add(getPlayerHandle(player));
-        }
-
-        sendPacket(source, newPlayerInfoUpdatePacketAdd(players));
-    }
-
-    @Override
-    public void removePlayersFromTab(Player source, Collection<? extends Player> players) {
-        Object handle = getPlayerHandle(source);
-
-        sendPacket(handle, removeEntityPlayers(players.stream().map(this::getPlayerHandle).toArray()));
-        sendUpdatePacket(handle);
-    }
-
-    @Override
-    public void appendPlayerWithoutListed(Player source) {
-        sendUpdatePacket(getPlayerHandle(source));
-    }
-
-    private void sendUpdatePacket(Object player) {
-        try {
-            Object updatePacket = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), toArray(player));
-
-            if (playerLatency == null && (playerLatency = ClazzContainer.fieldByTypeOrName(player.getClass(), int.class, "latency", "ping", "g", "f", "e")) == null) {
-                return;
-            }
-
-            // This is why I hate
-            if (gameProfileMethod == null && (gameProfileMethod = ClazzContainer.methodByTypeAndName(player.getClass().getSuperclass(), GameProfile.class, null,
-                    "getProfile", "fi", "getGameProfile", "cS", "dH", "fp", "da", "cK", "eA", "ez", "ed", "do", "da", "cP", "cL")) == null) {
-                return;
-            }
-
-            if (interactManagerField == null && (interactManagerField = ClazzContainer.fieldByTypeOrName(player.getClass(), interactManager,
-                    "playerInteractManager", "d", "c", "gameMode")) == null) {
-                return;
-            }
-
-            Object infoData = null;
-
-            try {
-                Object interactManagerInstance = interactManagerField.get(player);
-
-                if (interactGameModeMethod == null) {
-                    interactGameModeMethod = ClazzContainer.methodByTypeAndName(interactManagerInstance.getClass(), ClazzContainer.getGameModeSurvival().getClass(), null,
-                            "b", "getGameModeForPlayer", "getGameMode");
-                }
-
-                int ping = playerLatency.getInt(player);
-                GameProfile profile = (GameProfile) gameProfileMethod.invoke(player);
-                Object gameMode = interactGameModeMethod.invoke(interactManagerInstance);
-
-                if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
-                    infoData = ClazzContainer.getPlayerInfoDataConstructor().newInstance(updatePacket, profile, ping, gameMode, ReflectionUtils.EMPTY_COMPONENT);
-                } else {
-                    infoData = ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, gameMode, ReflectionUtils.EMPTY_COMPONENT);
-                }
-            } catch (IllegalAccessException | InstantiationException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
-
-            setEntriesField(updatePacket, Collections.singletonList(infoData));
-
-            if (packetPlayOutAnimation == null) {
-                packetPlayOutAnimation = ClazzContainer.classByName("net.minecraft.network.protocol.game", "PacketPlayOutAnimation")
-                        .getConstructors()[1];
-            }
-
-            Object animatePacket = packetPlayOutAnimation.newInstance(player, 0);
-
-            for (Player pl : Bukkit.getOnlinePlayers()) {
-                sendPacket(pl, updatePacket);
-                sendPacket(pl, animatePacket);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

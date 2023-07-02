@@ -7,8 +7,6 @@ import java.util.HashSet;
 import java.util.Set;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundPlayerChatPacket;
-import net.minecraft.network.protocol.game.PacketPlayOutAnimation;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective;
@@ -30,15 +28,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public final class V1_19_R1 implements IPacketNM {
-
-    private final IChatBaseComponent emptyComponent = IChatBaseComponent.ChatSerializer.a("");
 
     private final Scoreboard scoreboard = new Scoreboard();
 
@@ -96,48 +90,6 @@ public final class V1_19_R1 implements IPacketNM {
         MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
 
         return new EntityPlayer(server, server.C(), profile, null);
-    }
-
-    @Override
-    public void addPlayersToTab(Player source, Player... targets) {
-        List<EntityPlayer> players = new ArrayList<>(targets.length);
-
-        for (Player player : targets) {
-            players.add(getPlayerHandle(player));
-        }
-
-        sendPacket(source, new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a, players));
-    }
-
-    @Override
-    public void removePlayersFromTab(Player source, Collection<? extends Player> players) {
-        EntityPlayer entityPlayer = getPlayerHandle(source);
-
-        sendPacket(entityPlayer, new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.e,
-                players.stream().map(this::getPlayerHandle).collect(Collectors.toList())));
-        sendUpdatePacket(entityPlayer);
-    }
-
-    @Override
-    public void appendPlayerWithoutListed(Player source) {
-        sendUpdatePacket(getPlayerHandle(source));
-    }
-
-    private void sendUpdatePacket(EntityPlayer from) {
-        PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a, Collections.singletonList(from));
-        net.minecraft.world.entity.player.ProfilePublicKey publicKey = from.fz();
-
-        setEntriesField(updatePacket, Collections.singletonList(new PacketPlayOutPlayerInfo.PlayerInfoData(from.fy(), from.e, from.d.b(),
-                emptyComponent, publicKey == null ? null : publicKey.b())));
-
-        PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
-
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            EntityPlayer entityPlayer = getPlayerHandle(player);
-
-            sendPacket(entityPlayer, updatePacket);
-            sendPacket(entityPlayer, animatePacket);
-        }
     }
 
     @Override
@@ -373,29 +325,6 @@ public final class V1_19_R1 implements IPacketNM {
                     }
 
                     super.write(ctx, msg, promise);
-                    return;
-                }
-
-                if (cl == ClientboundPlayerChatPacket.class) {
-                    Player player = Bukkit.getPlayer(listenerPlayerId);
-
-                    if (player == null) {
-                        break;
-                    }
-
-                    ClientboundPlayerChatPacket chatPacket = (ClientboundPlayerChatPacket) msg;
-                    IChatBaseComponent content = chatPacket.b().c();
-
-                    if (content == null) {
-                        content = IChatBaseComponent.b(chatPacket.b().b().b());
-                    }
-
-                    java.util.Optional<net.minecraft.network.chat.ChatMessageType.a> chatType = chatPacket.c().a(((CraftServer) Bukkit.getServer()).getServer().aX());
-
-                    if (chatType.isPresent()) {
-                        sendPacket(player, new net.minecraft.network.protocol.game.ClientboundSystemChatPacket(chatType.get().a(content), false));
-                    }
-
                     return;
                 }
 

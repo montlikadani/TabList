@@ -23,7 +23,6 @@ import hu.montlikadani.tablist.config.CommentedConfig;
 import hu.montlikadani.tablist.config.Configuration;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
-import hu.montlikadani.tablist.listeners.HidePlayerListener;
 import hu.montlikadani.tablist.listeners.Listeners;
 import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.TabManager;
@@ -219,7 +218,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	}
 
 	private void loadPacketListener() {
-		if (!ConfigValues.isRemoveGrayColorFromTabInSpec() && !ConfigValues.isHidePlayersFromTab() && !ConfigValues.isPrefixSuffixEnabled()) {
+		if (!ConfigValues.isRemoveGrayColorFromTabInSpec() && !ConfigValues.isPrefixSuffixEnabled()) {
 			getServer().getOnlinePlayers().forEach(PacketNM.NMS_PACKET::removePlayerChannelListener);
 			packetClasses = null;
 			return;
@@ -238,21 +237,13 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			}
 		}
 
-		try {
-			if (ConfigValues.isHidePlayersFromTab()) {
-				packetClasses.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerChatPacket"));
-			} else if (ConfigValues.isRemoveGrayColorFromTabInSpec()) {
-				packetClasses.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket"));
-			}
-		} catch (ClassNotFoundException e) {
+		if (ConfigValues.isRemoveGrayColorFromTabInSpec()) {
 			try {
-				if (ConfigValues.isHidePlayersFromTab()) {
-					packetClasses.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerChatPacket"));
-				} else if (ConfigValues.isRemoveGrayColorFromTabInSpec()) {
+				packetClasses.add(Class.forName("net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket"));
+			} catch (ClassNotFoundException e) {
+				try {
 					packetClasses.add(Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo"));
-				}
-			} catch (ClassNotFoundException ex) {
-				if (ConfigValues.isRemoveGrayColorFromTabInSpec()) {
+				} catch (ClassNotFoundException ex) {
 					try {
 						packetClasses.add(Class.forName("net.minecraft.server." + ServerVersion.nmsVersion() + ".PacketPlayOutPlayerInfo"));
 					} catch (ClassNotFoundException ignored) {
@@ -270,10 +261,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		HandlerList.unregisterAll(this);
 
 		getServer().getPluginManager().registerEvents(new Listeners(this), this);
-
-		if (ConfigValues.isHidePlayersFromTab()) {
-			new HidePlayerListener(this);
-		}
 
 		if (ConfigValues.isAfkStatusEnabled() || ConfigValues.isHidePlayerFromTabAfk()) {
 			if (isPluginEnabled("Essentials")) {
@@ -414,27 +401,21 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			PacketNM.NMS_PACKET.addPlayerChannelListener(player, packetClasses);
 		}
 
-		if (ConfigValues.isHidePlayersFromTab()) {
-			user.removeFromPlayerList();
-		} else {
-			user.addToPlayerList();
+		if (ConfigValues.isPerWorldPlayerList()) {
+			newTLScheduler().submitSync(() -> {
+				user.setHidden(true);
 
-			if (ConfigValues.isPerWorldPlayerList()) {
-				newTLScheduler().submitSync(() -> {
-					user.setHidden(true);
+				if (user.isHidden()) {
+					user.getPlayerList().displayInWorld();
+				}
 
-					if (user.isHidden()) {
-						user.getPlayerList().displayInWorld();
-					}
-
-					return 1;
-				});
-			} else if (user.isHidden()) {
-				newTLScheduler().submitSync(() -> {
-					user.setHidden(false);
-					return 1;
-				});
-			}
+				return 1;
+			});
+		} else if (user.isHidden()) {
+			newTLScheduler().submitSync(() -> {
+				user.setHidden(false);
+				return 1;
+			});
 		}
 	}
 

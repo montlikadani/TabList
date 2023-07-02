@@ -16,8 +16,6 @@ count-vanished-staffs: true
 
 hide-player-from-tab-when-afk: false
 
-hide-players-from-tablist: false
-
 per-world-player-list:
   enabled: false
 

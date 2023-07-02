@@ -4,7 +4,6 @@ import hu.montlikadani.tablist.Objects;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.tablist.TabHandler;
 import hu.montlikadani.tablist.tablist.groups.GroupPlayer;
-import hu.montlikadani.tablist.tablist.playerlist.HidePlayers;
 import hu.montlikadani.tablist.tablist.playerlist.PlayerList;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import org.bukkit.entity.Player;
@@ -20,7 +19,6 @@ public final class TabListUser {
 	private transient final TabHandler tabHandler;
 	private transient PlayerScore playerScore;
 
-	private transient HidePlayers hidePlayers;
 	private transient PlayerList playerList;
 
 	private boolean tabVisible = true;
@@ -69,24 +67,6 @@ public final class TabListUser {
 		} else if (playerList != null) {
 			playerList.showEveryone();
 			playerList = null;
-		}
-	}
-
-	public boolean isRemovedFromPlayerList() {
-		return hidePlayers != null;
-	}
-
-	public void removeFromPlayerList() {
-		if (hidePlayers == null) {
-			hidePlayers = new HidePlayers(uniqueId);
-			hidePlayers.removePlayerFromTab();
-		}
-	}
-
-	public void addToPlayerList() {
-		if (hidePlayers != null) {
-			hidePlayers.addPlayerToTab();
-			hidePlayers = null;
 		}
 	}
 

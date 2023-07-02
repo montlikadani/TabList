@@ -15,7 +15,7 @@ import hu.montlikadani.tablist.config.CommentedConfig;
 public final class ConfigValues {
 
 	private static boolean logConsole, placeholderAPI, perWorldPlayerList, fakePlayers, countFakePlayersToOnlinePlayers, removeGrayColorFromTabInSpec, ignoreVanishedPlayers,
-			countVanishedStaff, hidePlayerFromTabAfk, hidePlayersFromTab, afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, pingFormatEnabled,
+			countVanishedStaff, hidePlayerFromTabAfk, afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, pingFormatEnabled,
 			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish, preferPrimaryVaultGroup, assignGlobalGroup,
 			followNameTagVisibility, useLPWeightToOrderGroupsFirst;
 
@@ -63,8 +63,6 @@ public final class ConfigValues {
 		c.addComment("count-vanished-staffs", "If enabled, vanished players with \"tablist.onlinestaff\" permission added will be counted in %staff-online% placeholder",
 				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin");
 		c.addComment("hide-player-from-tab-when-afk", "Hide player from player list when a player is AFK?", "Requires Essentials or CMI plugin");
-		c.addComment("hide-players-from-tablist", "If enabled, all players will be removed from the player list, resulting to only",
-				"display the tablist with header and footer without players.");
 
 		c.addComment("per-world-player-list", "Different player list in different world.");
 		c.addComment("per-world-player-list.world-groups", "You can specify worlds, which will share the same list of players");
@@ -146,7 +144,6 @@ public final class ConfigValues {
 		ignoreVanishedPlayers = c.get("ignore-vanished-players-in-online-players", false);
 		countVanishedStaff = c.get("count-vanished-staffs", true);
 		hidePlayerFromTabAfk = c.get("hide-player-from-tab-when-afk", false);
-		hidePlayersFromTab = c.get("hide-players-from-tablist", false);
 		perWorldPlayerList = c.get("per-world-player-list.enabled", c.getBoolean("per-world-player-list"));
 
 		ConfigurationSection section = c.getConfigurationSection("per-world-player-list.world-groups");
@@ -280,6 +277,7 @@ public final class ConfigValues {
 		// Here comes the options that removed
 		c.set("change-prefix-suffix-in-tablist.hide-group-when-player-afk", null);
 		c.set("placeholder-format.memory-bar", null);
+		c.set("hide-players-from-tablist", null);
 
 		c.save();
 	}
@@ -318,10 +316,6 @@ public final class ConfigValues {
 
 	public static boolean isHidePlayerFromTabAfk() {
 		return hidePlayerFromTabAfk;
-	}
-
-	public static boolean isHidePlayersFromTab() {
-		return hidePlayersFromTab;
 	}
 
 	public static boolean isAfkStatusEnabled() {

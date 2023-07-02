@@ -2,7 +2,6 @@ package hu.montlikadani.v1_17_R1;
 
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.PacketPlayOutAnimation;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective;
@@ -22,17 +21,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
-
-    private final IChatBaseComponent emptyComponent = IChatBaseComponent.ChatSerializer.a("");
 
     private final Scoreboard scoreboard = new Scoreboard();
 
@@ -90,40 +85,6 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
         net.minecraft.server.MinecraftServer server = ((org.bukkit.craftbukkit.v1_17_R1.CraftServer) Bukkit.getServer()).getServer();
 
         return new EntityPlayer(server, server.E(), profile);
-    }
-
-    @Override
-    public void addPlayersToTab(Player source, Player... targets) {
-        List<EntityPlayer> players = new ArrayList<>(targets.length);
-
-        for (Player player : targets) {
-            players.add(getPlayerHandle(player));
-        }
-
-        sendPacket(source, new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a, players));
-    }
-
-    @Override
-    public void removePlayersFromTab(Player source, Collection<? extends Player> players) {
-        sendPacket(getPlayerHandle(source), new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.e,
-                players.stream().map(this::getPlayerHandle).collect(Collectors.toList())));
-    }
-
-    @Override
-    public void appendPlayerWithoutListed(Player source) {
-        EntityPlayer from = getPlayerHandle(source);
-        PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a, Collections.singletonList(from));
-
-        setEntriesField(updatePacket, Collections.singletonList(new PacketPlayOutPlayerInfo.PlayerInfoData(from.getProfile(), from.e, from.d.c(), emptyComponent)));
-
-        PacketPlayOutAnimation animatePacket = new PacketPlayOutAnimation(from, 0);
-
-        for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-            EntityPlayer entityPlayer = getPlayerHandle(player);
-
-            sendPacket(entityPlayer, updatePacket);
-            sendPacket(entityPlayer, animatePacket);
-        }
     }
 
     @Override
