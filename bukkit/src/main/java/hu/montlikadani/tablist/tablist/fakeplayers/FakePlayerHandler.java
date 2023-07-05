@@ -12,7 +12,7 @@ import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 
 public final class FakePlayerHandler {
 
-	protected final TabList plugin;
+	private final TabList plugin;
 
 	public final Set<IFakePlayer> fakePlayers = new java.util.HashSet<>();
 
@@ -38,16 +38,46 @@ public final class FakePlayerHandler {
 		fakePlayers.clear();
 
 		if (!ConfigValues.isFakePlayers()) {
+			java.io.File file = plugin.getConf().getFakeplayersFile();
+
+			if (!file.exists()) {
+				return;
+			}
+
+			if (file.length() == 0L) {
+				file.delete();
+				return;
+			}
+
+			FileConfiguration config = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(file);
+			ConfigurationSection section = config.getConfigurationSection("list");
+
+			if (section != null && section.getKeys(false).isEmpty()) {
+				config.set("list", null);
+
+				try {
+					config.save(file);
+				} catch (IOException ex) {
+					ex.printStackTrace();
+				}
+
+				if (file.length() == 0L) {
+					file.delete();
+				}
+			}
+
 			return;
 		}
 
-		ConfigurationSection cs = plugin.getConf().getFakeplayers().getConfigurationSection("list");
-		if (cs == null) {
-			cs = plugin.getConf().getFakeplayers().createSection("list");
+		ConfigurationSection section = plugin.getConf().getFakeplayers().getConfigurationSection("list");
+
+		if (section == null) {
+			return;
 		}
 
-		for (String name : cs.getKeys(false)) {
-			FakePlayer fp = new FakePlayer(name, cs.getString(name + ".displayname", ""), cs.getString(name + ".headuuid", ""), cs.getInt(name + ".ping", -1));
+		for (String name : section.getKeys(false)) {
+			FakePlayer fp = new FakePlayer(name, section.getString(name + ".displayname", ""), section.getString(name + ".headuuid", ""),
+					section.getInt(name + ".ping", -1));
 			fp.show();
 			fakePlayers.add(fp);
 		}

@@ -76,12 +76,6 @@ public class Configuration {
 		return YamlConfiguration.loadConfiguration(file);
 	}
 
-	public void deleteEmptyFiles() {
-		if (fakePlayersFile.length() == 0L) {
-			fakePlayersFile.delete();
-		}
-	}
-
 	public CommentedConfig getConfig() {
 		return config;
 	}

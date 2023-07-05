@@ -156,8 +156,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		tabManager.toggleBase.saveToggledTabs(this);
 		fakePlayerHandler.removeAllFakePlayer();
-
-		conf.deleteEmptyFiles();
 		HandlerList.unregisterAll(this);
 	}
 

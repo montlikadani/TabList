@@ -6,12 +6,12 @@ import java.util.concurrent.CompletableFuture;
 
 public final class URLDataFetcher {
 
-    private static final java.util.List<RequestType> DATA_FETCHERS = new java.util.ArrayList<>(2);
+    private static final RequestType[] DATA_FETCHERS = new RequestType[3];
 
     static {
-        DATA_FETCHERS.add(new hu.montlikadani.tablist.utils.datafetcher.impl.AshconProfile());
-        DATA_FETCHERS.add(new hu.montlikadani.tablist.utils.datafetcher.impl.MineToolsProfile());
-        DATA_FETCHERS.add(new hu.montlikadani.tablist.utils.datafetcher.impl.SessionServerProfile());
+        DATA_FETCHERS[0] = new hu.montlikadani.tablist.utils.datafetcher.impl.AshconProfile();
+        DATA_FETCHERS[1] = new hu.montlikadani.tablist.utils.datafetcher.impl.MineToolsProfile();
+        DATA_FETCHERS[2] = new hu.montlikadani.tablist.utils.datafetcher.impl.SessionServerProfile();
     }
 
     public static CompletableFuture<PlayerSkinProperties> fetchProfile(String playerNameOrId) {
