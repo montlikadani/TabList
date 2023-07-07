@@ -31,7 +31,6 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
     private final Scoreboard scoreboard = new Scoreboard();
 
-    private final Set<ScoreboardTeam> scoreboardTeams = new HashSet<>();
     private final Set<TagTeam> tagTeams = new HashSet<>();
 
     @Override
@@ -148,9 +147,9 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public void createBoardTeam(String teamName, Player player, boolean followNameTagVisibility) {
-        ScoreboardTeam playerTeam = new ScoreboardTeam(scoreboard, teamName);
+        ScoreboardTeam playerTeam = scoreboard.createTeam(teamName);
 
-        playerTeam.getPlayerNameSet().add(player.getName());
+        scoreboard.addPlayerToTeam(player.getName(), playerTeam);
 
         if (followNameTagVisibility) {
             ScoreboardTeam.EnumNameTagVisibility visibility = null;
@@ -179,8 +178,6 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
             }
         }
 
-        scoreboardTeams.add(playerTeam);
-
         if (tagTeams.isEmpty()) {
             sendPacket(getPlayerHandle(player), PacketPlayOutScoreboardTeam.a(playerTeam, true));
             return;
@@ -204,10 +201,12 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public PacketPlayOutScoreboardTeam unregisterBoardTeam(String teamName) {
-        synchronized (scoreboardTeams) {
-            for (ScoreboardTeam team : new HashSet<>(scoreboardTeams)) {
+        java.util.Collection<ScoreboardTeam> teams = scoreboard.getTeams();
+
+        synchronized (teams) {
+            for (ScoreboardTeam team : new ArrayList<>(teams)) {
                 if (team.getName().equals(teamName)) {
-                    scoreboardTeams.remove(team);
+                    scoreboard.removeTeam(team);
                     return PacketPlayOutScoreboardTeam.a(team);
                 }
             }

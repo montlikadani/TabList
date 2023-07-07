@@ -36,7 +36,6 @@ public final class V1_18_R2 implements IPacketNM {
 
     private final Scoreboard scoreboard = new Scoreboard();
 
-    private final Set<ScoreboardTeam> scoreboardTeams = new HashSet<>();
     private final Set<TagTeam> tagTeams = new HashSet<>();
 
     @Override
@@ -153,9 +152,9 @@ public final class V1_18_R2 implements IPacketNM {
 
     @Override
     public void createBoardTeam(String teamName, Player player, boolean followNameTagVisibility) {
-        ScoreboardTeam playerTeam = new ScoreboardTeam(scoreboard, teamName);
+        ScoreboardTeam playerTeam = scoreboard.g(teamName);
 
-        playerTeam.g().add(player.getName());
+        scoreboard.a(player.getName(), playerTeam);
 
         if (followNameTagVisibility) {
             ScoreboardTeam.EnumNameTagVisibility visibility = null;
@@ -184,8 +183,6 @@ public final class V1_18_R2 implements IPacketNM {
             }
         }
 
-        scoreboardTeams.add(playerTeam);
-
         if (tagTeams.isEmpty()) {
             sendPacket(getPlayerHandle(player), PacketPlayOutScoreboardTeam.a(playerTeam, true));
             return;
@@ -209,10 +206,12 @@ public final class V1_18_R2 implements IPacketNM {
 
     @Override
     public PacketPlayOutScoreboardTeam unregisterBoardTeam(String teamName) {
-        synchronized (scoreboardTeams) {
-            for (ScoreboardTeam team : new HashSet<>(scoreboardTeams)) {
+        java.util.Collection<ScoreboardTeam> teams = scoreboard.g();
+
+        synchronized (teams) {
+            for (ScoreboardTeam team : new ArrayList<>(teams)) {
                 if (team.b().equals(teamName)) {
-                    scoreboardTeams.remove(team);
+                    scoreboard.d(team);
                     return PacketPlayOutScoreboardTeam.a(team);
                 }
             }
