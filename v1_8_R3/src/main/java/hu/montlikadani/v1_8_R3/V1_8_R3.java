@@ -132,6 +132,16 @@ public final class V1_8_R3 implements IPacketNM {
 	}
 
 	@Override
+	public int playerPing(Player player) {
+		return getPlayerHandle(player).ping;
+	}
+
+	@Override
+	public double serverTps() {
+		return MinecraftServer.getServer().recentTps[0];
+	}
+
+	@Override
 	public PacketPlayOutPlayerInfo updateDisplayNamePacket(Object entityPlayer, Object component, boolean listName) {
 		if (listName) {
 			setListName(entityPlayer, component);

@@ -15,9 +15,6 @@ import hu.montlikadani.tablist.tablist.TabText;
  */
 public final class TabListAPI {
 
-	private static java.lang.reflect.Field pingField, recentTpsField;
-	private static java.lang.reflect.Method serverMethod;
-
 	private static boolean isTpsMethodExists = false;
 	private static boolean isPingMethodExists = false;
 
@@ -25,17 +22,13 @@ public final class TabListAPI {
 		try {
 			Bukkit.getServer().getTPS();
 			isTpsMethodExists = true;
-		} catch (NoSuchMethodError e) {
-			try {
-				(serverMethod = Bukkit.getServer().getClass().getDeclaredMethod("getServer")).setAccessible(true);
-			} catch (NoSuchMethodException ex) {
-			}
+		} catch (NoSuchMethodError ignored) {
 		}
 
 		try {
 			Player.class.getDeclaredMethod("getPing");
 			isPingMethodExists = true;
-		} catch (NoSuchMethodException e) {
+		} catch (NoSuchMethodException ignored) {
 		}
 	}
 
@@ -83,23 +76,7 @@ public final class TabListAPI {
 	 * @return the current amount of ping of the given player
 	 */
 	public static int getPing(Player player) {
-		if (isPingMethodExists) {
-			return player.getPing();
-		}
-
-		try {
-			Object entityPlayer = PacketNM.NMS_PACKET.getPlayerHandle(player);
-
-			if (pingField == null) {
-				(pingField = entityPlayer.getClass().getField("ping")).setAccessible(true);
-			}
-
-			return pingField.getInt(entityPlayer);
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-
-		return 0;
+		return isPingMethodExists ? player.getPing() : PacketNM.NMS_PACKET.playerPing(player);
 	}
 
 	/**
@@ -108,21 +85,6 @@ public final class TabListAPI {
 	 * @return The first value of TPS array according to {@link org.bukkit.Server#getTPS()}
 	 */
 	public static double getTPS() {
-		if (isTpsMethodExists) {
-			return Bukkit.getServer().getTPS()[0];
-		}
-
-		try {
-			Object server = serverMethod.invoke(Bukkit.getServer());
-
-			if (recentTpsField == null) {
-				(recentTpsField = server.getClass().getField("recentTps")).setAccessible(true);
-			}
-
-			return ((double[]) recentTpsField.get(server))[0];
-		} catch (Exception ex) {
-		}
-
-		return 0.0;
+		return isTpsMethodExists ? Bukkit.getServer().getTPS()[0] : PacketNM.NMS_PACKET.serverTps();
 	}
 }

@@ -92,6 +92,11 @@ public final class V1_18_R2 implements IPacketNM {
     }
 
     @Override
+    public double serverTps() {
+        return ((CraftServer) Bukkit.getServer()).getServer().recentTps[0];
+    }
+
+    @Override
     public PacketPlayOutPlayerInfo updateDisplayNamePacket(Object entityPlayer, Object component, boolean listName) {
         if (listName) {
             setListName(entityPlayer, component);

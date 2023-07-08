@@ -28,7 +28,8 @@ public final class LegacyVersion implements IPacketNM {
 
     private Method playerHandleMethod, sendPacketMethod, getHandleWorldMethod, getServerMethod, jsonComponentMethod,
             chatSerializerMethodA;
-    private Field playerConnectionField, headerField, footerField, listNameField, playerTeamNameField, networkManager, channel;
+    private Field playerConnectionField, headerField, footerField, listNameField, playerTeamNameField, networkManager, channel,
+            recentTpsField, pingField;
     private Constructor<?> playerListHeaderFooterConstructor, entityPlayerConstructor, interactManagerConstructor;
     private Class<?> minecraftServer, interactManager, craftServerClass, chatSerializer;
 
@@ -53,6 +54,15 @@ public final class LegacyVersion implements IPacketNM {
                     null, "b", "playerConnection", "connection", "a");
 
             interactManager = ClazzContainer.classByName("net.minecraft.server.level", "PlayerInteractManager");
+
+            try {
+                minecraftServer = ClazzContainer.classByName("net.minecraft.server", "MinecraftServer");
+            } catch (ClassNotFoundException c) {
+                try {
+                    minecraftServer = ClazzContainer.classByName("net.minecraft.server.dedicated", "DedicatedServer");
+                } catch (ClassNotFoundException ignored) {
+                }
+            }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -95,6 +105,44 @@ public final class LegacyVersion implements IPacketNM {
     }
 
     @Override
+    public int playerPing(Player player) {
+        Object entityPlayer = getPlayerHandle(player);
+
+        if (pingField == null) {
+            pingField = ClazzContainer.fieldByTypeOrName(entityPlayer.getClass(), int.class, "ping", "latency");
+        }
+
+        if (pingField != null) {
+            try {
+                return pingField.getInt(entityPlayer);
+            } catch (IllegalAccessException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        return 0;
+    }
+
+    @Override
+    public double serverTps() {
+        if (recentTpsField == null) {
+            try {
+                (recentTpsField = minecraftServer.getField("recentTps")).setAccessible(true);
+            } catch (NoSuchFieldException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        try {
+             return ((double[]) recentTpsField.get(getServer()))[0];
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
+        }
+
+        return 0;
+    }
+
+    @Override
     public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
         Object entityPlayer = getPlayerHandle(player);
         Channel channel;
@@ -132,10 +180,10 @@ public final class LegacyVersion implements IPacketNM {
         }
     }
 
-    private Object getServer(Class<?> server) {
+    private Object getServer() {
         if (getServerMethod == null) {
             try {
-                getServerMethod = server.getMethod("getServer");
+                getServerMethod = minecraftServer.getMethod("getServer");
             } catch (NoSuchMethodException e) {
                 return null;
             }
@@ -149,7 +197,7 @@ public final class LegacyVersion implements IPacketNM {
             return getServerMethod.invoke(craftServerClass.cast(Bukkit.getServer()));
         } catch (Exception x) {
             try {
-                return getServerMethod.invoke(server);
+                return getServerMethod.invoke(minecraftServer);
             } catch (ReflectiveOperationException e) {
                 e.printStackTrace();
             }
@@ -289,17 +337,6 @@ public final class LegacyVersion implements IPacketNM {
 
     @Override
     public Object getNewEntityPlayer(GameProfile profile) {
-        if (minecraftServer == null) {
-            try {
-                minecraftServer = ClazzContainer.classByName("net.minecraft.server", "MinecraftServer");
-            } catch (ClassNotFoundException c) {
-                try {
-                    minecraftServer = ClazzContainer.classByName("net.minecraft.server.dedicated", "DedicatedServer");
-                } catch (ClassNotFoundException e) {
-                }
-            }
-        }
-
         org.bukkit.World world = Bukkit.getServer().getWorlds().get(0);
 
         try {
@@ -320,7 +357,7 @@ public final class LegacyVersion implements IPacketNM {
                     }
                 }
 
-                return entityPlayerConstructor.newInstance(getServer(minecraftServer), worldServer, profile);
+                return entityPlayerConstructor.newInstance(getServer(), worldServer, profile);
             }
 
             if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
@@ -336,7 +373,7 @@ public final class LegacyVersion implements IPacketNM {
                         profile.getClass(), interactManager);
             }
 
-            return entityPlayerConstructor.newInstance(getServer(minecraftServer), worldServer, profile, interactManagerConstructor.newInstance(worldServer));
+            return entityPlayerConstructor.newInstance(getServer(), worldServer, profile, interactManagerConstructor.newInstance(worldServer));
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -16,7 +16,7 @@ repositories {
 dependencies {
 	compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8, so we must use this
 
-	compileOnly("org.spigotmc:spigot-api:1.20-R0.1-SNAPSHOT") {
+	compileOnly("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT") {
 		exclude("com.google.guava", "guava")
 		exclude("com.google.code.gson", "gson")
 		exclude("junit", "junit")

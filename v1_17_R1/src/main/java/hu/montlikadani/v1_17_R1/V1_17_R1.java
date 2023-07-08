@@ -17,6 +17,7 @@ import net.minecraft.world.scores.ScoreboardTeam;
 import net.minecraft.world.scores.ScoreboardTeamBase;
 import net.minecraft.world.scores.criteria.IScoreboardCriteria;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_17_R1.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -81,9 +82,14 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public EntityPlayer getNewEntityPlayer(com.mojang.authlib.GameProfile profile) {
-        net.minecraft.server.MinecraftServer server = ((org.bukkit.craftbukkit.v1_17_R1.CraftServer) Bukkit.getServer()).getServer();
+        net.minecraft.server.MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
 
         return new EntityPlayer(server, server.E(), profile);
+    }
+
+    @Override
+    public double serverTps() {
+        return ((CraftServer) Bukkit.getServer()).getServer().recentTps[0];
     }
 
     @Override
