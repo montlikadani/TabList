@@ -33,12 +33,12 @@ public final class Util {
 		}
 	}
 
-	public static String applyMinimessageFormat(String value) {
-		return applyMinimessageFormat(value, true);
+	public static String applyTextFormat(String value) {
+		return applyTextFormat(value, true);
 	}
 
 	@SuppressWarnings("deprecation")
-	public static String applyMinimessageFormat(String value, boolean applyLegacyColours) {
+	public static String applyTextFormat(String value, boolean applyLegacyColours) {
 		if (MINIMESSAGE_SUPPORTED) {
 			value = value.replace("&", "-{-}-").replace("§", "-{-}-");
 
@@ -50,12 +50,12 @@ public final class Util {
 		return applyLegacyColours ? org.bukkit.ChatColor.translateAlternateColorCodes('&', value) : value;
 	}
 
-	public static List<String> applyMinimessageFormat(List<String> list) {
-		return applyMinimessageFormat(list, true);
+	public static List<String> applyTextFormat(List<String> list) {
+		return applyTextFormat(list, true);
 	}
 
-	public static List<String> applyMinimessageFormat(List<String> list, boolean applyLegacyColours) {
-		list.replaceAll(value -> applyMinimessageFormat(value, applyLegacyColours));
+	public static List<String> applyTextFormat(List<String> list, boolean applyLegacyColours) {
+		list.replaceAll(value -> applyTextFormat(value, applyLegacyColours));
 
 		return list;
 	}

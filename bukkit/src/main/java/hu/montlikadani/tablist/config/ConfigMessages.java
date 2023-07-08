@@ -34,6 +34,11 @@ public final class ConfigMessages {
 		FileConfiguration messagesConfig = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(file);
 		boolean saveRequired = false;
 
+		if (fileWasExisted && messagesConfig.get("unknownsub-command") != null) {
+			messagesConfig.set("unknownsub-command", null);
+			saveRequired = true;
+		}
+
 		for (MessageKeys key : MessageKeys.values()) {
 			if (key.type == String.class) {
 				String str;
@@ -43,7 +48,7 @@ public final class ConfigMessages {
 					saveRequired = true;
 				}
 
-				key.value = Util.applyMinimessageFormat(str);
+				key.value = Util.applyTextFormat(str);
 			} else if (key.type == String[].class) {
 				if (!fileWasExisted) {
 					messagesConfig.set(key.path, key.defaultValue);
@@ -66,10 +71,10 @@ public final class ConfigMessages {
 					String[] arr = (String[]) key.value;
 
 					for (int i = 0; i < arr.length; i++) {
-						arr[i] = Util.applyMinimessageFormat(arr[i]);
+						arr[i] = Util.applyTextFormat(arr[i]);
 					}
 				} else {
-					key.value = Util.applyMinimessageFormat(list).toArray(new String[0]);
+					key.value = Util.applyTextFormat(list).toArray(new String[0]);
 				}
 			}
 		}
@@ -116,7 +121,6 @@ public final class ConfigMessages {
 
 		RELOAD_CONFIG("&aReloaded!"),
 		NO_PERMISSION("&cYou don't have permission for that!&7 (%perm%)"),
-		UNKNOWN_SUB_COMMAND("&cUnknown sub-command&7 %subcmd%&c."),
 		NO_CONSOLE("&cThis command '&7/%command%&c' can only be in-game."),
 
 		SET_GROUP_META_COULD_NOT_BE_EMPTY("set-group", "&cThe text could not be empty!"),

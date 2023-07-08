@@ -12,7 +12,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 
-import hu.montlikadani.tablist.Perm;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.ConfigMessages;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
@@ -46,52 +45,34 @@ public final class Commands implements CommandExecutor, TabCompleter {
 	}
 
 	@Override
-	public boolean onCommand(final CommandSender sender, final Command cmd, final String label, final String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length == 0) {
-			plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&9&lTab&4&lList"));
-			plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&5Version:&a " + plugin.getDescription().getVersion()));
-			plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&5Author, created by:&a montlikadani"));
-			plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&5List of commands:&7 /" + label + " help"));
-			plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&4Report bugs/features here:&e &nhttps://github.com/montlikadani/TabList/issues"));
+			plugin.getComplement().sendMessage(sender, Util.applyTextFormat("&9&lTab&4&lList"));
+			plugin.getComplement().sendMessage(sender, Util.applyTextFormat("&5Version:&a " + plugin.getDescription().getVersion()));
+			plugin.getComplement().sendMessage(sender, Util.applyTextFormat("&5Author, created by:&a montlikadani"));
+			plugin.getComplement().sendMessage(sender, Util.applyTextFormat("&5List of commands:&7 /" + label + " help"));
+			plugin.getComplement().sendMessage(sender, Util.applyTextFormat("&4Report bugs/features here:&e &nhttps://github.com/montlikadani/TabList/issues"));
 			return true;
 		}
 
 		boolean isPlayer = sender instanceof Player;
 		String first = args[0];
 
-		boolean isHelp;
-		if ((isHelp = "help".equalsIgnoreCase(first)) && isPlayer && !sender.hasPermission(Perm.HELP.permission)) {
-			plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.HELP.permission));
-			return true;
-		}
-
 		for (ICommand command : commands) {
-			CommandProcessor proc = command.getClass().getAnnotation(CommandProcessor.class);
+			CommandProcessor processor = command.getClass().getAnnotation(CommandProcessor.class);
 
-			if (proc == null) {
+			if (processor == null || !processor.name().equalsIgnoreCase(first)) {
 				continue;
 			}
 
-			if (isHelp) {
-				if (!isPlayer || sender.hasPermission(proc.permission().permission)) {
-					String params = proc.params().isEmpty() ? "" : ' ' + proc.params();
-					plugin.getComplement().sendMessage(sender, Util.applyMinimessageFormat("&7/" + label + " " + proc.name() + params + " -&6 " + proc.desc()));
+			if (isPlayer) {
+				if (!sender.hasPermission(processor.permission().value)) {
+					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%",
+							processor.permission().value));
+					return true;
 				}
-
-				continue;
-			}
-
-			if (!proc.name().equalsIgnoreCase(first)) {
-				continue;
-			}
-
-			if (proc.playerOnly() && !isPlayer) {
+			} else if (processor.playerOnly()) {
 				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_CONSOLE, "%command%", label + " " + first));
-				return true;
-			}
-
-			if (isPlayer && !sender.hasPermission(proc.permission().permission)) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", proc.permission().permission));
 				return true;
 			}
 
@@ -99,8 +80,17 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
-		if (!isHelp) {
-			plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.UNKNOWN_SUB_COMMAND, "%subcmd%", first));
+		for (ICommand command : commands) {
+			CommandProcessor processor = command.getClass().getAnnotation(CommandProcessor.class);
+
+			if (processor == null) {
+				continue;
+			}
+
+			if (!isPlayer || sender.hasPermission(processor.permission().value)) {
+				String params = processor.params().isEmpty() ? "" : ' ' + processor.params();
+				plugin.getComplement().sendMessage(sender, Util.applyTextFormat("&7/" + label + " " + processor.name() + params + " -&6 " + processor.desc()));
+			}
 		}
 
 		return true;
@@ -152,7 +142,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 		for (ICommand cmd : commands) {
 			CommandProcessor proc = cmd.getClass().getAnnotation(CommandProcessor.class);
 
-			if (proc != null && (!isPlayer || sender.hasPermission(proc.permission().permission))) {
+			if (proc != null && (!isPlayer || sender.hasPermission(proc.permission().value))) {
 				set.add(proc.name());
 			}
 		}

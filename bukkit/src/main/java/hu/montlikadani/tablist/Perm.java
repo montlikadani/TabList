@@ -3,7 +3,6 @@ package hu.montlikadani.tablist;
 public enum Perm {
 
 	FAKEPLAYERS,
-	HELP,
 	RELOAD,
 	GROUP_META("groupmeta"),
 	PLAYER_META("playermeta"),
@@ -11,13 +10,13 @@ public enum Perm {
 	TOGGLEALL("toggle.all"),
 	;
 
-	public final String permission;
+	public final String value;
 
 	Perm() {
-		this.permission = "tablist." + toString().toLowerCase(java.util.Locale.ENGLISH);
+		value = "tablist." + name().toLowerCase(java.util.Locale.ENGLISH);
 	}
 
-	Perm(String permission) {
-		this.permission = "tablist." + permission;
+	Perm(String extra) {
+		value = "tablist." + extra;
 	}
 }

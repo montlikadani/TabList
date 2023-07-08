@@ -50,7 +50,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	private transient org.bukkit.plugin.Plugin papi;
 
-	private transient boolean hasVault = false;
+	private transient boolean hasPermissionService = false;
 	private transient boolean isFoliaServer = false;
 
 	private final Set<TextAnimation> animations = new HashSet<>(8);
@@ -75,16 +75,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		tabManager = new TabManager(this);
 		fakePlayerHandler = new FakePlayerHandler(this);
 
-		try {
-			Class.forName("io.papermc.paper.threadedregions.scheduler.RegionScheduler");
-			isFoliaServer = true;
-		} catch (ClassNotFoundException ignored) {
-		}
-
 		// Load static references
 		try {
 			Class.forName("hu.montlikadani.tablist.packets.PacketNM");
-		} catch (ClassNotFoundException e) {
+		} catch (ClassNotFoundException ignored) {
 		}
 		hu.montlikadani.tablist.api.TabListAPI.getTPS();
 
@@ -96,7 +90,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			Util.logConsole("Hooked " + papi.getName() + " version: " + papi.getDescription().getVersion());
 		}
 
-		hasVault = isPluginEnabled("Vault") && (permissionService = new PermissionService()).getPermission() != null;
+		hasPermissionService = isPluginEnabled("Vault") && (permissionService = new PermissionService()).getPermission() != null;
 
 		fakePlayerHandler.load();
 		loadAnimations();
@@ -113,7 +107,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		if (ConfigValues.isLogConsole()) {
 			complement.sendMessage(getServer().getConsoleSender(), Util
-					.applyMinimessageFormat("&6[&5Tab&cList&6]&7 >&a Enabled&6 v" + getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
+					.applyTextFormat("&6[&5Tab&cList&6]&7 >&a Enabled&6 v" + getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
 		}
 	}
 
@@ -137,13 +131,13 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		if (!users.isEmpty()) {
 			if (objects != null) {
-				for (Objects.ObjectTypes t : Objects.ObjectTypes.values()) {
-					if (t == Objects.ObjectTypes.NONE) {
+				for (Objects.ObjectTypes type : Objects.ObjectTypes.values()) {
+					if (type == Objects.ObjectTypes.NONE) {
 						continue;
 					}
 
 					for (TabListUser user : users) {
-						objects.unregisterObjective(t, user);
+						objects.unregisterObjective(type, user);
 					}
 				}
 			}
@@ -170,6 +164,12 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	}
 
 	private void verifyServerSoftware() {
+		try {
+			Class.forName("io.papermc.paper.threadedregions.scheduler.RegionScheduler");
+			isFoliaServer = true;
+		} catch (ClassNotFoundException ignored) {
+		}
+
 		try {
 			Class.forName("net.kyori.adventure.text.Component");
 			Player.class.getDeclaredMethod("displayName");
@@ -495,7 +495,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	 * @return true if there is a permission service installed
 	 */
 	public boolean hasPermissionService() {
-		return hasVault;
+		return hasPermissionService;
 	}
 
 	/**

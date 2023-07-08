@@ -1,14 +1,7 @@
 package hu.montlikadani.tablist.commands;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Retention;
-import java.lang.annotation.Target;
-
-import hu.montlikadani.tablist.Perm;
-
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
+@java.lang.annotation.Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
+@java.lang.annotation.Target(java.lang.annotation.ElementType.TYPE)
 public @interface CommandProcessor {
 
 	/**
@@ -24,7 +17,7 @@ public @interface CommandProcessor {
 	/**
 	 * @return the permission of this command
 	 */
-	Perm permission();
+	hu.montlikadani.tablist.Perm permission();
 
 	/**
 	 * @return the description of this command
@@ -37,4 +30,5 @@ public @interface CommandProcessor {
 	 * @return <code>false</code> by default
 	 */
 	boolean playerOnly() default false;
+
 }

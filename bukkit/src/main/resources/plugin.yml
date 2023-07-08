@@ -35,7 +35,6 @@ permissions:
        tablist.fakeplayers: true
        tablist.onlinestaff: true
        tablist.reload: true
-       tablist.help: true
   tablist.toggle:
     description: Gives access to use /tl toggle command.
     default: false
@@ -53,9 +52,6 @@ permissions:
     default: false
   tablist.onlinestaff:
     description: Online staffs permission
-  tablist.help:
-    description: List of available commands
-    default: false
   tablist.reload:
     description: Gives access to use /tl reload command.
     default: false

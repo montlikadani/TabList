@@ -115,14 +115,14 @@ public final class Variables {
 		str = str.replace("%mc-version%", plugin.getServer().getBukkitVersion());
 		str = hu.montlikadani.tablist.Global.setSymbols(str);
 
-		return Util.applyMinimessageFormat(str);
+		return Util.applyTextFormat(str);
 	}
 
 	public TabText replaceVariables(Player pl, TabText text) {
 		if (!text.getPlainText().isEmpty()) {
 			String str = replaceVariables(pl, text.getPlainText());
 
-			text.updateText(ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2) ? Util.applyMinimessageFormat(str) : str);
+			text.updateText(ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2) ? Util.applyTextFormat(str) : str);
 		}
 
 		return text;

@@ -35,8 +35,8 @@ public final class toggle implements ICommand {
 			String first = args[1];
 
 			if (first.equalsIgnoreCase("all")) {
-				if (sender instanceof Player && !sender.hasPermission(Perm.TOGGLEALL.permission)) {
-					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.TOGGLEALL.permission));
+				if (sender instanceof Player && !sender.hasPermission(Perm.TOGGLEALL.value)) {
+					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.TOGGLEALL.value));
 					return;
 				}
 
