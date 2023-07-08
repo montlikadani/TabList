@@ -23,18 +23,10 @@ public final class BukkitScheduler implements TLScheduler {
     }
 
     @Override
-    public <V> V submitSync(java.util.function.Supplier<V> supplier) {
-        if (plugin.isEnabled() && !plugin.getServer().isPrimaryThread()) { // Check if current thread is async
-            try {
-                return plugin.getServer().getScheduler().callSyncMethod(plugin, supplier::get).get();
-            } catch (InterruptedException | java.util.concurrent.ExecutionException e) {
-                e.printStackTrace();
-            } catch (java.util.concurrent.CancellationException e) {
-                return null;
-            }
+    public void submitSync(Runnable runnable) {
+        if (plugin.isEnabled() && !plugin.getServer().isPrimaryThread()) {
+            plugin.getServer().getScheduler().runTask(plugin, runnable);
         }
-
-        return supplier.get();
     }
 
     @Override

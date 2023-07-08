@@ -406,14 +406,9 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				if (user.isHidden()) {
 					user.getPlayerList().displayInWorld();
 				}
-
-				return 1;
 			});
 		} else if (user.isHidden()) {
-			newTLScheduler().submitSync(() -> {
-				user.setHidden(false);
-				return 1;
-			});
+			newTLScheduler().submitSync(() -> user.setHidden(false));
 		}
 	}
 

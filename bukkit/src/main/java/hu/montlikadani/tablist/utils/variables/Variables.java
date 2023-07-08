@@ -1,9 +1,6 @@
 package hu.montlikadani.tablist.utils.variables;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -19,13 +16,12 @@ import hu.montlikadani.tablist.utils.PluginUtils;
 import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.Util;
 import hu.montlikadani.tablist.utils.operators.OverriddenOperatorNodes;
-import me.clip.placeholderapi.PlaceholderAPI;
 
 public final class Variables {
 
 	private final TabList plugin;
 
-	private final List<LogicalNode> nodes = new ArrayList<>();
+	private final java.util.List<LogicalNode> nodes = new java.util.ArrayList<>();
 	private final java.util.Set<Variable> variables = new java.util.HashSet<>(6);
 
 	public Variables(TabList plugin) {
@@ -176,64 +172,68 @@ public final class Variables {
 	}
 
 	@SuppressWarnings("deprecation")
-	String setPlayerPlaceholders(Player player, String s) {
+	String setPlayerPlaceholders(Player player, String text) {
 		if (plugin.hasPapi()) {
 
-			// Some PAPI placeholders which does not supports async threads
-			int stc = s.indexOf("%server_total_chunks%");
-			int ste = s.indexOf("%server_total_entities%");
-			int stl = s.indexOf("%server_total_living_entities%");
+			// A temporal solution for PAPI placeholders
+			int stc = text.indexOf("%server_total_chunks%");
+			int ste = text.indexOf("%server_total_entities%");
+			int stl = text.indexOf("%server_total_living_entities%");
 
 			if (stc != -1 || ste != -1 || stl != -1) {
-				final String st = s;
+				final String str = text;
 
-				s = plugin.newTLScheduler().submitSync(() -> {
-					String str = st;
+				try {
+					text = plugin.getServer().getScheduler().callSyncMethod(plugin, () -> {
+						String st = str;
 
-					if (stc != -1) {
-						str = str.replace("%server_total_chunks%", Integer.toString(getChunks()));
-					}
+						if (stc != -1) {
+							st = st.replace("%server_total_chunks%", Integer.toString(getChunks()));
+						}
 
-					if (stl != -1) {
-						str = str.replace("%server_total_living_entities%", Integer.toString(getLivingEntities()));
-					}
+						if (stl != -1) {
+							st = st.replace("%server_total_living_entities%", Integer.toString(getLivingEntities()));
+						}
 
-					if (ste != -1) {
-						str = str.replace("%server_total_entities%", Integer.toString(getTotalEntities()));
-					}
+						if (ste != -1) {
+							st = st.replace("%server_total_entities%", Integer.toString(getTotalEntities()));
+						}
 
-					return str;
-				});
+						return st;
+					}).get();
+				} catch (InterruptedException | java.util.concurrent.ExecutionException ex) {
+					ex.printStackTrace();
+				}
 			}
 
-			s = PlaceholderAPI.setPlaceholders(player, s);
+			text = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, text);
 		}
 
-		s = Global.replace(s, "%player%", player::getName);
-		s = Global.replace(s, "%world%", () -> player.getWorld().getName());
-		s = Global.replace(s, "%player-gamemode%", () -> player.getGameMode().name());
-		s = Global.replace(s, "%player-displayname%", () -> plugin.getComplement().displayName(player));
-		s = Global.replace(s, "%player-health%", () -> Double.toString(player.getHealth()));
+		text = Global.replace(text, "%player%", player::getName);
+		text = Global.replace(text, "%world%", () -> player.getWorld().getName());
+		text = Global.replace(text, "%player-gamemode%", () -> player.getGameMode().name());
+		text = Global.replace(text, "%player-displayname%", () -> plugin.getComplement().displayName(player));
+		text = Global.replace(text, "%player-health%", () -> Double.toString(player.getHealth()));
 
-		if (s.indexOf("%player-max-health%") != -1) {
+		if (text.indexOf("%player-max-health%") != -1) {
 			if (ServerVersion.isCurrentLower(ServerVersion.v1_9_R1)) {
-				s = s.replace("%player-max-health%", Double.toString(player.getMaxHealth()));
+				text = text.replace("%player-max-health%", Double.toString(player.getMaxHealth()));
 			} else {
 				org.bukkit.attribute.AttributeInstance attr = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
 
 				if (attr != null) {
-					s = s.replace("%player-max-health%", Double.toString(attr.getDefaultValue()));
+					text = text.replace("%player-max-health%", Double.toString(attr.getDefaultValue()));
 				}
 			}
 		}
 
-		s = Global.replace(s, "%ping%", () -> formatPing(TabListAPI.getPing(player)));
-		s = Global.replace(s, "%exp-to-level%", () -> Integer.toString(player.getExpToLevel()));
-		s = Global.replace(s, "%level%", () -> Integer.toString(player.getLevel()));
-		s = Global.replace(s, "%xp%", () -> Float.toString(player.getExp()));
-		s = Global.replace(s, "%light-level%", () -> Integer.toString(player.getLocation().getBlock().getLightLevel()));
+		text = Global.replace(text, "%ping%", () -> formatPing(TabListAPI.getPing(player)));
+		text = Global.replace(text, "%exp-to-level%", () -> Integer.toString(player.getExpToLevel()));
+		text = Global.replace(text, "%level%", () -> Integer.toString(player.getLevel()));
+		text = Global.replace(text, "%xp%", () -> Float.toString(player.getExp()));
+		text = Global.replace(text, "%light-level%", () -> Integer.toString(player.getLocation().getBlock().getLightLevel()));
 
-		if (s.indexOf("%ip-address%") != -1) {
+		if (text.indexOf("%ip-address%") != -1) {
 			java.net.InetSocketAddress address = player.getAddress();
 
 			if (address != null) {
@@ -243,13 +243,13 @@ public final class Variables {
 					String hostAddress = inetAddress.getHostAddress();
 
 					if (hostAddress != null) {
-						s = s.replace("%ip-address%", hostAddress);
+						text = text.replace("%ip-address%", hostAddress);
 					}
 				}
 			}
 		}
 
-		return s;
+		return text;
 	}
 
 	private String roundTpsDigits(double value) {
@@ -273,7 +273,7 @@ public final class Variables {
 		return LogicalNode.parseCondition(ping, LogicalNode.NodeType.PING, nodes).toString();
 	}
 
-	private String getTimeAsString(DateTimeFormatter formatterPattern) {
+	private String getTimeAsString(java.time.format.DateTimeFormatter formatterPattern) {
 		return (ConfigValues.getTimeZone() == null ? LocalDateTime.now() : LocalDateTime.now(ConfigValues.getTimeZone().toZoneId())).format(formatterPattern);
 	}
 

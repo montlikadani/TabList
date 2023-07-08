@@ -4,7 +4,6 @@ import io.papermc.paper.threadedregions.scheduler.ScheduledTask;
 import org.bukkit.plugin.Plugin;
 
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
 
 public final class FoliaScheduler implements TLScheduler {
 
@@ -27,8 +26,8 @@ public final class FoliaScheduler implements TLScheduler {
     }
 
     @Override
-    public <V> V submitSync(Supplier<V> supplier) {
-        return supplier.get();
+    public void submitSync(Runnable runnable) {
+        plugin.getServer().getGlobalRegionScheduler().execute(plugin, runnable);
     }
 
     @Override

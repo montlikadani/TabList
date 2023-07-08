@@ -101,8 +101,6 @@ public final class Objects {
 				adjustMaxHealth(pl, -1);
 				pl.setHealth(pl.getHealth() - 1);
 			}, pl.getLocation(), 2);
-
-			return 1;
 		});
 	}
 

@@ -6,7 +6,7 @@ public interface TLScheduler {
 
     void runDelayed(Runnable task, org.bukkit.Location location, long delay);
 
-    <V> V submitSync(java.util.function.Supplier<V> sup);
+    void submitSync(Runnable runnable);
 
     void runTaskAsynchronously(Runnable task);
 
