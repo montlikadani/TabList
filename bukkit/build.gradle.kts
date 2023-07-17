@@ -53,7 +53,7 @@ dependencies {
         isTransitive = false
     }
 
-    compileOnly("com.github.LeonMangler:SuperVanish:6.2.16") {
+    compileOnly("com.github.LeonMangler:SuperVanish:6.2.17") {
         isTransitive = false
     }
 
