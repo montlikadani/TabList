@@ -14,7 +14,7 @@ public final class OverriddenOperatorNodes extends hu.montlikadani.tablist.logic
 			if (receivedValue < 0.0)
 				return false;
 
-			double secondCondition = condition.getSecondCondition();
+			double secondCondition = condition.getValue();
 			if (secondCondition < 0.0)
 				return false;
 

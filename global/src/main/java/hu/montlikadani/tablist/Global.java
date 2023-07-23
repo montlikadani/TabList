@@ -7,7 +7,7 @@ public final class Global {
 	private Global() {
 	}
 
-	public static String setSymbols(String s) {
+	public static String replaceToUnicodeSymbol(String s) {
 		if (s.indexOf('<') == -1) {
 			return s;
 		}

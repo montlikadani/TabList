@@ -5,32 +5,23 @@ public class Condition {
 	public final RelationalOperators operator;
 
 	private String color = "";
-	private double secondCondition = 0D;
+	private double value = 0D;
 
 	public Condition(RelationalOperators operator, String[] content) {
 		this.operator = operator;
 
-		if (content.length < 2) {
-			return;
-		}
-
-		String first = content[0];
-		String second = content[1];
-
 		try {
-			secondCondition = Double.parseDouble(
-					(first.indexOf("%ping%") != -1 || first.indexOf("%tps%") != -1 || first.indexOf("%tps-overflow%") != -1)
-							? second
-							: first);
-		} catch (NumberFormatException e) {
+			value = Double.parseDouble(content[1].trim());
+		} catch (NumberFormatException ex) {
+			ex.printStackTrace();
 		}
 
-		color = (second.matches("&|#") ? second : first).trim().replace("%tps%", "").replace("%tps-overflow%", "")
+		color = content[0].trim().replace("%tps%", "").replace("%tps-overflow%", "")
 				.replace("%ping%", "").replace('&', '\u00a7');
 	}
 
-	public double getSecondCondition() {
-		return secondCondition;
+	public double getValue() {
+		return value;
 	}
 
 	public String getColor() {
@@ -45,18 +36,6 @@ public class Condition {
 
 		RelationalOperators(String operator) {
 			this.operator = operator;
-		}
-
-		public static RelationalOperators getByOperator(String operator) {
-			if (!operator.isEmpty()) {
-				for (RelationalOperators one : RelationalOperators.values()) {
-					if (one.operator.equals(operator)) {
-						return one;
-					}
-				}
-			}
-
-			return null;
 		}
 	}
 }

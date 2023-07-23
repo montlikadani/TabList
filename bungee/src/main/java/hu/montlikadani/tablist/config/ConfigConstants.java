@@ -151,7 +151,7 @@ public final class ConfigConstants {
 			texts = list.size() != 0 ? list.toArray(new String[0]) : new String[] { section.getString(key + ".name", "") };
 
 			for (int a = 0; a < texts.length; a++) {
-				texts[a] = hu.montlikadani.tablist.Global.setSymbols(texts[a]);
+				texts[a] = hu.montlikadani.tablist.Global.replaceToUnicodeSymbol(texts[a]);
 			}
 		}
 	}

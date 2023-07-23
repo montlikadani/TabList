@@ -5,12 +5,13 @@ body:
   - type: markdown
     attributes:
       value: |
-        Please fill out the below templates, creating an empty or non-filled issues will be closed immediately.
+        Please fill out the below templates, creating blank, incomplete or invalid issues will be closed immediately.
   - type: dropdown
     attributes:
       label: Type of bug
       multiple: false
       options:
+        - General issue
         - Performance loss or memory leak
         - Compatibility issue
         - Error in console
@@ -20,19 +21,19 @@ body:
   - type: input
     attributes:
       label: TabList version
-      description: Run `/version tablist` in the console, then copy and paste the full output into here.
+      description: Run `/version tablist` in the console, then copy and paste the full output into this box.
     validations:
       required: true
   - type: input
     attributes:
       label: Software version
-      description: Run `/version` in the console, then copy and paste the full output into here.
+      description: Run `/version` in the console, then copy and paste the full output into this box.
     validations:
       required: true
   - type: textarea
     attributes:
       label: Relevant plugins
-      description: If there is some conflicting or relevant plugins with tablist you can insert here the name of the plugin(s). But it is enough if you run `/plugins` command and inserts here the output.
+      description: If there is some conflicting or relevant plugins with tablist you can insert here the name of the plugin(s). But it is enough if you run `/plugins` command and inserts the output here.
   - type: textarea
     attributes:
       label: Console error (if applicable)
@@ -47,7 +48,7 @@ body:
     attributes:
       label: Bug description
       description: |
-        Explain your bug clearly and if possible include how to reproduce.
+        Explain your bug clearly and if possible include the reproduction steps.
         You can also attach any related screenshots, files, links and timings/spark profiler reports.
     validations:
       required: true

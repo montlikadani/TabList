@@ -44,11 +44,11 @@ public interface LogicalNode {
 
 		nodes.sort((node, node2) -> {
 			if (node.getType() == NodeType.PING && node2.getType() == NodeType.PING) {
-				return Double.compare(node.getCondition().getSecondCondition(), node2.getCondition().getSecondCondition());
+				return Double.compare(node.getCondition().getValue(), node2.getCondition().getValue());
 			}
 
 			if (node.getType() == NodeType.TPS && node2.getType() == NodeType.TPS) {
-				return -Double.compare(node.getCondition().getSecondCondition(), node2.getCondition().getSecondCondition());
+				return -Double.compare(node.getCondition().getValue(), node2.getCondition().getValue());
 			}
 
 			return -1;

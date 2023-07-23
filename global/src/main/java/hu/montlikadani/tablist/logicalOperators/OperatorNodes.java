@@ -16,21 +16,34 @@ public class OperatorNodes implements LogicalNode {
 
 	@Override
 	public LogicalNode parseInput(String input) {
-		String strOperator = "";
+		Condition.RelationalOperators chosen = null;
+		Condition.RelationalOperators[] values = Condition.RelationalOperators.values();
 
-		for (String logicalOperator : new String[] { ">", ">=", "<", "<=", "==", "!=" }) {
-			String s = input.replaceAll("[^" + logicalOperator + "]", "");
+		// TODO Do we really need validation for the existence of tps and ping placeholders?
+		// I think it's not that important honestly, because each option is separated
 
-			if (s.equals(logicalOperator)) {
-				strOperator = s;
+		for (Condition.RelationalOperators logicalOperator : values) {
+			if (input.replaceAll("[^" + logicalOperator + "]", "").equals(logicalOperator.operator)) {
+				chosen = logicalOperator;
+
+				// Do not break the loop operation here, it may have multiple conditions with same operator
 			}
 		}
 
-		Condition.RelationalOperators operator = Condition.RelationalOperators.getByOperator(strOperator);
+		if (chosen != null) {
+			for (Condition.RelationalOperators one : values) {
+				if (one != chosen) {
+					continue;
+				}
 
-		if (operator != null) {
-			condition = new Condition(operator,
-					String.valueOf(input.trim().replace(strOperator, ";").toCharArray()).split(";", 2));
+				String[] arr = input.trim().replace(one.operator, ";").split(";", 2);
+
+				if (arr.length > 1) {
+					condition = new Condition(one, arr);
+				}
+
+				break;
+			}
 		}
 
 		return this;
@@ -43,33 +56,33 @@ public class OperatorNodes implements LogicalNode {
 
 	@Override
 	public boolean parse(double receivedValue) {
-		if (type == NodeType.PING) {
-			int secondCondition = (int) condition.getSecondCondition();
-			if (secondCondition < 0)
-				return false;
-
-			int firstCondition = (int) receivedValue;
-			if (firstCondition < 0)
-				return false;
-
-			switch (condition.operator) {
-			case GREATER_THAN:
-				return firstCondition > secondCondition;
-			case GREATER_THAN_OR_EQUAL:
-				return firstCondition >= secondCondition;
-			case LESS_THAN:
-				return firstCondition < secondCondition;
-			case LESS_THAN_OR_EQUAL:
-				return firstCondition <= secondCondition;
-			case EQUAL:
-				return firstCondition == secondCondition;
-			case NOT_EQUAL:
-				return firstCondition != secondCondition;
-			default:
-				return false;
-			}
+		if (type != NodeType.PING) {
+			return false;
 		}
 
-		return false;
+		int firstValue = (int) receivedValue;
+		if (firstValue < 0)
+			return false;
+
+		int secondValue = (int) condition.getValue();
+		if (secondValue < 0)
+			return false;
+
+		switch (condition.operator) {
+			case GREATER_THAN:
+				return firstValue > secondValue;
+			case GREATER_THAN_OR_EQUAL:
+				return firstValue >= secondValue;
+			case LESS_THAN:
+				return firstValue < secondValue;
+			case LESS_THAN_OR_EQUAL:
+				return firstValue <= secondValue;
+			case EQUAL:
+				return firstValue == secondValue;
+			case NOT_EQUAL:
+				return firstValue != secondValue;
+			default:
+				return false;
+		}
 	}
 }

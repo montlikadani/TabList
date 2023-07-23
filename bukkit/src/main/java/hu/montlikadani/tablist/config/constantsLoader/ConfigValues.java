@@ -184,8 +184,8 @@ public final class ConfigValues {
 		useLPWeightToOrderGroupsFirst = c.get("change-prefix-suffix-in-tablist.use-luckperms-weight-to-order-groups-to-first-place", true);
 		followNameTagVisibility = c.get("change-prefix-suffix-in-tablist.followNameTagVisibility", false);
 
-		afkFormatYes = Global.setSymbols(c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r "));
-		afkFormatNo = Global.setSymbols(c.get("placeholder-format.afk-status.format-no", ""));
+		afkFormatYes = Global.replaceToUnicodeSymbol(c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r "));
+		afkFormatNo = Global.replaceToUnicodeSymbol(c.get("placeholder-format.afk-status.format-no", ""));
 
 		if (c.get("placeholder-format.time.use-system-zone", false)) {
 			timeZone = TimeZone.getTimeZone(java.time.ZoneId.systemDefault());

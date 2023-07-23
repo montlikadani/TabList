@@ -113,7 +113,7 @@ public final class Variables {
 	public String replaceMiscVariables(String str) {
 		str = str.replace("%servertype%", plugin.getServer().getName());
 		str = str.replace("%mc-version%", plugin.getServer().getBukkitVersion());
-		str = hu.montlikadani.tablist.Global.setSymbols(str);
+		str = hu.montlikadani.tablist.Global.replaceToUnicodeSymbol(str);
 
 		return Util.applyTextFormat(str);
 	}

@@ -7,7 +7,6 @@ public final class TextAnimation {
 	public final String name;
 
 	private final int time;
-	private final boolean randomized;
 	private final String[] texts;
 
 	private Random random;
@@ -16,7 +15,6 @@ public final class TextAnimation {
 	public TextAnimation(String name, java.util.List<String> texts, int time, boolean randomized) {
 		this.name = name;
 		this.time = time < 1 ? 150 : time;
-		this.randomized = randomized;
 		this.texts = texts.toArray(new String[0]);
 
 		if (randomized) {
@@ -27,7 +25,7 @@ public final class TextAnimation {
 	public String next() {
 		int index = (int) ((System.currentTimeMillis() % (texts.length * time)) / time);
 
-		if (last != index && randomized) {
+		if (last != index && random != null) {
 
 			// We're using Fisher–Yates shuffle algorithm to randomize
 			for (int i = texts.length - 1; i > 0; i--) {

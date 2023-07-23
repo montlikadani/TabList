@@ -175,13 +175,13 @@ public class PlayerTab {
 
 		if (header != null) {
 			for (int i = 0; i < header.length; i++) {
-				header[i] = Global.setSymbols(header[i]);
+				header[i] = Global.replaceToUnicodeSymbol(header[i]);
 			}
 		}
 
 		if (footer != null) {
 			for (int i = 0; i < footer.length; i++) {
-				footer[i] = Global.setSymbols(footer[i]);
+				footer[i] = Global.replaceToUnicodeSymbol(footer[i]);
 			}
 		}
 	}
