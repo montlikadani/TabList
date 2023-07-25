@@ -8,7 +8,6 @@ A plugin for Minecraft servers that allows to get an animated tablist with heade
 
 - More detailed documentation can be found on [wiki](https://github.com/montlikadani/TabList/wiki) page.
 - Download the latest build from [actions](https://github.com/montlikadani/TabList/actions/workflows/gradle.yml) page. You will need github account to download.
-- For general questions and support, join our discord server: https://discord.gg/XsfT5cJ (you need phone verification to join)
 
 ### API
 <details><summary>Click to view</summary>
