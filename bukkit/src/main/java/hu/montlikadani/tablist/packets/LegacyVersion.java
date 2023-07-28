@@ -36,6 +36,8 @@ public final class LegacyVersion implements IPacketNM {
     private final List<Object> playerTeams = new ArrayList<>();
     private final java.util.Set<TagTeam> tagTeams = new java.util.HashSet<>();
 
+    private PacketReceivingListener packetReceivingListener;
+
     public LegacyVersion() {
         try {
             Class<?> networkManagerClass;
@@ -155,8 +157,12 @@ public final class LegacyVersion implements IPacketNM {
         }
 
         if (channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
+            if (packetReceivingListener == null) {
+                packetReceivingListener = new PacketReceivingListener(player.getUniqueId(), classesToListen);
+            }
+
             try {
-                channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(player.getUniqueId(), classesToListen));
+                channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, packetReceivingListener);
             } catch (java.util.NoSuchElementException ex) {
                 // packet_handler not exists, sure then, ignore
             }
@@ -589,24 +595,31 @@ public final class LegacyVersion implements IPacketNM {
 
             playerTeams.add(scoreTeam == null ? newTeamPacket : scoreTeam);
 
-            if (tagTeams.isEmpty()) {
-                sendPacket(getPlayerHandle(player), newTeamPacket);
-                return;
+            if (packetReceivingListener != null) {
+                removePlayerChannelListener(player);
             }
 
-            for (TagTeam tagTeam : tagTeams) {
-                if (!tagTeam.playerName.equals(player.getName())) {
-                    continue;
+            if (tagTeams.isEmpty()) {
+                sendPacket(getPlayerHandle(player), newTeamPacket);
+            } else {
+                for (TagTeam tagTeam : tagTeams) {
+                    if (!tagTeam.playerName.equals(player.getName())) {
+                        continue;
+                    }
+
+                    ClazzContainer.getScoreboardTeamSetDisplayName().invoke(tagTeam.scoreboardTeam, tagTeam.scoreboardTeamDisplayNameMethod.invoke(tagTeam.scoreboardTeam));
+                    ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(tagTeam.scoreboardTeam, tagTeam.scoreboardTeamNameTagVisibilityMethod.invoke(tagTeam.scoreboardTeam));
+
+                    Object handle = getPlayerHandle(player);
+
+                    sendPacket(handle, newTeamPacket);
+                    sendPacket(handle, ClazzContainer.scoreboardTeamPacketByAction(tagTeam.scoreboardTeam, 0));
+                    break;
                 }
+            }
 
-                ClazzContainer.getScoreboardTeamSetDisplayName().invoke(tagTeam.scoreboardTeam, tagTeam.scoreboardTeamDisplayNameMethod.invoke(tagTeam.scoreboardTeam));
-                ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(tagTeam.scoreboardTeam, tagTeam.scoreboardTeamNameTagVisibilityMethod.invoke(tagTeam.scoreboardTeam));
-
-                Object handle = getPlayerHandle(player);
-
-                sendPacket(handle, newTeamPacket);
-                sendPacket(handle, ClazzContainer.scoreboardTeamPacketByAction(tagTeam.scoreboardTeam, 0));
-                break;
+            if (packetReceivingListener != null) {
+                addPlayerChannelListener(player, packetReceivingListener.classesToListen);
             }
         } catch (Exception e) {
             e.printStackTrace();

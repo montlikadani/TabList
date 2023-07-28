@@ -34,6 +34,8 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
     private final Set<TagTeam> tagTeams = new HashSet<>();
 
+    private PacketReceivingListener packetReceivingListener;
+
     @Override
     public void sendPacket(Player player, Object packet) {
         getPlayerHandle(player).b.sendPacket((Packet<?>) packet);
@@ -45,11 +47,17 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
-        EntityPlayer entityPlayer = getPlayerHandle(player);
+        addPlayerChannelListener(getPlayerHandle(player), classesToListen);
+    }
 
+    private void addPlayerChannelListener(EntityPlayer entityPlayer, List<Class<?>> classesToListen) {
         if (entityPlayer.b.a.k.pipeline().get(PACKET_INJECTOR_NAME) == null) {
+            if (packetReceivingListener == null) {
+                packetReceivingListener = new PacketReceivingListener(entityPlayer.getProfile().getId(), classesToListen);
+            }
+
             try {
-                entityPlayer.b.a.k.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, new PacketReceivingListener(entityPlayer.getProfile().getId(), classesToListen));
+                entityPlayer.b.a.k.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, packetReceivingListener);
             } catch (java.util.NoSuchElementException ex) {
                 // packet_handler not exists, sure then, ignore
             }
@@ -58,8 +66,10 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public void removePlayerChannelListener(Player player) {
-        EntityPlayer entityPlayer = getPlayerHandle(player);
+        removePlayerChannelListener(getPlayerHandle(player));
+    }
 
+    private void removePlayerChannelListener(EntityPlayer entityPlayer) {
         if (entityPlayer.b.a.k.pipeline().get(PACKET_INJECTOR_NAME) != null) {
             entityPlayer.b.a.k.pipeline().remove(PACKET_INJECTOR_NAME);
         }
@@ -184,24 +194,31 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
             }
         }
 
-        if (tagTeams.isEmpty()) {
-            sendPacket(getPlayerHandle(player), PacketPlayOutScoreboardTeam.a(playerTeam, true));
-            return;
+        EntityPlayer handle = getPlayerHandle(player);
+
+        if (packetReceivingListener != null) {
+            removePlayerChannelListener(handle);
         }
 
-        for (TagTeam tagTeam : tagTeams) {
-            if (!tagTeam.playerName.equals(player.getName())) {
-                continue;
-            }
-
-            tagTeam.scoreboardTeam.setDisplayName(playerTeam.getDisplayName());
-            tagTeam.scoreboardTeam.setNameTagVisibility(playerTeam.getNameTagVisibility());
-
-            EntityPlayer handle = getPlayerHandle(player);
-
+        if (tagTeams.isEmpty()) {
             sendPacket(handle, PacketPlayOutScoreboardTeam.a(playerTeam, true));
-            sendPacket(handle, PacketPlayOutScoreboardTeam.a(tagTeam.scoreboardTeam, true));
-            break;
+        } else {
+            for (TagTeam tagTeam : tagTeams) {
+                if (!tagTeam.playerName.equals(player.getName())) {
+                    continue;
+                }
+
+                tagTeam.scoreboardTeam.setDisplayName(playerTeam.getDisplayName());
+                tagTeam.scoreboardTeam.setNameTagVisibility(playerTeam.getNameTagVisibility());
+
+                sendPacket(handle, PacketPlayOutScoreboardTeam.a(playerTeam, true));
+                sendPacket(handle, PacketPlayOutScoreboardTeam.a(tagTeam.scoreboardTeam, true));
+                break;
+            }
+        }
+
+        if (packetReceivingListener != null) {
+            addPlayerChannelListener(handle, packetReceivingListener.classesToListen);
         }
     }
 

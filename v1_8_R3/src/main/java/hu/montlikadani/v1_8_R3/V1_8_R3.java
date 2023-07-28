@@ -50,6 +50,8 @@ public final class V1_8_R3 implements IPacketNM {
 
 	private final Set<TagTeam> tagTeams = new HashSet<>();
 
+	private PacketReceivingListener packetReceivingListener;
+
 	public V1_8_R3() {
 		try {
 			(headerField = PacketPlayOutPlayerListHeaderFooter.class.getDeclaredField("a")).setAccessible(true);
@@ -79,12 +81,18 @@ public final class V1_8_R3 implements IPacketNM {
 
 	@Override
 	public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
-		EntityPlayer entityPlayer = getPlayerHandle(player);
+		addPlayerChannelListener(getPlayerHandle(player), classesToListen);
+	}
 
+	private void addPlayerChannelListener(EntityPlayer entityPlayer, List<Class<?>> classesToListen) {
 		if (entityPlayer.playerConnection.networkManager.channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
+			if (packetReceivingListener == null) {
+				packetReceivingListener = new PacketReceivingListener(entityPlayer.getUniqueID(), classesToListen);
+			}
+
 			try {
 				entityPlayer.playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
-						new PacketReceivingListener(entityPlayer.getUniqueID(), classesToListen));
+						packetReceivingListener);
 			} catch (java.util.NoSuchElementException ex) {
 				// packet_handler not exists, sure then, ignore
 			}
@@ -93,8 +101,10 @@ public final class V1_8_R3 implements IPacketNM {
 
 	@Override
 	public void removePlayerChannelListener(Player player) {
-		EntityPlayer entityPlayer = getPlayerHandle(player);
+		removePlayerChannelListener(getPlayerHandle(player));
+	}
 
+	private void removePlayerChannelListener(EntityPlayer entityPlayer) {
 		if (entityPlayer.playerConnection.networkManager.channel.pipeline().get(PACKET_INJECTOR_NAME) != null) {
 			entityPlayer.playerConnection.networkManager.channel.pipeline().remove(PACKET_INJECTOR_NAME);
 		}
@@ -247,24 +257,31 @@ public final class V1_8_R3 implements IPacketNM {
 			}
 		}
 
-		if (tagTeams.isEmpty()) {
-			sendPacket(getPlayerHandle(player), new PacketPlayOutScoreboardTeam(playerTeam, 0));
-			return;
+		EntityPlayer handle = getPlayerHandle(player);
+
+		if (packetReceivingListener != null) {
+			removePlayerChannelListener(handle);
 		}
 
-		for (TagTeam tagTeam : tagTeams) {
-			if (!tagTeam.playerName.equals(player.getName())) {
-				continue;
-			}
-
-			tagTeam.scoreboardTeam.setDisplayName(playerTeam.getDisplayName());
-			tagTeam.scoreboardTeam.setNameTagVisibility(playerTeam.getNameTagVisibility());
-
-			EntityPlayer handle = getPlayerHandle(player);
-
+		if (tagTeams.isEmpty()) {
 			sendPacket(handle, new PacketPlayOutScoreboardTeam(playerTeam, 0));
-			sendPacket(handle, new PacketPlayOutScoreboardTeam(tagTeam.scoreboardTeam, 0));
-			break;
+		} else {
+			for (TagTeam tagTeam : tagTeams) {
+				if (!tagTeam.playerName.equals(player.getName())) {
+					continue;
+				}
+
+				tagTeam.scoreboardTeam.setDisplayName(playerTeam.getDisplayName());
+				tagTeam.scoreboardTeam.setNameTagVisibility(playerTeam.getNameTagVisibility());
+
+				sendPacket(handle, new PacketPlayOutScoreboardTeam(playerTeam, 0));
+				sendPacket(handle, new PacketPlayOutScoreboardTeam(tagTeam.scoreboardTeam, 0));
+				break;
+			}
+		}
+
+		if (packetReceivingListener != null) {
+			addPlayerChannelListener(handle, packetReceivingListener.classesToListen);
 		}
 	}
 

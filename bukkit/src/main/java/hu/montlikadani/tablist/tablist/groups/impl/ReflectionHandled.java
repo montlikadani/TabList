@@ -59,12 +59,17 @@ public class ReflectionHandled {
 			}
 		}
 
+		java.util.List<Class<?>> packetClasses = tl.packetClasses();
+
 		for (Player player : tl.getServer().getOnlinePlayers()) {
+			PacketNM.NMS_PACKET.removePlayerChannelListener(player);
 			PacketNM.NMS_PACKET.sendPacket(player, removeTeamPacket);
 
 			if (updateNamePacket != null) {
 				PacketNM.NMS_PACKET.sendPacket(player, updateNamePacket);
 			}
+
+			PacketNM.NMS_PACKET.addPlayerChannelListener(player, packetClasses);
 		}
 	}
 }
