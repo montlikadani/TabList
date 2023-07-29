@@ -506,6 +506,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		return papi != null && papi.isEnabled();
 	}
 
+	public boolean isFoliaServer() {
+		return isFoliaServer;
+	}
+
 	public Variables getPlaceholders() {
 		return variables;
 	}

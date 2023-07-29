@@ -1,6 +1,7 @@
 plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("java-library")
+    id("io.papermc.paperweight.userdev") version "1.5.5"
 }
 
 java {
@@ -36,10 +37,7 @@ dependencies {
     compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8, so we must use this
     compileOnly("net.luckperms:api:5.4")
 
-    api("dev.folia:folia-api:1.20.1-R0.1-SNAPSHOT") {
-        exclude("org.yaml", "snakeyaml")
-        exclude("junit", "junit")
-    }
+    paperweight.foliaDevBundle("1.20.1-R0.1-SNAPSHOT")
 
     compileOnly("net.essentialsx:EssentialsX:2.20.1-SNAPSHOT") {
         isTransitive = false

@@ -163,12 +163,45 @@ public final class Variables {
 		});
 
 		str = Global.replace(str, "%tps-overflow%", () -> roundTpsDigits(TabListAPI.getTPS()));
-		str = Global.replace(str, "%tps%", () -> {
-			double tps = TabListAPI.getTPS();
-			return tps >= 21.0 ? (fixedTpsString == null ? fixedTpsString = roundTpsDigits(20.0) : fixedTpsString) : roundTpsDigits(tps);
-		});
+		str = Global.replace(str, "%tps%", () -> tpsDigits(TabListAPI.getTPS()));
+
+		if (plugin.isFoliaServer()) {
+			for (TicksPerSecond one : TicksPerSecond.VALUES) {
+				str = Global.replace(str, "%folia-current-region-average-tps-" + one.dur + "%", () -> {
+					io.papermc.paper.threadedregions.TickRegionScheduler.RegionScheduleHandle scheduleHandle =
+							io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegion().getData().getRegionSchedulingHandle();
+					io.papermc.paper.threadedregions.TickData.TickReportData tickReportData;
+
+					switch (one) {
+						case SECONDS_5:
+							tickReportData = scheduleHandle.getTickReport5s(System.nanoTime());
+							break;
+						case SECONDS_15:
+							tickReportData = scheduleHandle.getTickReport15s(System.nanoTime());
+							break;
+						case MINUTES_1:
+							tickReportData = scheduleHandle.getTickReport1m(System.nanoTime());
+							break;
+						case MINUTES_5:
+							tickReportData = scheduleHandle.getTickReport5m(System.nanoTime());
+							break;
+						case MINUTES_15:
+							tickReportData = scheduleHandle.getTickReport15m(System.nanoTime());
+							break;
+						default:
+							return "-1";
+					}
+
+					return tpsDigits(tickReportData.tpsData().segmentAll().average());
+				});
+			}
+		}
 
 		return str;
+	}
+
+	private String tpsDigits(double tps) {
+		return tps >= 21.0 ? (fixedTpsString == null ? fixedTpsString = roundTpsDigits(20.0) : fixedTpsString) : roundTpsDigits(tps);
 	}
 
 	@SuppressWarnings("deprecation")
@@ -305,5 +338,18 @@ public final class Variables {
 		}
 
 		return allEntities;
+	}
+
+	private enum TicksPerSecond {
+
+		SECONDS_5("5sec"), SECONDS_15("15sec"), MINUTES_1("1min"), MINUTES_5("5min"), MINUTES_15("15min");
+
+		public static final TicksPerSecond[] VALUES = values();
+
+		final String dur;
+
+		TicksPerSecond(String dur) {
+			this.dur = dur;
+		}
 	}
 }
