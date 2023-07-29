@@ -45,7 +45,10 @@ public final class FakePlayerHandler {
 			}
 
 			if (file.length() == 0L) {
-				file.delete();
+				if (!file.delete()) {
+					throw new RuntimeException("Failed to delete file " + file.getName());
+				}
+
 				return;
 			}
 
@@ -61,8 +64,8 @@ public final class FakePlayerHandler {
 					ex.printStackTrace();
 				}
 
-				if (file.length() == 0L) {
-					file.delete();
+				if (file.length() == 0L && !file.delete()) {
+					throw new RuntimeException("Failed to delete file " + file.getName());
 				}
 			}
 

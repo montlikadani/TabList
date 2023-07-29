@@ -34,8 +34,8 @@ public class Configuration {
 	public void loadFiles() {
 		// Monument
 		File names = new File(plugin.getDataFolder(), "names.yml");
-		if (names.exists()) {
-			names.delete();
+		if (names.exists() && !names.delete()) {
+			throw new RuntimeException("Failed to delete names.yml file");
 		}
 
 		if (!configFile.exists()) {
@@ -64,7 +64,9 @@ public class Configuration {
 		if (!file.exists()) {
 			if (newFile) {
 				try {
-					file.createNewFile();
+					if (!file.createNewFile()) {
+						throw new RuntimeException("Failed to create " + name + " file");
+					}
 				} catch (java.io.IOException e) {
 					e.printStackTrace();
 				}

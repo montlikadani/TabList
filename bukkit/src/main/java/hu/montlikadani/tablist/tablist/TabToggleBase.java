@@ -84,8 +84,8 @@ public final class TabToggleBase {
         File file = new File(tl.getDataFolder(), "toggledtablists.yml");
 
         if (!TabConfigValues.isRememberToggledTablistToFile() || (!globallySwitched && tl.getUsers().stream().allMatch(TabListUser::isTabVisible))) {
-            if (file.exists()) {
-                file.delete();
+            if (file.exists() && !file.delete()) {
+                throw new RuntimeException("Failed to delete file toggledtablists.yml");
             }
 
             return;
@@ -93,7 +93,9 @@ public final class TabToggleBase {
 
         if (!file.exists()) {
             try {
-                file.createNewFile();
+                if (!file.createNewFile()) {
+                    throw new RuntimeException("Failed to create toggledtablists.yml file");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
