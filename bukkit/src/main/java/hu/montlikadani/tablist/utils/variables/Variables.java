@@ -170,13 +170,13 @@ public final class Variables {
 			for (TicksPerSecond one : TicksPerSecond.VALUES) {
 				str = Global.replace(str, "%folia-current-region-average-tps-" + one.dur + "%", () -> {
 					io.papermc.paper.threadedregions.ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData,
-							TickRegions.TickRegionSectionData> regionizer = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegion();
+							TickRegions.TickRegionSectionData> currentRegion = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegion();
 
-					if (regionizer == null) {
-						return "-1";
+					if (currentRegion == null) {
+						return "no current region";
 					}
 
-					io.papermc.paper.threadedregions.TickRegionScheduler.RegionScheduleHandle scheduleHandle = regionizer.getData().getRegionSchedulingHandle();
+					io.papermc.paper.threadedregions.TickRegionScheduler.RegionScheduleHandle scheduleHandle = currentRegion.getData().getRegionSchedulingHandle();
 					io.papermc.paper.threadedregions.TickData.TickReportData tickReportData;
 
 					switch (one) {

@@ -120,12 +120,17 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			objects.cancelTask();
 		}
 
-		getServer().getScheduler().cancelTasks(this);
+		if (isFoliaServer) {
+			getServer().getAsyncScheduler().cancelTasks(this);
+			getServer().getGlobalRegionScheduler().cancelTasks(this);
+		} else {
+			getServer().getScheduler().cancelTasks(this);
 
-		// Async tasks can't be cancelled sometimes, with this the active threads will be interrupted
-		for (org.bukkit.scheduler.BukkitWorker worker : getServer().getScheduler().getActiveWorkers()) {
-			if (equals(worker.getOwner())) {
-				worker.getThread().interrupt();
+			// Async tasks can't be cancelled sometimes, with this the active threads will be interrupted
+			for (org.bukkit.scheduler.BukkitWorker worker : getServer().getScheduler().getActiveWorkers()) {
+				if (equals(worker.getOwner())) {
+					worker.getThread().interrupt();
+				}
 			}
 		}
 
