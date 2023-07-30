@@ -41,6 +41,19 @@ public final class V1_18_R2 implements IPacketNM {
     private PacketReceivingListener packetReceivingListener;
 
     @Override
+    public void modifyPacketListeningClass(boolean add) {
+        if (packetReceivingListener == null) {
+            return;
+        }
+
+        if (add) {
+            packetReceivingListener.classesToListen.add(PacketPlayOutScoreboardTeam.class);
+        } else {
+            packetReceivingListener.classesToListen.remove(PacketPlayOutScoreboardTeam.class);
+        }
+    }
+
+    @Override
     public void sendPacket(Player player, Object packet) {
         getPlayerHandle(player).b.a((Packet<?>) packet);
     }
@@ -196,10 +209,6 @@ public final class V1_18_R2 implements IPacketNM {
 
         EntityPlayer handle = getPlayerHandle(player);
 
-        if (packetReceivingListener != null) {
-            packetReceivingListener.classesToListen.remove(PacketPlayOutScoreboardTeam.class);
-        }
-
         if (tagTeams.isEmpty()) {
             sendPacket(handle, PacketPlayOutScoreboardTeam.a(playerTeam, true));
         } else {
@@ -215,10 +224,6 @@ public final class V1_18_R2 implements IPacketNM {
                 sendPacket(handle, PacketPlayOutScoreboardTeam.a(tagTeam.scoreboardTeam, true));
                 break;
             }
-        }
-
-        if (packetReceivingListener != null) {
-            packetReceivingListener.classesToListen.add(PacketPlayOutScoreboardTeam.class);
         }
     }
 

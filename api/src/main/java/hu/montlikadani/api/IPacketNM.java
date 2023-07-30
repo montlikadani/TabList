@@ -6,6 +6,8 @@ public interface IPacketNM {
 
     String PACKET_INJECTOR_NAME = "TLPacketInjector";
 
+    void modifyPacketListeningClass(boolean add);
+
     void sendPacket(Player player, Object packet);
 
     void addPlayerChannelListener(Player player, java.util.List<Class<?>> classesToListen);

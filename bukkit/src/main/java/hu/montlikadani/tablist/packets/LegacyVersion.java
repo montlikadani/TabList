@@ -92,6 +92,19 @@ public final class LegacyVersion implements IPacketNM {
     }
 
     @Override
+    public void modifyPacketListeningClass(boolean add) {
+        if (packetReceivingListener == null) {
+            return;
+        }
+
+        if (add) {
+            packetReceivingListener.classesToListen.add(ClazzContainer.packetPlayOutScoreboardTeam());
+        } else {
+            packetReceivingListener.classesToListen.remove(ClazzContainer.packetPlayOutScoreboardTeam());
+        }
+    }
+
+    @Override
     public Object getPlayerHandle(Player player) {
         try {
             if (playerHandleMethod == null) {
@@ -595,12 +608,10 @@ public final class LegacyVersion implements IPacketNM {
 
             playerTeams.add(scoreTeam == null ? newTeamPacket : scoreTeam);
 
-            if (packetReceivingListener != null) {
-                packetReceivingListener.classesToListen.remove(ClazzContainer.packetPlayOutScoreboardTeam());
-            }
+            Object handle = getPlayerHandle(player);
 
             if (tagTeams.isEmpty()) {
-                sendPacket(getPlayerHandle(player), newTeamPacket);
+                sendPacket(handle, newTeamPacket);
             } else {
                 for (TagTeam tagTeam : tagTeams) {
                     if (!tagTeam.playerName.equals(player.getName())) {
@@ -610,16 +621,10 @@ public final class LegacyVersion implements IPacketNM {
                     ClazzContainer.getScoreboardTeamSetDisplayName().invoke(tagTeam.scoreboardTeam, tagTeam.scoreboardTeamDisplayNameMethod.invoke(tagTeam.scoreboardTeam));
                     ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(tagTeam.scoreboardTeam, tagTeam.scoreboardTeamNameTagVisibilityMethod.invoke(tagTeam.scoreboardTeam));
 
-                    Object handle = getPlayerHandle(player);
-
                     sendPacket(handle, newTeamPacket);
                     sendPacket(handle, ClazzContainer.scoreboardTeamPacketByAction(tagTeam.scoreboardTeam, 0));
                     break;
                 }
-            }
-
-            if (packetReceivingListener != null) {
-                packetReceivingListener.classesToListen.add(ClazzContainer.packetPlayOutScoreboardTeam());
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -23,6 +23,8 @@ public class ReflectionHandled {
 			return;
 		}
 
+		PacketNM.NMS_PACKET.modifyPacketListeningClass(false);
+
 		if (tl.getGroups().isToSort()) {
 			unregisterTeam(false);
 
@@ -36,6 +38,8 @@ public class ReflectionHandled {
 		for (Player pl : tl.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(pl, updatePacket);
 		}
+
+		PacketNM.NMS_PACKET.modifyPacketListeningClass(true);
 	}
 
 	public void unregisterTeam() {
