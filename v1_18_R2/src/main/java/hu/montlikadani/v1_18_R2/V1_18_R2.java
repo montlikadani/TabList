@@ -38,19 +38,31 @@ public final class V1_18_R2 implements IPacketNM {
 
     private final Set<TagTeam> tagTeams = new HashSet<>();
 
-    private PacketReceivingListener packetReceivingListener;
+    private final List<PacketReceivingListener> packetReceivingListeners = new ArrayList<>();
 
     @Override
-    public void modifyPacketListeningClass(boolean add) {
-        if (packetReceivingListener == null) {
+    public void modifyPacketListeningClass(Player player, boolean add) {
+        PacketReceivingListener receivingListener = listenerByPlayer(player.getUniqueId());
+
+        if (receivingListener == null) {
             return;
         }
 
         if (add) {
-            packetReceivingListener.classesToListen.add(PacketPlayOutScoreboardTeam.class);
+            receivingListener.classesToListen.add(PacketPlayOutScoreboardTeam.class);
         } else {
-            packetReceivingListener.classesToListen.remove(PacketPlayOutScoreboardTeam.class);
+            receivingListener.classesToListen.remove(PacketPlayOutScoreboardTeam.class);
         }
+    }
+
+    private PacketReceivingListener listenerByPlayer(UUID playerId) {
+        for (PacketReceivingListener receivingListener : packetReceivingListeners) {
+            if (receivingListener.listenerPlayerId.equals(playerId)) {
+                return receivingListener;
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -64,12 +76,18 @@ public final class V1_18_R2 implements IPacketNM {
 
     @Override
     public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
+        UUID playerId = player.getUniqueId();
+
+        if (listenerByPlayer(playerId) != null) {
+            return;
+        }
+
         EntityPlayer entityPlayer = getPlayerHandle(player);
 
         if (entityPlayer.b.a.m.pipeline().get(PACKET_INJECTOR_NAME) == null) {
-            if (packetReceivingListener == null) {
-                packetReceivingListener = new PacketReceivingListener(entityPlayer.fq().getId(), classesToListen);
-            }
+            PacketReceivingListener packetReceivingListener = new PacketReceivingListener(playerId, classesToListen);
+
+            packetReceivingListeners.add(packetReceivingListener);
 
             try {
                 entityPlayer.b.a.m.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, packetReceivingListener);
@@ -86,6 +104,8 @@ public final class V1_18_R2 implements IPacketNM {
         if (entityPlayer.b.a.m.pipeline().get(PACKET_INJECTOR_NAME) != null) {
             entityPlayer.b.a.m.pipeline().remove(PACKET_INJECTOR_NAME);
         }
+
+        packetReceivingListeners.removeIf(pr -> pr.listenerPlayerId.equals(player.getUniqueId()));
     }
 
     @Override

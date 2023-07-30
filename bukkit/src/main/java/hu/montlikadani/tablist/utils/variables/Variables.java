@@ -2,6 +2,7 @@ package hu.montlikadani.tablist.utils.variables;
 
 import java.time.LocalDateTime;
 
+import io.papermc.paper.threadedregions.TickRegions;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -168,8 +169,14 @@ public final class Variables {
 		if (plugin.isFoliaServer()) {
 			for (TicksPerSecond one : TicksPerSecond.VALUES) {
 				str = Global.replace(str, "%folia-current-region-average-tps-" + one.dur + "%", () -> {
-					io.papermc.paper.threadedregions.TickRegionScheduler.RegionScheduleHandle scheduleHandle =
-							io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegion().getData().getRegionSchedulingHandle();
+					io.papermc.paper.threadedregions.ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData,
+							TickRegions.TickRegionSectionData> regionizer = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegion();
+
+					if (regionizer == null) {
+						return "-1";
+					}
+
+					io.papermc.paper.threadedregions.TickRegionScheduler.RegionScheduleHandle scheduleHandle = regionizer.getData().getRegionSchedulingHandle();
 					io.papermc.paper.threadedregions.TickData.TickReportData tickReportData;
 
 					switch (one) {

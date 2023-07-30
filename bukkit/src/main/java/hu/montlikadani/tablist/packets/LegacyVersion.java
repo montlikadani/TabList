@@ -36,7 +36,7 @@ public final class LegacyVersion implements IPacketNM {
     private final List<Object> playerTeams = new ArrayList<>();
     private final java.util.Set<TagTeam> tagTeams = new java.util.HashSet<>();
 
-    private PacketReceivingListener packetReceivingListener;
+    private final List<PacketReceivingListener> packetReceivingListeners = new ArrayList<>();
 
     public LegacyVersion() {
         try {
@@ -92,16 +92,28 @@ public final class LegacyVersion implements IPacketNM {
     }
 
     @Override
-    public void modifyPacketListeningClass(boolean add) {
-        if (packetReceivingListener == null) {
+    public void modifyPacketListeningClass(Player player, boolean add) {
+        PacketReceivingListener receivingListener = listenerByPlayer(player.getUniqueId());
+
+        if (receivingListener == null) {
             return;
         }
 
         if (add) {
-            packetReceivingListener.classesToListen.add(ClazzContainer.packetPlayOutScoreboardTeam());
+            receivingListener.classesToListen.add(ClazzContainer.packetPlayOutScoreboardTeam());
         } else {
-            packetReceivingListener.classesToListen.remove(ClazzContainer.packetPlayOutScoreboardTeam());
+            receivingListener.classesToListen.remove(ClazzContainer.packetPlayOutScoreboardTeam());
         }
+    }
+
+    private PacketReceivingListener listenerByPlayer(UUID playerId) {
+        for (PacketReceivingListener receivingListener : packetReceivingListeners) {
+            if (receivingListener.listenerPlayerId.equals(playerId)) {
+                return receivingListener;
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -159,6 +171,12 @@ public final class LegacyVersion implements IPacketNM {
 
     @Override
     public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
+        UUID playerId = player.getUniqueId();
+
+        if (listenerByPlayer(playerId) != null) {
+            return;
+        }
+
         Object entityPlayer = getPlayerHandle(player);
         Channel channel;
 
@@ -170,9 +188,9 @@ public final class LegacyVersion implements IPacketNM {
         }
 
         if (channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
-            if (packetReceivingListener == null) {
-                packetReceivingListener = new PacketReceivingListener(player.getUniqueId(), classesToListen);
-            }
+            PacketReceivingListener packetReceivingListener = new PacketReceivingListener(playerId, classesToListen);
+
+            packetReceivingListeners.add(packetReceivingListener);
 
             try {
                 channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, packetReceivingListener);
@@ -197,6 +215,8 @@ public final class LegacyVersion implements IPacketNM {
         if (channel.pipeline().get(PACKET_INJECTOR_NAME) != null) {
             channel.pipeline().remove(PACKET_INJECTOR_NAME);
         }
+
+        packetReceivingListeners.removeIf(pr -> pr.listenerPlayerId.equals(player.getUniqueId()));
     }
 
     private Object getServer() {
