@@ -181,7 +181,7 @@ public final class ConfigValues {
 		hideGroupInVanish = c.get("change-prefix-suffix-in-tablist.hide-group-when-player-vanished", false);
 		assignGlobalGroup = c.get("change-prefix-suffix-in-tablist.assign-global-group-to-normal", false);
 		preferPrimaryVaultGroup = c.get("change-prefix-suffix-in-tablist.prefer-primary-vault-group", false);
-		useLPWeightToOrderGroupsFirst = c.get("change-prefix-suffix-in-tablist.use-luckperms-weight-to-order-groups-to-first-place", true);
+		useLPWeightToOrderGroupsFirst = c.get("change-prefix-suffix-in-tablist.use-luckperms-weight-to-order-groups-to-first-place", false);
 		followNameTagVisibility = c.get("change-prefix-suffix-in-tablist.followNameTagVisibility", false);
 
 		afkFormatYes = Global.replaceToUnicodeSymbol(c.get("placeholder-format.afk-status.format-yes", "&7 [AFK]&r "));

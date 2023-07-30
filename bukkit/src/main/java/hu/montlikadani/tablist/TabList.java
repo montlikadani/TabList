@@ -1,7 +1,6 @@
 package hu.montlikadani.tablist;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -532,10 +531,6 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	public Complement getComplement() {
 		return complement;
-	}
-
-	public List<Class<?>> packetClasses() {
-		return new ArrayList<>(packetClasses);
 	}
 
 	boolean isPluginEnabled(String name) {
