@@ -114,8 +114,8 @@ public final class Groups {
 			teams.add(team);
 		}
 
-		ConfigurationSection cs = gr.getConfigurationSection("groups");
-		if (cs == null) {
+		ConfigurationSection section = gr.getConfigurationSection("groups");
+		if (section == null) {
 			if (!teams.isEmpty()) {
 				startTask();
 			}
@@ -123,7 +123,7 @@ public final class Groups {
 			return;
 		}
 
-		Set<String> keys = cs.getKeys(false);
+		Set<String> keys = section.getKeys(false);
 
 		if (keys.isEmpty()) {
 			if (!teams.isEmpty()) {
@@ -137,15 +137,31 @@ public final class Groups {
 		if (ConfigValues.isSyncPluginsGroups() && plugin.hasPermissionService()) {
 			boolean saveRequired = false;
 
-			me: for (String s : plugin.getPermissionService().getGroups()) {
-				for (String g : keys) {
-					if (s.equalsIgnoreCase(g)) {
+			me: for (String one : plugin.getPermissionService().getGroups()) {
+
+				// If group already exists, skip it
+				for (String name : keys) {
+					if (one.equalsIgnoreCase(name)) {
 						continue me;
 					}
 				}
 
-				cs.set(s + ".prefix", "[" + s + "] - ");
-				saveRequired = true;
+				// Set luckperms prefix if it has any
+				Object group = plugin.getPermissionService().groupObjectByName(one);
+
+				if (group != null) {
+					String prefix = ((net.luckperms.api.model.group.Group) group).getCachedData().getMetaData().getPrefix();
+
+					if (prefix != null) {
+						section.set(one + ".prefix", prefix);
+						saveRequired = true;
+					}
+				}
+
+				if (!saveRequired) {
+					section.set(one + ".prefix", "[" + one + "] - ");
+					saveRequired = true;
+				}
 			}
 
 			if (saveRequired) {
@@ -159,19 +175,19 @@ public final class Groups {
 
 		int last = 0;
 
-		for (String g : keys) {
-			if (g.equals("exampleGroup") || g.equals("PlayerName")) {
+		for (String name : keys) {
+			if ("exampleGroup".equals(name) || "PlayerName".equals(name)) {
 				continue;
 			}
 
-			TabText prefix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(cs.getString(g + ".prefix", "")));
-			TabText suffix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(cs.getString(g + ".suffix", "")));
+			TabText prefix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(section.getString(name + ".prefix", "")));
+			TabText suffix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(section.getString(name + ".suffix", "")));
 
-			TeamHandler th = new TeamHandler(g, prefix, suffix, cs.getString(g + ".permission", ""),
-					last = cs.getInt(g + ".sort-priority", last + 1));
+			TeamHandler th = new TeamHandler(name, prefix, suffix, section.getString(name + ".permission", ""),
+					last = section.getInt(name + ".sort-priority", last + 1));
 
-			th.setAfkSortPriority(cs.getInt(g + ".afk-sort-priority", -1));
-			th.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(cs.getString(g + ".tabname", "")));
+			th.setAfkSortPriority(section.getInt(name + ".afk-sort-priority", -1));
+			th.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(section.getString(name + ".tabname", "")));
 
 			teams.add(th);
 		}
