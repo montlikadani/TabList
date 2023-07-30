@@ -47,10 +47,8 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
-        addPlayerChannelListener(getPlayerHandle(player), classesToListen);
-    }
+        EntityPlayer entityPlayer = getPlayerHandle(player);
 
-    private void addPlayerChannelListener(EntityPlayer entityPlayer, List<Class<?>> classesToListen) {
         if (entityPlayer.b.a.k.pipeline().get(PACKET_INJECTOR_NAME) == null) {
             if (packetReceivingListener == null) {
                 packetReceivingListener = new PacketReceivingListener(entityPlayer.getProfile().getId(), classesToListen);
@@ -66,10 +64,8 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public void removePlayerChannelListener(Player player) {
-        removePlayerChannelListener(getPlayerHandle(player));
-    }
+        EntityPlayer entityPlayer = getPlayerHandle(player);
 
-    private void removePlayerChannelListener(EntityPlayer entityPlayer) {
         if (entityPlayer.b.a.k.pipeline().get(PACKET_INJECTOR_NAME) != null) {
             entityPlayer.b.a.k.pipeline().remove(PACKET_INJECTOR_NAME);
         }
@@ -197,7 +193,7 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
         EntityPlayer handle = getPlayerHandle(player);
 
         if (packetReceivingListener != null) {
-            removePlayerChannelListener(handle);
+            packetReceivingListener.classesToListen.remove(PacketPlayOutScoreboardTeam.class);
         }
 
         if (tagTeams.isEmpty()) {
@@ -218,7 +214,7 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
         }
 
         if (packetReceivingListener != null) {
-            addPlayerChannelListener(handle, packetReceivingListener.classesToListen);
+            packetReceivingListener.classesToListen.add(PacketPlayOutScoreboardTeam.class);
         }
     }
 

@@ -51,10 +51,8 @@ public final class V1_18_R2 implements IPacketNM {
 
     @Override
     public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
-        addPlayerChannelListener(getPlayerHandle(player), classesToListen);
-    }
+        EntityPlayer entityPlayer = getPlayerHandle(player);
 
-    private void addPlayerChannelListener(EntityPlayer entityPlayer, List<Class<?>> classesToListen) {
         if (entityPlayer.b.a.m.pipeline().get(PACKET_INJECTOR_NAME) == null) {
             if (packetReceivingListener == null) {
                 packetReceivingListener = new PacketReceivingListener(entityPlayer.fq().getId(), classesToListen);
@@ -70,10 +68,8 @@ public final class V1_18_R2 implements IPacketNM {
 
     @Override
     public void removePlayerChannelListener(Player player) {
-        removePlayerChannelListener(getPlayerHandle(player));
-    }
+        EntityPlayer entityPlayer = getPlayerHandle(player);
 
-    private void removePlayerChannelListener(EntityPlayer entityPlayer) {
         if (entityPlayer.b.a.m.pipeline().get(PACKET_INJECTOR_NAME) != null) {
             entityPlayer.b.a.m.pipeline().remove(PACKET_INJECTOR_NAME);
         }
@@ -201,7 +197,7 @@ public final class V1_18_R2 implements IPacketNM {
         EntityPlayer handle = getPlayerHandle(player);
 
         if (packetReceivingListener != null) {
-            removePlayerChannelListener(handle);
+            packetReceivingListener.classesToListen.remove(PacketPlayOutScoreboardTeam.class);
         }
 
         if (tagTeams.isEmpty()) {
@@ -222,7 +218,7 @@ public final class V1_18_R2 implements IPacketNM {
         }
 
         if (packetReceivingListener != null) {
-            addPlayerChannelListener(handle, packetReceivingListener.classesToListen);
+            packetReceivingListener.classesToListen.add(PacketPlayOutScoreboardTeam.class);
         }
     }
 

@@ -596,7 +596,7 @@ public final class LegacyVersion implements IPacketNM {
             playerTeams.add(scoreTeam == null ? newTeamPacket : scoreTeam);
 
             if (packetReceivingListener != null) {
-                removePlayerChannelListener(player);
+                packetReceivingListener.classesToListen.remove(ClazzContainer.packetPlayOutScoreboardTeam());
             }
 
             if (tagTeams.isEmpty()) {
@@ -619,7 +619,7 @@ public final class LegacyVersion implements IPacketNM {
             }
 
             if (packetReceivingListener != null) {
-                addPlayerChannelListener(player, packetReceivingListener.classesToListen);
+                packetReceivingListener.classesToListen.add(ClazzContainer.packetPlayOutScoreboardTeam());
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -54,10 +54,7 @@ public final class V1_20_R1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
-        addPlayerChannelListener(getPlayerHandle(player), classesToListen);
-    }
-
-    private void addPlayerChannelListener(EntityPlayer entityPlayer, List<Class<?>> classesToListen) {
+        EntityPlayer entityPlayer = getPlayerHandle(player);
         Channel channel = playerChannel(entityPlayer.c);
 
         if (channel != null && channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
@@ -97,11 +94,7 @@ public final class V1_20_R1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public void removePlayerChannelListener(Player player) {
-        removePlayerChannelListener(getPlayerHandle(player));
-    }
-
-    private void removePlayerChannelListener(EntityPlayer player) {
-        Channel channel = playerChannel(player.c);
+        Channel channel = playerChannel(getPlayerHandle(player).c);
 
         if (channel != null && channel.pipeline().get(PACKET_INJECTOR_NAME) != null) {
             channel.pipeline().remove(PACKET_INJECTOR_NAME);
@@ -236,7 +229,7 @@ public final class V1_20_R1 implements hu.montlikadani.api.IPacketNM {
         EntityPlayer handle = getPlayerHandle(player);
 
         if (packetReceivingListener != null) {
-            removePlayerChannelListener(handle);
+            packetReceivingListener.classesToListen.remove(PacketPlayOutScoreboardTeam.class);
         }
 
         if (tagTeams.isEmpty()) {
@@ -257,7 +250,7 @@ public final class V1_20_R1 implements hu.montlikadani.api.IPacketNM {
         }
 
         if (packetReceivingListener != null) {
-            addPlayerChannelListener(handle, packetReceivingListener.classesToListen);
+            packetReceivingListener.classesToListen.add(PacketPlayOutScoreboardTeam.class);
         }
     }
 
