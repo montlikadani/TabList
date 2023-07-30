@@ -50,7 +50,7 @@ public final class V1_8_R3 implements IPacketNM {
 
 	private final Set<TagTeam> tagTeams = new HashSet<>();
 
-	private final List<PacketReceivingListener> packetReceivingListeners = new ArrayList<>();
+	private final List<PacketReceivingListener> packetReceivingListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
 
 	public V1_8_R3() {
 		try {

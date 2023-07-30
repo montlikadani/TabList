@@ -227,7 +227,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			return;
 		}
 
-		packetClasses = new java.util.ArrayList<>(1);
+		packetClasses = new java.util.concurrent.CopyOnWriteArrayList<>();
 
 		if (ConfigValues.isPrefixSuffixEnabled()) {
 			try {

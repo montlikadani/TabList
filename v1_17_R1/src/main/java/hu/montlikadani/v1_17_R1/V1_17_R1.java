@@ -34,7 +34,7 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
     private final Set<TagTeam> tagTeams = new HashSet<>();
 
-    private final List<PacketReceivingListener> packetReceivingListeners = new ArrayList<>();
+    private final List<PacketReceivingListener> packetReceivingListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
 
     @Override
     public void modifyPacketListeningClass(Player player, boolean add) {

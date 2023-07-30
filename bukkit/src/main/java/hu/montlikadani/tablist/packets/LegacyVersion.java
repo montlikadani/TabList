@@ -36,7 +36,7 @@ public final class LegacyVersion implements IPacketNM {
     private final List<Object> playerTeams = new ArrayList<>();
     private final java.util.Set<TagTeam> tagTeams = new java.util.HashSet<>();
 
-    private final List<PacketReceivingListener> packetReceivingListeners = new ArrayList<>();
+    private final List<PacketReceivingListener> packetReceivingListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
 
     public LegacyVersion() {
         try {
