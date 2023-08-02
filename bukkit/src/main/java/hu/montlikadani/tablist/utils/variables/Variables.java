@@ -176,6 +176,10 @@ public final class Variables {
 						return "no current region";
 					}
 
+					if (currentRegion.getData() == null) {
+						return "no region data available";
+					}
+
 					io.papermc.paper.threadedregions.TickRegionScheduler.RegionScheduleHandle scheduleHandle = currentRegion.getData().getRegionSchedulingHandle();
 					io.papermc.paper.threadedregions.TickData.TickReportData tickReportData;
 
@@ -197,6 +201,10 @@ public final class Variables {
 							break;
 						default:
 							return "-1";
+					}
+
+					if (tickReportData == null) {
+						return "no tick report generated";
 					}
 
 					return tpsDigits(tickReportData.tpsData().segmentAll().average());
