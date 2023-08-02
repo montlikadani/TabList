@@ -23,7 +23,7 @@ public class ReflectionHandled {
 			return;
 		}
 
-		PacketNM.NMS_PACKET.modifyPacketListeningClass(player, false);
+		PacketNM.NMS_PACKET.packetListeningAllowed(player);
 
 		if (tl.getGroups().isToSort()) {
 			unregisterTeam(false);
@@ -39,7 +39,7 @@ public class ReflectionHandled {
 			PacketNM.NMS_PACKET.sendPacket(pl, updatePacket);
 		}
 
-		PacketNM.NMS_PACKET.modifyPacketListeningClass(player, true);
+		PacketNM.NMS_PACKET.packetListeningAllowed(player);
 	}
 
 	public void unregisterTeam() {

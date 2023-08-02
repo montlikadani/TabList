@@ -41,17 +41,11 @@ public final class V1_19_R1 implements IPacketNM {
     private final List<PacketReceivingListener> packetReceivingListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
 
     @Override
-    public void modifyPacketListeningClass(Player player, boolean add) {
+    public void packetListeningAllowed(Player player) {
         PacketReceivingListener receivingListener = listenerByPlayer(player.getUniqueId());
 
-        if (receivingListener == null) {
-            return;
-        }
-
-        if (add) {
-            receivingListener.classesToListen.add(PacketPlayOutScoreboardTeam.class);
-        } else {
-            receivingListener.classesToListen.remove(PacketPlayOutScoreboardTeam.class);
+        if (receivingListener != null) {
+            receivingListener.packetListeningAllowed = !receivingListener.packetListeningAllowed;
         }
     }
 
@@ -293,6 +287,8 @@ public final class V1_19_R1 implements IPacketNM {
         private final UUID listenerPlayerId;
         private final List<Class<?>> classesToListen;
 
+        private boolean packetListeningAllowed = true;
+
         public PacketReceivingListener(UUID listenerPlayerId, List<Class<?>> classesToListen) {
             this.listenerPlayerId = listenerPlayerId;
             this.classesToListen = classesToListen;
@@ -300,6 +296,11 @@ public final class V1_19_R1 implements IPacketNM {
 
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
+            if (!packetListeningAllowed) {
+                super.write(ctx, msg, promise);
+                return;
+            }
+
             Class<?> receivingClass = msg.getClass();
 
             for (Class<?> cl : classesToListen) {
