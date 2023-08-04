@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -188,7 +189,7 @@ public final class LegacyVersion implements IPacketNM {
 
             try {
                 channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, packetReceivingListener);
-            } catch (java.util.NoSuchElementException ex) {
+            } catch (NoSuchElementException ex) {
                 // packet_handler not exists, sure then, ignore
             }
         }
@@ -206,8 +207,11 @@ public final class LegacyVersion implements IPacketNM {
             return;
         }
 
-        if (channel.pipeline().get(PACKET_INJECTOR_NAME) != null) {
-            channel.pipeline().remove(PACKET_INJECTOR_NAME);
+        if (channel != null) {
+            try {
+                channel.pipeline().remove(PACKET_INJECTOR_NAME);
+            } catch (NoSuchElementException ignored) {
+            }
         }
 
         packetReceivingListeners.removeIf(pr -> pr.listenerPlayerId.equals(player.getUniqueId()));

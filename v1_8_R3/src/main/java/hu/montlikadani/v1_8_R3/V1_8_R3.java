@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -116,7 +117,7 @@ public final class V1_8_R3 implements IPacketNM {
 			try {
 				entityPlayer.playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
 						packetReceivingListener);
-			} catch (java.util.NoSuchElementException ex) {
+			} catch (NoSuchElementException ex) {
 				// packet_handler not exists, sure then, ignore
 			}
 		}
@@ -126,8 +127,11 @@ public final class V1_8_R3 implements IPacketNM {
 	public void removePlayerChannelListener(Player player) {
 		EntityPlayer entityPlayer = getPlayerHandle(player);
 
-		if (entityPlayer.playerConnection.networkManager.channel.pipeline().get(PACKET_INJECTOR_NAME) != null) {
-			entityPlayer.playerConnection.networkManager.channel.pipeline().remove(PACKET_INJECTOR_NAME);
+		if (entityPlayer.playerConnection.networkManager.channel != null) {
+			try {
+				entityPlayer.playerConnection.networkManager.channel.pipeline().remove(PACKET_INJECTOR_NAME);
+			} catch (NoSuchElementException ignored) {
+			}
 		}
 
 		packetReceivingListeners.removeIf(pr -> pr.listenerPlayerId.equals(player.getUniqueId()));

@@ -4,6 +4,7 @@ import com.mojang.authlib.GameProfile;
 import hu.montlikadani.api.IPacketNM;
 import io.netty.channel.ChannelHandlerContext;
 import java.util.HashSet;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
@@ -85,7 +86,7 @@ public final class V1_19_R1 implements IPacketNM {
 
             try {
                 entityPlayer.b.b.m.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, packetReceivingListener);
-            } catch (java.util.NoSuchElementException ex) {
+            } catch (NoSuchElementException ex) {
                 // packet_handler not exists, sure then, ignore
             }
         }
@@ -95,8 +96,11 @@ public final class V1_19_R1 implements IPacketNM {
     public void removePlayerChannelListener(Player player) {
         EntityPlayer entityPlayer = getPlayerHandle(player);
 
-        if (entityPlayer.b.b.m.pipeline().get(PACKET_INJECTOR_NAME) != null) {
-            entityPlayer.b.b.m.pipeline().remove(PACKET_INJECTOR_NAME);
+        if (entityPlayer.b.b.m != null) {
+            try {
+                entityPlayer.b.b.m.pipeline().remove(PACKET_INJECTOR_NAME);
+            } catch (NoSuchElementException ignored) {
+            }
         }
 
         packetReceivingListeners.removeIf(pr -> pr.listenerPlayerId.equals(player.getUniqueId()));

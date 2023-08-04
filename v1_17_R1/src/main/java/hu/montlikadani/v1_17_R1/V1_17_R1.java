@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
@@ -81,7 +82,7 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
             try {
                 entityPlayer.b.a.k.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, packetReceivingListener);
-            } catch (java.util.NoSuchElementException ex) {
+            } catch (NoSuchElementException ex) {
                 // packet_handler not exists, sure then, ignore
             }
         }
@@ -91,8 +92,11 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
     public void removePlayerChannelListener(Player player) {
         EntityPlayer entityPlayer = getPlayerHandle(player);
 
-        if (entityPlayer.b.a.k.pipeline().get(PACKET_INJECTOR_NAME) != null) {
-            entityPlayer.b.a.k.pipeline().remove(PACKET_INJECTOR_NAME);
+        if (entityPlayer.b.a.k != null) {
+            try {
+                entityPlayer.b.a.k.pipeline().remove(PACKET_INJECTOR_NAME);
+            } catch (NoSuchElementException ignored) {
+            }
         }
 
         packetReceivingListeners.removeIf(pr -> pr.listenerPlayerId.equals(player.getUniqueId()));
