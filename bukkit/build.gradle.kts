@@ -39,7 +39,7 @@ dependencies {
 
     paperweight.foliaDevBundle("1.20.1-R0.1-SNAPSHOT")
 
-    compileOnly("net.essentialsx:EssentialsX:2.20.1-SNAPSHOT") {
+    compileOnly("net.essentialsx:EssentialsX:2.21.0-SNAPSHOT") {
         isTransitive = false
     }
 
