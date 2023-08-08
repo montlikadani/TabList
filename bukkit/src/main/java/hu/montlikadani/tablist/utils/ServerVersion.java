@@ -14,7 +14,7 @@ public enum ServerVersion {
 	private static ServerVersion current;
 
 	ServerVersion() {
-		value = Integer.parseInt(StrUtil.getNumberEscapeSequence().reset(name()).replaceAll(""));
+		value = Integer.parseInt(Util.NUMBER_ESCAPE_SEQUENCE.reset(name()).replaceAll(""));
 	}
 
 	public static ServerVersion getCurrent() {

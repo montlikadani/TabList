@@ -14,7 +14,6 @@ import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.ServerVersion;
-import hu.montlikadani.tablist.utils.StrUtil;
 
 import java.util.Locale;
 
@@ -218,8 +217,8 @@ public final class Objects {
 			String value = ConfigValues.getCustomObjectSetting();
 
 			try {
-				return Integer.parseInt(StrUtil.getNumberEscapeSequence().reset(me.clip.placeholderapi.PlaceholderAPI
-						.setPlaceholders(player, value)).replaceAll(""));
+				return Integer.parseInt(hu.montlikadani.tablist.utils.Util.NUMBER_ESCAPE_SEQUENCE
+						.reset(me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, value)).replaceAll(""));
 			} catch (NumberFormatException e) {
 				hu.montlikadani.tablist.utils.Util.logConsole("Invalid custom objective with " + value + " value.");
 			}

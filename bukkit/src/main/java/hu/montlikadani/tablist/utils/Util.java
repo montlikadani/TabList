@@ -7,6 +7,8 @@ import java.util.logging.Level;
 
 public final class Util {
 
+	public static final java.util.regex.Matcher NUMBER_ESCAPE_SEQUENCE = java.util.regex.Pattern.compile("[^\\d]").matcher("");
+
 	private static final boolean MINIMESSAGE_SUPPORTED;
 
 	static {
