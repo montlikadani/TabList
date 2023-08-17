@@ -433,7 +433,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 				groups.removePlayerGroup(user);
 
-				if (objects != null) {
+				if (objects != null && ConfigValues.getObjectType() != Objects.ObjectTypes.NONE) {
 					objects.unregisterObjective(ConfigValues.getObjectType(), user);
 				}
 
