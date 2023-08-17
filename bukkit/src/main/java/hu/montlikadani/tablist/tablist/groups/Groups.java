@@ -152,16 +152,12 @@ public final class Groups {
 				if (group != null) {
 					String prefix = ((net.luckperms.api.model.group.Group) group).getCachedData().getMetaData().getPrefix();
 
-					if (prefix != null) {
-						section.set(one + ".prefix", prefix);
-						saveRequired = true;
-					}
+					section.set(one + ".prefix", prefix != null ? prefix : "[" + one + "] - ");
+				} else {
+					section.set(one + ".prefix", "[" + one + "] - ");
 				}
 
-				if (!saveRequired) {
-					section.set(one + ".prefix", "[" + one + "] - ");
-					saveRequired = true;
-				}
+				saveRequired = true;
 			}
 
 			if (saveRequired) {
