@@ -790,9 +790,7 @@ public final class LegacyVersion implements IPacketNM {
 
                             if (nameTagVisibility == null) {
                                 nameTagVisibility = ClazzContainer.getNameTagVisibilityAlways();
-                            }
-
-                            if (nameTagVisibility == ClazzContainer.getNameTagVisibilityNever()) {
+                            } else if (nameTagVisibility == ClazzContainer.getNameTagVisibilityNever()) {
                                 return;
                             }
 
@@ -850,9 +848,7 @@ public final class LegacyVersion implements IPacketNM {
 
                                     if (nameTagVisibility == null) {
                                         nameTagVisibility = ClazzContainer.getNameTagVisibilityAlways();
-                                    }
-
-                                    if (nameTagVisibility == ClazzContainer.getNameTagVisibilityNever()) {
+                                    } else if (nameTagVisibility == ClazzContainer.getNameTagVisibilityNever()) {
                                         return;
                                     }
 

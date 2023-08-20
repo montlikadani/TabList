@@ -323,9 +323,7 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
 
                             if (enumNameTagVisibility == null) {
                                 enumNameTagVisibility = ScoreboardTeamBase.EnumNameTagVisibility.a;
-                            }
-
-                            if (enumNameTagVisibility == ScoreboardTeamBase.EnumNameTagVisibility.b) {
+                            } else if (enumNameTagVisibility == ScoreboardTeamBase.EnumNameTagVisibility.b) {
                                 return;
                             }
 

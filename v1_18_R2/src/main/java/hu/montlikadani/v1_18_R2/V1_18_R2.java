@@ -327,9 +327,7 @@ public final class V1_18_R2 implements IPacketNM {
 
                             if (enumNameTagVisibility == null) {
                                 enumNameTagVisibility = ScoreboardTeamBase.EnumNameTagVisibility.a;
-                            }
-
-                            if (enumNameTagVisibility == ScoreboardTeamBase.EnumNameTagVisibility.b) {
+                            } else if (enumNameTagVisibility == ScoreboardTeamBase.EnumNameTagVisibility.b) {
                                 return;
                             }
 

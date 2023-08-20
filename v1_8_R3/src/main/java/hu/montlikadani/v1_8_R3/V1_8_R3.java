@@ -412,9 +412,7 @@ public final class V1_8_R3 implements IPacketNM {
 
 						if (enumNameTagVisibility == null) {
 							enumNameTagVisibility = ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS;
-						}
-
-						if (enumNameTagVisibility == ScoreboardTeamBase.EnumNameTagVisibility.NEVER) {
+						} else if (enumNameTagVisibility == ScoreboardTeamBase.EnumNameTagVisibility.NEVER) {
 							return;
 						}
 
