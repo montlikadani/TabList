@@ -23,7 +23,7 @@ public class OperatorNodes implements LogicalNode {
 		// I think it's not that important honestly, because each option is separated
 
 		for (Condition.RelationalOperators logicalOperator : values) {
-			if (input.replaceAll("[^" + logicalOperator + "]", "").equals(logicalOperator.operator)) {
+			if (input.replaceAll("[^" + logicalOperator.operator + "]", "").equals(logicalOperator.operator)) {
 				chosen = logicalOperator;
 
 				// Do not break the loop operation here, it may have multiple conditions with same operator
