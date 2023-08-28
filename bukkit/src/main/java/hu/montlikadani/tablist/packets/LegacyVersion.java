@@ -37,8 +37,6 @@ public final class LegacyVersion implements IPacketNM {
     private final List<Object> playerTeams = new ArrayList<>();
     private final java.util.Set<TagTeam> tagTeams = new java.util.HashSet<>();
 
-    private final List<PacketReceivingListener> packetReceivingListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
-
     public LegacyVersion() {
         try {
             Class<?> networkManagerClass;
@@ -93,22 +91,23 @@ public final class LegacyVersion implements IPacketNM {
     }
 
     @Override
-    public void packetListeningAllowed(Player player) {
-        PacketReceivingListener receivingListener = listenerByPlayer(player.getUniqueId());
+    public void flushPipelineContext(Player player) {
+        Channel channel;
 
-        if (receivingListener != null) {
-            receivingListener.packetListeningAllowed = !receivingListener.packetListeningAllowed;
+        try {
+            channel = (Channel) this.channel.get(networkManager.get(playerConnectionField.get(getPlayerHandle(player))));
+        } catch (IllegalAccessException ex) {
+            ex.printStackTrace();
+            return;
         }
-    }
 
-    private PacketReceivingListener listenerByPlayer(UUID playerId) {
-        for (PacketReceivingListener receivingListener : packetReceivingListeners) {
-            if (receivingListener.listenerPlayerId.equals(playerId)) {
-                return receivingListener;
+        if (channel != null) {
+            ChannelHandlerContext context = channel.pipeline().context(PACKET_INJECTOR_NAME);
+
+            if (context != null) {
+                context.flush();
             }
         }
-
-        return null;
     }
 
     @Override
@@ -156,7 +155,7 @@ public final class LegacyVersion implements IPacketNM {
         }
 
         try {
-             return ((double[]) recentTpsField.get(getServer()))[0];
+            return ((double[]) recentTpsField.get(getServer()))[0];
         } catch (IllegalAccessException ex) {
             ex.printStackTrace();
         }
@@ -166,29 +165,19 @@ public final class LegacyVersion implements IPacketNM {
 
     @Override
     public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
-        UUID playerId = player.getUniqueId();
-
-        if (listenerByPlayer(playerId) != null) {
-            return;
-        }
-
-        Object entityPlayer = getPlayerHandle(player);
         Channel channel;
 
         try {
-            channel = (Channel) this.channel.get(networkManager.get(playerConnectionField.get(entityPlayer)));
+            channel = (Channel) this.channel.get(networkManager.get(playerConnectionField.get(getPlayerHandle(player))));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
             return;
         }
 
         if (channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
-            PacketReceivingListener packetReceivingListener = new PacketReceivingListener(playerId, classesToListen);
-
-            packetReceivingListeners.add(packetReceivingListener);
-
             try {
-                channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME, packetReceivingListener);
+                channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
+                        new PacketReceivingListener(player.getUniqueId(), classesToListen));
             } catch (NoSuchElementException ex) {
                 // packet_handler not exists, sure then, ignore
             }
@@ -213,8 +202,6 @@ public final class LegacyVersion implements IPacketNM {
             } catch (NoSuchElementException ignored) {
             }
         }
-
-        packetReceivingListeners.removeIf(pr -> pr.listenerPlayerId.equals(player.getUniqueId()));
     }
 
     private Object getServer() {
@@ -273,7 +260,8 @@ public final class LegacyVersion implements IPacketNM {
                 }
 
                 return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), json);
-            } catch (IllegalAccessException | InvocationTargetException | ClassNotFoundException | NoSuchMethodException e) {
+            } catch (IllegalAccessException | InvocationTargetException | ClassNotFoundException |
+                     NoSuchMethodException e) {
                 e.printStackTrace();
             }
         }
@@ -484,7 +472,8 @@ public final class LegacyVersion implements IPacketNM {
     public Object removeEntityPlayers(Object... entityPlayers) {
         try {
             return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getRemovePlayer(), toArray(entityPlayers));
-        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | IllegalArgumentException |
+                 InvocationTargetException e) {
             e.printStackTrace();
         }
 
@@ -650,7 +639,7 @@ public final class LegacyVersion implements IPacketNM {
     }
 
     @Override
-    public Object unregisterBoardTeam(String teamName) {
+    public Object unregisterBoardTeamPacket(String teamName) {
         try {
 
             // We use indexed loop to prevent concurrent modification exception
@@ -758,191 +747,190 @@ public final class LegacyVersion implements IPacketNM {
         private final List<Class<?>> classesToListen;
         private Method scoreboardHandle;
 
-        private boolean packetListeningAllowed = true;
-
         public PacketReceivingListener(UUID listenerPlayerId, List<Class<?>> classesToListen) {
             this.listenerPlayerId = listenerPlayerId;
             this.classesToListen = classesToListen;
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
-            if (!packetListeningAllowed) {
+            Class<?> receivingClass = msg.getClass();
+
+            if (!classesToListen.contains(receivingClass)) {
                 super.write(ctx, msg, promise);
                 return;
             }
 
-            Class<?> receivingClass = msg.getClass();
-
-            for (Class<?> cl : classesToListen) {
-                if (cl != receivingClass) {
-                    continue;
-                }
-
-                // Temporal and disgusting solution to fix players name tag overwriting
-                if (cl == ClazzContainer.packetPlayOutScoreboardTeam()) {
-                    Collection<Object> players = (Collection<Object>) ClazzContainer.getScoreboardTeamNames().get(msg);
-
-                    if (players != null && !players.isEmpty()) {
-                        if (ClazzContainer.getPacketScoreboardTeamParametersMethod() == null) {
-                            Object nameTagVisibility = ClazzContainer.getNameTagVisibility().get(msg);
-
-                            if (nameTagVisibility == null) {
-                                nameTagVisibility = ClazzContainer.getNameTagVisibilityAlways();
-                            } else if (nameTagVisibility == ClazzContainer.getNameTagVisibilityNever()) {
-                                return;
-                            }
-
-                            String prefix, suffix;
-                            try {
-                                prefix = (String) ClazzContainer.getPacketScoreboardTeamPrefix().get(msg);
-                                suffix = (String) ClazzContainer.getPacketScoreboardTeamSuffix().get(msg);
-                            } catch (ClassCastException ex) {
-                                prefix = (String) ClazzContainer.getiChatBaseComponentGetStringMethod().invoke(ClazzContainer.getPacketScoreboardTeamPrefix().get(msg));
-                                suffix = (String) ClazzContainer.getiChatBaseComponentGetStringMethod().invoke(ClazzContainer.getPacketScoreboardTeamSuffix().get(msg));
-                            }
-
-                            if (!prefix.isEmpty() || !suffix.isEmpty()) {
-                                String playerName = (String) players.iterator().next();
-
-                                for (TagTeam team : tagTeams) {
-                                    if (team.playerName.equals(playerName)) {
-                                        return;
-                                    }
-                                }
-
-                                Player player = Bukkit.getPlayer(playerName);
-
-                                if (player == null) {
-                                    return;
-                                }
-
-                                Object chatFormat = ClazzContainer.getPacketScoreboardTeamChatFormatColorField().get(msg);
-                                try {
-                                    chatFormat = ClazzContainer.getEnumChatFormatByIntMethod().invoke(null, chatFormat);
-                                } catch (Throwable ignored) {
-                                }
-
-                                org.bukkit.scoreboard.Scoreboard scoreboard = player.getScoreboard();
-
-                                if (scoreboardHandle == null) {
-                                    scoreboardHandle = scoreboard.getClass().getDeclaredMethod("getHandle");
-                                }
-
-                                Object scoreboardTeam = ClazzContainer.getScoreboardTeamConstructor().newInstance(scoreboardHandle.invoke(scoreboard),
-                                        ClazzContainer.getPacketScoreboardTeamName().get(msg));
-
-                                ClazzContainer.getScoreboardTeamSetPrefix().invoke(scoreboardTeam, prefix);
-                                ClazzContainer.getScoreboardTeamSetSuffix().invoke(scoreboardTeam, suffix);
-                                ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(scoreboardTeam, nameTagVisibility);
-                                ClazzContainer.getScoreboardTeamSetChatFormat().invoke(scoreboardTeam, chatFormat);
-                                ((Collection<String>) ClazzContainer.getPlayerNameSetMethod().invoke(scoreboardTeam)).add(playerName);
-                                tagTeams.add(new TagTeam(playerName, scoreboardTeam));
-                            }
-                        } else {
-                            ((Optional<?>) ClazzContainer.getPacketScoreboardTeamParametersMethod().invoke(msg)).ifPresent(packetTeam -> {
-                                try {
-                                    Object nameTagVisibility = ClazzContainer.getNameTagVisibilityByNameMethod().invoke(packetTeam,
-                                            ClazzContainer.getParametersNameTagVisibility().invoke(packetTeam));
-
-                                    if (nameTagVisibility == null) {
-                                        nameTagVisibility = ClazzContainer.getNameTagVisibilityAlways();
-                                    } else if (nameTagVisibility == ClazzContainer.getNameTagVisibilityNever()) {
-                                        return;
-                                    }
-
-                                    String prefix = (String) ClazzContainer.getiChatBaseComponentGetStringMethod().invoke(ClazzContainer.getParametersTeamPrefix()
-                                            .invoke(packetTeam));
-                                    String suffix = (String) ClazzContainer.getiChatBaseComponentGetStringMethod().invoke(ClazzContainer.getParametersTeamSuffix()
-                                            .invoke(packetTeam));
-
-                                    if (!prefix.isEmpty() || !suffix.isEmpty()) {
-                                        String playerName = (String) players.iterator().next();
-
-                                        for (TagTeam team : tagTeams) {
-                                            if (team.playerName.equals(playerName)) {
-                                                return;
-                                            }
-                                        }
-
-                                        Player player = Bukkit.getPlayer(playerName);
-
-                                        if (player == null) {
-                                            return;
-                                        }
-
-                                        org.bukkit.scoreboard.Scoreboard scoreboard = player.getScoreboard();
-
-                                        if (scoreboardHandle == null) {
-                                            scoreboardHandle = scoreboard.getClass().getDeclaredMethod("getHandle");
-                                        }
-
-                                        Object scoreboardTeam = ClazzContainer.getScoreboardTeamConstructor().newInstance(scoreboardHandle.invoke(scoreboard),
-                                                ClazzContainer.getScoreboardTeamName().invoke(packetTeam));
-
-                                        ClazzContainer.getScoreboardTeamSetPrefix().invoke(scoreboardTeam, prefix);
-                                        ClazzContainer.getScoreboardTeamSetSuffix().invoke(scoreboardTeam, suffix);
-                                        ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(scoreboardTeam, nameTagVisibility);
-                                        ClazzContainer.getScoreboardTeamSetChatFormat().invoke(scoreboardTeam, ClazzContainer.getScoreboardTeamColor().invoke(packetTeam));
-                                        ((Collection<String>) ClazzContainer.getPlayerNameSetMethod().invoke(scoreboardTeam)).add(playerName);
-                                        tagTeams.add(new TagTeam(playerName, scoreboardTeam));
-                                    }
-                                } catch (Exception ex) {
-                                    ex.printStackTrace();
-                                }
-                            });
-                        }
-                    }
-
-                    super.write(ctx, msg, promise);
-                    return;
-                }
-
-                if (ClazzContainer.getActionField().get(msg) == ClazzContainer.getEnumUpdateGameMode()) {
-                    Player player = Bukkit.getPlayer(listenerPlayerId);
-
-                    if (player == null) {
-                        break;
-                    }
-
-                    Object updatePacket = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateLatency(), new Object[0]);
-                    List<Object> players = new ArrayList<>();
-
-                    for (Object entry : (List<Object>) ClazzContainer.getInfoList().get(msg)) {
-                        if (ClazzContainer.getPlayerInfoDataGameMode().get(entry) != ClazzContainer.getGameModeSpectator()) {
-                            continue;
-                        }
-
-                        GameProfile profile = ClazzContainer.getPlayerInfoDataProfile(entry);
-
-                        if (profile == null || profile.getId().equals(listenerPlayerId)) {
-                            continue;
-                        }
-
-                        try {
-                            int ping = ClazzContainer.getPlayerInfoDataPing().getInt(entry);
-                            Object component = ClazzContainer.getPlayerInfoDisplayName().get(entry);
-
-                            if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
-                                players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(msg, profile, ping, ClazzContainer.getGameModeSurvival(), component));
-                            } else {
-                                players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeSurvival(), component));
-                            }
-                        } catch (IllegalAccessException | InstantiationException |
-                                 java.lang.reflect.InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
-
-                        setEntriesField(updatePacket, players);
-                        sendPacket(player, updatePacket);
-                    }
-                }
-
-                break;
+            if (receivingClass == ClazzContainer.packetPlayOutScoreboardTeam()) {
+                scoreboardTeamPacket(msg);
+            } else {
+                playerInfoUpdatePacket(msg);
             }
 
             super.write(ctx, msg, promise);
+        }
+
+        @SuppressWarnings("unchecked")
+        private void playerInfoUpdatePacket(Object msg) throws Exception {
+            if (ClazzContainer.getActionField().get(msg) != ClazzContainer.getEnumUpdateGameMode()) {
+                return;
+            }
+
+            Player player = Bukkit.getPlayer(listenerPlayerId);
+
+            if (player == null) {
+                return;
+            }
+
+            Object updatePacket = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateLatency(), new Object[0]);
+            List<Object> players = new ArrayList<>();
+
+            for (Object entry : (List<Object>) ClazzContainer.getInfoList().get(msg)) {
+                if (ClazzContainer.getPlayerInfoDataGameMode().get(entry) != ClazzContainer.getGameModeSpectator()) {
+                    continue;
+                }
+
+                GameProfile profile = ClazzContainer.getPlayerInfoDataProfile(entry);
+
+                if (profile == null || profile.getId().equals(listenerPlayerId)) {
+                    continue;
+                }
+
+                int ping = ClazzContainer.getPlayerInfoDataPing().getInt(entry);
+                Object component = ClazzContainer.getPlayerInfoDisplayName().get(entry);
+
+                if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
+                    players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(msg, profile, ping, ClazzContainer.getGameModeSurvival(), component));
+                } else {
+                    players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeSurvival(), component));
+                }
+
+                setEntriesField(updatePacket, players);
+                sendPacket(player, updatePacket);
+            }
+        }
+
+        // Temporal and disgusting solution to fix players name tag overwriting
+        @SuppressWarnings("unchecked")
+        private void scoreboardTeamPacket(Object msg) throws Exception {
+            Collection<Object> players = (Collection<Object>) ClazzContainer.getScoreboardTeamNames().get(msg);
+
+            if (players == null || players.isEmpty()) {
+                return;
+            }
+
+            if (ClazzContainer.getPacketScoreboardTeamParametersMethod() == null) {
+                Object nameTagVisibility = ClazzContainer.getNameTagVisibility().get(msg);
+
+                if (nameTagVisibility == null) {
+                    nameTagVisibility = ClazzContainer.getNameTagVisibilityAlways();
+                } else if (nameTagVisibility == ClazzContainer.getNameTagVisibilityNever()) {
+                    return;
+                }
+
+                String prefix, suffix;
+                try {
+                    prefix = (String) ClazzContainer.getPacketScoreboardTeamPrefix().get(msg);
+                    suffix = (String) ClazzContainer.getPacketScoreboardTeamSuffix().get(msg);
+                } catch (ClassCastException ex) {
+                    prefix = (String) ClazzContainer.getiChatBaseComponentGetStringMethod().invoke(ClazzContainer.getPacketScoreboardTeamPrefix().get(msg));
+                    suffix = (String) ClazzContainer.getiChatBaseComponentGetStringMethod().invoke(ClazzContainer.getPacketScoreboardTeamSuffix().get(msg));
+                }
+
+                if (prefix.isEmpty() && suffix.isEmpty()) {
+                    return;
+                }
+
+                String playerName = (String) players.iterator().next();
+
+                for (TagTeam team : tagTeams) {
+                    if (team.playerName.equals(playerName)) {
+                        return;
+                    }
+                }
+
+                Player player = Bukkit.getPlayer(playerName);
+
+                if (player == null) {
+                    return;
+                }
+
+                Object chatFormat = ClazzContainer.getPacketScoreboardTeamChatFormatColorField().get(msg);
+                try {
+                    chatFormat = ClazzContainer.getEnumChatFormatByIntMethod().invoke(null, chatFormat);
+                } catch (Throwable ignored) {
+                }
+
+                org.bukkit.scoreboard.Scoreboard scoreboard = player.getScoreboard();
+
+                if (scoreboardHandle == null) {
+                    scoreboardHandle = scoreboard.getClass().getDeclaredMethod("getHandle");
+                }
+
+                Object scoreboardTeam = ClazzContainer.getScoreboardTeamConstructor().newInstance(scoreboardHandle.invoke(scoreboard),
+                        ClazzContainer.getPacketScoreboardTeamName().get(msg));
+
+                ClazzContainer.getScoreboardTeamSetPrefix().invoke(scoreboardTeam, prefix);
+                ClazzContainer.getScoreboardTeamSetSuffix().invoke(scoreboardTeam, suffix);
+                ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(scoreboardTeam, nameTagVisibility);
+                ClazzContainer.getScoreboardTeamSetChatFormat().invoke(scoreboardTeam, chatFormat);
+                ((Collection<String>) ClazzContainer.getPlayerNameSetMethod().invoke(scoreboardTeam)).add(playerName);
+
+                tagTeams.add(new TagTeam(playerName, scoreboardTeam));
+                return;
+            }
+
+            ((Optional<?>) ClazzContainer.getPacketScoreboardTeamParametersMethod().invoke(msg)).ifPresent(packetTeam -> {
+                try {
+                    Object nameTagVisibility = ClazzContainer.getNameTagVisibilityByNameMethod().invoke(packetTeam,
+                            ClazzContainer.getParametersNameTagVisibility().invoke(packetTeam));
+
+                    if (nameTagVisibility == null) {
+                        nameTagVisibility = ClazzContainer.getNameTagVisibilityAlways();
+                    } else if (nameTagVisibility == ClazzContainer.getNameTagVisibilityNever()) {
+                        return;
+                    }
+
+                    String prefix = (String) ClazzContainer.getiChatBaseComponentGetStringMethod().invoke(ClazzContainer.getParametersTeamPrefix()
+                            .invoke(packetTeam));
+                    String suffix = (String) ClazzContainer.getiChatBaseComponentGetStringMethod().invoke(ClazzContainer.getParametersTeamSuffix()
+                            .invoke(packetTeam));
+
+                    if (!prefix.isEmpty() || !suffix.isEmpty()) {
+                        String playerName = (String) players.iterator().next();
+
+                        for (TagTeam team : tagTeams) {
+                            if (team.playerName.equals(playerName)) {
+                                return;
+                            }
+                        }
+
+                        Player player = Bukkit.getPlayer(playerName);
+
+                        if (player == null) {
+                            return;
+                        }
+
+                        org.bukkit.scoreboard.Scoreboard scoreboard = player.getScoreboard();
+
+                        if (scoreboardHandle == null) {
+                            scoreboardHandle = scoreboard.getClass().getDeclaredMethod("getHandle");
+                        }
+
+                        Object scoreboardTeam = ClazzContainer.getScoreboardTeamConstructor().newInstance(scoreboardHandle.invoke(scoreboard),
+                                ClazzContainer.getScoreboardTeamName().invoke(packetTeam));
+
+                        ClazzContainer.getScoreboardTeamSetPrefix().invoke(scoreboardTeam, prefix);
+                        ClazzContainer.getScoreboardTeamSetSuffix().invoke(scoreboardTeam, suffix);
+                        ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(scoreboardTeam, nameTagVisibility);
+                        ClazzContainer.getScoreboardTeamSetChatFormat().invoke(scoreboardTeam, ClazzContainer.getScoreboardTeamColor().invoke(packetTeam));
+                        ((Collection<String>) ClazzContainer.getPlayerNameSetMethod().invoke(scoreboardTeam)).add(playerName);
+                        tagTeams.add(new TagTeam(playerName, scoreboardTeam));
+                    }
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            });
         }
     }
 

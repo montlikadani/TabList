@@ -51,8 +51,6 @@ public final class V1_8_R3 implements IPacketNM {
 
 	private final Set<TagTeam> tagTeams = new HashSet<>();
 
-	private final List<PacketReceivingListener> packetReceivingListeners = new java.util.concurrent.CopyOnWriteArrayList<>();
-
 	public V1_8_R3() {
 		try {
 			(headerField = PacketPlayOutPlayerListHeaderFooter.class.getDeclaredField("a")).setAccessible(true);
@@ -72,22 +70,16 @@ public final class V1_8_R3 implements IPacketNM {
 	}
 
 	@Override
-	public void packetListeningAllowed(Player player) {
-		PacketReceivingListener receivingListener = listenerByPlayer(player.getUniqueId());
+	public void flushPipelineContext(Player player) {
+		EntityPlayer entityPlayer = getPlayerHandle(player);
 
-		if (receivingListener != null) {
-			receivingListener.packetListeningAllowed = !receivingListener.packetListeningAllowed;
-		}
-	}
+		if (entityPlayer.playerConnection.networkManager.channel != null) {
+			ChannelHandlerContext context = entityPlayer.playerConnection.networkManager.channel.pipeline().context(PACKET_INJECTOR_NAME);
 
-	private PacketReceivingListener listenerByPlayer(UUID playerId) {
-		for (PacketReceivingListener receivingListener : packetReceivingListeners) {
-			if (receivingListener.listenerPlayerId.equals(playerId)) {
-				return receivingListener;
+			if (context != null) {
+				context.flush();
 			}
 		}
-
-		return null;
 	}
 
 	@Override
@@ -101,22 +93,12 @@ public final class V1_8_R3 implements IPacketNM {
 
 	@Override
 	public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
-		UUID playerId = player.getUniqueId();
-
-		if (listenerByPlayer(playerId) != null) {
-			return;
-		}
-
 		EntityPlayer entityPlayer = getPlayerHandle(player);
 
 		if (entityPlayer.playerConnection.networkManager.channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
-			PacketReceivingListener packetReceivingListener = new PacketReceivingListener(playerId, classesToListen);
-
-			packetReceivingListeners.add(packetReceivingListener);
-
 			try {
 				entityPlayer.playerConnection.networkManager.channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
-						packetReceivingListener);
+						new PacketReceivingListener(player.getUniqueId(), classesToListen));
 			} catch (NoSuchElementException ex) {
 				// packet_handler not exists, sure then, ignore
 			}
@@ -133,8 +115,6 @@ public final class V1_8_R3 implements IPacketNM {
 			} catch (NoSuchElementException ignored) {
 			}
 		}
-
-		packetReceivingListeners.removeIf(pr -> pr.listenerPlayerId.equals(player.getUniqueId()));
 	}
 
 	@Override
@@ -305,7 +285,7 @@ public final class V1_8_R3 implements IPacketNM {
 	}
 
 	@Override
-	public PacketPlayOutScoreboardTeam unregisterBoardTeam(String teamName) {
+	public PacketPlayOutScoreboardTeam unregisterBoardTeamPacket(String teamName) {
 		java.util.Collection<ScoreboardTeam> teams = scoreboard.getTeams();
 
 		synchronized (teams) {
@@ -379,111 +359,110 @@ public final class V1_8_R3 implements IPacketNM {
 		private final UUID listenerPlayerId;
 		private final List<Class<?>> classesToListen;
 
-		private boolean packetListeningAllowed = true;
-
 		public PacketReceivingListener(UUID listenerPlayerId, List<Class<?>> classesToListen) {
 			this.listenerPlayerId = listenerPlayerId;
 			this.classesToListen = classesToListen;
 		}
 
-		@SuppressWarnings("unchecked")
 		@Override
 		public void write(ChannelHandlerContext ctx, Object msg, io.netty.channel.ChannelPromise promise) throws Exception {
-			if (!packetListeningAllowed) {
+			Class<?> receivingClass = msg.getClass();
+
+			if (!classesToListen.contains(receivingClass)) {
 				super.write(ctx, msg, promise);
 				return;
 			}
 
-			Class<?> receivingClass = msg.getClass();
-
-			for (Class<?> cl : classesToListen) {
-				if (cl != receivingClass) {
-					continue;
-				}
-
-				// Temporal and disgusting solution to fix players name tag overwriting
-				if (cl == PacketPlayOutScoreboardTeam.class) {
-					PacketPlayOutScoreboardTeam packetScoreboardTeam = (PacketPlayOutScoreboardTeam) msg;
-					Collection<String> players = (Collection<String>) scoreboardTeamPlayers.get(packetScoreboardTeam);
-
-					if (players != null && !players.isEmpty()) {
-						ScoreboardTeamBase.EnumNameTagVisibility enumNameTagVisibility = ScoreboardTeamBase.EnumNameTagVisibility
-								.a((String) scoreboardTeamNameTagVisibility.get(packetScoreboardTeam));
-
-						if (enumNameTagVisibility == null) {
-							enumNameTagVisibility = ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS;
-						} else if (enumNameTagVisibility == ScoreboardTeamBase.EnumNameTagVisibility.NEVER) {
-							return;
-						}
-
-						String prefix = (String) scoreboardTeamPrefix.get(packetScoreboardTeam);
-						String suffix = (String) scoreboardTeamSuffix.get(packetScoreboardTeam);
-
-						if (!prefix.isEmpty() || !suffix.isEmpty()) {
-							String playerName = players.iterator().next();
-
-							for (TagTeam team : tagTeams) {
-								if (team.playerName.equals(playerName)) {
-									return;
-								}
-							}
-
-							Player player = Bukkit.getPlayer(playerName);
-
-							if (player == null) {
-								return;
-							}
-
-							EnumChatFormat enumChatFormat = EnumChatFormat.a((int) scoreboardTeamEnumChatFormat.get(packetScoreboardTeam));
-
-							if (enumChatFormat == null) {
-								enumChatFormat = EnumChatFormat.RESET;
-							}
-
-							ScoreboardTeam scoreboardTeam = new ScoreboardTeam(((org.bukkit.craftbukkit.v1_8_R3.scoreboard.CraftScoreboard) player.getScoreboard()).getHandle(),
-									(String) scoreboardTeamName.get(packetScoreboardTeam));
-
-							scoreboardTeam.setPrefix(prefix);
-							scoreboardTeam.setSuffix(suffix);
-							scoreboardTeam.setNameTagVisibility(enumNameTagVisibility);
-							scoreboardTeam.a(enumChatFormat);
-							scoreboardTeam.getPlayerNameSet().add(playerName);
-
-							tagTeams.add(new TagTeam(playerName, scoreboardTeam));
-						}
-					}
-
-					super.write(ctx, msg, promise);
-					return;
-				}
-
-				PacketPlayOutPlayerInfo playerInfoPacket = (PacketPlayOutPlayerInfo) msg;
-
-				if (playerInfoAction.get(playerInfoPacket) == PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE) {
-					Player player = Bukkit.getPlayer(listenerPlayerId);
-
-					if (player == null) {
-						break;
-					}
-
-					PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE,
-							Collections.emptyList());
-					List<PacketPlayOutPlayerInfo.PlayerInfoData> players = new ArrayList<>();
-
-					for (PacketPlayOutPlayerInfo.PlayerInfoData infoData : (List<PacketPlayOutPlayerInfo.PlayerInfoData>) infoList.get(playerInfoPacket)) {
-						if (infoData.c() == EnumGamemode.SPECTATOR && !infoData.a().getId().equals(listenerPlayerId)) {
-							players.add(playerInfoPacket.new PlayerInfoData(infoData.a(), infoData.b(), EnumGamemode.SURVIVAL, infoData.d()));
-						}
-					}
-
-					setEntriesField(updatePacket, players);
-					sendPacket(player, updatePacket);
-				}
-
-				break;
+			if (receivingClass == PacketPlayOutScoreboardTeam.class) {
+				scoreboardTeamPacket((PacketPlayOutScoreboardTeam) msg);
+			} else if (receivingClass == PacketPlayOutPlayerInfo.class) {
+				packetPlayPlayerInfo((PacketPlayOutPlayerInfo) msg);
 			}
 
 			super.write(ctx, msg, promise);
+		}
+
+		@SuppressWarnings("unchecked")
+		private void packetPlayPlayerInfo(PacketPlayOutPlayerInfo playerInfoPacket) throws Exception {
+			if (playerInfoAction.get(playerInfoPacket) != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE) {
+				return;
+			}
+
+			Player player = Bukkit.getPlayer(listenerPlayerId);
+
+			if (player == null) {
+				return;
+			}
+
+			PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE,
+					Collections.emptyList());
+			List<PacketPlayOutPlayerInfo.PlayerInfoData> players = new ArrayList<>();
+
+			for (PacketPlayOutPlayerInfo.PlayerInfoData infoData : (List<PacketPlayOutPlayerInfo.PlayerInfoData>) infoList.get(playerInfoPacket)) {
+				if (infoData.c() == EnumGamemode.SPECTATOR && !infoData.a().getId().equals(listenerPlayerId)) {
+					players.add(playerInfoPacket.new PlayerInfoData(infoData.a(), infoData.b(), EnumGamemode.SURVIVAL, infoData.d()));
+				}
+			}
+
+			setEntriesField(updatePacket, players);
+			sendPacket(player, updatePacket);
+		}
+
+		// Temporal and disgusting solution to fix players name tag overwriting
+		@SuppressWarnings("unchecked")
+		private void scoreboardTeamPacket(PacketPlayOutScoreboardTeam packetScoreboardTeam) throws Exception {
+			Collection<String> players = (Collection<String>) scoreboardTeamPlayers.get(packetScoreboardTeam);
+
+			if (players == null || players.isEmpty()) {
+				return;
+			}
+
+			ScoreboardTeamBase.EnumNameTagVisibility enumNameTagVisibility = ScoreboardTeamBase.EnumNameTagVisibility
+					.a((String) scoreboardTeamNameTagVisibility.get(packetScoreboardTeam));
+
+			if (enumNameTagVisibility == null) {
+				enumNameTagVisibility = ScoreboardTeamBase.EnumNameTagVisibility.ALWAYS;
+			} else if (enumNameTagVisibility == ScoreboardTeamBase.EnumNameTagVisibility.NEVER) {
+				return;
+			}
+
+			String prefix = (String) scoreboardTeamPrefix.get(packetScoreboardTeam);
+			String suffix = (String) scoreboardTeamSuffix.get(packetScoreboardTeam);
+
+			if (prefix.isEmpty() && suffix.isEmpty()) {
+				return;
+			}
+
+			String playerName = players.iterator().next();
+
+			for (TagTeam team : tagTeams) {
+				if (team.playerName.equals(playerName)) {
+					return;
+				}
+			}
+
+			Player player = Bukkit.getPlayer(playerName);
+
+			if (player == null) {
+				return;
+			}
+
+			EnumChatFormat enumChatFormat = EnumChatFormat.a((int) scoreboardTeamEnumChatFormat.get(packetScoreboardTeam));
+
+			if (enumChatFormat == null) {
+				enumChatFormat = EnumChatFormat.RESET;
+			}
+
+			ScoreboardTeam scoreboardTeam = new ScoreboardTeam(((org.bukkit.craftbukkit.v1_8_R3.scoreboard.CraftScoreboard) player.getScoreboard()).getHandle(),
+					(String) scoreboardTeamName.get(packetScoreboardTeam));
+
+			scoreboardTeam.setPrefix(prefix);
+			scoreboardTeam.setSuffix(suffix);
+			scoreboardTeam.setNameTagVisibility(enumNameTagVisibility);
+			scoreboardTeam.a(enumChatFormat);
+			scoreboardTeam.getPlayerNameSet().add(playerName);
+
+			tagTeams.add(new TagTeam(playerName, scoreboardTeam));
 		}
 	}
 

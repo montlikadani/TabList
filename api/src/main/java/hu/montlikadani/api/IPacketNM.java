@@ -6,7 +6,7 @@ public interface IPacketNM {
 
     String PACKET_INJECTOR_NAME = "TLPacketInjector";
 
-    void packetListeningAllowed(Player player);
+    void flushPipelineContext(Player player);
 
     void sendPacket(Player player, Object packet);
 
@@ -36,7 +36,7 @@ public interface IPacketNM {
 
     void createBoardTeam(String teamName, Player player, boolean followNameTagVisibility);
 
-    Object unregisterBoardTeam(String teamName);
+    Object unregisterBoardTeamPacket(String teamName);
 
     Object createObjectivePacket(String objectiveName, Object nameComponent);
 

@@ -23,7 +23,7 @@ public class ReflectionHandled {
 			return;
 		}
 
-		PacketNM.NMS_PACKET.packetListeningAllowed(player);
+		PacketNM.NMS_PACKET.flushPipelineContext(player);
 
 		if (tl.getGroups().isToSort()) {
 			unregisterTeam(false);
@@ -38,8 +38,6 @@ public class ReflectionHandled {
 		for (Player pl : tl.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(pl, updatePacket);
 		}
-
-		PacketNM.NMS_PACKET.packetListeningAllowed(player);
 	}
 
 	public void unregisterTeam() {
@@ -47,7 +45,7 @@ public class ReflectionHandled {
 	}
 
 	private void unregisterTeam(boolean clearName) {
-		Object removeTeamPacket = PacketNM.NMS_PACKET.unregisterBoardTeam(groupPlayer.getFullGroupTeamName());
+		Object removeTeamPacket = PacketNM.NMS_PACKET.unregisterBoardTeamPacket(groupPlayer.getFullGroupTeamName());
 
 		if (removeTeamPacket == null) {
 			return;
