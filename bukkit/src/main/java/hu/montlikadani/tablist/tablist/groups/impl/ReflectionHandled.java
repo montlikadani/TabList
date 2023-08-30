@@ -23,8 +23,6 @@ public class ReflectionHandled {
 			return;
 		}
 
-		PacketNM.NMS_PACKET.flushPipelineContext(player);
-
 		if (tl.getGroups().isToSort()) {
 			unregisterTeam(false);
 

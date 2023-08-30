@@ -91,26 +91,6 @@ public final class LegacyVersion implements IPacketNM {
     }
 
     @Override
-    public void flushPipelineContext(Player player) {
-        Channel channel;
-
-        try {
-            channel = (Channel) this.channel.get(networkManager.get(playerConnectionField.get(getPlayerHandle(player))));
-        } catch (IllegalAccessException ex) {
-            ex.printStackTrace();
-            return;
-        }
-
-        if (channel != null) {
-            ChannelHandlerContext context = channel.pipeline().context(PACKET_INJECTOR_NAME);
-
-            if (context != null) {
-                context.flush();
-            }
-        }
-    }
-
-    @Override
     public Object getPlayerHandle(Player player) {
         try {
             if (playerHandleMethod == null) {

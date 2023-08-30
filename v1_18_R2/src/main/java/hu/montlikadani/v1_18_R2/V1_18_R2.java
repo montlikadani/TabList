@@ -2,7 +2,6 @@ package hu.montlikadani.v1_18_R2;
 
 import com.mojang.authlib.GameProfile;
 import hu.montlikadani.api.IPacketNM;
-import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
@@ -39,19 +38,6 @@ public final class V1_18_R2 implements IPacketNM {
     private final Scoreboard scoreboard = new Scoreboard();
 
     private final Set<TagTeam> tagTeams = new HashSet<>();
-
-    @Override
-    public void flushPipelineContext(Player player) {
-        Channel channel = getPlayerHandle(player).b.a.m;
-
-        if (channel != null) {
-            ChannelHandlerContext context = channel.pipeline().context(PACKET_INJECTOR_NAME);
-
-            if (context != null) {
-                context.flush();
-            }
-        }
-    }
 
     @Override
     public void sendPacket(Player player, Object packet) {

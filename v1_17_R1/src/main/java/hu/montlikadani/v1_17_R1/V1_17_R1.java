@@ -1,6 +1,5 @@
 package hu.montlikadani.v1_17_R1;
 
-import io.netty.channel.ChannelHandlerContext;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
@@ -35,19 +34,6 @@ public final class V1_17_R1 implements hu.montlikadani.api.IPacketNM {
     private final Scoreboard scoreboard = new Scoreboard();
 
     private final Set<TagTeam> tagTeams = new HashSet<>();
-
-    @Override
-    public void flushPipelineContext(Player player) {
-        EntityPlayer entityPlayer = getPlayerHandle(player);
-
-        if (entityPlayer.b.a.k != null) {
-            ChannelHandlerContext context = entityPlayer.b.a.k.pipeline().context(PACKET_INJECTOR_NAME);
-
-            if (context != null) {
-                context.flush();
-            }
-        }
-    }
 
     @Override
     public void sendPacket(Player player, Object packet) {

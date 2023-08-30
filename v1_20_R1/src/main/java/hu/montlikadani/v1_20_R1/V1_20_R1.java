@@ -44,19 +44,6 @@ public final class V1_20_R1 implements hu.montlikadani.api.IPacketNM {
     private final Set<TagTeam> tagTeams = new HashSet<>();
 
     @Override
-    public void flushPipelineContext(Player player) {
-        Channel channel = playerChannel(getPlayerHandle(player).c);
-
-        if (channel != null) {
-            ChannelHandlerContext context = channel.pipeline().context(PACKET_INJECTOR_NAME);
-
-            if (context != null) {
-                context.flush();
-            }
-        }
-    }
-
-    @Override
     public void sendPacket(Player player, Object packet) {
         getPlayerHandle(player).c.a((Packet<?>) packet);
     }
@@ -73,8 +60,7 @@ public final class V1_20_R1 implements hu.montlikadani.api.IPacketNM {
             try {
                 channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
                         new PacketReceivingListener(player.getUniqueId(), classesToListen));
-            } catch (NoSuchElementException ex) {
-                // packet_handler not exists, sure then, ignore
+            } catch (NoSuchElementException ignored) {
             }
         }
     }

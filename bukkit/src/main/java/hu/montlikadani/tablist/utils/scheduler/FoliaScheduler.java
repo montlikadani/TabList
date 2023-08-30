@@ -16,7 +16,7 @@ public final class FoliaScheduler implements TLScheduler {
 
     @Override
     public TLScheduler submitAsync(Runnable task, long initialDelay, long period) {
-        scheduledTask = plugin.getServer().getAsyncScheduler().runAtFixedRate(plugin, consumer -> task.run(), initialDelay, period, TimeUnit.MILLISECONDS);
+        scheduledTask = plugin.getServer().getAsyncScheduler().runAtFixedRate(plugin, consumer -> task.run(), initialDelay, period * 20, TimeUnit.MILLISECONDS);
         return this;
     }
 

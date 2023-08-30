@@ -48,19 +48,6 @@ public final class V1_19_R3 implements IPacketNM {
     private final Set<TagTeam> tagTeams = new HashSet<>();
 
     @Override
-    public void flushPipelineContext(Player player) {
-        Channel channel = playerChannel(getPlayerHandle(player).b);
-
-        if (channel != null) {
-            ChannelHandlerContext context = channel.pipeline().context(PACKET_INJECTOR_NAME);
-
-            if (context != null) {
-                context.flush();
-            }
-        }
-    }
-
-    @Override
     public void sendPacket(Player player, Object packet) {
         getPlayerHandle(player).b.a((Packet<?>) packet);
     }

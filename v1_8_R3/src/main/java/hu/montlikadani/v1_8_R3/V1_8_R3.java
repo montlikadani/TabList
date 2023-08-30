@@ -70,19 +70,6 @@ public final class V1_8_R3 implements IPacketNM {
 	}
 
 	@Override
-	public void flushPipelineContext(Player player) {
-		EntityPlayer entityPlayer = getPlayerHandle(player);
-
-		if (entityPlayer.playerConnection.networkManager.channel != null) {
-			ChannelHandlerContext context = entityPlayer.playerConnection.networkManager.channel.pipeline().context(PACKET_INJECTOR_NAME);
-
-			if (context != null) {
-				context.flush();
-			}
-		}
-	}
-
-	@Override
 	public void sendPacket(Player player, Object packet) {
 		getPlayerHandle(player).playerConnection.sendPacket((Packet<?>) packet);
 	}
