@@ -25,7 +25,6 @@ import net.minecraft.world.scores.ScoreboardTeam;
 import net.minecraft.world.scores.ScoreboardTeamBase;
 import net.minecraft.world.scores.criteria.IScoreboardCriteria;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_19_R2.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -93,11 +92,20 @@ public final class V1_19_R2 implements IPacketNM {
         sendPacket(player, new PacketPlayOutPlayerListHeaderFooter((IChatBaseComponent) header, (IChatBaseComponent) footer));
     }
 
+    private MinecraftServer minecraftServer() {
+        return ((org.bukkit.craftbukkit.v1_19_R2.CraftServer) Bukkit.getServer()).getServer();
+    }
+
     @Override
     public EntityPlayer getNewEntityPlayer(GameProfile profile) {
-        MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+        MinecraftServer server = minecraftServer();
 
         return new EntityPlayer(server, server.C(), profile);
+    }
+
+    @Override
+    public double[] serverTps() {
+        return minecraftServer().recentTps;
     }
 
     @Override

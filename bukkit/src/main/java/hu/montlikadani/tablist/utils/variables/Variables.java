@@ -64,7 +64,8 @@ public final class Variables {
 		LogicalNode.reverseOrderOfArray(nodes);
 
 		if (ConfigValues.getDateFormat() != null) {
-			variables.add(new Variable("date", 3, (v, str) -> str = str.replace(v.fullName, v.remainingValue(getTimeAsString(ConfigValues.getDateFormat())))));
+			variables.add(new Variable("date", 3, (v, str) -> str = str.replace(v.fullName,
+					v.remainingValue(getTimeAsString(ConfigValues.getDateFormat())))));
 		}
 
 		variables.add(new Variable("online-players", 2, (v, str) -> {
@@ -77,7 +78,8 @@ public final class Variables {
 			str = str.replace(v.fullName, v.remainingValue(Integer.toString(players)));
 		}));
 
-		variables.add(new Variable("max-players", 20, (v, str) -> str = str.replace(v.fullName, v.remainingValue(Integer.toString(plugin.getServer().getMaxPlayers())))));
+		variables.add(new Variable("max-players", 20, (v, str) -> str = str.replace(v.fullName,
+				v.remainingValue(Integer.toString(plugin.getServer().getMaxPlayers())))));
 
 		variables.add(new Variable("vanished-players", 2, (v, str) -> {
 			int vanishedPlayers = PluginUtils.getVanishedPlayers();
@@ -99,7 +101,8 @@ public final class Variables {
 			for (TabListUser user : plugin.getUsers()) {
 				Player player = user.getPlayer();
 
-				if (player == null || !PluginUtils.hasPermission(player, "tablist.onlinestaff") || (!ConfigValues.isCountVanishedStaff() && PluginUtils.isVanished(player))) {
+				if (player == null || !PluginUtils.hasPermission(player, "tablist.onlinestaff") || (!ConfigValues.isCountVanishedStaff()
+						&& PluginUtils.isVanished(player))) {
 					continue;
 				}
 
@@ -163,11 +166,37 @@ public final class Variables {
 			return Long.toString((runtime.totalMemory() - runtime.freeMemory()) / MB);
 		});
 
-		str = Global.replace(str, "%tps-overflow%", () -> roundTpsDigits(TabListAPI.getTPS()));
-		str = Global.replace(str, "%tps%", () -> tpsDigits(TabListAPI.getTPS()));
+		str = Global.replace(str, "%tps-overflow%", () -> roundTpsDigits(TabListAPI.getTPS()[0]));
+		str = Global.replace(str, "%tps%", () -> tpsDigits(TabListAPI.getTPS()[0]));
 
-		if (plugin.isFoliaServer()) {
-			for (TicksPerSecond one : TicksPerSecond.VALUES) {
+		for (final TicksPerSecond one : TicksPerSecond.VALUES) {
+			str = Global.replace(str, "%tps-overflow-" + one.dur + "%", () -> {
+				switch (one) {
+					case MINUTES_1:
+						return roundTpsDigits(TabListAPI.getTPS()[0]);
+					case MINUTES_5:
+						return roundTpsDigits(TabListAPI.getTPS()[1]);
+					case MINUTES_15:
+						return roundTpsDigits(TabListAPI.getTPS()[2]);
+					default:
+						return "no value by this type";
+				}
+			});
+
+			str = Global.replace(str, "%tps-" + one.dur + "%", () -> {
+				switch (one) {
+					case MINUTES_1:
+						return tpsDigits(TabListAPI.getTPS()[0]);
+					case MINUTES_5:
+						return tpsDigits(TabListAPI.getTPS()[1]);
+					case MINUTES_15:
+						return tpsDigits(TabListAPI.getTPS()[2]);
+					default:
+						return "no value by this type";
+				}
+			});
+
+			if (plugin.isFoliaServer()) {
 				str = Global.replace(str, "%folia-current-region-average-tps-" + one.dur + "%", () -> {
 					io.papermc.paper.threadedregions.ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData,
 							TickRegions.TickRegionSectionData> currentRegion = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegion();

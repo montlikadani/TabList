@@ -27,8 +27,6 @@ import net.minecraft.world.scores.ScoreboardTeam;
 import net.minecraft.world.scores.ScoreboardTeamBase;
 import net.minecraft.world.scores.criteria.IScoreboardCriteria;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_19_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -109,7 +107,7 @@ public final class V1_19_R3 implements IPacketNM {
 
     @Override
     public EntityPlayer getPlayerHandle(Player player) {
-        return ((CraftPlayer) player).getHandle();
+        return ((org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer) player).getHandle();
     }
 
     @Override
@@ -122,9 +120,13 @@ public final class V1_19_R3 implements IPacketNM {
         sendPacket(player, new PacketPlayOutPlayerListHeaderFooter((IChatBaseComponent) header, (IChatBaseComponent) footer));
     }
 
+    private MinecraftServer minecraftServer() {
+        return ((org.bukkit.craftbukkit.v1_19_R3.CraftServer) Bukkit.getServer()).getServer();
+    }
+
     @Override
     public EntityPlayer getNewEntityPlayer(GameProfile profile) {
-        MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+        MinecraftServer server = minecraftServer();
 
         return new EntityPlayer(server, server.D(), profile);
     }
@@ -136,6 +138,11 @@ public final class V1_19_R3 implements IPacketNM {
         }
 
         return new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.a.f, (EntityPlayer) entityPlayer);
+    }
+
+    @Override
+    public double[] serverTps() {
+        return minecraftServer().recentTps;
     }
 
     @Override

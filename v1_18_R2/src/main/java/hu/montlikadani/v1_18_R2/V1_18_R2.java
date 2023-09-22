@@ -89,16 +89,20 @@ public final class V1_18_R2 implements IPacketNM {
         sendPacket(player, new PacketPlayOutPlayerListHeaderFooter((IChatBaseComponent) header, (IChatBaseComponent) footer));
     }
 
+    private MinecraftServer minecraftServer() {
+        return ((CraftServer) Bukkit.getServer()).getServer();
+    }
+
     @Override
     public EntityPlayer getNewEntityPlayer(GameProfile profile) {
-        MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+        MinecraftServer server = minecraftServer();
 
         return new EntityPlayer(server, server.D(), profile);
     }
 
     @Override
-    public double serverTps() {
-        return ((CraftServer) Bukkit.getServer()).getServer().recentTps[0];
+    public double[] serverTps() {
+        return minecraftServer().recentTps;
     }
 
     @Override

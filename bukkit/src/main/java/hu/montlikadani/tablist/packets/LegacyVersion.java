@@ -125,7 +125,7 @@ public final class LegacyVersion implements IPacketNM {
     }
 
     @Override
-    public double serverTps() {
+    public double[] serverTps() {
         if (recentTpsField == null) {
             try {
                 (recentTpsField = minecraftServer.getField("recentTps")).setAccessible(true);
@@ -135,12 +135,12 @@ public final class LegacyVersion implements IPacketNM {
         }
 
         try {
-            return ((double[]) recentTpsField.get(getServer()))[0];
+            return (double[]) recentTpsField.get(getServer());
         } catch (IllegalAccessException ex) {
             ex.printStackTrace();
         }
 
-        return 0;
+        return new double[0];
     }
 
     @Override

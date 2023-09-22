@@ -21,7 +21,7 @@ repositories {
     maven("https://oss.sonatype.org/content/groups/public/") // Netty
 }
 
-val nmsProjects = setOf("1_8_R3", "1_18_R2", "1_19_R1", "1_19_R2", "1_19_R3", "1_20_R1")
+val nmsProjects = setOf("1_8_R3", "1_18_R2", "1_19_R1", "1_19_R2", "1_19_R3", "1_20_R1", "1_20_R2")
 
 dependencies {
     implementation(project(":global"))

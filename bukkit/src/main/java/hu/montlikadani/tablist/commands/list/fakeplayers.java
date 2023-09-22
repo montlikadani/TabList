@@ -165,9 +165,7 @@ public final class fakeplayers implements ICommand {
 
 						// Retrieve from blocking web request as a last resort
 						if (skinProperties == null) {
-							org.bukkit.OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(nameOrId);
-
-							skinProperties = new PlayerSkinProperties(nameOrId, offlinePlayer.getUniqueId());
+							skinProperties = new PlayerSkinProperties(nameOrId, Bukkit.getOfflinePlayer(nameOrId).getUniqueId());
 						}
 					}
 

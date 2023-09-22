@@ -15,6 +15,7 @@ import net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjecti
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ScoreboardServer;
 import net.minecraft.server.level.EntityPlayer;
 import net.minecraft.world.level.EnumGamemode;
@@ -24,7 +25,6 @@ import net.minecraft.world.scores.ScoreboardTeam;
 import net.minecraft.world.scores.ScoreboardTeamBase;
 import net.minecraft.world.scores.criteria.IScoreboardCriteria;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_20_R1.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
@@ -114,11 +114,20 @@ public final class V1_20_R1 implements hu.montlikadani.api.IPacketNM {
         sendPacket(player, new PacketPlayOutPlayerListHeaderFooter((IChatBaseComponent) header, (IChatBaseComponent) footer));
     }
 
+    private MinecraftServer minecraftServer() {
+        return ((org.bukkit.craftbukkit.v1_20_R1.CraftServer) Bukkit.getServer()).getServer();
+    }
+
     @Override
     public EntityPlayer getNewEntityPlayer(com.mojang.authlib.GameProfile profile) {
-        net.minecraft.server.MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+        MinecraftServer server = minecraftServer();
 
         return new EntityPlayer(server, server.D(), profile);
+    }
+
+    @Override
+    public double[] serverTps() {
+        return minecraftServer().recentTps;
     }
 
     @Override

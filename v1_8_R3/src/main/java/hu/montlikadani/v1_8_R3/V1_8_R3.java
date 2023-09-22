@@ -141,8 +141,8 @@ public final class V1_8_R3 implements IPacketNM {
 	}
 
 	@Override
-	public double serverTps() {
-		return MinecraftServer.getServer().recentTps[0];
+	public double[] serverTps() {
+		return MinecraftServer.getServer().recentTps;
 	}
 
 	@Override

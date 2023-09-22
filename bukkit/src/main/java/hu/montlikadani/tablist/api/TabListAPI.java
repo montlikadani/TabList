@@ -80,11 +80,11 @@ public final class TabListAPI {
 	}
 
 	/**
-	 * Returns the current TPS (ticks per second) value of the server.
+	 * Returns the array of TPS (ticks per second) of the server.
 	 * 
-	 * @return The first value of TPS array according to {@link org.bukkit.Server#getTPS()}
+	 * @return The TPS array measurements according to {@link org.bukkit.Server#getTPS()}
 	 */
-	public static double getTPS() {
-		return isTpsMethodExists ? Bukkit.getServer().getTPS()[0] : PacketNM.NMS_PACKET.serverTps();
+	public static double[] getTPS() {
+		return isTpsMethodExists ? Bukkit.getServer().getTPS() : PacketNM.NMS_PACKET.serverTps();
 	}
 }

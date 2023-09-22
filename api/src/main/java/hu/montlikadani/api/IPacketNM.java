@@ -48,8 +48,8 @@ public interface IPacketNM {
 
     Object createScoreboardHealthObjectivePacket(String objectiveName, Object nameComponent);
 
-    default double serverTps() {
-        return -1;
+    default double[] serverTps() {
+        return new double[0];
     }
 
     default int playerPing(Player player) {
