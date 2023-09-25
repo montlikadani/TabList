@@ -56,7 +56,7 @@ dependencies {
     }
 
     compileOnly(files("lib/CMI9.0.0.0API.jar", "lib/PermissionsEx-1.23.4.jar"))
-    compileOnly("io.netty:netty-all:4.1.97.Final")
+    compileOnly("io.netty:netty-all:4.1.98.Final")
 }
 
 group = "hu.montlikadani.tablist"
