@@ -106,8 +106,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		beginDataCollection();
 
 		if (ConfigValues.isLogConsole()) {
-			complement.sendMessage(getServer().getConsoleSender(), Util
-					.applyTextFormat("&6[&5Tab&cList&6]&7 >&a Enabled&6 v" + getDescription().getVersion() + "&a (" + (System.currentTimeMillis() - load) + "ms)"));
+			Util.logConsole("v" + getDescription().getVersion() + " (" + (System.currentTimeMillis() - load) + "ms)");
 		}
 	}
 
