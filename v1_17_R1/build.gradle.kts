@@ -21,7 +21,7 @@ dependencies {
     compileOnly("org.spigotmc:spigot:1.17.1-R0.1-SNAPSHOT") {
         exclude("org.apache.logging", "log4j")
     }
-    compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8, so we must use this
+    compileOnly(libs.authlib)
 
     compileOnly("org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
@@ -29,5 +29,5 @@ dependencies {
         exclude("com.google.code.gson", "gson")
     }
 
-    implementation("io.netty:netty-all:4.1.89.Final")
+    implementation(libs.netty.core)
 }

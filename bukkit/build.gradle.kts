@@ -34,7 +34,7 @@ dependencies {
     implementation("org.bstats:bstats-bukkit:3.0.2")
 
     compileOnly("com.github.xtomyserrax:StaffFacilities:5.0.8")
-    compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8, so we must use this
+    compileOnly(libs.authlib)
     compileOnly("net.luckperms:api:5.4")
 
     paperweight.foliaDevBundle("1.20.1-R0.1-SNAPSHOT")
@@ -56,7 +56,7 @@ dependencies {
     }
 
     compileOnly(files("lib/CMI9.0.0.0API.jar", "lib/PermissionsEx-1.23.4.jar"))
-    compileOnly("io.netty:netty-all:4.1.98.Final")
+    compileOnly(libs.netty.core)
 }
 
 group = "hu.montlikadani.tablist"

@@ -15,6 +15,6 @@ repositories {
 dependencies {
 	api(project(":api"))
 
-	compileOnly("com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8 so we must use this
+	compileOnly(libs.authlib)
 	compileOnly(files("lib/spigot-1.8.8.jar"))
 }
