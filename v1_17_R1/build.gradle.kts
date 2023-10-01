@@ -23,7 +23,7 @@ dependencies {
     }
     compileOnly(libs.authlib)
 
-    compileOnly("org.spigotmc:spigot-api:1.17.1-R0.1-SNAPSHOT") {
+    compileOnly("org.spigotmc:spigot-api:1.20.2-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
         exclude("org.yaml", "snakeyaml")
         exclude("com.google.code.gson", "gson")
