@@ -8,7 +8,7 @@ pluginManagement {
 dependencyResolutionManagement {
 	versionCatalogs {
 		create("libs") {
-			library("netty-core", "io.netty:netty-all:4.1.98.Final")
+			library("netty-core", "io.netty:netty-all:4.1.99.Final")
 			library("authlib", "com.mojang:authlib:3.3.39") // 3.3.39 was compiled with JDK 8, so we must use this
 		}
 	}
