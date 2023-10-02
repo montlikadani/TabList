@@ -14,11 +14,12 @@ public final class Util {
 	static {
 		boolean supported;
 
+		// Extra check as some library shading only classes without methods or idk
 		try {
-			Class.forName("net.kyori.adventure.text.minimessage.MiniMessage");
 			Class.forName("net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer");
+			Class.forName("net.kyori.adventure.text.minimessage.MiniMessage").getDeclaredMethod("miniMessage");
 			supported = true;
-		} catch (ClassNotFoundException cn) {
+		} catch (ClassNotFoundException | NoSuchMethodException cn) {
 			supported = false;
 		}
 
