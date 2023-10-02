@@ -58,10 +58,11 @@ public final class fakeplayers implements ICommand {
 			return;
 		}
 
-		Actions action = Actions.ADD;
+		Actions action;
 		try {
 			action = Actions.valueOf(args[1].toUpperCase(java.util.Locale.ENGLISH));
 		} catch (IllegalArgumentException e) {
+			action = Actions.ADD;
 		}
 
 		if (action != Actions.LIST && args.length < 3) {
@@ -73,157 +74,182 @@ public final class fakeplayers implements ICommand {
 		EditingResult output;
 
 		switch (action) {
-		case ADD:
-			String name = args[2];
+			case ADD:
+				String name = args[2];
 
-			if ((output = handler.createPlayer(name, name, "", -1)) == EditingResult.ALREADY_EXIST) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_ALREADY_ADDED, "%name%", name));
-				return;
-			}
-
-			if (output == EditingResult.OK) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_ADDED, "%name%", name));
-			}
-
-			break;
-		case REMOVE:
-			if ((output = handler.removePlayer(args[2])) == EditingResult.NOT_EXIST) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
-				return;
-			}
-
-			if (output == EditingResult.OK) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_REMOVED, "%name%", args[2]));
-			}
-
-			break;
-		case RENAME:
-			if (args.length < 4) {
-				sendList(plugin, label, sender);
-				return;
-			}
-
-			String oldName = args[2];
-			String newName = args[3];
-
-			if ((output = handler.renamePlayer(oldName, newName)) == EditingResult.NOT_EXIST) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
-				return;
-			}
-
-			if (output == EditingResult.OK) {
-				plugin.getComplement().sendMessage(sender, Util.applyTextFormat("&2Old name: &e" + oldName + "&2, new name: &e" + newName));
-			}
-
-			break;
-		case LIST:
-			Set<IFakePlayer> list = handler.fakePlayers;
-
-			if (list.isEmpty()) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NO_FAKE_PLAYER));
-				return;
-			}
-
-			Collections.sort(list.stream().map(IFakePlayer::getName).collect(Collectors.toList()));
-
-			StringBuilder res = new StringBuilder();
-
-			for (IFakePlayer one : list) {
-				if (res.length() != 0) {
-					res.append("&r, ");
+				if ((output = handler.createPlayer(name, name, "", -1)) == EditingResult.ALREADY_EXIST) {
+					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_ALREADY_ADDED,
+							"%name%", name));
+					return;
 				}
 
-				res.append(one.getName());
-			}
+				if (output == EditingResult.OK) {
+					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_ADDED, "%name%", name));
+				}
 
-			ConfigMessages.getList(ConfigMessages.MessageKeys.FAKE_PLAYER_LIST, "%amount%", list.size(), "%fake-players%", res.toString()).forEach(line -> plugin.getComplement().sendMessage(sender, line));
-			break;
-		case SETSKIN:
-			if (args.length < 4) {
-				sendList(plugin, label, sender);
-				return;
-			}
-
-			final String nameOrId = args[3];
-			java.util.Optional<UUID> optional = Util.tryParseId(nameOrId);
-
-			if (optional.isPresent()) {
-				if (handler.setSkin(args[2], new PlayerSkinProperties(null, optional.get())) == EditingResult.NOT_EXIST) {
+				break;
+			case REMOVE:
+				if ((output = handler.removePlayer(args[2])) == EditingResult.NOT_EXIST) {
 					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
+					return;
 				}
-			} else {
-				fetchPlayerProfile(nameOrId).whenComplete((skinProperties, t) -> {
-					if (skinProperties == null && args.length > 4 && "--force".equalsIgnoreCase(args[4])) {
 
-						// Load and retrieve from disk
-						for (OfflinePlayer pl : Bukkit.getOfflinePlayers()) {
-							if (nameOrId.equals(pl.getName())) {
-								skinProperties = new PlayerSkinProperties(nameOrId, pl.getUniqueId());
-								break;
-							}
-						}
+				if (output == EditingResult.OK) {
+					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_REMOVED,
+							"%name%", args[2]));
+				}
 
-						// Retrieve from blocking web request as a last resort
-						if (skinProperties == null) {
-							skinProperties = new PlayerSkinProperties(nameOrId, Bukkit.getOfflinePlayer(nameOrId).getUniqueId());
-						}
+				break;
+			case RENAME:
+				if (args.length < 4) {
+					sendList(plugin, label, sender);
+					return;
+				}
+
+				String oldName = args[2];
+				String newName = args[3];
+
+				if ((output = handler.renamePlayer(oldName, newName)) == EditingResult.NOT_EXIST) {
+					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
+					return;
+				}
+
+				if (output == EditingResult.OK) {
+					plugin.getComplement().sendMessage(sender, Util.applyTextFormat("&2Old name: &e" + oldName + "&2, new name: &e" + newName));
+				}
+
+				break;
+			case LIST:
+				Set<IFakePlayer> list = handler.fakePlayers;
+
+				if (list.isEmpty()) {
+					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NO_FAKE_PLAYER));
+					return;
+				}
+
+				Collections.sort(list.stream().map(IFakePlayer::getName).collect(Collectors.toList()));
+
+				StringBuilder res = new StringBuilder();
+
+				for (IFakePlayer one : list) {
+					if (res.length() != 0) {
+						res.append("&r, ");
 					}
 
+					res.append(one.getName());
+				}
+
+				ConfigMessages.getList(ConfigMessages.MessageKeys.FAKE_PLAYER_LIST, "%amount%", list.size(),
+						"%fake-players%", res.toString()).forEach(line -> plugin.getComplement().sendMessage(sender, line));
+				break;
+			case SETSKIN:
+				if (args.length < 4) {
+					sendList(plugin, label, sender);
+					return;
+				}
+
+				final String nameOrId = args[3];
+				java.util.Optional<UUID> optional = Util.tryParseId(nameOrId);
+
+				if (optional.isPresent()) {
+					PlayerSkinProperties skinProperties = cachedPlayerProperty(null, optional.get());
+
 					if (skinProperties == null) {
-						plugin.getComplement().sendMessage(sender, "There is no player existing with this name or id.");
-						return;
+						skinProperties = new PlayerSkinProperties(null, optional.get());
 					}
 
 					if (handler.setSkin(args[2], skinProperties) == EditingResult.NOT_EXIST) {
 						plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
 					}
-				});
-			}
+				} else {
+					fetchPlayerProfile(nameOrId).whenComplete((skinProperties, t) -> {
+						if (skinProperties == null && args.length > 4 && "--force".equalsIgnoreCase(args[4])) {
 
-			break;
-		case SETPING:
-			if (args.length < 4) {
-				sendList(plugin, label, sender);
-				return;
-			}
+							// Load and retrieve from disk
+							for (OfflinePlayer pl : Bukkit.getOfflinePlayers()) {
+								if (nameOrId.equals(pl.getName())) {
+									skinProperties = new PlayerSkinProperties(nameOrId, pl.getUniqueId());
+									break;
+								}
+							}
 
-			int amount;
-			try {
-				amount = Integer.parseInt(args[3]);
-			} catch (NumberFormatException ex) {
-				amount = -1;
-			}
+							// Retrieve from blocking web request as a last resort
+							if (skinProperties == null) {
+								skinProperties = new PlayerSkinProperties(nameOrId, Bukkit.getOfflinePlayer(nameOrId).getUniqueId());
+							}
+						}
 
-			if ((output = handler.setPing(args[2], amount)) == EditingResult.NOT_EXIST) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
-				return;
-			}
+						// The max request limitation is only for url-based requests
+						if (skinProperties == null && PlayerSkinProperties.CACHED.size() > PlayerSkinProperties.MAX_REQUESTS) {
+							plugin.getComplement().sendMessage(sender, "You've reached the maximum requests, you can not make any more requests.");
+							return;
+						}
 
-			if (output == EditingResult.PING_AMOUNT) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_PING_CAN_NOT_BE_LESS, "%amount%", amount));
-			}
+						if (skinProperties == null) {
+							plugin.getComplement().sendMessage(sender, "There is no player existing with this name or id.");
+							return;
+						}
 
-			break;
-		case SETDISPLAYNAME:
-			StringBuilder builder = new StringBuilder();
+						if (handler.setSkin(args[2], skinProperties) == EditingResult.NOT_EXIST) {
+							plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
+						}
+					});
+				}
 
-			for (int i = 3; i < args.length; i++) {
-				builder.append(args[i] + (i + 1 < args.length ? " " : ""));
-			}
+				break;
+			case SETPING:
+				if (args.length < 4) {
+					sendList(plugin, label, sender);
+					return;
+				}
 
-			output = handler.setDisplayName(args[2], builder.toString().replace("\"", ""));
+				int amount;
+				try {
+					amount = Integer.parseInt(args[3]);
+				} catch (NumberFormatException ex) {
+					amount = -1;
+				}
 
-			if (output == EditingResult.NOT_EXIST) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
-			}
+				if ((output = handler.setPing(args[2], amount)) == EditingResult.NOT_EXIST) {
+					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
+					return;
+				}
 
-			break;
-		default:
-			break;
+				if (output == EditingResult.PING_AMOUNT) {
+					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_PING_CAN_NOT_BE_LESS,
+							"%amount%", amount));
+				}
+
+				break;
+			case SETDISPLAYNAME:
+				StringBuilder builder = new StringBuilder();
+
+				for (int i = 3; i < args.length; i++) {
+					builder.append(args[i] + (i + 1 < args.length ? " " : ""));
+				}
+
+				output = handler.setDisplayName(args[2], builder.toString().replace("\"", ""));
+
+				if (output == EditingResult.NOT_EXIST) {
+					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.FAKE_PLAYER_NOT_EXISTS));
+				}
+
+				break;
+			default:
+				break;
 		}
 	}
 
 	private CompletableFuture<PlayerSkinProperties> fetchPlayerProfile(String playerName) {
+		PlayerSkinProperties prop = cachedPlayerProperty(playerName, null);
+
+		if (prop != null) {
+			CompletableFuture<PlayerSkinProperties> future = new CompletableFuture<>();
+
+			future.complete(prop);
+			return future;
+		}
+
 		try {
 			OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayerIfCached(playerName);
 
@@ -237,5 +263,15 @@ public final class fakeplayers implements ICommand {
 		}
 
 		return hu.montlikadani.tablist.utils.datafetcher.URLDataFetcher.fetchProfile(playerName);
+	}
+
+	private PlayerSkinProperties cachedPlayerProperty(String playerName, UUID playerId) {
+		for (PlayerSkinProperties one : PlayerSkinProperties.CACHED) {
+			if ((playerId != null && playerId.equals(one.playerId)) || (playerName != null && playerName.equals(one.playerName))) {
+				return one;
+			}
+		}
+
+		return null;
 	}
 }

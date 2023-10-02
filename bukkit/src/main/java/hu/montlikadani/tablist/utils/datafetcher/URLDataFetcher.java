@@ -19,6 +19,10 @@ public final class URLDataFetcher {
     }
 
     private static PlayerSkinProperties fetchData(String playerNameOrId) {
+        if (PlayerSkinProperties.CACHED.size() > PlayerSkinProperties.MAX_REQUESTS) {
+            return null;
+        }
+
         for (RequestType fetcher : DATA_FETCHERS) {
             try {
                 return fetcher.get(playerNameOrId);

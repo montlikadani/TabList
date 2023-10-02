@@ -7,6 +7,9 @@ import java.util.concurrent.CompletableFuture;
 
 public final class PlayerSkinProperties {
 
+    public static final java.util.Set<PlayerSkinProperties> CACHED = new java.util.HashSet<>();
+    public static final int MAX_REQUESTS = 100;
+
     public final UUID playerId;
     public String playerName, textureRawValue, decodedTextureValue;
 
@@ -21,6 +24,8 @@ public final class PlayerSkinProperties {
         if (textureRawValue != null && decodedTextureValue != null) {
             this.textureRawValue = textureRawValue;
             this.decodedTextureValue = decodedTextureValue;
+
+            CACHED.add(this);
         }
     }
 
