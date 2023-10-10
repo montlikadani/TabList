@@ -12,7 +12,7 @@ A plugin for Minecraft servers that allows to get an animated tablist with heade
 ### API
 <details><summary>Click to view</summary>
 To get access to TabList API you need <a href="https://jitpack.io/#montlikadani/TabList" target="_blank">jitpack</a>
-
+<br/>
 **Maven**
 ```xml
 <repositories>
@@ -51,6 +51,13 @@ dependencies {
 }
 ```
 _Use `master-SNAPSHOT` as versioning to get the newest commit changes_
+
+**Alternative solution**
+```kotlin
+dependencies {
+    compileOnly(files("lib/TabList-bukkit-version.jar"))
+}
+```
 </details>
 
 ## Link

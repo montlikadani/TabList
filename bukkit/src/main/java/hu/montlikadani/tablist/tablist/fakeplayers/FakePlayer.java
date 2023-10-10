@@ -1,6 +1,7 @@
 package hu.montlikadani.tablist.tablist.fakeplayers;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.Objects.ObjectTypes;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
@@ -170,8 +171,11 @@ public final class FakePlayer implements IFakePlayer {
 				return;
 			}
 
-			profile.getProperties().removeAll("textures");
-			profile.getProperties().put("textures", new com.mojang.authlib.properties.Property("textures",
+			com.mojang.authlib.properties.PropertyMap propertyMap = profile.getProperties();
+
+			propertyMap.removeAll("textures");
+			propertyMap.put("name", new Property("name", name));
+			propertyMap.put("textures", new Property("textures",
 					playerSkinProperties.textureRawValue, playerSkinProperties.decodedTextureValue));
 
 			if (fakeEntityPlayer == null) {

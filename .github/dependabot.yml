@@ -6,21 +6,11 @@
 version: 2
 updates:
   - package-ecosystem: "gradle"
-    directory: "/bukkit"
-    schedule:
-      interval: "weekly"
-
-  - package-ecosystem: "gradle"
     directory: "/"
     schedule:
       interval: "weekly"
     ignore:
       - dependency-name: com.mojang:authlib
-
-  - package-ecosystem: "gradle"
-    directory: "/bungee"
-    schedule:
-      interval: "weekly"
 
   - package-ecosystem: "github-actions"
     directory: "/"
