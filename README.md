@@ -13,6 +13,7 @@ A plugin for Minecraft servers that allows to get an animated tablist with heade
 <details><summary>Click to view</summary>
 To get access to TabList API you need <a href="https://jitpack.io/#montlikadani/TabList" target="_blank">jitpack</a>
 <br/>
+	
 **Maven**
 ```xml
 <repositories>
