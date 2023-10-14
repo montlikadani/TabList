@@ -178,7 +178,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			Class.forName("net.kyori.adventure.text.Component");
 			Player.class.getDeclaredMethod("displayName");
 
-			complement = ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R3) ? new Complement2() : new Complement1();
+			complement = ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_3) ? new Complement2() : new Complement1();
 		} catch (NoSuchMethodException | ClassNotFoundException e) {
 			complement = new Complement1();
 		}

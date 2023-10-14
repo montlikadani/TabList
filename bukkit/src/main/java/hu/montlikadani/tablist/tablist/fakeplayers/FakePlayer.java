@@ -154,7 +154,7 @@ public final class FakePlayer implements IFakePlayer {
 	}
 
 	private void putTextureProperty(boolean debug) {
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_2)) {
 			return;
 		}
 

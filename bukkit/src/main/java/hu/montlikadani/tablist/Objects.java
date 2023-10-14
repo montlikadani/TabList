@@ -84,7 +84,7 @@ public final class Objects {
 		tlsched.submitSync(() -> {
 			Objective objective;
 
-			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_2)) {
 				objective = plugin.getComplement().registerNewObjective(board, objectName, "health", objectName, RenderType.HEARTS);
 			} else {
 				objective = board.registerNewObjective(objectName, "health");

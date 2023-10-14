@@ -146,7 +146,7 @@ public class PlayerList {
 
 	@SuppressWarnings("deprecation")
 	private void hide(Player to, Player pls) {
-		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_R1)) {
+		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_1)) {
 			to.hidePlayer(plugin, pls);
 		} else {
 			to.hidePlayer(pls);
@@ -155,7 +155,7 @@ public class PlayerList {
 
 	@SuppressWarnings("deprecation")
 	private void show(Player to, Player pls) {
-		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_R1)) {
+		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_1)) {
 			to.showPlayer(plugin, pls);
 		} else {
 			to.showPlayer(pls);

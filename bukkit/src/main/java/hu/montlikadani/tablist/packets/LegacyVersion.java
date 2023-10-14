@@ -32,7 +32,7 @@ public final class LegacyVersion implements IPacketNM {
     private Field playerConnectionField, headerField, footerField, listNameField, playerTeamNameField, networkManager, channel,
             recentTpsField, pingField;
     private Constructor<?> playerListHeaderFooterConstructor, entityPlayerConstructor, interactManagerConstructor;
-    private Class<?> minecraftServer, interactManager, craftServerClass, chatSerializer;
+    private Class<?> minecraftServer, interactManager, chatSerializer;
 
     private final List<Object> playerTeams = new ArrayList<>();
     private final java.util.Set<TagTeam> tagTeams = new java.util.HashSet<>();
@@ -194,11 +194,7 @@ public final class LegacyVersion implements IPacketNM {
         }
 
         try {
-            if (craftServerClass == null) {
-                craftServerClass = Class.forName("org.bukkit.craftbukkit." + ServerVersion.nmsVersion() + ".CraftServer");
-            }
-
-            return getServerMethod.invoke(craftServerClass.cast(Bukkit.getServer()));
+            return getServerMethod.invoke(Bukkit.getServer());
         } catch (Exception x) {
             try {
                 return getServerMethod.invoke(minecraftServer);
@@ -220,7 +216,7 @@ public final class LegacyVersion implements IPacketNM {
             Object playerConnection = playerConnectionField.get(handle);
 
             if (sendPacketMethod == null) {
-                sendPacketMethod = playerConnection.getClass().getDeclaredMethod(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_18_R1) ? "a" : "sendPacket",
+                sendPacketMethod = playerConnection.getClass().getDeclaredMethod(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_18_1) ? "a" : "sendPacket",
                         ClazzContainer.getPacket());
             }
 
@@ -235,7 +231,7 @@ public final class LegacyVersion implements IPacketNM {
             return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), json);
         } catch (IllegalAccessException | InvocationTargetException ex) {
             try {
-                if (ServerVersion.isCurrentLower(ServerVersion.v1_8_R2)) {
+                if (ServerVersion.isCurrentLower(ServerVersion.v1_8_2)) {
                     return asChatSerializer(json);
                 }
 
@@ -285,12 +281,12 @@ public final class LegacyVersion implements IPacketNM {
         try {
             Object packet;
 
-            if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+            if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_1)) {
                 packet = playerListHeaderFooterConstructor.newInstance(header, footer);
             } else {
                 packet = playerListHeaderFooterConstructor.newInstance();
 
-                if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R2)) {
+                if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_2)) {
                     if (headerField == null) {
                         (headerField = packet.getClass().getDeclaredField("header")).setAccessible(true);
                     }
@@ -351,9 +347,9 @@ public final class LegacyVersion implements IPacketNM {
 
             Object worldServer = getHandleWorldMethod.invoke(world);
 
-            if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+            if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_1)) {
                 if (entityPlayerConstructor == null) {
-                    if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_R1)) {
+                    if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_1)) {
                         entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer").getConstructor(minecraftServer, worldServer.getClass(),
                                 profile.getClass(), ClazzContainer.classByName("net.minecraft.world.entity.player", "ProfilePublicKey"));
                     } else {
@@ -365,7 +361,7 @@ public final class LegacyVersion implements IPacketNM {
                 return entityPlayerConstructor.newInstance(getServer(), worldServer, profile);
             }
 
-            if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_R1)) {
+            if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_1)) {
                 if (interactManagerConstructor == null) {
                     interactManagerConstructor = interactManager.getConstructor(worldServer.getClass());
                 }
@@ -514,7 +510,7 @@ public final class LegacyVersion implements IPacketNM {
         Object newTeamPacket = null, scoreTeam = null;
 
         try {
-            if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+            if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_1)) {
                 scoreTeam = ClazzContainer.getScoreboardTeamConstructor().newInstance(ClazzContainer.getScoreboardConstructor().newInstance(), teamName);
 
                 @SuppressWarnings("unchecked")
@@ -527,10 +523,10 @@ public final class LegacyVersion implements IPacketNM {
 
                 Object teamNameComponent = ReflectionUtils.asComponent(teamName);
 
-                ClazzContainer.getPacketScoreboardTeamName().set(newTeamPacket, ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) ?
+                ClazzContainer.getPacketScoreboardTeamName().set(newTeamPacket, ServerVersion.isCurrentLower(ServerVersion.v1_17_1) ?
                         teamName : teamNameComponent);
                 ClazzContainer.getPacketScoreboardTeamMode().set(newTeamPacket, 0);
-                ClazzContainer.getScoreboardTeamDisplayName().set(newTeamPacket, ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_R1)
+                ClazzContainer.getScoreboardTeamDisplayName().set(newTeamPacket, ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_1)
                         ? teamNameComponent : teamName);
                 ClazzContainer.getScoreboardTeamNames().set(newTeamPacket, Collections.singletonList(player.getName()));
             }
@@ -628,7 +624,7 @@ public final class LegacyVersion implements IPacketNM {
                 Object playerTeamName = playerTeamName(team);
 
                 if (teamName.equals(playerTeamName)) {
-                    if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+                    if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_1)) {
                         return ClazzContainer.scoreboardTeamPacketByAction(team, 1);
                     }
 

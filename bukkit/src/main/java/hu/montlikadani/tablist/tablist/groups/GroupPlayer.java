@@ -305,7 +305,7 @@ public final class GroupPlayer {
 
 		String full = tl.getPlaceholders().replaceVariables(player, tl.makeAnim(prefix + tabName + suffix));
 
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_16_R1)) {
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_16_1)) {
 			full = hu.montlikadani.tablist.utils.Util.applyTextFormat(full);
 		}
 

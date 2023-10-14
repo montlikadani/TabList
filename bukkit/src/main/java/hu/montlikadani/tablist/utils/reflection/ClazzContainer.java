@@ -109,7 +109,7 @@ public final class ClazzContainer {
 			scoreboardTeamSetChatFormat = methodByTypeAndName(scoreboardTeamClass, null, new Class<?>[] { enumChatFormat }, "a", "m", "setColor");
 			scoreboardTeamColor = methodByTypeAndName(scoreboardTeamClass, null, null, "getColor", "n");
 
-			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_1)) {
 				scoreboardTeamSetDisplayName = methodByTypeAndName(scoreboardTeamClass, null, new Class<?>[] { iChatBaseComponent }, "a", "setDisplayName");
 
 				scoreboardTeamNames = fieldByTypeOrName(scoreboardTeamClass, null, "e", "f", "players");
@@ -127,8 +127,8 @@ public final class ClazzContainer {
 				(packetScoreboardTeamName = packetPlayOutScoreboardTeam.getDeclaredField("a")).setAccessible(true);
 				(scoreboardTeamDisplayName = packetPlayOutScoreboardTeam.getDeclaredField("b")).setAccessible(true);
 				(nameTagVisibility = packetPlayOutScoreboardTeam.getDeclaredField("e")).setAccessible(true);
-				(packetScoreboardTeamMode = packetPlayOutScoreboardTeam.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "i" : "h")).setAccessible(true);
-				(scoreboardTeamNames = packetPlayOutScoreboardTeam.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_R1) ? "h" : "e")).setAccessible(true); // players
+				(packetScoreboardTeamMode = packetPlayOutScoreboardTeam.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_1) ? "i" : "h")).setAccessible(true);
+				(scoreboardTeamNames = packetPlayOutScoreboardTeam.getDeclaredField(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_9_1) ? "h" : "e")).setAccessible(true); // players
 				(packetScoreboardTeamChatFormatColorField = packetPlayOutScoreboardTeam.getDeclaredField("g")).setAccessible(true); // color
 			}
 
@@ -194,7 +194,7 @@ public final class ClazzContainer {
 				}
 			}
 
-			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_1)) {
 				(playerInfoDataPing = playerInfoData.getDeclaredField("a")).setAccessible(true);
 				(playerInfoDataProfileField = playerInfoData.getDeclaredField("c")).setAccessible(true);
 				(playerInfoDataGameMode = playerInfoData.getDeclaredField("b")).setAccessible(true);
@@ -231,7 +231,7 @@ public final class ClazzContainer {
 	}
 
 	public static Class<?> classByName(String newPackageName, String name) throws ClassNotFoundException {
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_R1) || newPackageName == null) {
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_17_1) || newPackageName == null) {
 			newPackageName = "net.minecraft.server." + ServerVersion.nmsVersion();
 		}
 
@@ -360,7 +360,7 @@ public final class ClazzContainer {
 
 	public static GameProfile getPlayerInfoDataProfile(Object infoData) {
 		try {
-			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_R1)) {
+			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_1)) {
 				return (GameProfile) playerInfoDataProfileField.get(infoData);
 			}
 

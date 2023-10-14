@@ -15,7 +15,7 @@ public final class ReflectionUtils {
 	private static ReentrantLock LOCK;
 
 	static {
-		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_R1)) {
+		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_1)) {
 			LOCK = new ReentrantLock();
 		}
 

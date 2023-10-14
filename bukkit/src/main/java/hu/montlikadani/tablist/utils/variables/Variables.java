@@ -126,7 +126,7 @@ public final class Variables {
 		if (!text.getPlainText().isEmpty()) {
 			String str = replaceVariables(pl, text.getPlainText());
 
-			text.updateText(ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_R2) ? Util.applyTextFormat(str) : str);
+			text.updateText(ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_2) ? Util.applyTextFormat(str) : str);
 		}
 
 		return text;
@@ -293,7 +293,7 @@ public final class Variables {
 		text = Global.replace(text, "%player-health%", () -> Double.toString(player.getHealth()));
 
 		if (text.indexOf("%player-max-health%") != -1) {
-			if (ServerVersion.isCurrentLower(ServerVersion.v1_9_R1)) {
+			if (ServerVersion.isCurrentLower(ServerVersion.v1_9_1)) {
 				text = text.replace("%player-max-health%", Double.toString(player.getMaxHealth()));
 			} else {
 				org.bukkit.attribute.AttributeInstance attr = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);

@@ -100,7 +100,7 @@ public final class TabListUser {
 	}
 
 	private void initScore(String entry) {
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_18_R1)) {
+		if (ServerVersion.isCurrentLower(ServerVersion.v1_18_1)) {
 			if (entry.length() > 40) {
 				entry = entry.substring(0, 40);
 			}
