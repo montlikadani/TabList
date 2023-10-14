@@ -370,9 +370,9 @@ public final class V1_20_R2 implements hu.montlikadani.api.IPacketNM {
 
         private void scoreboardTeamPacket(PacketPlayOutScoreboardTeam packetScoreboardTeam) {
 
-            // Some plugins are using this packet in wrong way and the return value of this method "e" is null
+            // Some plugins are using this packet in wrong way and the return value of this method "f" is null
             // which shouldn't be that way but ok, nothing I can do about this only to add an extra condition
-            if (packetScoreboardTeam.e() == null || packetScoreboardTeam.e().isEmpty()) {
+            if (packetScoreboardTeam.f() == null || packetScoreboardTeam.f().isEmpty()) {
                 return;
             }
 
