@@ -11,8 +11,7 @@ public final class PacketNM {
 		String current = hu.montlikadani.tablist.utils.ServerVersion.getCurrent().name();
 
 		try {
-			packetInstance = (IPacketNM) Class.forName("hu.montlikadani." + current + "." + current.replace('v', 'V'))
-					.getConstructor().newInstance();
+			packetInstance = (IPacketNM) Class.forName("hu.montlikadani." + current + "." + current).getConstructor().newInstance();
 		} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
 				 java.lang.reflect.InvocationTargetException e) {
 			packetInstance = new LegacyVersion();

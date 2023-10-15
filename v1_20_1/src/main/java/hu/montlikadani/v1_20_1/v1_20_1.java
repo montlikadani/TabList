@@ -1,7 +1,5 @@
-package hu.montlikadani.v1_19_3;
+package hu.montlikadani.v1_20_1;
 
-import com.mojang.authlib.GameProfile;
-import hu.montlikadani.api.IPacketNM;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import java.util.HashSet;
@@ -37,7 +35,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
-public final class V1_19_3 implements IPacketNM {
+public final class v1_20_1 implements hu.montlikadani.api.IPacketNM {
 
     private Field entriesField, playerNetworkManagerField;
 
@@ -47,31 +45,27 @@ public final class V1_19_3 implements IPacketNM {
 
     @Override
     public void sendPacket(Player player, Object packet) {
-        getPlayerHandle(player).b.a((Packet<?>) packet);
+        getPlayerHandle(player).c.a((Packet<?>) packet);
     }
 
     private void sendPacket(EntityPlayer player, Packet<?> packet) {
-        player.b.a(packet);
+        player.c.a(packet);
     }
 
     @Override
     public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
-        EntityPlayer entityPlayer = getPlayerHandle(player);
-        Channel channel = playerChannel(entityPlayer.b);
+        Channel channel = playerChannel(getPlayerHandle(player).c);
 
         if (channel != null && channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
             try {
                 channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
                         new PacketReceivingListener(player.getUniqueId(), classesToListen));
-            } catch (NoSuchElementException ex) {
-                // packet_handler not exists, sure then, ignore
+            } catch (NoSuchElementException ignored) {
             }
         }
     }
 
     private Channel playerChannel(net.minecraft.server.network.PlayerConnection connection) {
-
-        // Congratulations for moyeng for making networkManager field private
         if (playerNetworkManagerField == null && (playerNetworkManagerField = fieldByType(connection.getClass(), NetworkManager.class)) == null) {
             return null;
         }
@@ -95,7 +89,7 @@ public final class V1_19_3 implements IPacketNM {
 
     @Override
     public void removePlayerChannelListener(Player player) {
-        Channel channel = playerChannel(getPlayerHandle(player).b);
+        Channel channel = playerChannel(getPlayerHandle(player).c);
 
         if (channel != null) {
             try {
@@ -107,7 +101,7 @@ public final class V1_19_3 implements IPacketNM {
 
     @Override
     public EntityPlayer getPlayerHandle(Player player) {
-        return ((org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer) player).getHandle();
+        return ((org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer) player).getHandle();
     }
 
     @Override
@@ -121,14 +115,19 @@ public final class V1_19_3 implements IPacketNM {
     }
 
     private MinecraftServer minecraftServer() {
-        return ((org.bukkit.craftbukkit.v1_19_R3.CraftServer) Bukkit.getServer()).getServer();
+        return ((org.bukkit.craftbukkit.v1_20_R1.CraftServer) Bukkit.getServer()).getServer();
     }
 
     @Override
-    public EntityPlayer getNewEntityPlayer(GameProfile profile) {
+    public EntityPlayer getNewEntityPlayer(com.mojang.authlib.GameProfile profile) {
         MinecraftServer server = minecraftServer();
 
         return new EntityPlayer(server, server.D(), profile);
+    }
+
+    @Override
+    public double[] serverTps() {
+        return minecraftServer().recentTps;
     }
 
     @Override
@@ -138,11 +137,6 @@ public final class V1_19_3 implements IPacketNM {
         }
 
         return new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.a.f, (EntityPlayer) entityPlayer);
-    }
-
-    @Override
-    public double[] serverTps() {
-        return minecraftServer().recentTps;
     }
 
     @Override
@@ -172,7 +166,7 @@ public final class V1_19_3 implements IPacketNM {
         List<UUID> players = new ArrayList<>(entityPlayers.length);
 
         for (Object one : entityPlayers) {
-            players.add(((EntityPlayer) one).fI().getId());
+            players.add(((EntityPlayer) one).fM().getId());
         }
 
         return new ClientboundPlayerInfoRemovePacket(players);
@@ -194,7 +188,7 @@ public final class V1_19_3 implements IPacketNM {
     private void setEntriesField(ClientboundPlayerInfoUpdatePacket playerInfoPacket, List<ClientboundPlayerInfoUpdatePacket.b> list) {
         try {
 
-            // Entries list is immutable, so use reflection to bypass
+            // Entries list is unmodifiable, so use reflection to bypass
             if (entriesField == null) {
                 entriesField = playerInfoPacket.getClass().getDeclaredField("b");
                 entriesField.setAccessible(true);
@@ -358,8 +352,10 @@ public final class V1_19_3 implements IPacketNM {
             sendPacket(player, updatePacket);
         }
 
-        // Temporal and disgusting solution to fix players name tag overwriting
         private void scoreboardTeamPacket(PacketPlayOutScoreboardTeam packetScoreboardTeam) {
+
+            // Some plugins are using this packet in wrong way and the return value of this method "e" is null
+            // which shouldn't be that way but ok, nothing I can do about this only to add an extra condition
             if (packetScoreboardTeam.e() == null || packetScoreboardTeam.e().isEmpty()) {
                 return;
             }
@@ -397,7 +393,7 @@ public final class V1_19_3 implements IPacketNM {
                         enumTeamPush = ScoreboardTeamBase.EnumTeamPush.a;
                     }
 
-                    ScoreboardTeam scoreboardTeam = new ScoreboardTeam(((org.bukkit.craftbukkit.v1_19_R3.scoreboard.CraftScoreboard) player.getScoreboard()).getHandle(),
+                    ScoreboardTeam scoreboardTeam = new ScoreboardTeam(((org.bukkit.craftbukkit.v1_20_R1.scoreboard.CraftScoreboard) player.getScoreboard()).getHandle(),
                             packetTeam.a().getString());
                     scoreboardTeam.b(prefix);
                     scoreboardTeam.c(suffix);

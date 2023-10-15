@@ -29,7 +29,7 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.UUID;
 
-public final class V1_17_1 implements hu.montlikadani.api.IPacketNM {
+public final class v1_17_1 implements hu.montlikadani.api.IPacketNM {
 
     private final Scoreboard scoreboard = new Scoreboard();
 

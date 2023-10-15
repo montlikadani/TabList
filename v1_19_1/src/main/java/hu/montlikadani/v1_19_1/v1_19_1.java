@@ -1,15 +1,14 @@
-package hu.montlikadani.v1_20_1;
+package hu.montlikadani.v1_19_1;
 
-import io.netty.channel.Channel;
+import com.mojang.authlib.GameProfile;
+import hu.montlikadani.api.IPacketNM;
 import io.netty.channel.ChannelHandlerContext;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
-import net.minecraft.network.NetworkManager;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
-import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
+import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective;
@@ -28,16 +27,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
-public final class V1_20_1 implements hu.montlikadani.api.IPacketNM {
-
-    private Field entriesField, playerNetworkManagerField;
+public final class v1_19_1 implements IPacketNM {
 
     private final Scoreboard scoreboard = new Scoreboard();
 
@@ -45,55 +40,34 @@ public final class V1_20_1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public void sendPacket(Player player, Object packet) {
-        getPlayerHandle(player).c.a((Packet<?>) packet);
+        getPlayerHandle(player).b.a((Packet<?>) packet);
     }
 
     private void sendPacket(EntityPlayer player, Packet<?> packet) {
-        player.c.a(packet);
+        player.b.a(packet);
     }
 
     @Override
     public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
-        Channel channel = playerChannel(getPlayerHandle(player).c);
+        EntityPlayer entityPlayer = getPlayerHandle(player);
 
-        if (channel != null && channel.pipeline().get(PACKET_INJECTOR_NAME) == null) {
+        if (entityPlayer.b.b.m.pipeline().get(PACKET_INJECTOR_NAME) == null) {
             try {
-                channel.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
+                entityPlayer.b.b.m.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
                         new PacketReceivingListener(player.getUniqueId(), classesToListen));
-            } catch (NoSuchElementException ignored) {
+            } catch (NoSuchElementException ex) {
+                // packet_handler not exists, sure then, ignore
             }
         }
-    }
-
-    private Channel playerChannel(net.minecraft.server.network.PlayerConnection connection) {
-        if (playerNetworkManagerField == null && (playerNetworkManagerField = fieldByType(connection.getClass(), NetworkManager.class)) == null) {
-            return null;
-        }
-
-        try {
-            return ((NetworkManager) playerNetworkManagerField.get(connection)).m;
-        } catch (IllegalAccessException ignored) {
-            return null;
-        }
-    }
-
-    private Field fieldByType(Class<?> where, Class<?> type) {
-        for (Field field : where.getDeclaredFields()) {
-            if (field.getType() == type) {
-                return field;
-            }
-        }
-
-        return null;
     }
 
     @Override
     public void removePlayerChannelListener(Player player) {
-        Channel channel = playerChannel(getPlayerHandle(player).c);
+        EntityPlayer entityPlayer = getPlayerHandle(player);
 
-        if (channel != null) {
+        if (entityPlayer.b.b.m != null) {
             try {
-                channel.pipeline().remove(PACKET_INJECTOR_NAME);
+                entityPlayer.b.b.m.pipeline().remove(PACKET_INJECTOR_NAME);
             } catch (NoSuchElementException ignored) {
             }
         }
@@ -101,7 +75,7 @@ public final class V1_20_1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public EntityPlayer getPlayerHandle(Player player) {
-        return ((org.bukkit.craftbukkit.v1_20_R1.entity.CraftPlayer) player).getHandle();
+        return ((org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer) player).getHandle();
     }
 
     @Override
@@ -115,14 +89,14 @@ public final class V1_20_1 implements hu.montlikadani.api.IPacketNM {
     }
 
     private MinecraftServer minecraftServer() {
-        return ((org.bukkit.craftbukkit.v1_20_R1.CraftServer) Bukkit.getServer()).getServer();
+        return ((org.bukkit.craftbukkit.v1_19_R1.CraftServer) Bukkit.getServer()).getServer();
     }
 
     @Override
-    public EntityPlayer getNewEntityPlayer(com.mojang.authlib.GameProfile profile) {
+    public EntityPlayer getNewEntityPlayer(GameProfile profile) {
         MinecraftServer server = minecraftServer();
 
-        return new EntityPlayer(server, server.D(), profile);
+        return new EntityPlayer(server, server.C(), profile, null);
     }
 
     @Override
@@ -131,12 +105,12 @@ public final class V1_20_1 implements hu.montlikadani.api.IPacketNM {
     }
 
     @Override
-    public ClientboundPlayerInfoUpdatePacket updateDisplayNamePacket(Object entityPlayer, Object component, boolean listName) {
+    public PacketPlayOutPlayerInfo updateDisplayNamePacket(Object entityPlayer, Object component, boolean listName) {
         if (listName) {
             setListName(entityPlayer, component);
         }
 
-        return new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.a.f, (EntityPlayer) entityPlayer);
+        return new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.d, (EntityPlayer) entityPlayer);
     }
 
     @Override
@@ -145,59 +119,48 @@ public final class V1_20_1 implements hu.montlikadani.api.IPacketNM {
     }
 
     @Override
-    public ClientboundPlayerInfoUpdatePacket newPlayerInfoUpdatePacketAdd(Object... entityPlayers) {
+    public PacketPlayOutPlayerInfo newPlayerInfoUpdatePacketAdd(Object... entityPlayers) {
         List<EntityPlayer> players = new ArrayList<>(entityPlayers.length);
 
         for (Object one : entityPlayers) {
             players.add((EntityPlayer) one);
         }
 
-        return new ClientboundPlayerInfoUpdatePacket(EnumSet.of(ClientboundPlayerInfoUpdatePacket.a.a,
-                ClientboundPlayerInfoUpdatePacket.a.d, ClientboundPlayerInfoUpdatePacket.a.e, ClientboundPlayerInfoUpdatePacket.a.f), players);
+        return new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a, players);
     }
 
     @Override
-    public ClientboundPlayerInfoUpdatePacket updateLatency(Object entityPlayer) {
-        return new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.a.e, (EntityPlayer) entityPlayer);
+    public PacketPlayOutPlayerInfo updateLatency(Object entityPlayer) {
+        return new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.c, (EntityPlayer) entityPlayer);
     }
 
     @Override
-    public ClientboundPlayerInfoRemovePacket removeEntityPlayers(Object... entityPlayers) {
-        List<UUID> players = new ArrayList<>(entityPlayers.length);
+    public PacketPlayOutPlayerInfo removeEntityPlayers(Object... entityPlayers) {
+        List<EntityPlayer> players = new ArrayList<>(entityPlayers.length);
 
         for (Object one : entityPlayers) {
-            players.add(((EntityPlayer) one).fM().getId());
+            players.add(((EntityPlayer) one));
         }
 
-        return new ClientboundPlayerInfoRemovePacket(players);
+        return new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.e, players);
     }
 
     @Override
     public void setInfoData(Object info, UUID id, int ping, Object component) {
-        ClientboundPlayerInfoUpdatePacket update = (ClientboundPlayerInfoUpdatePacket) info;
+        PacketPlayOutPlayerInfo update = (PacketPlayOutPlayerInfo) info;
 
-        for (ClientboundPlayerInfoUpdatePacket.b playerInfo : update.c()) {
-            if (playerInfo.a().equals(id)) {
-                setEntriesField(update, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.b(playerInfo.a(), playerInfo.b(), playerInfo.c(),
-                        ping == -2 ? playerInfo.d() : ping, playerInfo.e(), (IChatBaseComponent) component, playerInfo.g())));
+        for (PacketPlayOutPlayerInfo.PlayerInfoData playerInfo : update.b()) {
+            if (playerInfo.a().getId().equals(id)) {
+                setEntriesField(update, Collections.singletonList(new PacketPlayOutPlayerInfo.PlayerInfoData(playerInfo.a(), ping == -2 ? playerInfo.b() : ping, playerInfo.c(),
+                        (IChatBaseComponent) component, playerInfo.e())));
                 break;
             }
         }
     }
 
-    private void setEntriesField(ClientboundPlayerInfoUpdatePacket playerInfoPacket, List<ClientboundPlayerInfoUpdatePacket.b> list) {
-        try {
-
-            // Entries list is unmodifiable, so use reflection to bypass
-            if (entriesField == null) {
-                entriesField = playerInfoPacket.getClass().getDeclaredField("b");
-                entriesField.setAccessible(true);
-            }
-
-            entriesField.set(playerInfoPacket, list);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    private void setEntriesField(PacketPlayOutPlayerInfo playerInfoPacket, List<PacketPlayOutPlayerInfo.PlayerInfoData> list) {
+        playerInfoPacket.b().clear();
+        playerInfoPacket.b().addAll(list);
     }
 
     @Override
@@ -318,17 +281,18 @@ public final class V1_20_1 implements hu.montlikadani.api.IPacketNM {
                 return;
             }
 
+            // Temporal and disgusting solution to fix players name tag overwriting
             if (receivingClass == PacketPlayOutScoreboardTeam.class) {
                 scoreboardTeamPacket((PacketPlayOutScoreboardTeam) msg);
-            } else if (receivingClass == ClientboundPlayerInfoUpdatePacket.class) {
-                playerInfoUpdatePacket((ClientboundPlayerInfoUpdatePacket) msg);
+            } else if (receivingClass == PacketPlayOutPlayerInfo.class) {
+                playerInfoUpdatePacket((PacketPlayOutPlayerInfo) msg);
             }
 
             super.write(ctx, msg, promise);
         }
 
-        private void playerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket playerInfoPacket) {
-            if (!playerInfoPacket.a().contains(ClientboundPlayerInfoUpdatePacket.a.c)) {
+        private void playerInfoUpdatePacket(PacketPlayOutPlayerInfo playerInfoPacket) {
+            if (playerInfoPacket.c() != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.b) {
                 return;
             }
 
@@ -338,13 +302,12 @@ public final class V1_20_1 implements hu.montlikadani.api.IPacketNM {
                 return;
             }
 
-            ClientboundPlayerInfoUpdatePacket updatePacket = new ClientboundPlayerInfoUpdatePacket(EnumSet.of(ClientboundPlayerInfoUpdatePacket.a.c),
-                    Collections.emptyList());
-            List<ClientboundPlayerInfoUpdatePacket.b> players = new ArrayList<>();
+            PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.c, Collections.emptyList());
+            List<PacketPlayOutPlayerInfo.PlayerInfoData> players = new ArrayList<>();
 
-            for (ClientboundPlayerInfoUpdatePacket.b entry : playerInfoPacket.c()) {
-                if (entry.e() == EnumGamemode.d && !entry.a().equals(listenerPlayerId)) {
-                    players.add(new ClientboundPlayerInfoUpdatePacket.b(entry.a(), entry.b(), entry.c(), entry.d(), EnumGamemode.a, entry.f(), entry.g()));
+            for (PacketPlayOutPlayerInfo.PlayerInfoData entry : playerInfoPacket.b()) {
+                if (entry.c() == EnumGamemode.d && !entry.a().getId().equals(listenerPlayerId)) {
+                    players.add(new PacketPlayOutPlayerInfo.PlayerInfoData(entry.a(), entry.b(), EnumGamemode.a, entry.d(), entry.e()));
                 }
             }
 
@@ -353,9 +316,6 @@ public final class V1_20_1 implements hu.montlikadani.api.IPacketNM {
         }
 
         private void scoreboardTeamPacket(PacketPlayOutScoreboardTeam packetScoreboardTeam) {
-
-            // Some plugins are using this packet in wrong way and the return value of this method "e" is null
-            // which shouldn't be that way but ok, nothing I can do about this only to add an extra condition
             if (packetScoreboardTeam.e() == null || packetScoreboardTeam.e().isEmpty()) {
                 return;
             }
@@ -393,7 +353,7 @@ public final class V1_20_1 implements hu.montlikadani.api.IPacketNM {
                         enumTeamPush = ScoreboardTeamBase.EnumTeamPush.a;
                     }
 
-                    ScoreboardTeam scoreboardTeam = new ScoreboardTeam(((org.bukkit.craftbukkit.v1_20_R1.scoreboard.CraftScoreboard) player.getScoreboard()).getHandle(),
+                    ScoreboardTeam scoreboardTeam = new ScoreboardTeam(((org.bukkit.craftbukkit.v1_19_R1.scoreboard.CraftScoreboard) player.getScoreboard()).getHandle(),
                             packetTeam.a().getString());
                     scoreboardTeam.b(prefix);
                     scoreboardTeam.c(suffix);

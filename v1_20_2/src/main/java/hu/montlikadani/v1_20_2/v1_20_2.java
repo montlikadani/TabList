@@ -36,7 +36,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.UUID;
 
-public final class V1_20_2 implements hu.montlikadani.api.IPacketNM {
+public final class v1_20_2 implements hu.montlikadani.api.IPacketNM {
 
     private Field entriesField, playerNetworkManagerField;
 

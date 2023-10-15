@@ -40,7 +40,7 @@ import net.minecraft.server.v1_8_R3.ScoreboardTeamBase;
 import net.minecraft.server.v1_8_R3.WorldServer;
 import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode;
 
-public final class V1_8_8 implements IPacketNM {
+public final class v1_8_8 implements IPacketNM {
 
 	private final List<ObjectiveStorage> objectiveStorage = new ArrayList<>();
 
@@ -51,7 +51,7 @@ public final class V1_8_8 implements IPacketNM {
 
 	private final Set<TagTeam> tagTeams = new HashSet<>();
 
-	public V1_8_8() {
+	public v1_8_8() {
 		try {
 			(headerField = PacketPlayOutPlayerListHeaderFooter.class.getDeclaredField("a")).setAccessible(true);
 			(footerField = PacketPlayOutPlayerListHeaderFooter.class.getDeclaredField("b")).setAccessible(true);

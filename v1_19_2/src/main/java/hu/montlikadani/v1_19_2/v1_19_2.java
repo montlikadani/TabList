@@ -1,4 +1,4 @@
-package hu.montlikadani.v1_18_2;
+package hu.montlikadani.v1_19_2;
 
 import com.mojang.authlib.GameProfile;
 import hu.montlikadani.api.IPacketNM;
@@ -8,7 +8,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
-import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
+import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerListHeaderFooter;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardDisplayObjective;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardObjective;
@@ -24,16 +25,18 @@ import net.minecraft.world.scores.ScoreboardTeam;
 import net.minecraft.world.scores.ScoreboardTeamBase;
 import net.minecraft.world.scores.criteria.IScoreboardCriteria;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_18_R2.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.Team;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
-public final class V1_18_2 implements IPacketNM {
+public final class v1_19_2 implements IPacketNM {
+
+    private Field entriesField;
 
     private final Scoreboard scoreboard = new Scoreboard();
 
@@ -52,9 +55,9 @@ public final class V1_18_2 implements IPacketNM {
     public void addPlayerChannelListener(Player player, List<Class<?>> classesToListen) {
         EntityPlayer entityPlayer = getPlayerHandle(player);
 
-        if (entityPlayer.b.a.m.pipeline().get(PACKET_INJECTOR_NAME) == null) {
+        if (entityPlayer.b.b.m.pipeline().get(PACKET_INJECTOR_NAME) == null) {
             try {
-                entityPlayer.b.a.m.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
+                entityPlayer.b.b.m.pipeline().addBefore("packet_handler", PACKET_INJECTOR_NAME,
                         new PacketReceivingListener(player.getUniqueId(), classesToListen));
             } catch (NoSuchElementException ex) {
                 // packet_handler not exists, sure then, ignore
@@ -66,9 +69,9 @@ public final class V1_18_2 implements IPacketNM {
     public void removePlayerChannelListener(Player player) {
         EntityPlayer entityPlayer = getPlayerHandle(player);
 
-        if (entityPlayer.b.a.m != null) {
+        if (entityPlayer.b.b.m != null) {
             try {
-                entityPlayer.b.a.m.pipeline().remove(PACKET_INJECTOR_NAME);
+                entityPlayer.b.b.m.pipeline().remove(PACKET_INJECTOR_NAME);
             } catch (NoSuchElementException ignored) {
             }
         }
@@ -76,7 +79,7 @@ public final class V1_18_2 implements IPacketNM {
 
     @Override
     public EntityPlayer getPlayerHandle(Player player) {
-        return ((org.bukkit.craftbukkit.v1_18_R2.entity.CraftPlayer) player).getHandle();
+        return ((org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer) player).getHandle();
     }
 
     @Override
@@ -90,14 +93,14 @@ public final class V1_18_2 implements IPacketNM {
     }
 
     private MinecraftServer minecraftServer() {
-        return ((CraftServer) Bukkit.getServer()).getServer();
+        return ((org.bukkit.craftbukkit.v1_19_R2.CraftServer) Bukkit.getServer()).getServer();
     }
 
     @Override
     public EntityPlayer getNewEntityPlayer(GameProfile profile) {
         MinecraftServer server = minecraftServer();
 
-        return new EntityPlayer(server, server.D(), profile);
+        return new EntityPlayer(server, server.C(), profile);
     }
 
     @Override
@@ -106,12 +109,12 @@ public final class V1_18_2 implements IPacketNM {
     }
 
     @Override
-    public PacketPlayOutPlayerInfo updateDisplayNamePacket(Object entityPlayer, Object component, boolean listName) {
+    public ClientboundPlayerInfoUpdatePacket updateDisplayNamePacket(Object entityPlayer, Object component, boolean listName) {
         if (listName) {
             setListName(entityPlayer, component);
         }
 
-        return new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.d, (EntityPlayer) entityPlayer);
+        return new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.a.f, (EntityPlayer) entityPlayer);
     }
 
     @Override
@@ -120,48 +123,59 @@ public final class V1_18_2 implements IPacketNM {
     }
 
     @Override
-    public PacketPlayOutPlayerInfo newPlayerInfoUpdatePacketAdd(Object... entityPlayers) {
+    public ClientboundPlayerInfoUpdatePacket newPlayerInfoUpdatePacketAdd(Object... entityPlayers) {
         List<EntityPlayer> players = new ArrayList<>(entityPlayers.length);
 
         for (Object one : entityPlayers) {
             players.add((EntityPlayer) one);
         }
 
-        return new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.a, players);
+        return new ClientboundPlayerInfoUpdatePacket(java.util.EnumSet.of(ClientboundPlayerInfoUpdatePacket.a.a,
+                ClientboundPlayerInfoUpdatePacket.a.d, ClientboundPlayerInfoUpdatePacket.a.e, ClientboundPlayerInfoUpdatePacket.a.f), players);
     }
 
     @Override
-    public PacketPlayOutPlayerInfo updateLatency(Object entityPlayer) {
-        return new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.c, (EntityPlayer) entityPlayer);
+    public ClientboundPlayerInfoUpdatePacket updateLatency(Object entityPlayer) {
+        return new ClientboundPlayerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket.a.e, (EntityPlayer) entityPlayer);
     }
 
     @Override
-    public PacketPlayOutPlayerInfo removeEntityPlayers(Object... entityPlayers) {
-        List<EntityPlayer> players = new ArrayList<>(entityPlayers.length);
+    public ClientboundPlayerInfoRemovePacket removeEntityPlayers(Object... entityPlayers) {
+        List<UUID> players = new ArrayList<>(entityPlayers.length);
 
         for (Object one : entityPlayers) {
-            players.add(((EntityPlayer) one));
+            players.add(((EntityPlayer) one).fD().getId());
         }
 
-        return new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.e, players);
+        return new ClientboundPlayerInfoRemovePacket(players);
     }
 
     @Override
     public void setInfoData(Object info, UUID id, int ping, Object component) {
-        PacketPlayOutPlayerInfo update = (PacketPlayOutPlayerInfo) info;
+        ClientboundPlayerInfoUpdatePacket update = (ClientboundPlayerInfoUpdatePacket) info;
 
-        for (PacketPlayOutPlayerInfo.PlayerInfoData playerInfo : update.b()) {
-            if (playerInfo.a().getId().equals(id)) {
-                setEntriesField(update, Collections.singletonList(new PacketPlayOutPlayerInfo.PlayerInfoData(playerInfo.a(), ping == -2 ? playerInfo.b() : ping,
-                        playerInfo.c(), (IChatBaseComponent) component)));
+        for (ClientboundPlayerInfoUpdatePacket.b playerInfo : update.c()) {
+            if (playerInfo.a().equals(id)) {
+                setEntriesField(update, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.b(playerInfo.a(), playerInfo.b(), playerInfo.c(),
+                        ping == -2 ? playerInfo.d() : ping, playerInfo.e(), (IChatBaseComponent) component, playerInfo.g())));
                 break;
             }
         }
     }
 
-    private void setEntriesField(PacketPlayOutPlayerInfo playerInfoPacket, List<PacketPlayOutPlayerInfo.PlayerInfoData> list) {
-        playerInfoPacket.b().clear();
-        playerInfoPacket.b().addAll(list);
+    private void setEntriesField(ClientboundPlayerInfoUpdatePacket playerInfoPacket, List<ClientboundPlayerInfoUpdatePacket.b> list) {
+        try {
+
+            // Entries list is immutable, so use reflection to bypass
+            if (entriesField == null) {
+                entriesField = playerInfoPacket.getClass().getDeclaredField("b");
+                entriesField.setAccessible(true);
+            }
+
+            entriesField.set(playerInfoPacket, list);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -284,15 +298,15 @@ public final class V1_18_2 implements IPacketNM {
 
             if (receivingClass == PacketPlayOutScoreboardTeam.class) {
                 scoreboardTeamPacket((PacketPlayOutScoreboardTeam) msg);
-            } else if (receivingClass == PacketPlayOutPlayerInfo.class) {
-                playerInfoPacket((PacketPlayOutPlayerInfo) msg);
+            } else if (receivingClass == ClientboundPlayerInfoUpdatePacket.class) {
+                playerInfoUpdatePacket((ClientboundPlayerInfoUpdatePacket) msg);
             }
 
             super.write(ctx, msg, promise);
         }
 
-        private void playerInfoPacket(PacketPlayOutPlayerInfo playerInfoPacket) {
-            if (playerInfoPacket.c() != PacketPlayOutPlayerInfo.EnumPlayerInfoAction.b) {
+        private void playerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket playerInfoPacket) {
+            if (!playerInfoPacket.b().contains(ClientboundPlayerInfoUpdatePacket.a.c)) {
                 return;
             }
 
@@ -302,12 +316,14 @@ public final class V1_18_2 implements IPacketNM {
                 return;
             }
 
-            PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.c, Collections.emptyList());
-            List<PacketPlayOutPlayerInfo.PlayerInfoData> players = new ArrayList<>();
+            ClientboundPlayerInfoUpdatePacket updatePacket = new ClientboundPlayerInfoUpdatePacket(
+                    java.util.EnumSet.of(ClientboundPlayerInfoUpdatePacket.a.c), java.util.Collections.emptyList());
+            List<ClientboundPlayerInfoUpdatePacket.b> players = new ArrayList<>();
 
-            for (PacketPlayOutPlayerInfo.PlayerInfoData entry : playerInfoPacket.b()) {
-                if (entry.c() == EnumGamemode.d && !entry.a().getId().equals(listenerPlayerId)) {
-                    players.add(new PacketPlayOutPlayerInfo.PlayerInfoData(entry.a(), entry.b(), EnumGamemode.a, entry.d()));
+            for (ClientboundPlayerInfoUpdatePacket.b entry : playerInfoPacket.c()) {
+                if (entry.e() == EnumGamemode.d && !entry.a().equals(listenerPlayerId)) {
+                    players.add(new ClientboundPlayerInfoUpdatePacket.b(entry.a(), entry.b(), entry.c(), entry.d(),
+                            EnumGamemode.a, entry.f(), entry.g()));
                 }
             }
 
@@ -354,7 +370,7 @@ public final class V1_18_2 implements IPacketNM {
                         enumTeamPush = ScoreboardTeamBase.EnumTeamPush.a;
                     }
 
-                    ScoreboardTeam scoreboardTeam = new ScoreboardTeam(((org.bukkit.craftbukkit.v1_18_R2.scoreboard.CraftScoreboard) player.getScoreboard()).getHandle(),
+                    ScoreboardTeam scoreboardTeam = new ScoreboardTeam(((org.bukkit.craftbukkit.v1_19_R2.scoreboard.CraftScoreboard) player.getScoreboard()).getHandle(),
                             packetTeam.a().getString());
                     scoreboardTeam.b(prefix);
                     scoreboardTeam.c(suffix);
