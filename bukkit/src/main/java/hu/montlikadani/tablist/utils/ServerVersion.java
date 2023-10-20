@@ -16,43 +16,20 @@ public enum ServerVersion {
 	v1_9_4, v1_9_3, v1_9_2, v1_9_1, v1_9,
 	v1_8_9, v1_8_8, v1_8_7, v1_8_6, v1_8_5, v1_8_4, v1_8_3, v1_8_2, v1_8_1, v1_8;
 
-	private final int value;
-
-	private static String nmsVersion;
 	private static ServerVersion current;
-
-	ServerVersion() {
-		value = Integer.parseInt(Util.NUMBER_ESCAPE_SEQUENCE.reset(name()).replaceAll(""));
-	}
 
 	public static ServerVersion getCurrent() {
 		if (current != null)
 			return current;
 
-		nmsVersion = 'v' + org.bukkit.Bukkit.getServer().getBukkitVersion().split("-", 2)[0].replace('.', '_');
+		String name = 'v' + org.bukkit.Bukkit.getServer().getBukkitVersion().split("-", 2)[0].replace('.', '_');
 
 		for (ServerVersion one : values()) {
-			if (one.name().equals(nmsVersion)) {
+			if (one.name().equals(name)) {
 				return current = one;
 			}
 		}
 
 		return null;
-	}
-
-	public static String nmsVersion() {
-		return nmsVersion;
-	}
-
-	public static boolean isCurrentEqualOrHigher(ServerVersion v) {
-		return current.value >= v.value;
-	}
-
-	public static boolean isCurrentLower(ServerVersion v) {
-		return current.value < v.value;
-	}
-
-	public static boolean isCurrentEqualOrLower(ServerVersion v) {
-		return current.value <= v.value;
 	}
 }

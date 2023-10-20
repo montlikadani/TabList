@@ -33,7 +33,7 @@ public final class TabListUser {
 		String entry = plugin.getServer().getOfflinePlayer(uniqueId).getName();
 
 		if (entry != null) {
-			initScore(entry);
+			playerScore = new PlayerScore(entry);
 		}
 	}
 
@@ -95,20 +95,8 @@ public final class TabListUser {
 
 		Player player = getPlayer();
 
-		initScore(player == null ? "" : player.getName());
+		playerScore = new PlayerScore(player == null ? "" : player.getName());
 		return playerScore;
-	}
-
-	private void initScore(String entry) {
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_18_1)) {
-			if (entry.length() > 40) {
-				entry = entry.substring(0, 40);
-			}
-		} else if (entry.length() > Short.MAX_VALUE) {
-			entry = entry.substring(0, Short.MAX_VALUE);
-		}
-
-		playerScore = new PlayerScore(entry);
 	}
 
 	public boolean isTabVisible() {

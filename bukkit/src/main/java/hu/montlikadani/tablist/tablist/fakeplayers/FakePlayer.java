@@ -7,7 +7,6 @@ import hu.montlikadani.tablist.Objects.ObjectTypes;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.utils.PlayerSkinProperties;
-import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.Util;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 import org.bukkit.Bukkit;
@@ -154,10 +153,6 @@ public final class FakePlayer implements IFakePlayer {
 	}
 
 	private void putTextureProperty(boolean debug) {
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_8_2)) {
-			return;
-		}
-
 		if (!Bukkit.getServer().getOnlineMode()) {
 			if (debug) {
 				Util.logConsole(java.util.logging.Level.WARNING, "Can't set skin for offline servers.");

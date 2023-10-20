@@ -8,16 +8,26 @@ import org.bukkit.entity.Player;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.user.TabListUser;
-import hu.montlikadani.tablist.utils.ServerVersion;
 
 public class PlayerList {
 
 	private transient final TabList plugin;
 	private transient final TabListUser user;
+	private transient final boolean isHideShowByPluginSupported;
 
 	public PlayerList(TabList plugin, TabListUser user) {
 		this.plugin = plugin;
 		this.user = user;
+
+		boolean hsSupported;
+		try {
+			Player.class.getDeclaredMethod("hidePlayer", org.bukkit.plugin.Plugin.class, Player.class);
+			hsSupported = true;
+		} catch (NoSuchMethodException ex) {
+			hsSupported = false;
+		}
+
+		isHideShowByPluginSupported = hsSupported;
 	}
 
 	public void hide() {
@@ -146,7 +156,7 @@ public class PlayerList {
 
 	@SuppressWarnings("deprecation")
 	private void hide(Player to, Player pls) {
-		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_1)) {
+		if (isHideShowByPluginSupported) {
 			to.hidePlayer(plugin, pls);
 		} else {
 			to.hidePlayer(pls);
@@ -155,7 +165,7 @@ public class PlayerList {
 
 	@SuppressWarnings("deprecation")
 	private void show(Player to, Player pls) {
-		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_12_1)) {
+		if (isHideShowByPluginSupported) {
 			to.showPlayer(plugin, pls);
 		} else {
 			to.showPlayer(pls);

@@ -25,8 +25,19 @@ public final class Variables {
 	private final java.util.List<LogicalNode> nodes = new java.util.ArrayList<>();
 	private final java.util.Set<Variable> variables = new java.util.HashSet<>(6);
 
+	private final boolean entityAttributeSupported;
+
 	public Variables(TabList plugin) {
 		this.plugin = plugin;
+
+		boolean att;
+		try {
+			org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH.name();
+			att = true;
+		} catch (Error err) {
+			att = false;
+		}
+		entityAttributeSupported = att;
 	}
 
 	public void load() {
@@ -124,9 +135,7 @@ public final class Variables {
 
 	public TabText replaceVariables(Player pl, TabText text) {
 		if (!text.getPlainText().isEmpty()) {
-			String str = replaceVariables(pl, text.getPlainText());
-
-			text.updateText(ServerVersion.isCurrentEqualOrLower(ServerVersion.v1_15_2) ? Util.applyTextFormat(str) : str);
+			text.updateText(replaceVariables(pl, text.getPlainText()));
 		}
 
 		return text;
@@ -293,14 +302,14 @@ public final class Variables {
 		text = Global.replace(text, "%player-health%", () -> Double.toString(player.getHealth()));
 
 		if (text.indexOf("%player-max-health%") != -1) {
-			if (ServerVersion.isCurrentLower(ServerVersion.v1_9_1)) {
-				text = text.replace("%player-max-health%", Double.toString(player.getMaxHealth()));
-			} else {
+			if (entityAttributeSupported) {
 				org.bukkit.attribute.AttributeInstance attr = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
 
 				if (attr != null) {
 					text = text.replace("%player-max-health%", Double.toString(attr.getDefaultValue()));
 				}
+			} else {
+				text = text.replace("%player-max-health%", Double.toString(player.getMaxHealth()));
 			}
 		}
 

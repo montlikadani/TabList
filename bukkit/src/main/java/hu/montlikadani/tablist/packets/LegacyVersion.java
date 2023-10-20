@@ -2,7 +2,6 @@ package hu.montlikadani.tablist.packets;
 
 import com.mojang.authlib.GameProfile;
 import hu.montlikadani.api.IPacketNM;
-import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.reflection.ClazzContainer;
 import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 import io.netty.channel.Channel;
@@ -215,65 +214,47 @@ public final class LegacyVersion implements IPacketNM {
         try {
             Object playerConnection = playerConnectionField.get(handle);
 
-            if (sendPacketMethod == null) {
-                sendPacketMethod = playerConnection.getClass().getDeclaredMethod(ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_18_1) ? "a" : "sendPacket",
-                        ClazzContainer.getPacket());
+            if (sendPacketMethod == null && (sendPacketMethod = ClazzContainer.methodByTypeAndName(playerConnection.getClass(), null,
+                        new Class[] { ClazzContainer.getPacket() }, "a", "sendPacket")) == null) {
+                return;
             }
 
             sendPacketMethod.invoke(playerConnection, packet);
-        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException ignored) {
+        } catch (InvocationTargetException | IllegalAccessException ignored) {
         }
     }
 
     @Override
     public Object fromJson(String json) {
         try {
-            return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), json);
-        } catch (IllegalAccessException | InvocationTargetException ex) {
+            if (jsonComponentMethod == null) {
+                Class<?>[] declaredClasses = ClazzContainer.getIChatBaseComponent().getDeclaredClasses();
+
+                if (declaredClasses.length != 0) {
+                    jsonComponentMethod = declaredClasses[0].getMethod("a", String.class);
+                }
+            }
+
+            if (jsonComponentMethod != null) {
+                return jsonComponentMethod.invoke(ClazzContainer.getIChatBaseComponent(), json);
+            }
+        } catch (ReflectiveOperationException ex) {
             try {
-                if (ServerVersion.isCurrentLower(ServerVersion.v1_8_2)) {
-                    return asChatSerializer(json);
+                if (chatSerializer == null) {
+                    chatSerializer = Class.forName("net.minecraft.server."
+                            + hu.montlikadani.tablist.utils.Util.legacyNmsVersion() + ".ChatSerializer");
                 }
 
-                return jsonComponentMethod().invoke(ClazzContainer.getIChatBaseComponent(), json);
-            } catch (IllegalAccessException | InvocationTargetException | ClassNotFoundException |
-                     NoSuchMethodException e) {
-                e.printStackTrace();
+                if (chatSerializerMethodA == null) {
+                    chatSerializerMethodA = chatSerializer.getMethod("a", String.class);
+                }
+
+                return ClazzContainer.getIChatBaseComponent().cast(chatSerializerMethodA.invoke(chatSerializer, json));
+            } catch (ReflectiveOperationException ignore) {
             }
         }
 
         return null;
-    }
-
-    private Method jsonComponentMethod() {
-        if (jsonComponentMethod != null) {
-            return jsonComponentMethod;
-        }
-
-        try {
-            Class<?>[] declaredClasses = ClazzContainer.getIChatBaseComponent().getDeclaredClasses();
-
-            if (declaredClasses.length != 0) {
-                return jsonComponentMethod = declaredClasses[0].getMethod("a", String.class);
-            }
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-
-        return jsonComponentMethod;
-    }
-
-    private Object asChatSerializer(String json) throws ClassNotFoundException, NoSuchMethodException,
-            IllegalAccessException, InvocationTargetException {
-        if (chatSerializer == null) {
-            chatSerializer = Class.forName("net.minecraft.server." + ServerVersion.nmsVersion() + ".ChatSerializer");
-        }
-
-        if (chatSerializerMethodA == null) {
-            chatSerializerMethodA = chatSerializer.getMethod("a", String.class);
-        }
-
-        return ClazzContainer.getIChatBaseComponent().cast(chatSerializerMethodA.invoke(chatSerializer, json));
     }
 
     @Override
@@ -281,27 +262,19 @@ public final class LegacyVersion implements IPacketNM {
         try {
             Object packet;
 
-            if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_1)) {
+            if (playerListHeaderFooterConstructor.getParameterCount() == 2) {
                 packet = playerListHeaderFooterConstructor.newInstance(header, footer);
             } else {
                 packet = playerListHeaderFooterConstructor.newInstance();
 
-                if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_2)) {
-                    if (headerField == null) {
-                        (headerField = packet.getClass().getDeclaredField("header")).setAccessible(true);
-                    }
+                if (headerField == null && (headerField = ClazzContainer.fieldByTypeOrName(packet.getClass(),
+                        ClazzContainer.getIChatBaseComponent(), "header", "a")) == null) {
+                    return;
+                }
 
-                    if (footerField == null) {
-                        (footerField = packet.getClass().getDeclaredField("footer")).setAccessible(true);
-                    }
-                } else {
-                    if (headerField == null) {
-                        (headerField = packet.getClass().getDeclaredField("a")).setAccessible(true);
-                    }
-
-                    if (footerField == null) {
-                        (footerField = packet.getClass().getDeclaredField("b")).setAccessible(true);
-                    }
+                if (footerField == null && (footerField = ClazzContainer.fieldByTypeOrName(packet.getClass(),
+                        ClazzContainer.getIChatBaseComponent(), "footer", "b")) == null) {
+                    return;
                 }
 
                 headerField.set(packet, header);
@@ -318,13 +291,14 @@ public final class LegacyVersion implements IPacketNM {
                 } catch (IllegalArgumentException e) {
                     try {
                         packet = playerListHeaderFooterConstructor.newInstance();
-                    } catch (IllegalArgumentException ex) {
+                    } catch (IllegalArgumentException ignore) {
                     }
                 }
 
                 if (packet != null) {
-                    if (footerField == null) {
-                        (footerField = packet.getClass().getDeclaredField("b")).setAccessible(true);
+                    if (footerField == null && (footerField = ClazzContainer.fieldByTypeOrName(packet.getClass(),
+                            ClazzContainer.getIChatBaseComponent(), "footer", "b")) == null) {
+                        return;
                     }
 
                     footerField.set(packet, footer);
@@ -347,34 +321,35 @@ public final class LegacyVersion implements IPacketNM {
 
             Object worldServer = getHandleWorldMethod.invoke(world);
 
-            if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_1)) {
+            try {
                 if (entityPlayerConstructor == null) {
-                    if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_19_1)) {
-                        entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer").getConstructor(minecraftServer, worldServer.getClass(),
-                                profile.getClass(), ClazzContainer.classByName("net.minecraft.world.entity.player", "ProfilePublicKey"));
-                    } else {
-                        entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer").getConstructor(minecraftServer, worldServer.getClass(),
-                                profile.getClass());
+                    try {
+                        entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer")
+                                .getConstructor(minecraftServer, worldServer.getClass(), profile.getClass(),
+                                        ClazzContainer.classByName("net.minecraft.world.entity.player", "ProfilePublicKey"));
+                    } catch (NoSuchMethodException ex) {
+                        entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer")
+                                .getConstructor(minecraftServer, worldServer.getClass(), profile.getClass());
                     }
                 }
 
                 return entityPlayerConstructor.newInstance(getServer(), worldServer, profile);
-            }
-
-            if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_14_1)) {
+            } catch (NoSuchMethodException | ClassNotFoundException | IllegalArgumentException ex) {
                 if (interactManagerConstructor == null) {
-                    interactManagerConstructor = interactManager.getConstructor(worldServer.getClass());
+                    try {
+                        interactManagerConstructor = interactManager.getConstructor(worldServer.getClass());
+                    } catch (NoSuchMethodException nos) {
+                        interactManagerConstructor = interactManager.getConstructors()[0];
+                    }
                 }
-            } else if (interactManagerConstructor == null) {
-                interactManagerConstructor = interactManager.getConstructors()[0];
-            }
 
-            if (entityPlayerConstructor == null) {
-                entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer").getConstructor(minecraftServer, worldServer.getClass(),
-                        profile.getClass(), interactManager);
-            }
+                if (entityPlayerConstructor == null) {
+                    entityPlayerConstructor = ClazzContainer.classByName("net.minecraft.server.level", "EntityPlayer")
+                            .getConstructor(minecraftServer, worldServer.getClass(), profile.getClass(), interactManager);
+                }
 
-            return entityPlayerConstructor.newInstance(getServer(), worldServer, profile, interactManagerConstructor.newInstance(worldServer));
+                return entityPlayerConstructor.newInstance(getServer(), worldServer, profile, interactManagerConstructor.newInstance(worldServer));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -413,8 +388,6 @@ public final class LegacyVersion implements IPacketNM {
     @Override
     public Object newPlayerInfoUpdatePacketAdd(Object... entityPlayers) {
         try {
-
-            // Weird reflection behaviour: this sometimes work and not
             try {
                 return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getAddPlayer(), toArray(entityPlayers));
             } catch (IllegalArgumentException ex) {
@@ -430,8 +403,6 @@ public final class LegacyVersion implements IPacketNM {
     @Override
     public Object updateLatency(Object entityPlayer) {
         try {
-
-            // Weird reflection behaviour: this sometimes work and not
             try {
                 return ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateLatency(), toArray(entityPlayer));
             } catch (IllegalArgumentException ex) {
@@ -496,21 +467,13 @@ public final class LegacyVersion implements IPacketNM {
         }
     }
 
-    private void setEntriesField(Object playerInfoPacket, List<Object> list) {
-        try {
-            ClazzContainer.getInfoList().set(playerInfoPacket, list);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-    }
-
     @SuppressWarnings("deprecation")
     @Override
     public void createBoardTeam(String teamName, Player player, boolean followNameTagVisibility) {
         Object newTeamPacket = null, scoreTeam = null;
 
         try {
-            if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_1)) {
+            if (ClazzContainer.getPacketPlayOutScoreboardTeamConstructor() == null) {
                 scoreTeam = ClazzContainer.getScoreboardTeamConstructor().newInstance(ClazzContainer.getScoreboardConstructor().newInstance(), teamName);
 
                 @SuppressWarnings("unchecked")
@@ -521,14 +484,17 @@ public final class LegacyVersion implements IPacketNM {
             } else {
                 newTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
 
-                Object teamNameComponent = ReflectionUtils.asComponent(teamName);
-
-                ClazzContainer.getPacketScoreboardTeamName().set(newTeamPacket, ServerVersion.isCurrentLower(ServerVersion.v1_17_1) ?
-                        teamName : teamNameComponent);
+                ClazzContainer.getPacketScoreboardTeamName().set(newTeamPacket, teamName);
                 ClazzContainer.getPacketScoreboardTeamMode().set(newTeamPacket, 0);
-                ClazzContainer.getScoreboardTeamDisplayName().set(newTeamPacket, ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_1)
-                        ? teamNameComponent : teamName);
                 ClazzContainer.getScoreboardTeamNames().set(newTeamPacket, Collections.singletonList(player.getName()));
+
+                Field displayName = ClazzContainer.getScoreboardTeamDisplayName();
+
+                if (displayName.getType() == String.class) {
+                    displayName.set(newTeamPacket, teamName);
+                } else {
+                    displayName.set(newTeamPacket, ReflectionUtils.asComponent(teamName));
+                }
             }
 
             if (followNameTagVisibility) {
@@ -624,16 +590,16 @@ public final class LegacyVersion implements IPacketNM {
                 Object playerTeamName = playerTeamName(team);
 
                 if (teamName.equals(playerTeamName)) {
-                    if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_17_1)) {
+                    try {
                         return ClazzContainer.scoreboardTeamPacketByAction(team, 1);
+                    } catch (Exception ex) {
+                        Object oldTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
+
+                        ClazzContainer.getPacketScoreboardTeamName().set(oldTeamPacket, playerTeamName);
+                        ClazzContainer.getPacketScoreboardTeamMode().set(oldTeamPacket, 1);
+
+                        return oldTeamPacket;
                     }
-
-                    Object oldTeamPacket = ClazzContainer.getPacketPlayOutScoreboardTeamConstructor().newInstance();
-
-                    ClazzContainer.getPacketScoreboardTeamName().set(oldTeamPacket, playerTeamName);
-                    ClazzContainer.getPacketScoreboardTeamMode().set(oldTeamPacket, 1);
-
-                    return oldTeamPacket;
                 }
             }
         } catch (Exception e) {
@@ -781,7 +747,7 @@ public final class LegacyVersion implements IPacketNM {
                     players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeSurvival(), component));
                 }
 
-                setEntriesField(updatePacket, players);
+                ClazzContainer.getInfoList().set(updatePacket, players);
                 sendPacket(player, updatePacket);
             }
         }

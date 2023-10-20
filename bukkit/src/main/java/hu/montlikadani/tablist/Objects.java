@@ -13,7 +13,6 @@ import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.fakeplayers.IFakePlayer;
 import hu.montlikadani.tablist.user.TabListUser;
-import hu.montlikadani.tablist.utils.ServerVersion;
 
 import java.util.Locale;
 
@@ -23,9 +22,22 @@ public final class Objects {
 
 	private TLScheduler scheduler;
 	private PluginPlaceholders customPlaceholder;
+	private java.util.regex.Matcher numberEscapeSequence;
+
+	private transient final boolean renderTypeSupported;
 
 	Objects(TabList plugin) {
 		this.plugin = plugin;
+
+		boolean rtSupported;
+		try {
+			Class.forName("org.bukkit.scoreboard.RenderType");
+			rtSupported = true;
+		} catch (ClassNotFoundException ex) {
+			rtSupported = false;
+		}
+
+		renderTypeSupported = rtSupported;
 	}
 
 	void load() {
@@ -84,7 +96,7 @@ public final class Objects {
 		tlsched.submitSync(() -> {
 			Objective objective;
 
-			if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_13_2)) {
+			if (renderTypeSupported) {
 				objective = plugin.getComplement().registerNewObjective(board, objectName, "health", objectName, RenderType.HEARTS);
 			} else {
 				objective = board.registerNewObjective(objectName, "health");
@@ -216,9 +228,13 @@ public final class Objects {
 		if (plugin.hasPapi()) {
 			String value = ConfigValues.getCustomObjectSetting();
 
+			if (numberEscapeSequence == null) {
+				numberEscapeSequence = java.util.regex.Pattern.compile("[^\\d]").matcher("");
+			}
+
 			try {
-				return Integer.parseInt(hu.montlikadani.tablist.utils.Util.NUMBER_ESCAPE_SEQUENCE
-						.reset(me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, value)).replaceAll(""));
+				return Integer.parseInt(numberEscapeSequence.reset(me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, value))
+						.replaceAll(""));
 			} catch (NumberFormatException e) {
 				hu.montlikadani.tablist.utils.Util.logConsole("Invalid custom objective with " + value + " value.");
 			}

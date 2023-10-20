@@ -8,7 +8,6 @@ import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.tablist.groups.impl.ReflectionHandled;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.PluginUtils;
-import hu.montlikadani.tablist.utils.ServerVersion;
 
 public final class GroupPlayer {
 
@@ -304,10 +303,6 @@ public final class GroupPlayer {
 		}
 
 		String full = tl.getPlaceholders().replaceVariables(player, tl.makeAnim(prefix + tabName + suffix));
-
-		if (ServerVersion.isCurrentLower(ServerVersion.v1_16_1)) {
-			full = hu.montlikadani.tablist.utils.Util.applyTextFormat(full);
-		}
 
 		if (fullName == null) {
 			fullName = TabText.parseFromText(full);

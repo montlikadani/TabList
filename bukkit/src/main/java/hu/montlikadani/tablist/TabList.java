@@ -62,7 +62,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		long load = System.currentTimeMillis();
 
 		if (ServerVersion.getCurrent() == null) {
-			Util.logConsole(Level.SEVERE, "Your server version does not supported " + ServerVersion.nmsVersion());
+			Util.logConsole(Level.SEVERE, "Your server version does not supported " + Util.legacyNmsVersion());
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
@@ -106,7 +106,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		beginDataCollection();
 
 		if (ConfigValues.isLogConsole()) {
-			Util.logConsole("v" + getDescription().getVersion() + " (" + (System.currentTimeMillis() - load) + "ms)");
+			Util.logConsole("v" + getDescription().getVersion() + " on " + ServerVersion.getCurrent().name()
+					+ " (" + (System.currentTimeMillis() - load) + "ms)");
 		}
 	}
 
@@ -177,8 +178,9 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		try {
 			Class.forName("net.kyori.adventure.text.Component");
 			Player.class.getDeclaredMethod("displayName");
+			Player.class.getDeclaredMethod("playerListName"); // Extra check
 
-			complement = ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_3) ? new Complement2() : new Complement1();
+			complement = new Complement2();
 		} catch (NoSuchMethodException | ClassNotFoundException e) {
 			complement = new Complement1();
 		}
@@ -233,7 +235,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 				packetClasses.add(Class.forName("net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam"));
 			} catch (ClassNotFoundException ex) {
 				try {
-					packetClasses.add(Class.forName("net.minecraft.server." + ServerVersion.nmsVersion() + ".PacketPlayOutScoreboardTeam"));
+					packetClasses.add(Class.forName("net.minecraft.server." + Util.legacyNmsVersion() + ".PacketPlayOutScoreboardTeam"));
 				} catch (ClassNotFoundException ignored) {
 				}
 			}
@@ -247,7 +249,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 					packetClasses.add(Class.forName("net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo"));
 				} catch (ClassNotFoundException ex) {
 					try {
-						packetClasses.add(Class.forName("net.minecraft.server." + ServerVersion.nmsVersion() + ".PacketPlayOutPlayerInfo"));
+						packetClasses.add(Class.forName("net.minecraft.server." + Util.legacyNmsVersion() + ".PacketPlayOutPlayerInfo"));
 					} catch (ClassNotFoundException ignored) {
 					}
 				}

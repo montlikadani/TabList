@@ -21,9 +21,6 @@ public final class JsonComponent {
 
 	private Object emptyJson;
 
-	protected JsonComponent() {
-	}
-
 	Object parseProperty(String text, List<TabText.JsonElementData> existingJson) {
 		if (text.isEmpty()) {
 			if (emptyJson == null) {
@@ -46,7 +43,7 @@ public final class JsonComponent {
 
 		for (int i = 0; i < length; i++) {
 
-			// Finds hex colours that may be coming from essentials (&x&f ..) and removes "&" character to match the correct hex colour
+			// Finds hex colours that may be coming from essentials (&x&f) and removes "&" character to match the correct hex colour
 			int count = i + 13; // = #§a§a§e§2§a§5
 			int j = i + 1;
 
@@ -63,8 +60,8 @@ public final class JsonComponent {
 
 			char charAt = text.charAt(i);
 
-			if (charAt == '[' && existingJson != null && index < existingJson.size() && text.charAt(i + 1) == '"' && text.charAt(i + 2) == '"' && text.charAt(i + 3) == ','
-					&& text.charAt(i + 4) == '{') {
+			if (charAt == '[' && existingJson != null && index < existingJson.size() && text.charAt(i + 1) == '"' && text.charAt(i + 2) == '"'
+					&& text.charAt(i + 3) == ',' && text.charAt(i + 4) == '{') {
 				if (builder.length() != 0) {
 					obj.addProperty("text", builder.toString());
 					jsonList.add(obj);

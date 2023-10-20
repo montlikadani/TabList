@@ -1,12 +1,16 @@
 package hu.montlikadani.v1_20_2;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelConfig;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelMetadata;
+import java.net.SocketAddress;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.chat.IChatBaseComponent;
+import net.minecraft.network.protocol.EnumProtocolDirection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoUpdatePacket;
@@ -17,7 +21,10 @@ import net.minecraft.network.protocol.game.PacketPlayOutScoreboardScore;
 import net.minecraft.network.protocol.game.PacketPlayOutScoreboardTeam;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.ScoreboardServer;
+import net.minecraft.server.level.ClientInformation;
 import net.minecraft.server.level.EntityPlayer;
+import net.minecraft.server.network.CommonListenerCookie;
+import net.minecraft.server.network.PlayerConnection;
 import net.minecraft.world.level.EnumGamemode;
 import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Scoreboard;
@@ -66,7 +73,7 @@ public final class v1_20_2 implements hu.montlikadani.api.IPacketNM {
         }
     }
 
-    private Channel playerChannel(net.minecraft.server.network.PlayerConnection connection) {
+    private Channel playerChannel(PlayerConnection connection) {
         if (playerNetworkManagerField == null && (playerNetworkManagerField = fieldByType(connection.getClass().getSuperclass(),
                 NetworkManager.class)) == null) {
             return null;
@@ -124,8 +131,13 @@ public final class v1_20_2 implements hu.montlikadani.api.IPacketNM {
     @Override
     public EntityPlayer getNewEntityPlayer(com.mojang.authlib.GameProfile profile) {
         MinecraftServer server = minecraftServer();
+        ClientInformation clientInfo = ClientInformation.a();
+        EntityPlayer entityPlayer = new EntityPlayer(server, server.D(), profile, clientInfo);
 
-        return new EntityPlayer(server, server.D(), profile, net.minecraft.server.level.ClientInformation.a());
+        entityPlayer.c = new EmptyPacketListener(server, new EmptyConnection(EnumProtocolDirection.b), entityPlayer,
+                new CommonListenerCookie(profile, 0, clientInfo));
+
+        return entityPlayer;
     }
 
     @Override
@@ -442,6 +454,162 @@ public final class v1_20_2 implements hu.montlikadani.api.IPacketNM {
         @Override
         public int hashCode() {
             return java.util.Objects.hash(playerName);
+        }
+    }
+
+    private static class EmptyPacketListener extends PlayerConnection {
+
+        public EmptyPacketListener(MinecraftServer minecraftserver, NetworkManager networkmanager, EntityPlayer entityplayer,
+                                   CommonListenerCookie commonlistenercookie) {
+            super(minecraftserver, networkmanager, entityplayer, commonlistenercookie);
+        }
+
+        @Override
+        public void h() {
+        }
+
+        @Override
+        public void b(Packet<?> packet) {
+        }
+    }
+
+    private static class EmptyConnection extends NetworkManager {
+
+        public EmptyConnection(EnumProtocolDirection enumprotocoldirection) {
+            super(enumprotocoldirection);
+
+            n = new EmptyChannel(null);
+            o = new SocketAddress() {
+            };
+        }
+
+        @Override
+        public void c() {
+        }
+
+        @Override
+        public boolean k() {
+            return true;
+        }
+
+        @Override
+        public void a(Packet packet) {
+        }
+
+        @Override
+        public void a(Packet packet, net.minecraft.network.PacketSendListener genericfuturelistener) {
+        }
+
+        @Override
+        public void a(Packet packet, net.minecraft.network.PacketSendListener genericfuturelistener, boolean flag) {
+        }
+
+        private Field packetListenerField, disconnectListenerField;
+
+        @Override
+        public void a(net.minecraft.network.PacketListener pl) {
+            if (packetListenerField == null) {
+                try {
+                    (packetListenerField = NetworkManager.class.getDeclaredField("q")).setAccessible(true);
+                } catch (NoSuchFieldException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            try {
+                packetListenerField.set(this, pl);
+            } catch (IllegalAccessException ex) {
+                ex.printStackTrace();
+            }
+
+            if (disconnectListenerField == null) {
+                try {
+                    (disconnectListenerField = NetworkManager.class.getDeclaredField("p")).setAccessible(true);
+                } catch (NoSuchFieldException ex) {
+                    ex.printStackTrace();
+                }
+            }
+
+            try {
+                disconnectListenerField.set(this, null);
+            } catch (IllegalAccessException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private static class EmptyChannel extends io.netty.channel.AbstractChannel {
+
+        private final ChannelConfig config = new io.netty.channel.DefaultChannelConfig(this);
+
+        protected EmptyChannel(Channel parent) {
+            super(parent);
+        }
+
+        @Override
+        protected AbstractUnsafe newUnsafe() {
+            return null;
+        }
+
+        @Override
+        protected boolean isCompatible(io.netty.channel.EventLoop loop) {
+            return false;
+        }
+
+        @Override
+        protected SocketAddress localAddress0() {
+            return null;
+        }
+
+        @Override
+        protected SocketAddress remoteAddress0() {
+            return null;
+        }
+
+        @Override
+        protected void doBind(SocketAddress localAddress) throws Exception {
+
+        }
+
+        @Override
+        protected void doDisconnect() throws Exception {
+
+        }
+
+        @Override
+        protected void doClose() throws Exception {
+
+        }
+
+        @Override
+        protected void doBeginRead() throws Exception {
+
+        }
+
+        @Override
+        protected void doWrite(io.netty.channel.ChannelOutboundBuffer in) throws Exception {
+
+        }
+
+        @Override
+        public ChannelConfig config() {
+            config.setAutoRead(true);
+            return config;
+        }
+
+        @Override
+        public boolean isOpen() {
+            return false;
+        }
+
+        @Override
+        public boolean isActive() {
+            return false;
+        }
+
+        @Override
+        public ChannelMetadata metadata() {
+            return new ChannelMetadata(true);
         }
     }
 }

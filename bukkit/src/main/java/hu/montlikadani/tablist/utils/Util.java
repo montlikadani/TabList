@@ -4,12 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
+import org.bukkit.Bukkit;
 
 public final class Util {
 
-	public static final java.util.regex.Matcher NUMBER_ESCAPE_SEQUENCE = java.util.regex.Pattern.compile("[^\\d]").matcher("");
-
 	private static final boolean MINIMESSAGE_SUPPORTED;
+
+	private static String legacyNmsVersion;
 
 	static {
 		boolean supported;
@@ -32,8 +33,13 @@ public final class Util {
 
 	public static void logConsole(Level level, String msg) {
 		if (hu.montlikadani.tablist.config.constantsLoader.ConfigValues.isLogConsole()) {
-			org.bukkit.Bukkit.getServer().getLogger().log(level, "[TabList] " + msg);
+			Bukkit.getServer().getLogger().log(level, "[TabList] " + msg);
 		}
+	}
+
+	public static String legacyNmsVersion() {
+		return legacyNmsVersion == null ? legacyNmsVersion = Bukkit.getServer().getClass().getPackage().getName()
+				.split("\\.", 4)[3] : legacyNmsVersion;
 	}
 
 	public static String applyTextFormat(String value) {

@@ -1,8 +1,6 @@
 package hu.montlikadani.tablist.utils.reflection;
 
-import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.TabText;
-import hu.montlikadani.tablist.utils.ServerVersion;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -12,13 +10,9 @@ public final class ReflectionUtils {
 
 	private static JsonComponent jsonComponent;
 
-	private static ReentrantLock LOCK;
+	private static final ReentrantLock LOCK = new ReentrantLock();
 
 	static {
-		if (ServerVersion.isCurrentEqualOrHigher(ServerVersion.v1_16_1)) {
-			LOCK = new ReentrantLock();
-		}
-
 		EMPTY_COMPONENT = asComponent("");
 	}
 
@@ -41,25 +35,22 @@ public final class ReflectionUtils {
 			return asComponent(text.getPlainText());
 		}
 
-		if (LOCK != null) {
+		// JsonComponent#parseProperty takes a bit longer time than expected and in some
+		// circumstances it can cause ThreadDeath (deadlock) due to long operation.
+		// With this lock now the current thread will be paused until the operation
+		// is working. So multiple thread can await for it to be done.
+		LOCK.lock();
 
-			// JsonComponent#parseProperty takes a bit longer time than expected and in some
-			// circumstances it can cause ThreadDeath (deadlock) due to long operation.
-			// With this lock now the current thread will be paused until the operation
-			// is working. So multiple thread can await for it to be done.
-			LOCK.lock();
-
-			Object component;
-			try {
-				component = getJsonComponent().parseProperty(text.getPlainText(), text.getJsonElements());
-			} finally {
-				LOCK.unlock();
-			}
-
-			return component;
+		Object component;
+		try {
+			component = getJsonComponent().parseProperty(text.getPlainText(), text.getJsonElements());
+		} finally {
+			LOCK.unlock();
 		}
 
-		StringBuilder result = new StringBuilder("[");
+		return component;
+
+		/*StringBuilder result = new StringBuilder("[");
 		int index = 0, jsonStartingIndex, beginIndex = 0;
 		String strJson = text.getJsonElements().get(0).plainJson;
 		String plainText = text.getPlainText();
@@ -83,23 +74,21 @@ public final class ReflectionUtils {
 
 		result.append(",{\"text\":\"").append(plainText.substring(jsonStartingIndex + strJson.length())).append("\"}]");
 
-		return PacketNM.NMS_PACKET.fromJson(result.toString());
+		return PacketNM.NMS_PACKET.fromJson(Util.applyTextFormat(result.toString()));*/
 	}
 
 	public static Object asComponent(final String text) {
-		if (LOCK != null) {
-			LOCK.lock();
+		LOCK.lock();
 
-			Object component;
-			try {
-				component = getJsonComponent().parseProperty(text, null);
-			} finally {
-				LOCK.unlock();
-			}
-
-			return component;
+		Object component;
+		try {
+			component = getJsonComponent().parseProperty(text, null);
+		} finally {
+			LOCK.unlock();
 		}
 
-		return PacketNM.NMS_PACKET.fromJson("{\"text\":\"" + text + "\"}");
+		return component;
+
+		//return PacketNM.NMS_PACKET.fromJson("{\"text\":\"" + Util.applyTextFormat(text) + "\"}");
 	}
 }
