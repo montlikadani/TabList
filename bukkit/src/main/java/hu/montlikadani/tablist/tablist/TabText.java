@@ -18,7 +18,7 @@ public final class TabText {
 	public static final TabText EMPTY = new TabText();
 
 	// This holds both the original and the updated text in separated instances
-	protected String plainText = "";
+	String plainText = "";
 
 	private List<JsonElementData> jsonElements = new ArrayList<>();
 

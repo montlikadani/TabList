@@ -185,28 +185,24 @@ public class TabHandler {
 				fo = footer[footer.length == 1 ? 0 : random.nextInt(footer.length)];
 		}
 
-		if (tabEmpty) {
-			tabEmpty = false;
-		}
+		Object head = ReflectionUtils.EMPTY_COMPONENT;
+		Object foot = ReflectionUtils.EMPTY_COMPONENT;
 
 		if (he != null) {
 			TabText tt = new TabText(he);
+
 			tt.plainText = plugin.makeAnim(tt.plainText);
-			he = tt;
-		} else {
-			he = TabText.EMPTY;
+			head = plugin.getPlaceholders().replaceVariables(player, tt).toComponent();
+			tabEmpty = false;
 		}
 
 		if (fo != null) {
 			TabText tt = new TabText(fo);
-			tt.plainText = plugin.makeAnim(tt.plainText);
-			fo = tt;
-		} else {
-			fo = TabText.EMPTY;
-		}
 
-		Object head = he == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : plugin.getPlaceholders().replaceVariables(player, he).toComponent();
-		Object foot = fo == TabText.EMPTY ? ReflectionUtils.EMPTY_COMPONENT : plugin.getPlaceholders().replaceVariables(player, fo).toComponent();
+			tt.plainText = plugin.makeAnim(tt.plainText);
+			foot = plugin.getPlaceholders().replaceVariables(player, tt).toComponent();
+			tabEmpty = false;
+		}
 
 		PacketNM.NMS_PACKET.sendTabTitle(player, head, foot);
 	}
