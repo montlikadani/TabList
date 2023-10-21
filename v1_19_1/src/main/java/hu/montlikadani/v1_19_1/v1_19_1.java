@@ -302,17 +302,16 @@ public final class v1_19_1 implements IPacketNM {
                 return;
             }
 
-            PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.c, Collections.emptyList());
-            List<PacketPlayOutPlayerInfo.PlayerInfoData> players = new ArrayList<>();
-
             for (PacketPlayOutPlayerInfo.PlayerInfoData entry : playerInfoPacket.b()) {
                 if (entry.c() == EnumGamemode.d && !entry.a().getId().equals(listenerPlayerId)) {
-                    players.add(new PacketPlayOutPlayerInfo.PlayerInfoData(entry.a(), entry.b(), EnumGamemode.a, entry.d(), entry.e()));
+                    PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo
+                            .EnumPlayerInfoAction.c, Collections.emptyList());
+
+                    setEntriesField(updatePacket, Collections.singletonList(new PacketPlayOutPlayerInfo.PlayerInfoData
+                            (entry.a(), entry.b(), EnumGamemode.a, entry.d(), entry.e())));
+                    sendPacket(player, updatePacket);
                 }
             }
-
-            setEntriesField(updatePacket, players);
-            sendPacket(player, updatePacket);
         }
 
         private void scoreboardTeamPacket(PacketPlayOutScoreboardTeam packetScoreboardTeam) {

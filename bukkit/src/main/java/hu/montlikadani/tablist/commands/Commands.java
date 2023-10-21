@@ -21,10 +21,12 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 	private final TabList plugin;
 
-	private final Set<ICommand> commands = new HashSet<>(5);
+	private final ICommand[] commands = new ICommand[5];
 
 	public Commands(TabList plugin) {
 		this.plugin = plugin;
+
+		int i = 0;
 
 		for (String s : new String[] { "reload", "fakeplayers", "player", "group", "toggle" }) {
 			try {
@@ -37,7 +39,8 @@ public final class Commands implements CommandExecutor, TabCompleter {
 					continue;
 				}
 
-				commands.add((ICommand) clazz.getDeclaredConstructor().newInstance());
+				commands[i] = (ICommand) clazz.getDeclaredConstructor().newInstance();
+				i++;
 			} catch (ReflectiveOperationException e) {
 				e.printStackTrace();
 			}
@@ -98,7 +101,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		List<String> cmds = new ArrayList<>(this.commands.size());
+		List<String> cmds = new ArrayList<>(this.commands.length);
 
 		switch (args.length) {
 		case 1:
@@ -136,7 +139,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 	}
 
 	private Set<String> availableSubCommands(CommandSender sender) {
-		Set<String> set = new HashSet<>(commands.size());
+		Set<String> set = new HashSet<>(commands.length);
 		boolean isPlayer = sender instanceof Player;
 
 		for (ICommand cmd : commands) {

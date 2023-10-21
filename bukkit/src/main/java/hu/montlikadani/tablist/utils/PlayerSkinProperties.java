@@ -7,11 +7,25 @@ import java.util.concurrent.CompletableFuture;
 
 public final class PlayerSkinProperties {
 
-    public static final java.util.Set<PlayerSkinProperties> CACHED = new java.util.HashSet<>();
+    private static final java.util.Set<PlayerSkinProperties> CACHED = new java.util.HashSet<>();
     public static final int MAX_REQUESTS = 100;
 
     public final UUID playerId;
     public String playerName, textureRawValue, decodedTextureValue;
+
+    public static PlayerSkinProperties findPlayerProperty(String playerName, UUID playerId) {
+        for (PlayerSkinProperties one : CACHED) {
+            if ((playerId != null && playerId.equals(one.playerId)) || (playerName != null && playerName.equals(one.playerName))) {
+                return one;
+            }
+        }
+
+        return null;
+    }
+
+    public static int cachedSize() {
+        return CACHED.size();
+    }
 
     public PlayerSkinProperties(String playerName, UUID playerId) {
         this(playerName, playerId, null, null);

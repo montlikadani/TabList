@@ -366,18 +366,16 @@ public final class v1_20_2 implements hu.montlikadani.api.IPacketNM {
                 return;
             }
 
-            ClientboundPlayerInfoUpdatePacket updatePacket = new ClientboundPlayerInfoUpdatePacket(EnumSet.of(ClientboundPlayerInfoUpdatePacket.a.c),
-                    Collections.emptyList());
-            List<ClientboundPlayerInfoUpdatePacket.b> players = new ArrayList<>();
-
             for (ClientboundPlayerInfoUpdatePacket.b entry : playerInfoPacket.d()) {
                 if (entry.e() == EnumGamemode.d && !entry.a().equals(listenerPlayerId)) {
-                    players.add(new ClientboundPlayerInfoUpdatePacket.b(entry.a(), entry.b(), entry.c(), entry.d(), EnumGamemode.a, entry.f(), entry.g()));
+                    ClientboundPlayerInfoUpdatePacket updatePacket = new ClientboundPlayerInfoUpdatePacket(
+                            EnumSet.of(ClientboundPlayerInfoUpdatePacket.a.c), Collections.emptyList());
+
+                    setEntriesField(updatePacket, Collections.singletonList(new ClientboundPlayerInfoUpdatePacket.b(
+                            entry.a(), entry.b(), entry.c(), entry.d(), EnumGamemode.a, entry.f(), entry.g())));
+                    sendPacket(player, updatePacket);
                 }
             }
-
-            setEntriesField(updatePacket, players);
-            sendPacket(player, updatePacket);
         }
 
         private void scoreboardTeamPacket(PacketPlayOutScoreboardTeam packetScoreboardTeam) {

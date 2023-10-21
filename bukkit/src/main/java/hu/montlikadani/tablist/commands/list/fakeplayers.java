@@ -152,7 +152,7 @@ public final class fakeplayers implements ICommand {
 				java.util.Optional<UUID> optional = Util.tryParseId(nameOrId);
 
 				if (optional.isPresent()) {
-					PlayerSkinProperties skinProperties = cachedPlayerProperty(null, optional.get());
+					PlayerSkinProperties skinProperties = PlayerSkinProperties.findPlayerProperty(null, optional.get());
 
 					if (skinProperties == null) {
 						skinProperties = new PlayerSkinProperties(null, optional.get());
@@ -180,7 +180,7 @@ public final class fakeplayers implements ICommand {
 						}
 
 						// The max request limitation is only for url-based requests
-						if (skinProperties == null && PlayerSkinProperties.CACHED.size() > PlayerSkinProperties.MAX_REQUESTS) {
+						if (skinProperties == null && PlayerSkinProperties.cachedSize() > PlayerSkinProperties.MAX_REQUESTS) {
 							plugin.getComplement().sendMessage(sender, "You've reached the maximum requests, you can not make any more requests.");
 							return;
 						}
@@ -241,7 +241,7 @@ public final class fakeplayers implements ICommand {
 	}
 
 	private CompletableFuture<PlayerSkinProperties> fetchPlayerProfile(String playerName) {
-		PlayerSkinProperties prop = cachedPlayerProperty(playerName, null);
+		PlayerSkinProperties prop = PlayerSkinProperties.findPlayerProperty(playerName, null);
 
 		if (prop != null) {
 			CompletableFuture<PlayerSkinProperties> future = new CompletableFuture<>();
@@ -263,15 +263,5 @@ public final class fakeplayers implements ICommand {
 		}
 
 		return hu.montlikadani.tablist.utils.datafetcher.URLDataFetcher.fetchProfile(playerName);
-	}
-
-	private PlayerSkinProperties cachedPlayerProperty(String playerName, UUID playerId) {
-		for (PlayerSkinProperties one : PlayerSkinProperties.CACHED) {
-			if ((playerId != null && playerId.equals(one.playerId)) || (playerName != null && playerName.equals(one.playerName))) {
-				return one;
-			}
-		}
-
-		return null;
 	}
 }

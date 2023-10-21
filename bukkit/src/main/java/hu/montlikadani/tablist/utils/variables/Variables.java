@@ -14,7 +14,6 @@ import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.api.TabListAPI;
 import hu.montlikadani.tablist.utils.PluginUtils;
-import hu.montlikadani.tablist.utils.ServerVersion;
 import hu.montlikadani.tablist.utils.Util;
 import hu.montlikadani.tablist.utils.operators.OverriddenOperatorNodes;
 

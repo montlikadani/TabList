@@ -5,7 +5,6 @@ import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.tablist.TabHandler;
 import hu.montlikadani.tablist.tablist.groups.GroupPlayer;
 import hu.montlikadani.tablist.tablist.playerlist.PlayerList;
-import hu.montlikadani.tablist.utils.ServerVersion;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;

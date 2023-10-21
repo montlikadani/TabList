@@ -724,9 +724,6 @@ public final class LegacyVersion implements IPacketNM {
                 return;
             }
 
-            Object updatePacket = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(ClazzContainer.getUpdateLatency(), new Object[0]);
-            List<Object> players = new ArrayList<>();
-
             for (Object entry : (List<Object>) ClazzContainer.getInfoList().get(msg)) {
                 if (ClazzContainer.getPlayerInfoDataGameMode().get(entry) != ClazzContainer.getGameModeSpectator()) {
                     continue;
@@ -738,13 +735,18 @@ public final class LegacyVersion implements IPacketNM {
                     continue;
                 }
 
+                Object updatePacket = ClazzContainer.getPlayOutPlayerInfoConstructor().newInstance(
+                        ClazzContainer.getUpdateLatency(), new Object[0]);
+                List<Object> players = new ArrayList<>();
                 int ping = ClazzContainer.getPlayerInfoDataPing().getInt(entry);
                 Object component = ClazzContainer.getPlayerInfoDisplayName().get(entry);
 
                 if (ClazzContainer.getPlayerInfoDataConstructor().getParameterCount() == 5) {
-                    players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(msg, profile, ping, ClazzContainer.getGameModeSurvival(), component));
+                    players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(msg, profile, ping,
+                            ClazzContainer.getGameModeSurvival(), component));
                 } else {
-                    players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping, ClazzContainer.getGameModeSurvival(), component));
+                    players.add(ClazzContainer.getPlayerInfoDataConstructor().newInstance(profile, ping,
+                            ClazzContainer.getGameModeSurvival(), component));
                 }
 
                 ClazzContainer.getInfoList().set(updatePacket, players);

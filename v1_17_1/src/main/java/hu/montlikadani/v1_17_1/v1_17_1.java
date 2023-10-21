@@ -298,17 +298,16 @@ public final class v1_17_1 implements hu.montlikadani.api.IPacketNM {
                 return;
             }
 
-            PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.c, Collections.emptyList());
-            List<PacketPlayOutPlayerInfo.PlayerInfoData> players = new ArrayList<>();
-
             for (PacketPlayOutPlayerInfo.PlayerInfoData entry : playerInfoPacket.b()) {
                 if (entry.c() == EnumGamemode.d && !entry.a().getId().equals(listenerPlayerId)) {
-                    players.add(new PacketPlayOutPlayerInfo.PlayerInfoData(entry.a(), entry.b(), EnumGamemode.a, entry.d()));
+                    PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo
+                            .EnumPlayerInfoAction.c, Collections.emptyList());
+
+                    setEntriesField(updatePacket, Collections.singletonList(new PacketPlayOutPlayerInfo.PlayerInfoData
+                            (entry.a(), entry.b(), EnumGamemode.a, entry.d())));
+                    sendPacket(player, updatePacket);
                 }
             }
-
-            setEntriesField(updatePacket, players);
-            sendPacket(player, updatePacket);
         }
 
         // Temporal and disgusting solution to fix players name tag overwriting

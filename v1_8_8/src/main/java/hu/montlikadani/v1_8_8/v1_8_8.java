@@ -381,18 +381,16 @@ public final class v1_8_8 implements IPacketNM {
 				return;
 			}
 
-			PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.UPDATE_GAME_MODE,
-					Collections.emptyList());
-			List<PacketPlayOutPlayerInfo.PlayerInfoData> players = new ArrayList<>();
-
 			for (PacketPlayOutPlayerInfo.PlayerInfoData infoData : (List<PacketPlayOutPlayerInfo.PlayerInfoData>) infoList.get(playerInfoPacket)) {
 				if (infoData.c() == EnumGamemode.SPECTATOR && !infoData.a().getId().equals(listenerPlayerId)) {
-					players.add(playerInfoPacket.new PlayerInfoData(infoData.a(), infoData.b(), EnumGamemode.SURVIVAL, infoData.d()));
+					PacketPlayOutPlayerInfo updatePacket = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo
+							.EnumPlayerInfoAction.UPDATE_GAME_MODE, Collections.emptyList());
+
+					setEntriesField(updatePacket, Collections.singletonList(playerInfoPacket.new PlayerInfoData
+							(infoData.a(), infoData.b(), EnumGamemode.SURVIVAL, infoData.d())));
+					sendPacket(player, updatePacket);
 				}
 			}
-
-			setEntriesField(updatePacket, players);
-			sendPacket(player, updatePacket);
 		}
 
 		// Temporal and disgusting solution to fix players name tag overwriting
