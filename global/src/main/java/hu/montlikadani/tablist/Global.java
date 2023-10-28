@@ -31,10 +31,6 @@ public final class Global {
 		return s;
 	}
 
-	public static boolean isValidColourCharacter(char ch) {
-		return ((ch >= 'a' && ch <= 'f') || (ch == 'k' || ch == 'l' || ch == 'm' || ch == 'n' || ch == 'o' || ch == 'r')) || Character.isDigit(ch);
-	}
-
 	public static void replace(StringBuilder builder, String search, Supplier<String> replacement) {
 		int index = builder.indexOf(search);
 

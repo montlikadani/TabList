@@ -1,29 +1,18 @@
 package hu.montlikadani.tablist.tablist.text;
 
-import java.util.ArrayList;
-
-import com.google.gson.JsonObject;
-
-import hu.montlikadani.tablist.Global;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public final class LegacyTextConverter {
 
-	public static final String EMPTY_JSON = "[\"\",{\"text\":\"\"}]";
+	public static final BaseComponent EMPTY_JSON = TextComponent.fromLegacy("[\"\",{\"text\":\"\"}]");
 
-	private static final com.google.gson.Gson GSON = new com.google.gson.GsonBuilder().disableHtmlEscaping().create();
-
-	private static final ArrayList<JsonObject> JSON_OBJECTS = new ArrayList<>(5);
-	private static final ArrayList<BaseComponent> COMPONENTS = new ArrayList<>(10);
-
-	public static synchronized BaseComponent[] toBaseComponent(String legacyText) {
-		COMPONENTS.clear();
-		COMPONENTS.trimToSize();
-
-		StringBuilder builder = new StringBuilder();
-		TextComponent component = new TextComponent();
+	public static synchronized BaseComponent toBaseComponent(String legacyText) {
+		ComponentBuilder componentBuilder = new ComponentBuilder();
+		StringBuilder stringBuilder = new StringBuilder();
+		TextComponent textComponent = new TextComponent();
 		int length = legacyText.length();
 
 		for (int i = 0; i < length; i++) {
@@ -32,42 +21,42 @@ public final class LegacyTextConverter {
 			if (c == '&') {
 				char nextChar = legacyText.charAt(i + 1);
 
-				if (Global.isValidColourCharacter(nextChar)) {
-					if (builder.length() != 0) {
-						TextComponent old = component;
-						component = new TextComponent(old);
+				if (isValidColourCharacter(nextChar)) {
+					if (stringBuilder.length() != 0) {
+						TextComponent old = textComponent;
+						textComponent = new TextComponent(old);
 
-						old.setText(builder.toString());
-						builder = new StringBuilder();
-						COMPONENTS.add(old);
+						old.setText(stringBuilder.toString());
+						stringBuilder = new StringBuilder();
+						componentBuilder.append(old);
 					}
 
 					switch (nextChar) {
 					case 'k':
-						component.setObfuscated(true);
+						textComponent.setObfuscated(true);
 						break;
 					case 'o':
-						component.setItalic(true);
+						textComponent.setItalic(true);
 						break;
 					case 'n':
-						component.setUnderlined(true);
+						textComponent.setUnderlined(true);
 						break;
 					case 'm':
-						component.setStrikethrough(true);
+						textComponent.setStrikethrough(true);
 						break;
 					case 'l':
-						component.setBold(true);
+						textComponent.setBold(true);
 						break;
 					case 'r':
-						component = new TextComponent();
-						component.setColor(ChatColor.WHITE);
+						textComponent = new TextComponent();
+						textComponent.setColor(ChatColor.WHITE);
 						break;
 					default:
 						ChatColor color = ChatColor.getByChar(nextChar);
 
 						if (color != null) {
-							component = new TextComponent();
-							component.setColor(color);
+							textComponent = new TextComponent();
+							textComponent.setColor(color);
 						}
 
 						break;
@@ -75,129 +64,45 @@ public final class LegacyTextConverter {
 
 					i++;
 				} else {
-					builder.append(c);
+					stringBuilder.append(c);
 				}
 			} else if (c == '#') {
 				int from = i + 1;
 				int end = i + 7;
 
-				if (!isHexaColour(from, end, length, legacyText)) {
+				if (!isHexColour(from, end, length, legacyText)) {
 
 					// Temporary solution to do not display # character
 					if (from < length && legacyText.charAt(from) != '&') {
-						builder.append(c);
+						stringBuilder.append(c);
 					}
 				} else {
-					if (builder.length() != 0) {
-						component.setText(builder.toString());
-						builder = new StringBuilder();
-						COMPONENTS.add(component);
+					if (stringBuilder.length() != 0) {
+						textComponent.setText(stringBuilder.toString());
+						stringBuilder = new StringBuilder();
+						componentBuilder.append(textComponent);
 					}
 
-					component = new TextComponent();
-					component.setColor(ChatColor.of(legacyText.substring(i, end)));
+					textComponent = new TextComponent();
+					textComponent.setColor(ChatColor.of(legacyText.substring(i, end)));
 					i += 6; // Increase loop to skip the next 6 hex digit
 				}
 			} else {
-				builder.append(c);
+				stringBuilder.append(c);
 			}
 		}
 
-		component.setText(builder.toString());
-		COMPONENTS.add(component);
+		textComponent.setText(stringBuilder.toString());
+		componentBuilder.append(textComponent);
 
-		return COMPONENTS.toArray(new BaseComponent[0]);
+		return componentBuilder.build();
 	}
 
-	public static synchronized String toJson(String text) {
-		JSON_OBJECTS.clear();
-		JSON_OBJECTS.trimToSize();
-
-		JsonObject object = new JsonObject();
-		StringBuilder builder = new StringBuilder();
-
-		int length = text.length();
-
-		for (int i = 0; i < length; i++) {
-			char charAt = text.charAt(i);
-
-			if (charAt == '&') {
-				char nextChar = text.charAt(i + 1);
-
-				if (Global.isValidColourCharacter(nextChar)) {
-					if (builder.length() != 0) {
-						object.addProperty("text", builder.toString());
-						JSON_OBJECTS.add(object);
-
-						object = new JsonObject();
-						builder = new StringBuilder();
-					}
-
-					switch (nextChar) {
-					case 'k':
-						object.addProperty("obfuscated", true);
-						break;
-					case 'o':
-						object.addProperty("italic", true);
-						break;
-					case 'n':
-						object.addProperty("underlined", true);
-						break;
-					case 'm':
-						object.addProperty("strikethrough", true);
-						break;
-					case 'l':
-						object.addProperty("bold", true);
-						break;
-					default:
-						if (nextChar == 'r' || nextChar == 'f') {
-							break;
-						}
-
-						ChatColor colorChar = ChatColor.getByChar(nextChar);
-
-						if (colorChar != null) {
-							object.addProperty("color", colorChar.getName());
-						}
-
-						break;
-					}
-
-					i++;
-				} else {
-					builder.append(charAt);
-				}
-			} else if (charAt == '#') {
-				int from = i + 1;
-				int end = i + 7;
-
-				if (!isHexaColour(from, end, length, text)) {
-					if (from < length && text.charAt(from) != '&') {
-						builder.append(charAt);
-					}
-				} else {
-					if (builder.length() != 0) {
-						object.addProperty("text", builder.toString());
-						JSON_OBJECTS.add(object);
-						builder = new StringBuilder();
-					}
-
-					object = new JsonObject();
-					object.addProperty("color", text.substring(i, end));
-					i += 6;
-				}
-			} else {
-				builder.append(charAt);
-			}
-		}
-
-		object.addProperty("text", builder.toString());
-		JSON_OBJECTS.add(object);
-
-		return "[\"\"," + Global.replaceFrom(GSON.toJson(JSON_OBJECTS), 0, "[", "", 1);
+	private static boolean isValidColourCharacter(char ch) {
+		return ((ch >= 'a' && ch <= 'f') || (ch == 'k' || ch == 'l' || ch == 'm' || ch == 'n' || ch == 'o' || ch == 'r')) || Character.isDigit(ch);
 	}
 
-	private static boolean isHexaColour(int start, int endIndex, int maxLength, String text) {
+	private static boolean isHexColour(int start, int endIndex, int maxLength, String text) {
 		for (int b = start; b < endIndex; b++) {
 			if (b >= maxLength || !Character.isLetterOrDigit(text.charAt(b))) {
 				return false;

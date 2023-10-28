@@ -108,14 +108,14 @@ animations:
   perPlayer:
     interval: 250
     texts:
-    - "&aWelcome&6 %player%\n<lines>"
-    - "&aWelcome&7 %player%\n<lines>"
-    - "&aWelcome&c %player%\n<lines>"
-    - "&aWelcome&f %player%\n<lines>"
-    - "&aWelcome&e %player%\n<lines>"
-    - "&aWelcome&a %player%\n<lines>"
-    - "&aWelcome&5 %player%\n<lines>"
-    - "&aWelcome&b %player%\n<lines>"
+    - "&aWelcome&6 %player%\n&7-------"
+    - "&aWelcome&7 %player%\n&7-------"
+    - "&aWelcome&c %player%\n&7-------"
+    - "&aWelcome&f %player%\n&7-------"
+    - "&aWelcome&e %player%\n&7-------"
+    - "&aWelcome&a %player%\n&7-------"
+    - "&aWelcome&5 %player%\n&7-------"
+    - "&aWelcome&b %player%\n&7-------"
 
   perGroupHead:
     interval: 200

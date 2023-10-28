@@ -8,6 +8,7 @@ import hu.montlikadani.tablist.Misc;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.ConfigConstants;
 import hu.montlikadani.tablist.tablist.text.LegacyTextConverter;
+import java.util.concurrent.atomic.AtomicInteger;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.config.Configuration;
@@ -17,7 +18,8 @@ public class PlayerTab {
 	private final TabList plugin;
 	public final UUID playerId;
 
-	private int i = 0, i2 = 0;
+	private final AtomicInteger headerIndex = new AtomicInteger();
+	private final AtomicInteger footerIndex = new AtomicInteger();
 
 	private String[] header, footer;
 
@@ -28,54 +30,6 @@ public class PlayerTab {
 
 	public ProxiedPlayer getPlayer() {
 		return plugin.getProxy().getPlayer(playerId);
-	}
-
-	private BaseComponent[] getNextHeader(ProxiedPlayer source) {
-		if (header == null || header.length == 0) {
-			return Misc.EMPTY_COMPONENT_ARRAY;
-		}
-
-		if (i >= header.length) {
-			i = 0;
-		}
-
-		String head = header[i];
-
-		if (head.isEmpty()) {
-			return Misc.EMPTY_COMPONENT_ARRAY;
-		}
-
-		if (i < header.length - 1) {
-			i++;
-		} else {
-			i = 0;
-		}
-
-		return LegacyTextConverter.toBaseComponent(Misc.replaceVariables(head, source));
-	}
-
-	private BaseComponent[] getNextFooter(ProxiedPlayer source) {
-		if (footer == null || footer.length == 0) {
-			return Misc.EMPTY_COMPONENT_ARRAY;
-		}
-
-		if (i2 >= footer.length) {
-			i2 = 0;
-		}
-
-		String foot = footer[i2];
-
-		if (foot.isEmpty()) {
-			return Misc.EMPTY_COMPONENT_ARRAY;
-		}
-
-		if (i2 < footer.length - 1) {
-			i2++;
-		} else {
-			i2 = 0;
-		}
-
-		return LegacyTextConverter.toBaseComponent(Misc.replaceVariables(foot, source));
 	}
 
 	public void clearTab() {
@@ -110,23 +64,27 @@ public class PlayerTab {
 		clearTab();
 
 		final ProxiedPlayer player = getPlayer();
-		final String pName = player.getName();
-		final String server = player.getServer() != null ? player.getServer().getInfo().getName() : "";
+		final String playerName = player.getName();
+		final String serverName = player.getServer() != null ? player.getServer().getInfo().getName() : "";
 
-		for (java.util.Map.Entry<String, ConfigConstants.TabSetting> one : ConfigConstants.TAB_SETTINGS.entrySet()) {
-			for (String split : one.getValue().names) {
-				if (server.equalsIgnoreCase(split)) {
+		if (!serverName.isEmpty()) {
+			for (java.util.Map.Entry<String, ConfigConstants.TabSetting> map : ConfigConstants.TAB_SETTINGS.entrySet()) {
+				for (String one : map.getValue().names) {
+					if (!serverName.equalsIgnoreCase(one)) {
+						continue;
+					}
+
 					header = fill(header, ConfigConstants.getPerServerSection()
-							.getStringList(one.getKey() + ".per-player." + pName + ".header"));
+							.getStringList(map.getKey() + ".per-player." + playerName + ".header"));
 
 					if (header == null)
-						header = fill(null, one.getValue().header);
+						header = fill(null, map.getValue().header);
 
 					footer = fill(footer, ConfigConstants.getPerServerSection()
-							.getStringList(one.getKey() + ".per-player." + pName + ".footer"));
+							.getStringList(map.getKey() + ".per-player." + playerName + ".footer"));
 
 					if (footer == null)
-						footer = fill(null, one.getValue().footer);
+						footer = fill(null, map.getValue().footer);
 
 					break;
 				}
@@ -134,8 +92,8 @@ public class PlayerTab {
 		}
 
 		for (ConfigConstants.TabSetting setting : ConfigConstants.TAB_SETTINGS.values()) {
-			for (String split : setting.names) {
-				if (pName.equalsIgnoreCase(split)) {
+			for (String one : setting.names) {
+				if (playerName.equalsIgnoreCase(one)) {
 					header = fill(header, setting.header);
 					footer = fill(footer, setting.footer);
 					break;
@@ -143,32 +101,28 @@ public class PlayerTab {
 			}
 		}
 
-		if (header != null && footer != null) {
-			return;
-		}
-
 		final Configuration conf = plugin.getConf();
 
 		if (header == null)
-			header = fill(null, conf.getStringList("tablist.per-server." + server + ".per-player." + pName + ".header"));
+			header = fill(null, conf.getStringList("tablist.per-server." + serverName + ".per-player." + playerName + ".header"));
 
 		if (header == null)
-			header = fill(null, conf.getStringList("tablist.per-server." + server + ".header"));
+			header = fill(null, conf.getStringList("tablist.per-server." + serverName + ".header"));
 
 		if (header == null)
-			header = fill(null, conf.getStringList("tablist.per-player." + pName + ".header"));
+			header = fill(null, conf.getStringList("tablist.per-player." + playerName + ".header"));
 
 		if (header == null)
 			header = fill(null, ConfigConstants.getDefaultHeader());
 
 		if (footer == null)
-			footer = fill(null, conf.getStringList("tablist.per-server." + server + ".per-player." + pName + ".footer"));
+			footer = fill(null, conf.getStringList("tablist.per-server." + serverName + ".per-player." + playerName + ".footer"));
 
 		if (footer == null)
-			footer = fill(null, conf.getStringList("tablist.per-server." + server + ".footer"));
+			footer = fill(null, conf.getStringList("tablist.per-server." + serverName + ".footer"));
 
 		if (footer == null)
-			footer = fill(null, conf.getStringList("tablist.per-player." + pName + ".footer"));
+			footer = fill(null, conf.getStringList("tablist.per-player." + playerName + ".footer"));
 
 		if (footer == null)
 			footer = fill(null, ConfigConstants.getDefaultFooter());
@@ -207,7 +161,31 @@ public class PlayerTab {
 		if (playerServer != null && ConfigConstants.getDisabledServers().contains(playerServer.getInfo().getName())) {
 			player.resetTabHeader();
 		} else {
-			player.setTabHeader(getNextHeader(player), getNextFooter(player));
+			player.setTabHeader(next(player, header, headerIndex), next(player, footer, footerIndex));
 		}
+	}
+
+	private BaseComponent next(ProxiedPlayer source, String[] arr, AtomicInteger index) {
+		if (arr == null || arr.length == 0) {
+			return Misc.EMPTY_COMPONENT;
+		}
+
+		if (index.get() >= arr.length) {
+			index.set(0);
+		}
+
+		String foot = arr[index.get()];
+
+		if (foot.isEmpty()) {
+			return Misc.EMPTY_COMPONENT;
+		}
+
+		if (index.get() < arr.length - 1) {
+			index.incrementAndGet();
+		} else {
+			index.set(0);
+		}
+
+		return LegacyTextConverter.toBaseComponent(Misc.replaceVariables(foot, source));
 	}
 }

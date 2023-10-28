@@ -81,31 +81,31 @@ tablist:
   refresh-interval: 180
 
   header:
-  - "&b&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&6&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&4&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&9&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&a&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&e&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&5&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&b&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&6&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&4&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&9&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&a&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&e&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&5&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&b&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&6&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&4&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&9&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&a&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&e&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&5&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
-  - "&b&lTabList\n&6Ping:&f %ping%&7ms\n<lines>"
+  - "&b&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&6&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&4&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&9&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&a&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&e&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&5&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&b&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&6&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&4&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&9&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&a&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&e&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&5&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&b&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&6&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&4&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&9&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&a&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&e&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&5&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
+  - "&b&lTabList\n&6Ping:&f %ping%&7ms\n&7-------"
 
   footer:
-  - "<lines>\n&7Website:&2 example.com"
+  - "&7-------\n&7Website:&2 example.com"
 
   # Per player tablist
   per-player:
@@ -125,7 +125,7 @@ tablist:
       header:
       - "&7<93>&3 Welcome&e &l%player-name%&7! <91>\n \n&5&l&m================="
       footer:
-      - "<lines>"
+      - "&7-------"
       
   # Per server tablist
   per-server:

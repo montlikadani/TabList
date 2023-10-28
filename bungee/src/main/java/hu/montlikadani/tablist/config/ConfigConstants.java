@@ -148,7 +148,7 @@ public final class ConfigConstants {
 
 			List<?> list = section.getList(key + ".name", java.util.Collections.EMPTY_LIST);
 
-			texts = list.size() != 0 ? list.toArray(new String[0]) : new String[] { section.getString(key + ".name", "") };
+			texts = !list.isEmpty() ? list.toArray(new String[0]) : new String[] { section.getString(key + ".name", "") };
 
 			for (int a = 0; a < texts.length; a++) {
 				texts[a] = hu.montlikadani.tablist.Global.replaceToUnicodeSymbol(texts[a]);
@@ -169,11 +169,11 @@ public final class ConfigConstants {
 	}
 
 	public static BaseComponent getMessage(MessageKeys key) {
-		return key.<BaseComponent>getValue();
+		return key.getValue();
 	}
 
 	public static List<BaseComponent> getMessageList(MessageKeys key) {
-		return key.<List<BaseComponent>>getValue();
+		return key.getValue();
 	}
 
 	public static boolean isIgnoreVanishedPlayers() {

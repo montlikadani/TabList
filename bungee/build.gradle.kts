@@ -19,8 +19,13 @@ repositories {
 dependencies {
 	implementation(project(":global"))
 
-	compileOnly("net.md-5:bungeecord-api:1.20-R0.2-SNAPSHOT")
-	compileOnly("net.md-5:bungeecord-chat:1.20-R0.2-SNAPSHOT")
+	compileOnly("net.md-5:bungeecord-api:1.20-R0.2-SNAPSHOT") {
+		exclude("com.mojang", "brigadier")
+	}
+
+	compileOnly("net.md-5:bungeecord-chat:1.20-R0.2-SNAPSHOT") {
+		exclude("com.mojang", "brigadier")
+	}
 
 	compileOnly("com.github.LeonMangler:PremiumVanishAPI:2.8.8") {
 		isTransitive = true

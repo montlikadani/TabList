@@ -19,7 +19,6 @@ import net.md_5.bungee.api.connection.Server;
 public final class Misc {
 
 	public static final BaseComponent EMPTY_COMPONENT = new net.md_5.bungee.api.chat.TextComponent();
-	public static final BaseComponent[] EMPTY_COMPONENT_ARRAY = {};
 
 	private static final String MAX_PLAYERS;
 	private static final net.md_5.bungee.api.plugin.Plugin PREMIUM_VANISH;
@@ -100,7 +99,8 @@ public final class Misc {
 
 	@SuppressWarnings("deprecation")
 	public static String replaceVariables(String str, ProxiedPlayer p) {
-		// TODO Remove or make more customisable variables
+
+		// TODO Remove or make configurable one
 		for (java.util.Map.Entry<String, String> map : ConfigConstants.CUSTOM_VARIABLES.entrySet()) {
 			str = str.replace(map.getKey(), map.getValue());
 		}
@@ -165,6 +165,7 @@ public final class Misc {
 	}
 
 	private static String getTimeAsString(DateTimeFormatter formatterPattern) {
-		return (ConfigConstants.getTimeZone() == null ? LocalDateTime.now() : LocalDateTime.now(ConfigConstants.getTimeZone().toZoneId())).format(formatterPattern);
+		return (ConfigConstants.getTimeZone() == null ? LocalDateTime.now() : LocalDateTime.now(ConfigConstants
+				.getTimeZone().toZoneId())).format(formatterPattern);
 	}
 }

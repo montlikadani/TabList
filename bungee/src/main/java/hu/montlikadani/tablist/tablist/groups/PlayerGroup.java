@@ -65,7 +65,7 @@ public class PlayerGroup {
 		if (text.isEmpty()) {
 			item.setDisplayName(LegacyTextConverter.EMPTY_JSON);
 		} else {
-			item.setDisplayName(Misc.replaceVariables(LegacyTextConverter.toJson(text), player));
+			item.setDisplayName(LegacyTextConverter.toBaseComponent(Misc.replaceVariables(text, player)));
 		}
 
 		listItemUpdate.setActions(java.util.EnumSet.of(PlayerListItemUpdate.Action.UPDATE_DISPLAY_NAME));
