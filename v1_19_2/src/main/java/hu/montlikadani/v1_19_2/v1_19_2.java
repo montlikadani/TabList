@@ -211,10 +211,10 @@ public final class v1_19_2 implements IPacketNM {
             }
         }
 
-        EntityPlayer handle = getPlayerHandle(player);
-
         if (tagTeams.isEmpty()) {
-            sendPacket(handle, PacketPlayOutScoreboardTeam.a(playerTeam, true));
+            for (Player one : Bukkit.getOnlinePlayers()) {
+                sendPacket(getPlayerHandle(one), PacketPlayOutScoreboardTeam.a(playerTeam, true));
+            }
         } else {
             for (TagTeam tagTeam : tagTeams) {
                 if (!tagTeam.playerName.equals(player.getName())) {
@@ -224,8 +224,13 @@ public final class v1_19_2 implements IPacketNM {
                 tagTeam.scoreboardTeam.a(playerTeam.c());
                 tagTeam.scoreboardTeam.a(playerTeam.j());
 
-                sendPacket(handle, PacketPlayOutScoreboardTeam.a(playerTeam, true));
-                sendPacket(handle, PacketPlayOutScoreboardTeam.a(tagTeam.scoreboardTeam, true));
+                for (Player one : Bukkit.getOnlinePlayers()) {
+                    EntityPlayer handle = getPlayerHandle(one);
+
+                    sendPacket(handle, PacketPlayOutScoreboardTeam.a(playerTeam, true));
+                    sendPacket(handle, PacketPlayOutScoreboardTeam.a(tagTeam.scoreboardTeam, true));
+                }
+
                 break;
             }
         }

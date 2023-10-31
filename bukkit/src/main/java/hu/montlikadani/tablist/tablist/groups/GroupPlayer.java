@@ -51,8 +51,6 @@ public final class GroupPlayer {
 	 * @return the full group name with priority required for creating
 	 */
 	public String getFullGroupTeamName() {
-		// We starts the sorting with "a" character and a number as without this will
-		// not work after the 10th player
 		return 'a' + (safePriority > 9 ? "" : "0") + safePriority;
 	}
 

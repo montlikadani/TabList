@@ -557,21 +557,28 @@ public final class LegacyVersion implements IPacketNM {
 
             playerTeams.add(scoreTeam == null ? newTeamPacket : scoreTeam);
 
-            Object handle = getPlayerHandle(player);
-
             if (tagTeams.isEmpty()) {
-                sendPacket(handle, newTeamPacket);
+                for (Player one : Bukkit.getOnlinePlayers()) {
+                    sendPacket(getPlayerHandle(one), newTeamPacket);
+                }
             } else {
                 for (TagTeam tagTeam : tagTeams) {
                     if (!tagTeam.playerName.equals(player.getName())) {
                         continue;
                     }
 
-                    ClazzContainer.getScoreboardTeamSetDisplayName().invoke(tagTeam.scoreboardTeam, tagTeam.scoreboardTeamDisplayNameMethod.invoke(tagTeam.scoreboardTeam));
-                    ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(tagTeam.scoreboardTeam, tagTeam.scoreboardTeamNameTagVisibilityMethod.invoke(tagTeam.scoreboardTeam));
+                    ClazzContainer.getScoreboardTeamSetDisplayName().invoke(tagTeam.scoreboardTeam,
+                            tagTeam.scoreboardTeamDisplayNameMethod.invoke(tagTeam.scoreboardTeam));
+                    ClazzContainer.getScoreboardTeamSetNameTagVisibility().invoke(tagTeam.scoreboardTeam,
+                            tagTeam.scoreboardTeamNameTagVisibilityMethod.invoke(tagTeam.scoreboardTeam));
 
-                    sendPacket(handle, newTeamPacket);
-                    sendPacket(handle, ClazzContainer.scoreboardTeamPacketByAction(tagTeam.scoreboardTeam, 0));
+                    for (Player one : Bukkit.getOnlinePlayers()) {
+                        Object handle = getPlayerHandle(one);
+
+                        sendPacket(handle, newTeamPacket);
+                        sendPacket(handle, ClazzContainer.scoreboardTeamPacketByAction(tagTeam.scoreboardTeam, 0));
+                    }
+
                     break;
                 }
             }

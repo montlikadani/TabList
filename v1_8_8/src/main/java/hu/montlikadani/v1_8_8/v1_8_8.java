@@ -251,10 +251,10 @@ public final class v1_8_8 implements IPacketNM {
 			}
 		}
 
-		EntityPlayer handle = getPlayerHandle(player);
-
 		if (tagTeams.isEmpty()) {
-			sendPacket(handle, new PacketPlayOutScoreboardTeam(playerTeam, 0));
+			for (Player one : Bukkit.getOnlinePlayers()) {
+				sendPacket(getPlayerHandle(one), new PacketPlayOutScoreboardTeam(playerTeam, 0));
+			}
 		} else {
 			for (TagTeam tagTeam : tagTeams) {
 				if (!tagTeam.playerName.equals(player.getName())) {
@@ -264,8 +264,13 @@ public final class v1_8_8 implements IPacketNM {
 				tagTeam.scoreboardTeam.setDisplayName(playerTeam.getDisplayName());
 				tagTeam.scoreboardTeam.setNameTagVisibility(playerTeam.getNameTagVisibility());
 
-				sendPacket(handle, new PacketPlayOutScoreboardTeam(playerTeam, 0));
-				sendPacket(handle, new PacketPlayOutScoreboardTeam(tagTeam.scoreboardTeam, 0));
+				for (Player one : Bukkit.getOnlinePlayers()) {
+					EntityPlayer handle = getPlayerHandle(one);
+
+					sendPacket(handle, new PacketPlayOutScoreboardTeam(playerTeam, 0));
+					sendPacket(handle, new PacketPlayOutScoreboardTeam(tagTeam.scoreboardTeam, 0));
+				}
+
 				break;
 			}
 		}

@@ -193,10 +193,10 @@ public final class v1_17_1 implements hu.montlikadani.api.IPacketNM {
             }
         }
 
-        EntityPlayer handle = getPlayerHandle(player);
-
         if (tagTeams.isEmpty()) {
-            sendPacket(handle, PacketPlayOutScoreboardTeam.a(playerTeam, true));
+            for (Player one : Bukkit.getOnlinePlayers()) {
+                sendPacket(getPlayerHandle(one), PacketPlayOutScoreboardTeam.a(playerTeam, true));
+            }
         } else {
             for (TagTeam tagTeam : tagTeams) {
                 if (!tagTeam.playerName.equals(player.getName())) {
@@ -206,8 +206,13 @@ public final class v1_17_1 implements hu.montlikadani.api.IPacketNM {
                 tagTeam.scoreboardTeam.setDisplayName(playerTeam.getDisplayName());
                 tagTeam.scoreboardTeam.setNameTagVisibility(playerTeam.getNameTagVisibility());
 
-                sendPacket(handle, PacketPlayOutScoreboardTeam.a(playerTeam, true));
-                sendPacket(handle, PacketPlayOutScoreboardTeam.a(tagTeam.scoreboardTeam, true));
+                for (Player one : Bukkit.getOnlinePlayers()) {
+                    EntityPlayer handle = getPlayerHandle(one);
+
+                    sendPacket(handle, PacketPlayOutScoreboardTeam.a(playerTeam, true));
+                    sendPacket(handle, PacketPlayOutScoreboardTeam.a(tagTeam.scoreboardTeam, true));
+                }
+
                 break;
             }
         }
