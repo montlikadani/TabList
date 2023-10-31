@@ -9,6 +9,18 @@ public final class PacketNM {
 	static {
 		IPacketNM packetInstance;
 		String current = hu.montlikadani.tablist.utils.ServerVersion.getCurrent().name();
+		int length = current.length();
+		int count = 0;
+
+		for (int i = 0; i < length; i++) {
+			if (current.charAt(i) == '_') {
+				count++;
+			}
+		}
+
+		if (count == 1) {
+			current += "_1";
+		}
 
 		try {
 			packetInstance = (IPacketNM) Class.forName("hu.montlikadani." + current + "." + current).getConstructor().newInstance();
