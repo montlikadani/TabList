@@ -27,7 +27,7 @@ dependencies {
 		exclude("com.mojang", "brigadier")
 	}
 
-	compileOnly("com.github.LeonMangler:PremiumVanishAPI:2.8.8") {
+	compileOnly("com.github.LeonMangler:PremiumVanishAPI:2.9.0-4") {
 		isTransitive = true
 	}
 }
