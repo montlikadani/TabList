@@ -13,7 +13,13 @@ repositories {
 	gradlePluginPortal()
 	mavenCentral()
 	maven("https://oss.sonatype.org/content/repositories/snapshots")
-	maven("https://jitpack.io")
+	maven {
+		url = uri("https://jitpack.io")
+		content {
+			includeGroup("com.github.johnrengelman")
+			includeGroup("com.github.LeonMangler")
+		}
+	}
 }
 
 dependencies {

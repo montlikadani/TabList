@@ -17,7 +17,15 @@ repositories {
     maven("https://libraries.minecraft.net/")
     maven("https://repo.essentialsx.net/snapshots/")
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
-    maven("https://jitpack.io")
+    maven {
+		url = uri("https://jitpack.io")
+		content {
+			includeGroup("com.github.johnrengelman")
+			includeGroup("com.github.xtomyserrax")
+			includeGroup("com.github.MilkBowl")
+			includeGroup("com.github.LeonMangler")
+		}
+	}
     maven("https://oss.sonatype.org/content/groups/public/") // Netty
 }
 
