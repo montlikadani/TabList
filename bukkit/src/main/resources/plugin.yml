@@ -1,6 +1,6 @@
 name: TabList
 main: hu.montlikadani.tablist.TabList
-version: 5.7.4
+version: 5.7.5
 author: montlikadani
 description: An alternative tablist plugin to replace vanilla empty tab
 softdepend:
