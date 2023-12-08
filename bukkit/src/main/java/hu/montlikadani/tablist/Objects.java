@@ -164,7 +164,8 @@ public final class Objects {
 			ObjectTypes type = ConfigValues.getObjectType();
 
 			if (!playerScore.isObjectiveCreated()) {
-				Object objectiveInstance = PacketNM.NMS_PACKET.createObjectivePacket(type.objectName, type.chatBaseComponent);
+				Object objectiveInstance = PacketNM.NMS_PACKET.createObjectivePacket(type.objectName,
+						type.chatBaseComponent, ConfigValues.objectiveFormat(), ConfigValues.getObjectiveFormatText());
 
 				// Create objective, 0 - create
 				PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.scoreboardObjectivePacket(objectiveInstance, 0));

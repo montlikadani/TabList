@@ -29,7 +29,7 @@ repositories {
     maven("https://oss.sonatype.org/content/groups/public/") // Netty
 }
 
-val nmsProjects = setOf("1_8_8", "1_18_2", "1_19_1", "1_19_2", "1_19_3", "1_20_1", "1_20_2")
+val nmsProjects = setOf("1_8_8", "1_18_2", "1_19_1", "1_19_2", "1_19_3", "1_20_1", "1_20_2", "1_20_4")
 
 dependencies {
     implementation(project(":global"))
@@ -45,7 +45,7 @@ dependencies {
     compileOnly(libs.authlib)
     compileOnly("net.luckperms:api:5.4")
 
-    paperweight.foliaDevBundle("1.20.1-R0.1-SNAPSHOT")
+    paperweight.foliaDevBundle("1.20.2-R0.1-SNAPSHOT")
 
     compileOnly("net.essentialsx:EssentialsX:2.21.0-SNAPSHOT") {
         isTransitive = false

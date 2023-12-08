@@ -9,7 +9,7 @@
 enabled: true
 
 # Save the toggled tablists to a file and load them after server restart.
-# If this false, if the file is exists, it will be deleted automatically at server restart.
+# If this false, if the file is existing, it will be deleted automatically at server restart.
 remember-toggled-tablist-to-file: true
 
 # Hide tab from vanished players

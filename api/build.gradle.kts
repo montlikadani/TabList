@@ -16,7 +16,7 @@ repositories {
 dependencies {
 	compileOnly(libs.authlib)
 
-	compileOnly("org.spigotmc:spigot-api:1.20.1-R0.1-SNAPSHOT") {
+	compileOnly("org.spigotmc:spigot-api:1.20.4-R0.1-SNAPSHOT") {
 		exclude("com.google.guava", "guava")
 		exclude("com.google.code.gson", "gson")
 		exclude("junit", "junit")

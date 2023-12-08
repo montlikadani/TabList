@@ -235,8 +235,10 @@ public final class v1_17_1 implements hu.montlikadani.api.IPacketNM {
     }
 
     @Override
-    public ScoreboardObjective createObjectivePacket(String objectiveName, Object nameComponent) {
-        return new ScoreboardObjective(null, objectiveName, IScoreboardCriteria.a, (IChatBaseComponent) nameComponent, IScoreboardCriteria.EnumScoreboardHealthDisplay.a);
+    public ScoreboardObjective createObjectivePacket(String objectiveName, Object nameComponent,
+                                                     ObjectiveFormat objectiveFormat, Object formatComponent) {
+        return new ScoreboardObjective(null, objectiveName, IScoreboardCriteria.a, (IChatBaseComponent) nameComponent,
+                IScoreboardCriteria.EnumScoreboardHealthDisplay.a);
     }
 
     @Override

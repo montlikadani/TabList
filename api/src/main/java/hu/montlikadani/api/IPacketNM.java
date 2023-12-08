@@ -6,6 +6,10 @@ public interface IPacketNM {
 
     String PACKET_INJECTOR_NAME = "TLPacketInjector";
 
+    enum ObjectiveFormat {
+        NONE, FIXED, BLANK, STYLED
+    }
+
     void sendPacket(Player player, Object packet);
 
     void addPlayerChannelListener(Player player, java.util.List<Class<?>> classesToListen);
@@ -36,7 +40,8 @@ public interface IPacketNM {
 
     Object unregisterBoardTeamPacket(String teamName);
 
-    Object createObjectivePacket(String objectiveName, Object nameComponent);
+    Object createObjectivePacket(String objectiveName, Object nameComponent, ObjectiveFormat objectiveFormat,
+                                 Object formatComponent);
 
     Object scoreboardObjectivePacket(Object objective, int mode);
 

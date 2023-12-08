@@ -2,7 +2,8 @@ package hu.montlikadani.tablist.utils;
 
 public enum ServerVersion {
 
-	v1_20_2, v1_20_1, v1_20,
+	// 1.20.4 is critical fix, so no support for .3 (useless)
+	v1_20_4, v1_20_2, v1_20_1, v1_20,
 	v1_19_4, v1_19_3, v1_19_2, v1_19_1, v1_19,
 	v1_18_2, v1_18_1, v1_18,
 	v1_17_1, v1_17,
@@ -18,6 +19,30 @@ public enum ServerVersion {
 
 	private static ServerVersion current;
 
+	public final int intVersion;
+
+	ServerVersion() {
+		String name = name();
+		int length = name.length();
+		int count = 0;
+
+		for (int i = 0; i < length; i++) {
+			if (name.charAt(i) == '_') {
+				count++;
+			}
+		}
+
+		name = name.replace("_", "").replace("v", "");
+
+		int ver = 0;
+		try {
+			ver = Integer.parseInt(count == 1 ? name + '0' : name);
+		} catch (NumberFormatException ignore) {
+		}
+
+		intVersion = ver;
+	}
+
 	public static ServerVersion getCurrent() {
 		if (current != null)
 			return current;
@@ -31,5 +56,9 @@ public enum ServerVersion {
 		}
 
 		return null;
+	}
+
+	public boolean isHigherOrEqual(ServerVersion version) {
+		return intVersion >= version.intVersion;
 	}
 }

@@ -73,6 +73,8 @@ public final class ConfigMessages {
 					for (int i = 0; i < arr.length; i++) {
 						arr[i] = Util.applyTextFormat(arr[i]);
 					}
+
+					key.value = arr;
 				} else {
 					key.value = Util.applyTextFormat(list).toArray(new String[0]);
 				}

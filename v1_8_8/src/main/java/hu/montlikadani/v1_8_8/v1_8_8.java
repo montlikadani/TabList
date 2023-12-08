@@ -293,7 +293,8 @@ public final class v1_8_8 implements IPacketNM {
 	}
 
 	@Override
-	public ScoreboardObjective createObjectivePacket(String objectiveName, Object nameComponent) {
+	public ScoreboardObjective createObjectivePacket(String objectiveName, Object nameComponent,
+													 ObjectiveFormat objectiveFormat, Object formatComponent) {
 		Scoreboard scoreboard = new Scoreboard();
 		ScoreboardObjective objective = new ScoreboardObjective(scoreboard, objectiveName, IScoreboardCriteria.b);
 		objectiveStorage.add(new ObjectiveStorage(scoreboard, objective));

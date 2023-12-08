@@ -281,8 +281,10 @@ public final class v1_19_3 implements IPacketNM {
     }
 
     @Override
-    public ScoreboardObjective createObjectivePacket(String objectiveName, Object nameComponent) {
-        return new ScoreboardObjective(null, objectiveName, IScoreboardCriteria.a, (IChatBaseComponent) nameComponent, IScoreboardCriteria.EnumScoreboardHealthDisplay.a);
+    public ScoreboardObjective createObjectivePacket(String objectiveName, Object nameComponent,
+                                                     ObjectiveFormat objectiveFormat, Object formatComponent) {
+        return new ScoreboardObjective(null, objectiveName, IScoreboardCriteria.a, (IChatBaseComponent) nameComponent,
+                IScoreboardCriteria.EnumScoreboardHealthDisplay.a);
     }
 
     @Override

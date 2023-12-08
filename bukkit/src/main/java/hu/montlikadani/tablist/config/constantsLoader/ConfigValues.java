@@ -1,11 +1,11 @@
 package hu.montlikadani.tablist.config.constantsLoader;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
+import hu.montlikadani.api.IPacketNM;
+import hu.montlikadani.tablist.utils.ServerVersion;
+import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
 import org.bukkit.configuration.ConfigurationSection;
 
 import hu.montlikadani.tablist.Global;
@@ -26,6 +26,8 @@ public final class ConfigValues {
 	private static DateTimeFormatter timeFormat, dateFormat;
 
 	private static Objects.ObjectTypes objectType = Objects.ObjectTypes.PING;
+	private static IPacketNM.ObjectiveFormat objectiveFormat;
+	private static Object objectiveFormatText;
 
 	private static List<String> tpsColorFormats, pingColorFormats, groupsDisabledWorlds, healthObjectRestricted, objectsDisabledWorlds;
 
@@ -41,7 +43,7 @@ public final class ConfigValues {
 
 		try {
 			options.parseComments(false);
-		} catch (NoSuchMethodError e) {
+		} catch (NoSuchMethodError ignore) {
 		}
 
 		PER_WORLD_LIST_NAMES.clear();
@@ -114,7 +116,8 @@ public final class ConfigValues {
 				"true - Follows the name tag visibility and hides if there is a scoreboard team created with visibility 'hidden'",
 				"false - Always shows the name tag above player");
 
-		c.addComment("tablist-object-type", "Tablist objective types", "Shows your current health (with life indicator), your current ping or any NUMBER placeholder",
+		c.addComment("tablist-object-type", "Tablist objective types",
+				"Shows your current health (with life indicator), your current ping or any NUMBER placeholder",
 				"after the player's name (before the ping indicator).");
 		c.addComment("tablist-object-type.type", "Types:",
 				"none - disables tablist objects",
@@ -123,8 +126,23 @@ public final class ConfigValues {
 				"custom - one of the number-ending placeholder");
 		c.addComment("tablist-object-type.refresh-interval", "How often should it refresh the values in seconds?",
 				"Set to 0 to disable refreshing automatically");
+		c.addComment("tablist-object-type.custom-value", "Custom placeholder - accepts only number-ending placeholders, like %level%");
+
+		if (ServerVersion.getCurrent().isHigherOrEqual(ServerVersion.v1_20_4)) {
+			c.addComment("tablist-object-type.number-format", "The format of this objective number what to display");
+			c.addComment("tablist-object-type.number-format.type", "The format type of this objective to display",
+					"Can be NONE (default), FIXED, BLANK and STYLED");
+			c.addComment("tablist-object-type.number-format.format", "The format of this objective, each format type is different,",
+					"",
+					"none - shows as a yellow number (default)",
+					"fixed - a unique text displayed instead of number without styling",
+					"blank - no text/number displayed",
+					"styled - changes the coloration of the number (use full color/formatting names 'green;bold;italic' or hexadecimal '#123456')",
+					"",
+					"with 'styled' format you can specify only 1 color and each formatting names 1 time, separate with ';' character");
+		}
+
 		c.addComment("tablist-object-type.disabled-worlds", "In these worlds the objects will not be displayed");
-		c.addComment("tablist-object-type.object-settings.custom", "Custom placeholder - accepts only number-ending placeholders, like %level%");
 
 		c.addComment("check-update", "Checks for plugin updates after server start");
 		c.addComment("download-updates", "Download new releases if updates found?",
@@ -206,7 +224,7 @@ public final class ConfigValues {
 		if (!tf.isEmpty()) {
 			try {
 				timeFormat = DateTimeFormatter.ofPattern(tf);
-			} catch (IllegalArgumentException e) {
+			} catch (IllegalArgumentException ignore) {
 			}
 		}
 
@@ -218,7 +236,7 @@ public final class ConfigValues {
 		if (!(tf = c.get("placeholder-format.time.date-format", "dd/MM/yyyy")).isEmpty()) {
 			try {
 				dateFormat = DateTimeFormatter.ofPattern(tf);
-			} catch (IllegalArgumentException e) {
+			} catch (IllegalArgumentException ignore) {
 			}
 		}
 
@@ -236,9 +254,26 @@ public final class ConfigValues {
 			objectType = Objects.ObjectTypes.NONE;
 		} else {
 			try {
-				objectType = Objects.ObjectTypes.valueOf(c.get("tablist-object-type.type", "ping").toUpperCase(java.util.Locale.ENGLISH));
+				objectType = Objects.ObjectTypes.valueOf(c.get("tablist-object-type.type", "ping").toUpperCase(Locale.ENGLISH));
 			} catch (IllegalArgumentException e) {
 				objectType = Objects.ObjectTypes.NONE;
+			}
+
+			if (objectType != Objects.ObjectTypes.HEALTH && ServerVersion.getCurrent().isHigherOrEqual(ServerVersion.v1_20_4)) {
+				try {
+					objectiveFormat = IPacketNM.ObjectiveFormat.valueOf(c.get("tablist-object-type.number-format.type",
+							"none").toUpperCase(Locale.ENGLISH));
+				} catch (IllegalArgumentException ex) {
+					objectiveFormat = IPacketNM.ObjectiveFormat.NONE;
+				}
+
+				String format = c.get("tablist-object-type.number-format.format", "green;bold");
+
+				if (objectiveFormat == IPacketNM.ObjectiveFormat.STYLED) {
+					objectiveFormatText = format.split(";");
+				} else if (objectiveFormat == IPacketNM.ObjectiveFormat.FIXED) {
+					objectiveFormatText = ReflectionUtils.asComponent(format);
+				}
 			}
 		}
 
@@ -436,5 +471,13 @@ public final class ConfigValues {
 
 	public static boolean isUseLPWeightToOrderGroupsFirst() {
 		return useLPWeightToOrderGroupsFirst;
+	}
+
+	public static IPacketNM.ObjectiveFormat objectiveFormat() {
+		return objectiveFormat;
+	}
+
+	public static Object getObjectiveFormatText() {
+		return objectiveFormatText;
 	}
 }

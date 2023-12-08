@@ -625,7 +625,8 @@ public final class LegacyVersion implements IPacketNM {
     }
 
     @Override
-    public Object createObjectivePacket(String objectiveName, Object nameComponent) {
+    public Object createObjectivePacket(String objectiveName, Object nameComponent,
+                                        ObjectiveFormat objectiveFormat, Object formatComponent) {
         try {
             if (ClazzContainer.getFirstScoreboardObjectiveConstructor().getParameterCount() == 3) {
                 return ClazzContainer.getFirstScoreboardObjectiveConstructor().newInstance(null, objectiveName, ClazzContainer.getiScoreboardCriteriaDummy());
