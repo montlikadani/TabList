@@ -20,6 +20,7 @@ dependencies {
 
     compileOnly("org.spigotmc:spigot:1.20.1-R0.1-SNAPSHOT") {
         exclude("org.yaml", "snakeyaml")
+        exclude("com.google.guava", "guava")
     }
 
     compileOnly(libs.authlib)

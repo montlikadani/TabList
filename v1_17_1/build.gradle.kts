@@ -27,6 +27,7 @@ dependencies {
         exclude("junit", "junit")
         exclude("org.yaml", "snakeyaml")
         exclude("com.google.code.gson", "gson")
+        exclude("com.google.guava", "guava")
     }
 
     implementation(libs.netty.core)

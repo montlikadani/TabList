@@ -107,7 +107,7 @@ public final class v1_19_3 implements IPacketNM {
 
     @Override
     public EntityPlayer getPlayerHandle(Player player) {
-        return ((org.bukkit.craftbukkit.v1_19_R3.entity.CraftPlayer) player).getHandle();
+        return ((org.bukkit.craftbukkit.v1_19_R2.entity.CraftPlayer) player).getHandle();
     }
 
     @Override
@@ -121,14 +121,14 @@ public final class v1_19_3 implements IPacketNM {
     }
 
     private MinecraftServer minecraftServer() {
-        return ((org.bukkit.craftbukkit.v1_19_R3.CraftServer) Bukkit.getServer()).getServer();
+        return ((org.bukkit.craftbukkit.v1_19_R2.CraftServer) Bukkit.getServer()).getServer();
     }
 
     @Override
     public EntityPlayer getNewEntityPlayer(GameProfile profile) {
         MinecraftServer server = minecraftServer();
 
-        return new EntityPlayer(server, server.D(), profile);
+        return new EntityPlayer(server, server.C(), profile);
     }
 
     @Override
@@ -172,7 +172,7 @@ public final class v1_19_3 implements IPacketNM {
         List<UUID> players = new ArrayList<>(entityPlayers.length);
 
         for (Object one : entityPlayers) {
-            players.add(((EntityPlayer) one).fI().getId());
+            players.add(((EntityPlayer) one).fD().getId());
         }
 
         return new ClientboundPlayerInfoRemovePacket(players);
@@ -341,7 +341,7 @@ public final class v1_19_3 implements IPacketNM {
         }
 
         private void playerInfoUpdatePacket(ClientboundPlayerInfoUpdatePacket playerInfoPacket) {
-            if (!playerInfoPacket.a().contains(ClientboundPlayerInfoUpdatePacket.a.c)) {
+            if (!playerInfoPacket.b().contains(ClientboundPlayerInfoUpdatePacket.a.c)) {
                 return;
             }
 
@@ -402,8 +402,8 @@ public final class v1_19_3 implements IPacketNM {
                         enumTeamPush = ScoreboardTeamBase.EnumTeamPush.a;
                     }
 
-                    ScoreboardTeam scoreboardTeam = new ScoreboardTeam(((org.bukkit.craftbukkit.v1_19_R3.scoreboard.CraftScoreboard) player.getScoreboard()).getHandle(),
-                            packetTeam.a().getString());
+                    ScoreboardTeam scoreboardTeam = new ScoreboardTeam(((org.bukkit.craftbukkit.v1_19_R2.scoreboard.CraftScoreboard)
+                            player.getScoreboard()).getHandle(), packetTeam.a().getString());
                     scoreboardTeam.b(prefix);
                     scoreboardTeam.c(suffix);
                     scoreboardTeam.a(enumNameTagVisibility);
