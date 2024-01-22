@@ -29,7 +29,7 @@ dependencies {
 		exclude("com.mojang", "brigadier")
 	}
 
-	compileOnly("net.md-5:bungeecord-chat:1.20-R0.2-SNAPSHOT") {
+	compileOnly("net.md-5:bungeecord-chat:1.20-R0.3-SNAPSHOT") {
 		exclude("com.mojang", "brigadier")
 	}
 
