@@ -19,7 +19,7 @@ public enum ServerVersion {
 
 	private static ServerVersion current;
 
-	public final int intVersion;
+	private final int intVersion;
 
 	ServerVersion() {
 		String name = name();

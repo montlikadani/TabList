@@ -3,9 +3,9 @@ package hu.montlikadani.tablist.logicalOperators;
 public class Condition {
 
 	public final RelationalOperators operator;
+	public final String color;
 
-	private String color = "";
-	private double value = 0D;
+	private double value;
 
 	public Condition(RelationalOperators operator, String[] content) {
 		this.operator = operator;
@@ -22,10 +22,6 @@ public class Condition {
 
 	public double getValue() {
 		return value;
-	}
-
-	public String getColor() {
-		return color;
 	}
 
 	public enum RelationalOperators {

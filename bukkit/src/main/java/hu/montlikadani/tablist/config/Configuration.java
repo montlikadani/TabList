@@ -32,8 +32,10 @@ public class Configuration {
 	}
 
 	public void loadFiles() {
+
 		// Monument
 		File names = new File(plugin.getDataFolder(), "names.yml");
+
 		if (names.exists() && !names.delete()) {
 			throw new RuntimeException("Failed to delete names.yml file");
 		}

@@ -28,7 +28,6 @@ public final class Groups {
 	private TLScheduler animationTask;
 
 	private final List<TeamHandler> teams = new ArrayList<>();
-	private final List<TeamHandler> orderedGroupsByWeight = new ArrayList<>();
 	private final Deque<GroupPlayer> sortedPlayers = new ConcurrentLinkedDeque<>();
 	private final Set<GroupPlayer> afkPlayersCache = new HashSet<>();
 
@@ -46,10 +45,6 @@ public final class Groups {
 	 */
 	public List<TeamHandler> getTeams() {
 		return new ArrayList<>(teams);
-	}
-
-	public List<TeamHandler> orderedGroupsByWeight() {
-		return orderedGroupsByWeight;
 	}
 
 	/**
@@ -74,7 +69,7 @@ public final class Groups {
 		}
 
 		for (TeamHandler handler : teams) {
-			if (handler.team.equalsIgnoreCase(name)) {
+			if (handler.name.equalsIgnoreCase(name)) {
 				return Optional.of(handler);
 			}
 		}
@@ -92,7 +87,6 @@ public final class Groups {
 
 	public void load() {
 		teams.clear();
-		orderedGroupsByWeight.clear();
 
 		if (!ConfigValues.isPrefixSuffixEnabled()) {
 			return;
@@ -137,7 +131,8 @@ public final class Groups {
 		if (ConfigValues.isSyncPluginsGroups() && plugin.hasPermissionService()) {
 			boolean saveRequired = false;
 
-			me: for (String one : plugin.getPermissionService().getGroups()) {
+			me:
+			for (String one : plugin.getPermissionService().getGroups()) {
 
 				// If group already exists, skip it
 				for (String name : keys) {
@@ -190,51 +185,24 @@ public final class Groups {
 
 		teams.add(defaultAssignedGroup = new TeamHandler("defaultLast", TabText.EMPTY, TabText.EMPTY, "", 0));
 
-		// Sort groups by priority to match the lowest priority firstly (highest
-		// priority is on the top of other)
-		teams.sort(Comparator.<TeamHandler>comparingInt(t -> t.priority).reversed());
-
-		orderGroupsByWeight();
+		setWeightForTeams();
 		startTask();
 	}
 
-	private void orderGroupsByWeight() {
-		orderedGroupsByWeight.clear();
-
+	private void setWeightForTeams() {
 		if (!ConfigValues.isUseLPWeightToOrderGroupsFirst() || ConfigValues.isPreferPrimaryVaultGroup()
 				|| !plugin.hasPermissionService() || !plugin.getPermissionService().hasLuckPerms) {
 			return;
 		}
 
-		orderedGroupsByWeight.addAll(teams);
+		for (final TeamHandler teamHandler : teams) {
+			net.luckperms.api.model.group.Group group = (net.luckperms.api.model.group.Group) plugin
+					.getPermissionService().groupObjectByName(teamHandler.name);
 
-		orderedGroupsByWeight.sort((team, team2) -> {
-			if (team.global || team2.global) {
-				return 0;
+			if (group != null) {
+				group.getWeight().ifPresent(weight -> teamHandler.priority = weight);
 			}
-
-			net.luckperms.api.model.group.Group group1 = (net.luckperms.api.model.group.Group) plugin.getPermissionService().groupObjectByName(team.team);
-
-			if (group1 == null) {
-				return 0;
-			}
-
-			net.luckperms.api.model.group.Group group2 = (net.luckperms.api.model.group.Group) plugin.getPermissionService().groupObjectByName(team2.team);
-
-			if (group2 == null) {
-				return 0;
-			}
-
-			java.util.OptionalInt optionalInt1 = group1.getWeight();
-
-			if (!optionalInt1.isPresent()) {
-				return 0;
-			}
-
-			java.util.OptionalInt optionalInt2 = group2.getWeight();
-
-			return optionalInt2.isPresent() ? optionalInt2.getAsInt() - optionalInt1.getAsInt() : 0;
-		});
+		}
 	}
 
 	/**
@@ -245,7 +213,7 @@ public final class Groups {
 	 */
 	public void setPlayerTeam(GroupPlayer groupPlayer, int safePriority) {
 		groupPlayer.setSafePriority(safePriority);
-		groupPlayer.getTabTeam().createAndUpdateTeam();
+		groupPlayer.tabTeam.createAndUpdateTeam();
 	}
 
 	/**
@@ -281,20 +249,16 @@ public final class Groups {
 		sortedPlayers.remove(groupPlayer);
 		afkPlayersCache.remove(groupPlayer);
 
-		groupPlayer.getTabTeam().unregisterTeam();
 		groupPlayer.removeGroup();
 	}
 
 	public void removeTeam(String teamName) {
-		getTeam(teamName).ifPresent(team -> {
-			teams.remove(team);
-			orderGroupsByWeight();
-		});
+		getTeam(teamName).ifPresent(teams::remove);
 	}
 
 	public void addTeam(TeamHandler team) {
 		teams.add(team);
-		orderGroupsByWeight();
+		setWeightForTeams();
 	}
 
 	/**
@@ -307,14 +271,11 @@ public final class Groups {
 		afkPlayersCache.clear();
 
 		for (TabListUser user : plugin.getUsers()) {
-			GroupPlayer groupPlayer = user.getGroupPlayer();
-
-			groupPlayer.getTabTeam().unregisterTeam();
-			groupPlayer.removeGroup();
+			user.getGroupPlayer().removeGroup();
 		}
 	}
 
-	public void cancelTask() {
+	private void cancelTask() {
 		if (animationTask != null) {
 			animationTask.cancelTask();
 			animationTask = null;
@@ -334,7 +295,7 @@ public final class Groups {
 
 		if (animationTask == null) {
 			animationTask = plugin.newTLScheduler().submitAsync(() -> {
-				if (plugin.performanceIsUnderValue() || plugin.getUsers().isEmpty()) {
+				if (plugin.tpsIsUnderValue() || plugin.getUsers().isEmpty()) {
 					cancelTask();
 					return;
 				}
@@ -390,7 +351,7 @@ public final class Groups {
 		for (GroupPlayer groupPlayer : sortedPlayers) {
 			if (ConfigValues.isAfkStatusEnabled() && (ConfigValues.isAfkSortLast()
 					|| (groupPlayer.getGroup() != null && groupPlayer.getGroup().getAfkSortPriority() != -1))) {
-				if (PluginUtils.isAfk(groupPlayer.getUser().getPlayer())) {
+				if (PluginUtils.isAfk(groupPlayer.tabListUser.getPlayer())) {
 					if (afkPlayersCache.add(groupPlayer) && !toSort) {
 						setToSort(true);
 					}

@@ -11,8 +11,9 @@ import hu.montlikadani.tablist.utils.PluginUtils;
 
 public final class GroupPlayer {
 
-	private transient final TabListUser tabListUser;
-	private transient final ReflectionHandled tabTeam;
+	public transient final TabListUser tabListUser;
+	public transient final ReflectionHandled tabTeam;
+
 	private transient final TabList tl;
 
 	private transient TeamHandler group, globalGroup;
@@ -20,17 +21,13 @@ public final class GroupPlayer {
 	private String customPrefix, customSuffix, playerPrimaryGroup;
 
 	private int customPriority = Integer.MIN_VALUE;
-	private int safePriority = 0;
+	private int safePriority;
 
 	public GroupPlayer(TabList tl, TabListUser tabListUser) {
 		this.tl = tl;
 		this.tabListUser = tabListUser;
 
 		tabTeam = new ReflectionHandled(tl, this);
-	}
-
-	public ReflectionHandled getTabTeam() {
-		return tabTeam;
 	}
 
 	/**
@@ -58,12 +55,9 @@ public final class GroupPlayer {
 	 * Removes the group cache from this player
 	 */
 	public void removeGroup() {
+		tabTeam.unregisterTeam();
 		group = globalGroup = null;
 		playerPrimaryGroup = null;
-	}
-
-	public TabListUser getUser() {
-		return tabListUser;
 	}
 
 	/**
@@ -168,7 +162,7 @@ public final class GroupPlayer {
 
 		// Search for player name
 		for (TeamHandler team : teams) {
-			if (team.global || !playerName.equalsIgnoreCase(team.team)) {
+			if (team.global || !playerName.equalsIgnoreCase(team.name)) {
 				continue;
 			}
 
@@ -182,17 +176,13 @@ public final class GroupPlayer {
 
 		refreshPlayerPrimaryGroup(player);
 
-		if (!groups.orderedGroupsByWeight().isEmpty()) {
-			teams = groups.orderedGroupsByWeight();
-		}
-
 		for (TeamHandler team : teams) {
 			if (team.global) {
 				continue;
 			}
 
 			if (playerPrimaryGroup != null) {
-				if (playerPrimaryGroup.equalsIgnoreCase(team.team)) {
+				if (playerPrimaryGroup.equalsIgnoreCase(team.name)) {
 					if (group != team) {
 						update = true;
 						setGroup(team);
@@ -201,7 +191,7 @@ public final class GroupPlayer {
 					return update;
 				}
 
-				continue; // Only check primary
+				continue;
 			}
 
 			if (!team.permission.isEmpty()) {
@@ -213,7 +203,7 @@ public final class GroupPlayer {
 
 					return update;
 				}
-			} else if (tl.hasPermissionService() && tl.getPermissionService().playerInGroup(player, team.team)) {
+			} else if (tl.hasPermissionService() && tl.getPermissionService().playerInGroup(player, team.name)) {
 				if (group != team) {
 					update = true;
 					setGroup(team);

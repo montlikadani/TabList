@@ -8,7 +8,7 @@ import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.utils.PlayerSkinProperties;
 import hu.montlikadani.tablist.utils.Util;
-import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
+import hu.montlikadani.tablist.utils.reflection.ComponentParser;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -75,7 +75,7 @@ public final class FakePlayer implements IFakePlayer {
 	}
 
 	private Object displayNameComponent() {
-		return displayName.isEmpty() ? ReflectionUtils.EMPTY_COMPONENT : ReflectionUtils.asComponent(Util.applyTextFormat(Global.replaceToUnicodeSymbol(displayName)));
+		return displayName.isEmpty() ? ComponentParser.EMPTY_COMPONENT : ComponentParser.asComponent(Util.applyTextFormat(Global.replaceToUnicodeSymbol(displayName)));
 	}
 
 	@Override
@@ -90,7 +90,7 @@ public final class FakePlayer implements IFakePlayer {
 			displayName = Util.applyTextFormat(Global.replaceToUnicodeSymbol(displayName));
 		}
 
-		Object packet = PacketNM.NMS_PACKET.updateDisplayNamePacket(fakeEntityPlayer, ReflectionUtils.asComponent(displayName), true);
+		Object packet = PacketNM.NMS_PACKET.updateDisplayNamePacket(fakeEntityPlayer, ComponentParser.asComponent(displayName), true);
 
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(player, packet);
@@ -132,7 +132,7 @@ public final class FakePlayer implements IFakePlayer {
 		ObjectTypes objectType = ConfigValues.getObjectType();
 
 		if (objectType == ObjectTypes.PING) {
-			packetUpdateScore = PacketNM.NMS_PACKET.changeScoreboardScorePacket(objectType.getObjectName(), name, ping);
+			packetUpdateScore = PacketNM.NMS_PACKET.changeScoreboardScorePacket(objectType.objectName, name, ping);
 		}
 
 		PacketNM.NMS_PACKET.setInfoData(info, profile.getId(), ping, displayNameComponent());

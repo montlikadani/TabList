@@ -2,8 +2,10 @@ package hu.montlikadani.tablist.config;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
+import hu.montlikadani.tablist.Global;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import hu.montlikadani.tablist.utils.Util;
@@ -49,9 +51,10 @@ public final class ConfigMessages {
 				}
 
 				key.value = Util.applyTextFormat(str);
-			} else if (key.type == String[].class) {
+			} else if (key.type == List.class) {
 				if (!fileWasExisted) {
-					messagesConfig.set(key.path, key.defaultValue);
+					key.value = key.defaultValue;
+					messagesConfig.set(key.path, key.value);
 					saveRequired = true;
 					continue;
 				}
@@ -60,23 +63,16 @@ public final class ConfigMessages {
 
 				try {
 					list = (List<String>) messagesConfig.getList(key.path, null);
-				} catch (ClassCastException ignored) {
-					continue;
+				} catch (ClassCastException ex) {
+					list = null;
 				}
 
 				if (list == null) {
-					messagesConfig.set(key.path, key.value = key.defaultValue);
+					key.value = key.defaultValue;
+					messagesConfig.set(key.path, key.value);
 					saveRequired = true;
-
-					String[] arr = (String[]) key.value;
-
-					for (int i = 0; i < arr.length; i++) {
-						arr[i] = Util.applyTextFormat(arr[i]);
-					}
-
-					key.value = arr;
 				} else {
-					key.value = Util.applyTextFormat(list).toArray(new String[0]);
+					key.value = list;
 				}
 			}
 		}
@@ -95,7 +91,8 @@ public final class ConfigMessages {
 
 		if (!text.isEmpty()) {
 			for (int i = 0; i < variables.length; i += 2) {
-				text = text.replace(String.valueOf(variables[i]), String.valueOf(variables[i + 1]));
+				final int a = i;
+				text = Global.replace(text, String.valueOf(variables[i]), () -> String.valueOf(variables[a + 1]));
 			}
 		}
 
@@ -103,18 +100,24 @@ public final class ConfigMessages {
 	}
 
 	public static List<String> getList(MessageKeys key, Object... variables) {
-		String[] array = (String[]) key.value;
-		List<String> list = new java.util.ArrayList<>(array.length);
-
-		for (String msg : array) {
-			if (!msg.isEmpty()) {
-				for (int y = 0; y < variables.length; y += 2) {
-					msg = msg.replace(String.valueOf(variables[y]), String.valueOf(variables[y + 1]));
-				}
-
-				list.add(msg);
-			}
+		if (variables.length == 0) {
+			return (List<String>) key.value;
 		}
+
+		List<String> list = new java.util.ArrayList<>((List<String>) key.value);
+
+		list.replaceAll(one -> {
+			if (one.isEmpty()) {
+				return one;
+			}
+
+			for (int y = 0; y < variables.length; y += 2) {
+				final int a = y;
+				one = Global.replace(one, String.valueOf(variables[y]), () -> String.valueOf(variables[a + 1]));
+			}
+
+			return one;
+		});
 
 		return list;
 	}
@@ -148,7 +151,9 @@ public final class ConfigMessages {
 		public final Class<?> type;
 
 		private String path;
-		private Object value, defaultValue;
+		private Object value;
+
+        private final Object defaultValue;
 
 		MessageKeys(String value) {
 			this(null, value);
@@ -160,10 +165,10 @@ public final class ConfigMessages {
 			type = String.class;
 		}
 
-		MessageKeys(String mainSection, String... value) {
+		MessageKeys(String mainSection, String... defaultValue) {
 			path(mainSection);
-			this.value = defaultValue = value;
-			type = String[].class;
+			value = this.defaultValue = Arrays.asList(defaultValue);
+			type = List.class;
 		}
 
 		private void path(String mainSection) {
@@ -173,7 +178,8 @@ public final class ConfigMessages {
 				path = name();
 			}
 
-			path = hu.montlikadani.tablist.Global.replaceFrom(path, 0, "_", "", 1).replace('_', '-').toLowerCase(java.util.Locale.ENGLISH);
+			path = hu.montlikadani.tablist.Global.replaceFrom(path, 0, "_", "", 1)
+					.replace('_', '-').toLowerCase(java.util.Locale.ENGLISH);
 		}
 	}
 }

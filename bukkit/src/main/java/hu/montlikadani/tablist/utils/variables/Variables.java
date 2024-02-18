@@ -2,13 +2,14 @@ package hu.montlikadani.tablist.utils.variables;
 
 import java.time.LocalDateTime;
 
+import io.papermc.paper.threadedregions.TickRegionScheduler;
 import io.papermc.paper.threadedregions.TickRegions;
 import org.bukkit.World;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.config.constantsLoader.ConfigValues;
 import hu.montlikadani.tablist.logicalOperators.LogicalNode;
-import hu.montlikadani.tablist.tablist.TabText;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.Global;
 import hu.montlikadani.tablist.TabList;
@@ -22,7 +23,7 @@ public final class Variables {
 	private final TabList plugin;
 
 	private final java.util.List<LogicalNode> nodes = new java.util.ArrayList<>();
-	private final java.util.Set<Variable> variables = new java.util.HashSet<>(6);
+	private final java.util.Set<TimedVariable> timedVariables = new java.util.HashSet<>(8);
 
 	private final boolean entityAttributeSupported;
 
@@ -31,7 +32,7 @@ public final class Variables {
 
 		boolean att;
 		try {
-			org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH.name();
+			Attribute.GENERIC_MAX_HEALTH.name();
 			att = true;
 		} catch (Error err) {
 			att = false;
@@ -41,7 +42,7 @@ public final class Variables {
 
 	public void load() {
 		nodes.clear();
-		variables.clear();
+		timedVariables.clear();
 
 		if (ConfigValues.isPingFormatEnabled()) {
 			for (String f : ConfigValues.getPingColorFormats()) {
@@ -74,91 +75,83 @@ public final class Variables {
 		LogicalNode.reverseOrderOfArray(nodes);
 
 		if (ConfigValues.getDateFormat() != null) {
-			variables.add(new Variable("date", 3, (v, str) -> str = str.replace(v.fullName,
-					v.remainingValue(getTimeAsString(ConfigValues.getDateFormat())))));
+			timedVariables.add(new TimedVariable("date", 3,
+					variable -> getTimeAsString(ConfigValues.getDateFormat())));
 		}
 
-		variables.add(new Variable("online-players", 2, (v, str) -> {
+		timedVariables.add(new TimedVariable("online-players", 2, variable -> {
 			int players = PluginUtils.countVanishedPlayers();
 
 			if (ConfigValues.isCountFakePlayersToOnlinePlayers()) {
 				players += plugin.getFakePlayerHandler().fakePlayers.size();
 			}
 
-			str = str.replace(v.fullName, v.remainingValue(Integer.toString(players)));
+			return Integer.toString(players);
 		}));
 
-		variables.add(new Variable("max-players", 20, (v, str) -> str = str.replace(v.fullName,
-				v.remainingValue(Integer.toString(plugin.getServer().getMaxPlayers())))));
+		timedVariables.add(new TimedVariable("max-players", 20,
+				variable -> Integer.toString(plugin.getServer().getMaxPlayers())));
 
-		variables.add(new Variable("vanished-players", 2, (v, str) -> {
+		timedVariables.add(new TimedVariable("vanished-players", 2, variable -> {
 			int vanishedPlayers = PluginUtils.getVanishedPlayers();
 
-			str = str.replace(v.fullName, v.remainingValue(vanishedPlayers == 0 ? "0" : Integer.toString(vanishedPlayers)));
+			return vanishedPlayers == 0 ? "0" : Integer.toString(vanishedPlayers);
 		}));
 
-		variables.add(new Variable("motd", 10, (v, str) -> str = str.replace(v.fullName, v.remainingValue(plugin.getComplement().motd()))));
+		timedVariables.add(new TimedVariable("motd", 10, variable -> plugin.getComplement().motd()));
 
-		variables.add(new Variable("fake-players", 3, (v, str) -> {
-			int pls = plugin.getFakePlayerHandler().fakePlayers.size();
+		timedVariables.add(new TimedVariable("fake-players", 3, variable -> {
+			int size = plugin.getFakePlayerHandler().fakePlayers.size();
 
-			str = str.replace(v.fullName, v.remainingValue(pls == 0 ? "0" : Integer.toString(pls)));
+			return size == 0 ? "0" : Integer.toString(size);
 		}));
 
-		variables.add(new Variable("staff-online", 3, (v, str) -> {
+		timedVariables.add(new TimedVariable("staff-online", 3, variable -> {
 			int staffs = 0;
 
 			for (TabListUser user : plugin.getUsers()) {
 				Player player = user.getPlayer();
 
-				if (player == null || !PluginUtils.hasPermission(player, "tablist.onlinestaff") || (!ConfigValues.isCountVanishedStaff()
-						&& PluginUtils.isVanished(player))) {
+				if (player == null || !PluginUtils.hasPermission(player, "tablist.onlinestaff")
+						|| (!ConfigValues.isCountVanishedStaff() && PluginUtils.isVanished(player))) {
 					continue;
 				}
 
 				staffs++;
 			}
 
-			str = str.replace(v.fullName, v.remainingValue(staffs == 0 ? "0" : Integer.toString(staffs)));
+			return staffs == 0 ? "0" : Integer.toString(staffs);
 		}));
+
+		timedVariables.add(new TimedVariable("tps-overflow", 3,
+				variable -> roundTpsDigits(TabListAPI.getTPS()[0])));
+		timedVariables.add(new TimedVariable("tps", 3,
+				variable -> tpsDigits(TabListAPI.getTPS()[0])));
 	}
 
 	// These are the variables that will be replaced once
 	public String replaceMiscVariables(String str) {
 		str = str.replace("%servertype%", plugin.getServer().getName());
 		str = str.replace("%mc-version%", plugin.getServer().getBukkitVersion());
-		str = hu.montlikadani.tablist.Global.replaceToUnicodeSymbol(str);
+		str = Global.replaceToUnicodeSymbol(str);
 
 		return Util.applyTextFormat(str);
 	}
 
-	public TabText replaceVariables(Player pl, TabText text) {
-		if (!text.getPlainText().isEmpty()) {
-			text.updateText(replaceVariables(pl, text.getPlainText()));
-		}
-
-		return text;
-	}
-
-	private final long MB = 1024 * 1024;
-	private String fixedTpsString;
-
-	public String replaceVariables(Player pl, String str) {
+	public String replaceVariables(Player player, String str) {
 		if (str.isEmpty()) {
 			return str;
 		}
 
-		if (pl != null) {
-			str = setPlayerPlaceholders(pl, str);
+		if (player != null) {
+			str = setPlayerPlaceholders(player, str);
 		}
 
-		for (Variable variable : variables) {
-			if (variable.canReplace(str)) {
-				variable.consumer.accept(variable, str);
-			}
-
-			if (variable.getRemainingValue() != null) {
-				str = str.replace(variable.fullName, variable.getRemainingValue());
+		for (TimedVariable timedVariable : timedVariables) {
+			if (timedVariable.canReplace(str)) {
+				str = str.replace(timedVariable.fullName, timedVariable.keptValue(timedVariable.function.apply(timedVariable)));
+			} else if (timedVariable.getKeptValue() != null) {
+				str = str.replace(timedVariable.fullName, timedVariable.getKeptValue());
 			}
 		}
 
@@ -166,16 +159,13 @@ public final class Variables {
 			str = Global.replace(str, "%server-time%", () -> getTimeAsString(ConfigValues.getTimeFormat()));
 		}
 
-		str = Global.replace(str, "%server-ram-free%", () -> Long.toString(Runtime.getRuntime().freeMemory() / MB));
-		str = Global.replace(str, "%server-ram-max%", () -> Long.toString(Runtime.getRuntime().maxMemory() / MB));
+		final long megaBytes = 1048576L;
+		final Runtime runtime = Runtime.getRuntime();
 
-		str = Global.replace(str, "%server-ram-used%", () -> {
-			Runtime runtime = Runtime.getRuntime();
-			return Long.toString((runtime.totalMemory() - runtime.freeMemory()) / MB);
-		});
-
-		str = Global.replace(str, "%tps-overflow%", () -> roundTpsDigits(TabListAPI.getTPS()[0]));
-		str = Global.replace(str, "%tps%", () -> tpsDigits(TabListAPI.getTPS()[0]));
+		str = Global.replace(str, "%server-ram-free%", () -> Long.toString(runtime.freeMemory() / megaBytes));
+		str = Global.replace(str, "%server-ram-max%", () -> Long.toString(runtime.maxMemory() / megaBytes));
+		str = Global.replace(str, "%server-ram-used%", () ->
+				Long.toString((runtime.totalMemory() - runtime.freeMemory()) / megaBytes));
 
 		for (final TicksPerSecond one : TicksPerSecond.VALUES) {
 			str = Global.replace(str, "%tps-overflow-" + one.dur + "%", () -> {
@@ -207,7 +197,7 @@ public final class Variables {
 			if (plugin.isFoliaServer()) {
 				str = Global.replace(str, "%folia-current-region-average-tps-" + one.dur + "%", () -> {
 					io.papermc.paper.threadedregions.ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData,
-							TickRegions.TickRegionSectionData> currentRegion = io.papermc.paper.threadedregions.TickRegionScheduler.getCurrentRegion();
+							TickRegions.TickRegionSectionData> currentRegion = TickRegionScheduler.getCurrentRegion();
 
 					if (currentRegion == null) {
 						return "no current region";
@@ -217,7 +207,8 @@ public final class Variables {
 						return "no region data available";
 					}
 
-					io.papermc.paper.threadedregions.TickRegionScheduler.RegionScheduleHandle scheduleHandle = currentRegion.getData().getRegionSchedulingHandle();
+					TickRegionScheduler.RegionScheduleHandle scheduleHandle
+							= currentRegion.getData().getRegionSchedulingHandle();
 					io.papermc.paper.threadedregions.TickData.TickReportData tickReportData;
 
 					switch (one) {
@@ -252,15 +243,16 @@ public final class Variables {
 		return str;
 	}
 
+	private String fixedTpsString;
+
 	private String tpsDigits(double tps) {
 		return tps >= 21.0 ? (fixedTpsString == null ? fixedTpsString = roundTpsDigits(20.0) : fixedTpsString) : roundTpsDigits(tps);
 	}
 
-	@SuppressWarnings("deprecation")
 	String setPlayerPlaceholders(Player player, String text) {
 		if (plugin.hasPapi()) {
 
-			// A temporal solution for PAPI placeholders
+			// A temporal solution for non async-safe PAPI placeholders
 			int stc = text.indexOf("%server_total_chunks%");
 			int ste = text.indexOf("%server_total_entities%");
 			int stl = text.indexOf("%server_total_living_entities%");
@@ -302,7 +294,7 @@ public final class Variables {
 
 		if (text.indexOf("%player-max-health%") != -1) {
 			if (entityAttributeSupported) {
-				org.bukkit.attribute.AttributeInstance attr = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
+				org.bukkit.attribute.AttributeInstance attr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
 
 				if (attr != null) {
 					text = text.replace("%player-max-health%", Double.toString(attr.getDefaultValue()));
@@ -359,7 +351,8 @@ public final class Variables {
 	}
 
 	private String getTimeAsString(java.time.format.DateTimeFormatter formatterPattern) {
-		return (ConfigValues.getTimeZone() == null ? LocalDateTime.now() : LocalDateTime.now(ConfigValues.getTimeZone().toZoneId())).format(formatterPattern);
+		return (ConfigValues.getTimeZone() == null ? LocalDateTime.now() : LocalDateTime.now(ConfigValues.getTimeZone()
+				.toZoneId())).format(formatterPattern);
 	}
 
 	private int getChunks() {

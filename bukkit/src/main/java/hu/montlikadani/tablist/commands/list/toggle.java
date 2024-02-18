@@ -19,48 +19,50 @@ public final class toggle implements ICommand {
 	public void run(TabList plugin, CommandSender sender, Command cmd, String label, String[] args) {
 		if (args.length == 1) {
 			if (!(sender instanceof Player)) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.TOGGLE_CONSOLE_USAGE, "%command%", label));
+				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.TOGGLE_CONSOLE_USAGE,
+						"%command%", label));
 				return;
 			}
 
-			Player player = (Player) sender;
+			final Player player = (Player) sender;
 
 			plugin.getUser(player).ifPresent(
-					user -> plugin.getComplement().sendMessage(player, ConfigMessages.get(toggleTab(user, player) ? ConfigMessages.MessageKeys.TOGGLE_ENABLED
-							: ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
+					user -> plugin.getComplement().sendMessage(player, ConfigMessages.get(toggleTab(user, player)
+							? ConfigMessages.MessageKeys.TOGGLE_ENABLED : ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
 			return;
 		}
 
-		if (args.length == 2) {
-			String first = args[1];
+		String first = args[1];
 
-			if (first.equalsIgnoreCase("all")) {
-				if (sender instanceof Player && !sender.hasPermission(Perm.TOGGLEALL.value)) {
-					plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION, "%perm%", Perm.TOGGLEALL.value));
-					return;
-				}
-
-				if (!(TabToggleBase.globallySwitched = !TabToggleBase.globallySwitched)) {
-					for (TabListUser user : plugin.getUsers()) {
-						user.getTabHandler().loadTabComponents();
-					}
-				} else {
-					TabToggleBase.TEMPORAL_PLAYER_CACHE.clear();
-				}
-
+		if (first.equalsIgnoreCase("all")) {
+			if (sender instanceof Player && !sender.hasPermission(Perm.TOGGLEALL.value)) {
+				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_PERMISSION,
+						"%perm%", Perm.TOGGLEALL.value));
 				return;
 			}
 
-			Player player = plugin.getServer().getPlayer(first);
-			if (player == null) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.TOGGLE_PLAYER_NOT_FOUND, "%player%", first));
-				return;
+			if (!(TabToggleBase.globallySwitched = !TabToggleBase.globallySwitched)) {
+				for (TabListUser user : plugin.getUsers()) {
+					user.getTabHandler().loadTabComponents();
+				}
+			} else {
+				TabToggleBase.TEMPORAL_PLAYER_CACHE.clear();
 			}
 
-			plugin.getUser(player).ifPresent(
-					user -> plugin.getComplement().sendMessage(player, ConfigMessages.get(toggleTab(user, player) ? ConfigMessages.MessageKeys.TOGGLE_ENABLED
-							: ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
+			return;
 		}
+
+		final Player player = plugin.getServer().getPlayer(first);
+
+		if (player == null) {
+			plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.TOGGLE_PLAYER_NOT_FOUND,
+					"%player%", first));
+			return;
+		}
+
+		plugin.getUser(player).ifPresent(
+				user -> plugin.getComplement().sendMessage(player, ConfigMessages.get(toggleTab(user, player)
+						? ConfigMessages.MessageKeys.TOGGLE_ENABLED : ConfigMessages.MessageKeys.TOGGLE_DISABLED)));
 	}
 
 	private boolean toggleTab(TabListUser user, Player player) {

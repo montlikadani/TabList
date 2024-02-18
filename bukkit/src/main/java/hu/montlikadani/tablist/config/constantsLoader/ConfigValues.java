@@ -5,7 +5,7 @@ import java.util.*;
 
 import hu.montlikadani.api.IPacketNM;
 import hu.montlikadani.tablist.utils.ServerVersion;
-import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
+import hu.montlikadani.tablist.utils.reflection.ComponentParser;
 import org.bukkit.configuration.ConfigurationSection;
 
 import hu.montlikadani.tablist.Global;
@@ -33,7 +33,7 @@ public final class ConfigValues {
 
 	private static int tpsDigits, groupsRefreshInterval, objectRefreshInterval;
 
-	private static double tpsPerformanceObservationValue;
+	private static double tpsObservationValue;
 
 	public static final List<List<String>> PER_WORLD_LIST_NAMES = new java.util.ArrayList<>();
 
@@ -49,12 +49,15 @@ public final class ConfigValues {
 		PER_WORLD_LIST_NAMES.clear();
 
 		c.addComment("hook.placeholderapi", "Hook to PlaceholderAPI to use custom placeholders.");
-		c.addComment("tps-performance-observation-value", "This option monitors server performance. If the server's TPS is less than the set value,",
+		c.addComment("tps-performance-observation-value",
+				"This option monitors server performance. If the server's TPS is less than the set value,",
 				"TabList will cancels all currently running schedulers to improve server performance.",
 				"TabList will not restart these schedulers (ie animations, group updates, etc.),",
 				"so you have to do it manually, by reconnecting to the server or by reloading the plugin.",
-				"At values below 8-5, TabList is almost unable to stop its own running processes,", "as the server is already under a very heavy load.",
-				"The values should be between 5-18", "If the value is below 5 or above 18, the default value will be 16.0", "To disable this feature set to -1");
+				"At values below 8-5, TabList is almost unable to stop its own running processes,",
+				"as the server is already under a very heavy load.",
+				"The values should be between 5-18", "If the value is below 5 or above 18, the default value will be 16.0",
+				"To disable this feature set to -1");
 
 		c.addComment("fake-players", "Fake players that can be added to the player list.");
 		c.addComment("fake-players.count-fake-players-to-online-players", "Count the added fake players to the %online-players% placeholder?");
@@ -150,10 +153,10 @@ public final class ConfigValues {
 		c.addComment("logconsole", "Plugin debug log messages");
 
 		placeholderAPI = c.get("hook.placeholderapi", true);
-		tpsPerformanceObservationValue = c.get("tps-performance-observation-value", -1.0);
+		tpsObservationValue = c.get("tps-performance-observation-value", -1.0);
 
-		if (tpsPerformanceObservationValue != -1.0 && (tpsPerformanceObservationValue < 5.0 || tpsPerformanceObservationValue > 18.0)) {
-			tpsPerformanceObservationValue = 16.0;
+		if (tpsObservationValue != -1.0 && (tpsObservationValue < 5.0 || tpsObservationValue > 18.0)) {
+			tpsObservationValue = 16.0;
 		}
 
 		fakePlayers = c.get("fake-players.enabled", c.getBoolean("enable-fake-players"));
@@ -272,7 +275,7 @@ public final class ConfigValues {
 				if (objectiveFormat == IPacketNM.ObjectiveFormat.STYLED) {
 					objectiveFormatText = format.split(";");
 				} else if (objectiveFormat == IPacketNM.ObjectiveFormat.FIXED) {
-					objectiveFormatText = ReflectionUtils.asComponent(format);
+					objectiveFormatText = ComponentParser.asComponent(format);
 				}
 			}
 		}
@@ -465,8 +468,8 @@ public final class ConfigValues {
 		return followNameTagVisibility;
 	}
 
-	public static double getTpsPerformanceObservationValue() {
-		return tpsPerformanceObservationValue;
+	public static double getTpsObservationValue() {
+		return tpsObservationValue;
 	}
 
 	public static boolean isUseLPWeightToOrderGroupsFirst() {

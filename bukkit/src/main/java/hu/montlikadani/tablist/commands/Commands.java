@@ -75,7 +75,8 @@ public final class Commands implements CommandExecutor, TabCompleter {
 					return true;
 				}
 			} else if (processor.playerOnly()) {
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_CONSOLE, "%command%", label + " " + first));
+				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.NO_CONSOLE,
+						"%command%", label + " " + first));
 				return true;
 			}
 
@@ -92,7 +93,9 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 			if (!isPlayer || sender.hasPermission(processor.permission().value)) {
 				String params = processor.params().isEmpty() ? "" : ' ' + processor.params();
-				plugin.getComplement().sendMessage(sender, Util.applyTextFormat("&7/" + label + " " + processor.name() + params + " -&6 " + processor.desc()));
+
+				plugin.getComplement().sendMessage(sender, Util.applyTextFormat("&7/" + label + " "
+						+ processor.name() + params + " -&6 " + processor.desc()));
 			}
 		}
 
@@ -101,32 +104,33 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command cmd, String commandLabel, String[] args) {
-		List<String> cmds = new ArrayList<>(this.commands.length);
+		List<String> list = new ArrayList<>(this.commands.length);
 
 		switch (args.length) {
 		case 1:
-			cmds.addAll(availableSubCommands(sender));
+			list.addAll(availableSubCommands(sender));
 			break;
 		case 2:
 			if (ConfigValues.isFakePlayers() && args[0].equalsIgnoreCase("fakeplayers")) {
 				for (String c : new String[] { "add", "remove", "list", "setskin", "setping", "setdisplayname", "rename" }) {
-					cmds.add(c);
+					list.add(c);
 				}
 			} else if (args[0].equalsIgnoreCase("toggle")) {
-				cmds.add("all");
+				list.add("all");
 			}
 
 			break;
 		case 3:
 			String first = args[0];
 
-			if (ConfigValues.isFakePlayers() && first.equalsIgnoreCase("fakeplayers") && !args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("list")) {
+			if (ConfigValues.isFakePlayers() && first.equalsIgnoreCase("fakeplayers")
+					&& !args[1].equalsIgnoreCase("add") && !args[1].equalsIgnoreCase("list")) {
 				for (IFakePlayer fp : plugin.getFakePlayerHandler().fakePlayers) {
-					cmds.add(fp.getName());
+					list.add(fp.getName());
 				}
 			} else if (first.equalsIgnoreCase("group") || first.equalsIgnoreCase("player")) {
 				for (String ca : new String[] { "prefix", "suffix", "priority", "tabname", "remove" }) {
-					cmds.add(ca);
+					list.add(ca);
 				}
 			}
 
@@ -135,7 +139,7 @@ public final class Commands implements CommandExecutor, TabCompleter {
 			break;
 		}
 
-		return cmds.isEmpty() ? null : cmds; // Suggest player names
+		return list.isEmpty() ? null : list; // Suggest player names
 	}
 
 	private Set<String> availableSubCommands(CommandSender sender) {

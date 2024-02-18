@@ -3,7 +3,7 @@ package hu.montlikadani.tablist.packets;
 import com.mojang.authlib.GameProfile;
 import hu.montlikadani.api.IPacketNM;
 import hu.montlikadani.tablist.utils.reflection.ClazzContainer;
-import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
+import hu.montlikadani.tablist.utils.reflection.ComponentParser;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import org.bukkit.Bukkit;
@@ -493,7 +493,7 @@ public final class LegacyVersion implements IPacketNM {
                 if (displayName.getType() == String.class) {
                     displayName.set(newTeamPacket, teamName);
                 } else {
-                    displayName.set(newTeamPacket, ReflectionUtils.asComponent(teamName));
+                    displayName.set(newTeamPacket, ComponentParser.asComponent(teamName));
                 }
             }
 

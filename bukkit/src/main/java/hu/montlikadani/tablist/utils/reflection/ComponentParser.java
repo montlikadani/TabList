@@ -4,7 +4,7 @@ import hu.montlikadani.tablist.tablist.TabText;
 
 import java.util.concurrent.locks.ReentrantLock;
 
-public final class ReflectionUtils {
+public final class ComponentParser {
 
 	public static final Object EMPTY_COMPONENT;
 
@@ -16,7 +16,7 @@ public final class ReflectionUtils {
 		EMPTY_COMPONENT = asComponent("");
 	}
 
-	private ReflectionUtils() {
+	private ComponentParser() {
 	}
 
 	private static JsonComponent getJsonComponent() {

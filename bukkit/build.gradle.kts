@@ -45,7 +45,9 @@ dependencies {
     compileOnly(libs.authlib)
     compileOnly("net.luckperms:api:5.4")
 
-    paperweight.foliaDevBundle("1.20.2-R0.1-SNAPSHOT")
+    paperweight.foliaDevBundle("1.20.4-R0.1-SNAPSHOT") {
+        exclude("com.mojang", "authlib")
+    }
 
     compileOnly("net.essentialsx:EssentialsX:2.21.0-SNAPSHOT") {
         isTransitive = false

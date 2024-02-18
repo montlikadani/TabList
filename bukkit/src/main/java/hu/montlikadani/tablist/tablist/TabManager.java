@@ -31,7 +31,8 @@ public final class TabManager {
 
 		user.getTabHandler().loadTabComponents();
 
-		final int refreshTime = TabConfigValues.getUpdateInterval();
+		int refreshTime = TabConfigValues.getUpdateInterval();
+
 		if (refreshTime < 1) {
 			user.getTabHandler().sendTab();
 			return;
@@ -39,13 +40,13 @@ public final class TabManager {
 
 		if (scheduler == null) {
 			scheduler = plugin.newTLScheduler().submitAsync(() -> {
-				if (plugin.performanceIsUnderValue() || plugin.getUsers().isEmpty()) {
+				if (plugin.tpsIsUnderValue() || plugin.getUsers().isEmpty()) {
 					cancelTask();
 					return;
 				}
 
-				for (TabListUser u : plugin.getUsers()) {
-					u.getTabHandler().sendTab();
+				for (TabListUser one : plugin.getUsers()) {
+					one.getTabHandler().sendTab();
 				}
 			}, 0, refreshTime);
 		}

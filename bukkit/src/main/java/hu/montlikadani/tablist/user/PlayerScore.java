@@ -8,7 +8,7 @@ public final class PlayerScore {
 	private final String scoreName;
 
 	private int lastScore = -1;
-	private boolean isObjectiveCreated = false;
+	private boolean isObjectiveCreated;
 
 	public PlayerScore(String scoreName) {
 		this.scoreName = scoreName;

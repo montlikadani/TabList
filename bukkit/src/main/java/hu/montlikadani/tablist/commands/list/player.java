@@ -105,15 +105,16 @@ public final class player implements ICommand {
 			e.printStackTrace();
 		}
 
-		String prefix = config.getString("groups." + target + ".prefix", ""), suffix = config.getString("groups." + target + ".suffix", ""),
+		String prefix = config.getString("groups." + target + ".prefix", ""),
+				suffix = config.getString("groups." + target + ".suffix", ""),
 				tabName = config.getString("groups." + target + ".tabname", "");
 
 		TeamHandler team = null;
 
 		for (TeamHandler one : plugin.getGroups().getTeams()) {
-			if (one.team.equalsIgnoreCase(target)) {
+			if (one.name.equalsIgnoreCase(target)) {
 				team = one;
-				team.team = target;
+				team.name = target;
 				team.prefix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(prefix));
 				team.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(tabName));
 				team.suffix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(suffix));
@@ -125,7 +126,7 @@ public final class player implements ICommand {
 		if (team == null) {
 			team = new TeamHandler();
 
-			team.team = target;
+			team.name = target;
 			team.prefix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(prefix));
 			team.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(tabName));
 			team.suffix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(suffix));
@@ -152,6 +153,7 @@ public final class player implements ICommand {
 			plugin.getGroups().setPlayerTeam(groupPlayer, priority);
 		}
 
-		plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_SET, "%team%", target, "%meta%", prefix + tabName + suffix));
+		plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_SET,
+				"%team%", target, "%meta%", prefix + tabName + suffix));
 	}
 }

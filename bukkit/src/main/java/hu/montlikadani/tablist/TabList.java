@@ -10,6 +10,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 
+import hu.montlikadani.tablist.api.TabListAPI;
 import hu.montlikadani.tablist.tablist.TabToggleBase;
 import hu.montlikadani.tablist.utils.Util;
 import hu.montlikadani.tablist.utils.scheduler.TLScheduler;
@@ -50,8 +51,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	private transient org.bukkit.plugin.Plugin papi;
 
-	private transient boolean hasPermissionService = false;
-	private transient boolean isFoliaServer = false;
+	private transient boolean hasPermissionService;
+	private transient boolean isFoliaServer;
 
 	private final Set<TextAnimation> animations = new HashSet<>(8);
 	private final Set<TabListUser> users = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -80,7 +81,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			Class.forName("hu.montlikadani.tablist.packets.PacketNM");
 		} catch (ClassNotFoundException ignored) {
 		}
-		hu.montlikadani.tablist.api.TabListAPI.getTPS();
+		TabListAPI.getTPS();
 
 		conf.loadFiles();
 		variables.load();
@@ -99,7 +100,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		groups.load();
 
 		getServer().getOnlinePlayers().forEach(this::getOrLoadUser);
-		tabManager.toggleBase.loadToggledTabs(this);
+		tabManager.toggleBase.load(this);
 		getServer().getOnlinePlayers().forEach(this::updateAll);
 
 		UpdateDownloader.checkFromGithub(this);
@@ -153,7 +154,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			});
 		}
 
-		tabManager.toggleBase.saveToggledTabs(this);
+		tabManager.toggleBase.save(this);
 		fakePlayerHandler.removeAllFakePlayer();
 		HandlerList.unregisterAll(this);
 	}
@@ -187,7 +188,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	}
 
 	private void beginDataCollection() {
-		YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(new File(getDataFolder().getParentFile(), "bStats"), "config.yml"));
+		YamlConfiguration config = YamlConfiguration.loadConfiguration(new File(new File(getDataFolder().getParentFile(),
+				"bStats"), "config.yml"));
 
 		if (!config.getBoolean("enabled", true)) {
 			return;
@@ -204,7 +206,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		metrics.addCustomChart(new org.bstats.charts.SimplePie("enable_tablist", () -> Boolean.toString(TabConfigValues.isEnabled())));
 
 		if (ConfigValues.getObjectType() != Objects.ObjectTypes.NONE) {
-			metrics.addCustomChart(new org.bstats.charts.SimplePie("object_type", () -> ConfigValues.getObjectType().loweredName));
+			metrics.addCustomChart(new org.bstats.charts.SimplePie("object_type",
+					() -> ConfigValues.getObjectType().name().toLowerCase(java.util.Locale.ENGLISH)));
 		}
 
 		metrics.addCustomChart(new org.bstats.charts.SimplePie("enable_fake_players", () -> Boolean.toString(ConfigValues.isFakePlayers())));
@@ -214,10 +217,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	private void registerCommands() {
 		Optional.ofNullable(getCommand("tablist")).ifPresent(tl -> {
-			Commands cmds = new Commands(this);
+			Commands commands = new Commands(this);
 
-			tl.setExecutor(cmds);
-			tl.setTabCompleter(cmds);
+			tl.setExecutor(commands);
+			tl.setTabCompleter(commands);
 		});
 	}
 
@@ -321,7 +324,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 			if (!list.isEmpty()) {
 				list.replaceAll(variables::replaceMiscVariables);
 
-				animations.add(new TextAnimation(name, list, section.getInt(name + ".interval", 200), section.getBoolean(name + ".random", false)));
+				animations.add(new TextAnimation(name, list, section.getInt(name + ".interval", 200),
+						section.getBoolean(name + ".random", false)));
 			}
 		}
 	}
@@ -446,13 +450,14 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		PacketNM.NMS_PACKET.removePlayerChannelListener(player);
 	}
 
-	private boolean printed = false;
+	private boolean printed;
 
-	public boolean performanceIsUnderValue() {
-		if (ConfigValues.getTpsPerformanceObservationValue() != -1.0 && hu.montlikadani.tablist.api.TabListAPI.getTPS()[0]
-				<= ConfigValues.getTpsPerformanceObservationValue()) {
+	public boolean tpsIsUnderValue() {
+		double value = ConfigValues.getTpsObservationValue();
+
+		if (value != -1.0 && TabListAPI.getTPS()[0] <= value) {
 			if (!printed) {
-				getLogger().log(Level.INFO, "All {0} schedulers has been terminated. (Low performance)", getName());
+				getLogger().log(Level.INFO, "All {0} schedulers has been terminated. (Low tps)", getName());
 				printed = true;
 			}
 

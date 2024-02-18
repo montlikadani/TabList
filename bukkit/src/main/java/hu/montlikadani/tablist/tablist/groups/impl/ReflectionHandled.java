@@ -17,7 +17,7 @@ public class ReflectionHandled {
 	}
 
 	public void createAndUpdateTeam() {
-		Player player = groupPlayer.getUser().getPlayer();
+		Player player = groupPlayer.tabListUser.getPlayer();
 
 		if (player == null) {
 			return;
@@ -26,15 +26,18 @@ public class ReflectionHandled {
 		if (tl.getGroups().isToSort()) {
 			unregisterTeam(false);
 
-			PacketNM.NMS_PACKET.createBoardTeam(groupPlayer.getFullGroupTeamName(), player, ConfigValues.isFollowNameTagVisibility());
+			PacketNM.NMS_PACKET.createBoardTeam(groupPlayer.getFullGroupTeamName(), player,
+					ConfigValues.isFollowNameTagVisibility());
 		}
 
-		Object updatePacket = PacketNM.NMS_PACKET.updateDisplayNamePacket(PacketNM.NMS_PACKET.getPlayerHandle(player), null, false);
+		Object updatePacket = PacketNM.NMS_PACKET.updateDisplayNamePacket(PacketNM.NMS_PACKET.getPlayerHandle(player),
+				null, false);
 
-		PacketNM.NMS_PACKET.setInfoData(updatePacket, groupPlayer.getUser().getUniqueId(), -2, groupPlayer.getTabNameWithPrefixSuffix().toComponent());
+		PacketNM.NMS_PACKET.setInfoData(updatePacket, groupPlayer.tabListUser.getUniqueId(), -2,
+				groupPlayer.getTabNameWithPrefixSuffix().toComponent());
 
-		for (Player pl : tl.getServer().getOnlinePlayers()) {
-			PacketNM.NMS_PACKET.sendPacket(pl, updatePacket);
+		for (Player one : tl.getServer().getOnlinePlayers()) {
+			PacketNM.NMS_PACKET.sendPacket(one, updatePacket);
 		}
 	}
 
@@ -52,10 +55,11 @@ public class ReflectionHandled {
 		Object updateNamePacket = null;
 
 		if (clearName) {
-			Player pl = groupPlayer.getUser().getPlayer();
+			Player player = groupPlayer.tabListUser.getPlayer();
 
-			if (pl != null) {
-				updateNamePacket = PacketNM.NMS_PACKET.updateDisplayNamePacket(PacketNM.NMS_PACKET.getPlayerHandle(pl), null, false);
+			if (player != null) {
+				updateNamePacket = PacketNM.NMS_PACKET.updateDisplayNamePacket(PacketNM.NMS_PACKET.getPlayerHandle(player),
+						null, false);
 			}
 		}
 

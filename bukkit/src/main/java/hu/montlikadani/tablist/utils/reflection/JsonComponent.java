@@ -137,7 +137,8 @@ public final class JsonComponent {
 				int closeIndex;
 				int fromIndex = i + 10;
 
-				if (text.regionMatches(true, i, "{gradient=", 0, 10) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
+				if (text.regionMatches(true, i, "{gradient=", 0, 10)
+						&& (closeIndex = text.indexOf('}', fromIndex)) != -1) {
 					Color[] colors = new Color[2];
 					int co = 0;
 
@@ -216,7 +217,8 @@ public final class JsonComponent {
 					if (res != null) {
 						font = res;
 					}
-				} else if (text.regionMatches(true, i, "{/font", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
+				} else if (text.regionMatches(true, i, "{/font", 0, 6)
+						&& (closeIndex = text.indexOf('}', fromIndex)) != -1) {
 					font = fonts.computeIfAbsent("default", s -> NamespacedKey.minecraft(s).toString());
 				} else {
 					builder.append(charAt);

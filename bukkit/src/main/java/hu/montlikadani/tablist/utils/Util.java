@@ -1,6 +1,5 @@
 package hu.montlikadani.tablist.utils;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -57,16 +56,6 @@ public final class Util {
 		}
 
 		return applyLegacyColours ? org.bukkit.ChatColor.translateAlternateColorCodes('&', value) : value;
-	}
-
-	public static List<String> applyTextFormat(List<String> list) {
-		return applyTextFormat(list, true);
-	}
-
-	public static List<String> applyTextFormat(List<String> list, boolean applyLegacyColours) {
-		list.replaceAll(value -> applyTextFormat(value, applyLegacyColours));
-
-		return list;
 	}
 
 	public static Optional<UUID> tryParseId(String uuid) {

@@ -6,7 +6,7 @@ import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.user.TabListUser;
 import hu.montlikadani.tablist.utils.Pair;
 import hu.montlikadani.tablist.utils.PluginUtils;
-import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
+import hu.montlikadani.tablist.utils.reflection.ComponentParser;
 import org.bukkit.entity.Player;
 
 import java.util.Random;
@@ -16,7 +16,7 @@ public class TabHandler {
 	private final TabList plugin;
 	private final TabListUser user;
 
-	private boolean tabEmpty = false;
+	private boolean tabEmpty;
 
 	private Random random;
 	private TabText[] header, footer;
@@ -31,7 +31,8 @@ public class TabHandler {
 		tabEmpty = false;
 		header = footer = null;
 
-		final Player player = user.getPlayer();
+		Player player = user.getPlayer();
+
 		if (player == null) {
 			return;
 		}
@@ -42,13 +43,13 @@ public class TabHandler {
 			return;
 		}
 
-		final String world = player.getWorld().getName();
+		String world = player.getWorld().getName();
 
 		if (TabConfigValues.getDisabledWorlds().contains(world)) {
 			return;
 		}
 
-		final String pName = player.getName();
+		String pName = player.getName();
 
 		if (TabConfigValues.getBlackListedPlayers().contains(pName)) {
 			return;
@@ -150,7 +151,7 @@ public class TabHandler {
 
 	public void sendEmptyTab(Player player) {
 		if (player != null && !tabEmpty) { // Only send it once to allow other plugins to overwrite tablist
-			PacketNM.NMS_PACKET.sendTabTitle(player, ReflectionUtils.EMPTY_COMPONENT, ReflectionUtils.EMPTY_COMPONENT);
+			PacketNM.NMS_PACKET.sendTabTitle(player, ComponentParser.EMPTY_COMPONENT, ComponentParser.EMPTY_COMPONENT);
 			tabEmpty = true;
 		}
 	}
@@ -160,7 +161,8 @@ public class TabHandler {
 			return;
 		}
 
-		final Player player = user.getPlayer();
+		Player player = user.getPlayer();
+
 		if (player == null) {
 			return;
 		}
@@ -185,14 +187,14 @@ public class TabHandler {
 				fo = footer[footer.length == 1 ? 0 : random.nextInt(footer.length)];
 		}
 
-		Object head = ReflectionUtils.EMPTY_COMPONENT;
-		Object foot = ReflectionUtils.EMPTY_COMPONENT;
+		Object head = ComponentParser.EMPTY_COMPONENT;
+		Object foot = ComponentParser.EMPTY_COMPONENT;
 
 		if (he != null) {
 			TabText tt = new TabText(he);
 
 			tt.plainText = plugin.makeAnim(tt.plainText);
-			head = plugin.getPlaceholders().replaceVariables(player, tt).toComponent();
+			head = toComponentWithVariables(player, tt);
 			tabEmpty = false;
 		}
 
@@ -200,10 +202,18 @@ public class TabHandler {
 			TabText tt = new TabText(fo);
 
 			tt.plainText = plugin.makeAnim(tt.plainText);
-			foot = plugin.getPlaceholders().replaceVariables(player, tt).toComponent();
+			foot = toComponentWithVariables(player, tt);
 			tabEmpty = false;
 		}
 
 		PacketNM.NMS_PACKET.sendTabTitle(player, head, foot);
+	}
+
+	private Object toComponentWithVariables(Player player, TabText text) {
+		if (!text.plainText.isEmpty()) {
+			text.updateText(plugin.getPlaceholders().replaceVariables(player, text.plainText));
+		}
+
+		return text.toComponent();
 	}
 }

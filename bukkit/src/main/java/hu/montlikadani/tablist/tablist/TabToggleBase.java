@@ -30,10 +30,10 @@ public final class TabToggleBase {
         return globallySwitched || !user.isTabVisible();
     }
 
-    protected TabToggleBase() {
+    TabToggleBase() {
     }
 
-    public void loadToggledTabs(TabList tl) {
+    public void load(TabList tl) {
         if (!TabConfigValues.isRememberToggledTablistToFile()) {
             return;
         }
@@ -61,26 +61,28 @@ public final class TabToggleBase {
                     UUID id = UUID.fromString(uuid);
                     java.util.Optional<TabListUser> user = tl.getUser(id);
 
-                    if (!user.isPresent()) {
-                        TEMPORAL_PLAYER_CACHE.add(id);
-                    } else {
+                    if (user.isPresent()) {
                         user.get().setTabVisibility(false);
+                    } else {
+                        TEMPORAL_PLAYER_CACHE.add(id);
                     }
-                } catch (IllegalArgumentException e) {
+                } catch (IllegalArgumentException ignore) {
                 }
             }
-        } else {
-            config.set("tablists", null);
 
-            try {
-                config.save(file);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            return;
+        }
+
+        config.set("tablists", null);
+
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
-    public void saveToggledTabs(TabList tl) {
+    public void save(TabList tl) {
         File file = new File(tl.getDataFolder(), "toggledtablists.yml");
 
         if (!TabConfigValues.isRememberToggledTablistToFile() || (!globallySwitched && tl.getUsers().stream().allMatch(TabListUser::isTabVisible))) {
@@ -96,8 +98,8 @@ public final class TabToggleBase {
                 if (!file.createNewFile()) {
                     throw new RuntimeException("Failed to create toggledtablists.yml file");
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
         }
 

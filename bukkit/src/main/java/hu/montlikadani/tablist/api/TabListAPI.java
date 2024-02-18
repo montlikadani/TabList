@@ -8,11 +8,6 @@ import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.tablist.TabText;
 
-/**
- * The API methods for TabList.
- * 
- * @author montlikadani
- */
 public final class TabListAPI {
 
 	private static boolean isTpsMethodExists = false;

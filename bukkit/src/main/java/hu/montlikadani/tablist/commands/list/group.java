@@ -108,9 +108,9 @@ public final class group implements ICommand {
 		TeamHandler team = null;
 
 		for (TeamHandler one : plugin.getGroups().getTeams()) {
-			if (one.team.equalsIgnoreCase(target)) {
+			if (one.name.equalsIgnoreCase(target)) {
 				team = one;
-				team.team = target;
+				team.name = target;
 				team.prefix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(prefix));
 				team.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(tabName));
 				team.suffix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(suffix));
@@ -122,7 +122,7 @@ public final class group implements ICommand {
 		if (team == null) {
 			team = new TeamHandler();
 
-			team.team = target;
+			team.name = target;
 			team.prefix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(prefix));
 			team.tabName = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(tabName));
 			team.suffix = TabText.parseFromText(plugin.getPlaceholders().replaceMiscVariables(suffix));
@@ -131,6 +131,7 @@ public final class group implements ICommand {
 			plugin.getGroups().addTeam(team);
 		}
 
-		plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_SET, "%team%", target, "%meta%", prefix + tabName + suffix));
+		plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_SET,
+				"%team%", target, "%meta%", prefix + tabName + suffix));
 	}
 }

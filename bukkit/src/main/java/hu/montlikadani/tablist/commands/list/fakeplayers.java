@@ -140,7 +140,8 @@ public final class fakeplayers implements ICommand {
 				}
 
 				ConfigMessages.getList(ConfigMessages.MessageKeys.FAKE_PLAYER_LIST, "%amount%", list.size(),
-						"%fake-players%", res.toString()).forEach(line -> plugin.getComplement().sendMessage(sender, line));
+						"%fake-players%", res.toString()).forEach(line -> plugin.getComplement().sendMessage(sender,
+						Util.applyTextFormat(line)));
 				break;
 			case SETSKIN:
 				if (args.length < 4) {

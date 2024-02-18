@@ -1,7 +1,7 @@
 package hu.montlikadani.tablist.tablist;
 
 import hu.montlikadani.tablist.utils.reflection.JsonComponent;
-import hu.montlikadani.tablist.utils.reflection.ReflectionUtils;
+import hu.montlikadani.tablist.utils.reflection.ComponentParser;
 
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -49,7 +49,7 @@ public final class TabText {
 
 	/**
 	 * Parses {@link TabText} from a plain {@link String} text. If the parameter {@code from} is null this method will
-	 * returns {@link #EMPTY}. If not then it tries to parse the text into {@link TabText} containing the json.
+	 * return {@link #EMPTY}. If not then it tries to parse the text into {@link TabText} containing the json.
 	 * 
 	 * @param from the plain text to parse
 	 * @return the {@link TabText} containing json texts
@@ -70,7 +70,7 @@ public final class TabText {
 	 * @return the component object (can be IChatBaseComponent), or an empty object if this {@link #EMPTY}
 	 */
 	public Object toComponent() {
-		return this == EMPTY ? ReflectionUtils.EMPTY_COMPONENT : ReflectionUtils.asComponent(this);
+		return this == EMPTY ? ComponentParser.EMPTY_COMPONENT : ComponentParser.asComponent(this);
 	}
 
 	/**
@@ -84,7 +84,7 @@ public final class TabText {
 	}
 
 	// Caching jsons to avoid recreating continuously
-	private final List<JsonElementData> skippedDatas = new ArrayList<>(1);
+	private final List<JsonElementData> toSkip = new ArrayList<>(1);
 
 	private void findJsonInText(StringBuilder text) {
 		int start, end = 0;
@@ -112,20 +112,20 @@ public final class TabText {
 
 	private void addJson(String str) {
 		for (JsonElementData jsonElementData : jsonElements) {
-			if (skippedDatas.indexOf(jsonElementData) != -1) {
+			if (toSkip.indexOf(jsonElementData) != -1) {
 				return;
 			}
 
 			if (jsonElementData.plainJson.equals(str)) {
-				skippedDatas.add(jsonElementData);
+				toSkip.add(jsonElementData);
 				return;
 			}
 		}
 
-		if (!skippedDatas.isEmpty()) {
+		if (!toSkip.isEmpty()) {
 			jsonElements.clear();
-			jsonElements.addAll(skippedDatas);
-			skippedDatas.clear();
+			jsonElements.addAll(toSkip);
+			toSkip.clear();
 		}
 
 		try {
@@ -147,7 +147,7 @@ public final class TabText {
 		}
 	}
 
-	public final class JsonElementDataNew extends JsonElementData {
+	public static final class JsonElementDataNew extends JsonElementData {
 
 		public com.google.gson.JsonElement element;
 
@@ -156,14 +156,14 @@ public final class TabText {
 		}
 	}
 
-	public final class JsonElementDataOld extends JsonElementData {
+	public static final class JsonElementDataOld extends JsonElementData {
 
 		public JsonElementDataOld(String plainJson) {
 			super(plainJson);
 		}
 	}
 
-	public class JsonElementData {
+	public static class JsonElementData {
 
 		public final String plainJson;
 		public final int jsonLength;

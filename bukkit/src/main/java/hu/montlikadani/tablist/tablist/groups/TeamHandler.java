@@ -4,25 +4,25 @@ import hu.montlikadani.tablist.tablist.TabText;
 
 public class TeamHandler {
 
-	public String team = "", permission = "";
+	public String name = "", permission = "";
 	public transient TabText prefix, suffix, tabName = TabText.EMPTY;
 
-	public boolean global = false;
+	public boolean global;
 
-	public int priority = 0;
+	public int priority;
 	private int afkSortPriority = -1;
 
 	public TeamHandler() {
 	}
 
-	public TeamHandler(String team, TabText prefix, TabText suffix) {
-		this.team = team == null ? "" : team;
+	public TeamHandler(String name, TabText prefix, TabText suffix) {
+		this.name = name == null ? "" : name;
 		this.prefix = prefix;
 		this.suffix = suffix;
 	}
 
-	public TeamHandler(String team, TabText prefix, TabText suffix, String permission, int priority) {
-		this(team, prefix, suffix);
+	public TeamHandler(String name, TabText prefix, TabText suffix, String permission, int priority) {
+		this(name, prefix, suffix);
 
 		this.permission = permission == null ? "" : permission;
 		this.priority = priority;

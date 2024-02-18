@@ -79,7 +79,8 @@ public final class Objects {
 
 	@SuppressWarnings("deprecation")
 	private void registerHealthTab(Player pl) {
-		if (ConfigValues.getObjectsDisabledWorlds().contains(pl.getWorld().getName()) || ConfigValues.getHealthObjectRestricted().contains(pl.getName())) {
+		if (ConfigValues.getObjectsDisabledWorlds().contains(pl.getWorld().getName())
+				|| ConfigValues.getHealthObjectRestricted().contains(pl.getName())) {
 			unregisterHealthObjective(pl);
 			return;
 		}
@@ -139,7 +140,7 @@ public final class Objects {
 		}
 
 		scheduler = plugin.newTLScheduler().submitAsync(() -> {
-			if (plugin.performanceIsUnderValue() || plugin.getUsers().isEmpty()) {
+			if (plugin.tpsIsUnderValue() || plugin.getUsers().isEmpty()) {
 				cancelTask();
 			} else {
 				update();
@@ -177,8 +178,8 @@ public final class Objects {
 				if (type == ObjectTypes.PING) {
 					for (IFakePlayer fakePlayer : plugin.getFakePlayerHandler().fakePlayers) {
 						if (fakePlayer.getPingLatency() > 0) {
-							PacketNM.NMS_PACKET.sendPacket(player,
-									PacketNM.NMS_PACKET.changeScoreboardScorePacket(type.objectName, fakePlayer.getName(), fakePlayer.getPingLatency()));
+							PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET
+									.changeScoreboardScorePacket(type.objectName, fakePlayer.getName(), fakePlayer.getPingLatency()));
 						}
 					}
 				}
@@ -200,7 +201,8 @@ public final class Objects {
 				playerScore.setLastScore(lastScore);
 
 				for (Player pl : plugin.getServer().getOnlinePlayers()) {
-					PacketNM.NMS_PACKET.sendPacket(pl, PacketNM.NMS_PACKET.changeScoreboardScorePacket(type.objectName, playerScore.getScoreName(), lastScore));
+					PacketNM.NMS_PACKET.sendPacket(pl, PacketNM.NMS_PACKET.changeScoreboardScorePacket(type.objectName,
+							playerScore.getScoreName(), lastScore));
 				}
 			}
 		}
@@ -286,37 +288,31 @@ public final class Objects {
 		}
 
 		// Send remove action
-		PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.removeScoreboardScorePacket(type.objectName, playerScore.getScoreName(), 0));
+		PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET.removeScoreboardScorePacket(type.objectName,
+				playerScore.getScoreName(), 0));
 
 		// Unregister objective
 		PacketNM.NMS_PACKET.sendPacket(player,
-				PacketNM.NMS_PACKET.scoreboardObjectivePacket(PacketNM.NMS_PACKET.createScoreboardHealthObjectivePacket(type.objectName, type.chatBaseComponent), 1));
+				PacketNM.NMS_PACKET.scoreboardObjectivePacket(PacketNM.NMS_PACKET.createScoreboardHealthObjectivePacket(type.objectName,
+						type.chatBaseComponent), 1));
 	}
 
 	public enum ObjectTypes {
-		HEALTH("showhealth", false), PING("PingTab", true), CUSTOM("customObj", true), NONE("", false);
+		HEALTH("showhealth", false),
+		PING("PingTab", true),
+		CUSTOM("customObj", true),
+		NONE("", false);
 
-		public final String loweredName;
+		public final String objectName;
 
-		private final String objectName;
 		private Object chatBaseComponent;
 
-		ObjectTypes(String objectName, boolean needChatBaseComponent) {
-			if (!objectName.isEmpty()) {
-				loweredName = name().toLowerCase(java.util.Locale.ENGLISH);
-			} else {
-				loweredName = "";
-			}
-
-			if (needChatBaseComponent) {
-				chatBaseComponent = hu.montlikadani.tablist.utils.reflection.ReflectionUtils.asComponent(objectName);
+		ObjectTypes(String objectName, boolean needComponent) {
+			if (needComponent) {
+				chatBaseComponent = hu.montlikadani.tablist.utils.reflection.ComponentParser.asComponent(objectName);
 			}
 
 			this.objectName = objectName;
-		}
-
-		public String getObjectName() {
-			return objectName;
 		}
 	}
 
@@ -325,7 +321,7 @@ public final class Objects {
 		// Player placeholders
 		PING, EXP_TO_LEVEL, LEVEL, LIGHT_LEVEL;
 
-		public final String name;
+		final String name;
 
 		PluginPlaceholders() {
 			name = '%' + name().replace('_', '-').toLowerCase(Locale.ENGLISH) + '%';
