@@ -1,7 +1,7 @@
 plugins {
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("java-library")
-    id("io.papermc.paperweight.userdev") version "1.5.15"
+    id("io.papermc.paperweight.userdev") version "1.6.3"
 }
 
 java {
