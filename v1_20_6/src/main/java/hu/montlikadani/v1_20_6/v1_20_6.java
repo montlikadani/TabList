@@ -15,7 +15,9 @@ import java.util.Set;
 import net.minecraft.EnumChatFormat;
 import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketListener;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.IChatBaseComponent;
+import net.minecraft.network.chat.numbers.BlankFormat;
 import net.minecraft.network.protocol.EnumProtocolDirection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
@@ -52,6 +54,7 @@ import java.util.UUID;
 public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
 
     private Field entriesField, playerNetworkManagerField;
+    private java.util.Map<String, ScoreboardObjective> scoreboardObjectives;
 
     private final Scoreboard scoreboard = new Scoreboard();
     private final Set<TagTeam> tagTeams = new HashSet<>();
@@ -122,7 +125,7 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
     @Override
     public IChatBaseComponent fromJson(String json) {
 
-        //
+        // Without this the game is not able to convert json to formatted text and sends the json instead
         // See IChatBaseComponent#ChatSerializer#deserialize or b
         return net.minecraft.network.chat.ComponentSerialization.a
                 .parse(com.mojang.serialization.JsonOps.INSTANCE, com.google.gson.JsonParser.parseString(json)).getOrThrow();
@@ -310,7 +313,7 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
         if (objectiveFormat != null) {
             switch (objectiveFormat) {
                 case BLANK:
-                    numberFormat = new net.minecraft.network.chat.numbers.BlankFormat();
+                    numberFormat = new BlankFormat();
                     break;
                 case FIXED:
                     numberFormat = new net.minecraft.network.chat.numbers.FixedFormat((IChatBaseComponent) formatComponent);
@@ -333,8 +336,15 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
             }
         }
 
-        return new ScoreboardObjective(null, objectiveName, IScoreboardCriteria.b, (IChatBaseComponent) nameComponent,
-                IScoreboardCriteria.EnumScoreboardHealthDisplay.a, false, numberFormat);
+        if (scoreboardObjectives == null) {
+            scoreboardObjectives = new java.util.HashMap<>(1);
+        }
+
+        ScoreboardObjective objective = new ScoreboardObjective(null, objectiveName, IScoreboardCriteria.b,
+                (IChatBaseComponent) nameComponent, IScoreboardCriteria.EnumScoreboardHealthDisplay.a, false, numberFormat);
+
+        scoreboardObjectives.putIfAbsent(objectiveName, objective);
+        return objective;
     }
 
     @Override
@@ -360,14 +370,17 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public PacketPlayOutScoreboardScore changeScoreboardScorePacket(String objectiveName, String scoreName, int score) {
-        return new PacketPlayOutScoreboardScore(scoreName, objectiveName, score,
-                Optional.of(IChatBaseComponent.b("")), null);
+        ScoreboardObjective objective = scoreboardObjectives.get(objectiveName);
+
+        return new PacketPlayOutScoreboardScore(scoreName, objectiveName, score, Optional.of(CommonComponents.a),
+                objective == null ? Optional.of(new BlankFormat()) : Optional.of(objective.a(new BlankFormat())));
     }
 
     @Override
     public PacketPlayOutScoreboardScore removeScoreboardScorePacket(String objectiveName, String scoreName, int score) {
-        return new PacketPlayOutScoreboardScore(scoreName, objectiveName, score,
-                Optional.of(IChatBaseComponent.b("")), null);
+        scoreboardObjectives.remove(objectiveName);
+
+        return new PacketPlayOutScoreboardScore(scoreName, objectiveName, score, Optional.of(CommonComponents.a), Optional.empty());
     }
 
     @Override

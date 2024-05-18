@@ -177,9 +177,11 @@ public final class Objects {
 				// Update ping score for fake players if set
 				if (type == ObjectTypes.PING) {
 					for (IFakePlayer fakePlayer : plugin.getFakePlayerHandler().fakePlayers) {
-						if (fakePlayer.getPingLatency() > 0) {
+						int pingLatency = fakePlayer.getPingLatency();
+
+						if (pingLatency > 0) {
 							PacketNM.NMS_PACKET.sendPacket(player, PacketNM.NMS_PACKET
-									.changeScoreboardScorePacket(type.objectName, fakePlayer.getName(), fakePlayer.getPingLatency()));
+									.changeScoreboardScorePacket(type.objectName, fakePlayer.getName(), pingLatency));
 						}
 					}
 				}
