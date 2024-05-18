@@ -55,18 +55,8 @@ public final class FakePlayerHandler {
 			FileConfiguration config = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(file);
 			ConfigurationSection section = config.getConfigurationSection("list");
 
-			if (section != null && section.getKeys(false).isEmpty()) {
-				config.set("list", null);
-
-				try {
-					config.save(file);
-				} catch (IOException ex) {
-					ex.printStackTrace();
-				}
-
-				if (file.length() == 0L && !file.delete()) {
-					throw new RuntimeException("Failed to delete file " + file.getName());
-				}
+			if (section != null && section.getKeys(false).isEmpty() && !file.delete()) {
+				throw new RuntimeException("Failed to delete file " + file.getName());
 			}
 
 			return;
@@ -79,16 +69,16 @@ public final class FakePlayerHandler {
 		}
 
 		for (String name : section.getKeys(false)) {
-			FakePlayer fp = new FakePlayer(name, section.getString(name + ".displayname", ""), section.getString(name + ".headuuid", ""),
-					section.getInt(name + ".ping", -1));
-			fp.show();
-			fakePlayers.add(fp);
+			FakePlayer fakePlayer = new FakePlayer(name, section.getString(name + ".displayname", ""),
+					section.getString(name + ".headuuid", ""), section.getInt(name + ".ping", -1));
+			fakePlayer.show();
+			fakePlayers.add(fakePlayer);
 		}
 	}
 
 	public void display() {
-		for (IFakePlayer fp : fakePlayers) {
-			fp.show();
+		for (IFakePlayer fakePlayer : fakePlayers) {
+			fakePlayer.show();
 		}
 	}
 

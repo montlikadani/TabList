@@ -8,16 +8,16 @@ repositories {
 dependencies {
     api(project(":api"))
 
-    compileOnly("org.spigotmc:spigot:1.19.3-R0.1-SNAPSHOT") {
+    compileOnly("org.spigotmc:spigot:1.20.6-R0.1-SNAPSHOT") {
         exclude("org.yaml", "snakeyaml")
-        exclude("com.google.guava", "guava")
     }
 
     compileOnly(libs.authlib)
 
-    compileOnly("org.spigotmc:spigot-api:1.19.3-R0.1-SNAPSHOT") {
+    compileOnly("org.spigotmc:spigot-api:1.20.6-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
         exclude("org.yaml", "snakeyaml")
+        exclude("com.mojang", "authlib")
     }
 
     implementation(libs.netty.core)

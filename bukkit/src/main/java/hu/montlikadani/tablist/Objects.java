@@ -239,7 +239,8 @@ public final class Objects {
 				return Integer.parseInt(numberEscapeSequence.reset(me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, value))
 						.replaceAll(""));
 			} catch (NumberFormatException e) {
-				hu.montlikadani.tablist.utils.Util.logConsole("Invalid custom objective with " + value + " value.");
+				hu.montlikadani.tablist.utils.Util.consolePrint(java.util.logging.Level.INFO, plugin,
+					"Invalid custom objective with {0} value", value);
 			}
 		}
 

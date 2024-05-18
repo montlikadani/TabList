@@ -29,7 +29,7 @@ public final class ClazzContainer {
 			packetPlayOutScoreboardScoreConstructor, packetPlayOutScoreboardObjectiveConstructor, firstScoreboardObjectiveConstructor,
 			packetPlayOutScoreboardDisplayObjectiveConstructor;
 
-	private static boolean isTeamOptionStatusEnumExist = false;
+	private static boolean isTeamOptionStatusEnumExist;
 
 	static {
 		try {

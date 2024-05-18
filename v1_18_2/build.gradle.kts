@@ -1,13 +1,3 @@
-plugins {
-    id("java-library")
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-    disableAutoTargetJvm()
-}
-
 repositories {
     maven("https://repo.codemc.org/repository/nms/")
     maven("https://libraries.minecraft.net/")

@@ -1,18 +1,12 @@
 plugins {
-	id("com.github.johnrengelman.shadow") version "8.1.1"
-	id("java-library")
-}
-
-java {
-	sourceCompatibility = JavaVersion.VERSION_1_8
-	targetCompatibility = JavaVersion.VERSION_1_8
-	disableAutoTargetJvm()
+	id("io.github.goooler.shadow") version "8.1.7"
 }
 
 repositories {
 	gradlePluginPortal()
 	mavenCentral()
 	maven("https://oss.sonatype.org/content/repositories/snapshots")
+
 	maven {
 		url = uri("https://jitpack.io")
 		content {
@@ -40,18 +34,20 @@ dependencies {
 
 version = "2.3.5"
 
-// All of these is required to include :global project class files
 tasks {
 	withType<JavaCompile> {
 		options.encoding = "UTF-8"
 	}
+
 	jar {
 		archiveClassifier.set("noshade")
 	}
+
 	shadowJar {
 		archiveClassifier.set("")
 		archiveFileName.set("TabList-bungee-v${project.version}.jar")
 	}
+
 	build {
 		dependsOn(shadowJar)
 	}

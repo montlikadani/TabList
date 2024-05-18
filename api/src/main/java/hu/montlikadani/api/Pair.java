@@ -1,4 +1,4 @@
-package hu.montlikadani.tablist.utils;
+package hu.montlikadani.api;
 
 public final class Pair<K, V> {
 

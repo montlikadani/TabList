@@ -17,7 +17,7 @@ public final class JsonComponent {
 	public static final com.google.gson.Gson GSON = new com.google.gson.GsonBuilder().disableHtmlEscaping().create();
 
 	private final ArrayList<JsonObject> jsonList = new ArrayList<>(10);
-	private final java.util.Map<String, String> fonts = new java.util.HashMap<>(1);
+	private java.util.Map<String, String> fonts;
 
 	private Object emptyJson;
 
@@ -60,8 +60,8 @@ public final class JsonComponent {
 
 			char charAt = text.charAt(i);
 
-			if (charAt == '[' && existingJson != null && index < existingJson.size() && text.charAt(i + 1) == '"' && text.charAt(i + 2) == '"'
-					&& text.charAt(i + 3) == ',' && text.charAt(i + 4) == '{') {
+			if (charAt == '[' && existingJson != null && index < existingJson.size() && text.charAt(i + 1) == '"'
+					&& text.charAt(i + 2) == '"' && text.charAt(i + 3) == ',' && text.charAt(i + 4) == '{') {
 				if (builder.length() != 0) {
 					obj.addProperty("text", builder.toString());
 					jsonList.add(obj);
@@ -183,7 +183,8 @@ public final class JsonComponent {
 							int blue = (int) (startColor.getBlue() + perc * (endColor.getBlue() - startColor.getBlue()));
 
 							// https://stackoverflow.com/questions/4801366
-							obj.addProperty("color", String.format("#%06x", ((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff)));
+							obj.addProperty("color", String.format("#%06x",
+									((red & 0xff) << 16) | ((green & 0xff) << 8) | (blue & 0xff)));
 
 							if (lastColor != null && lastColor.formatter) {
 								obj.addProperty(lastColor.propertyName, true);
@@ -203,12 +204,16 @@ public final class JsonComponent {
 
 				String font = "";
 
-				if (text.regionMatches(true, i, "{font=", 0, 6) && (closeIndex = text.indexOf('}', fromIndex)) != -1) {
+				if (text.regionMatches(true, i, "{font=", 0, 6)
+						&& (closeIndex = text.indexOf('}', fromIndex)) != -1) {
+					if (fonts == null) {
+						fonts = new java.util.HashMap<>(1);
+					}
+
 					String res = fonts.computeIfAbsent(text.substring(fromIndex, closeIndex), key -> {
 						try {
 							return NamespacedKey.minecraft(key).toString();
-						} catch (IllegalArgumentException ie) {
-							org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, ie.getMessage());
+						} catch (IllegalArgumentException ignore) {
 						}
 
 						return null;

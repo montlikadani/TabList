@@ -10,8 +10,8 @@ import hu.montlikadani.tablist.tablist.TabText;
 
 public final class TabListAPI {
 
-	private static boolean isTpsMethodExists = false;
-	private static boolean isPingMethodExists = false;
+	private static boolean isTpsMethodExists;
+	private static boolean isPingMethodExists;
 
 	static {
 		try {

@@ -185,11 +185,11 @@ public final class Groups {
 
 		teams.add(defaultAssignedGroup = new TeamHandler("defaultLast", TabText.EMPTY, TabText.EMPTY, "", 0));
 
-		setWeightForTeams();
+		setTeamWeights();
 		startTask();
 	}
 
-	private void setWeightForTeams() {
+	private void setTeamWeights() {
 		if (!ConfigValues.isUseLPWeightToOrderGroupsFirst() || ConfigValues.isPreferPrimaryVaultGroup()
 				|| !plugin.hasPermissionService() || !plugin.getPermissionService().hasLuckPerms) {
 			return;
@@ -258,7 +258,7 @@ public final class Groups {
 
 	public void addTeam(TeamHandler team) {
 		teams.add(team);
-		setWeightForTeams();
+		setTeamWeights();
 	}
 
 	/**

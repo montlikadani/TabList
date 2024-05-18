@@ -8,7 +8,7 @@ public final class PacketNM {
 
 	static {
 		IPacketNM packetInstance;
-		String current = hu.montlikadani.tablist.utils.ServerVersion.getCurrent().name();
+		String current = hu.montlikadani.tablist.utils.ServerVersion.current().name();
 		int length = current.length();
 		int count = 0;
 

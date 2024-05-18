@@ -1,9 +1,10 @@
 package hu.montlikadani.tablist.utils.variables;
 
+import hu.montlikadani.api.Pair;
+import hu.montlikadani.api.TicksPerSecondType;
+import hu.montlikadani.tablist.FoliaPack;
 import java.time.LocalDateTime;
 
-import io.papermc.paper.threadedregions.TickRegionScheduler;
-import io.papermc.paper.threadedregions.TickRegions;
 import org.bukkit.World;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
@@ -127,6 +128,18 @@ public final class Variables {
 				variable -> roundTpsDigits(TabListAPI.getTPS()[0])));
 		timedVariables.add(new TimedVariable("tps", 3,
 				variable -> tpsDigits(TabListAPI.getTPS()[0])));
+
+		// A temporal solution for non async-safe PAPI placeholders
+		if (plugin.hasPapi()) {
+			timedVariables.add(new TimedVariable("server_total_chunks", 30,
+					variable -> Integer.toString(getWorldChunks())));
+
+			timedVariables.add(new TimedVariable("server_total_living_entities", 10,
+					variable -> Integer.toString(getLivingEntities())));
+
+			timedVariables.add(new TimedVariable("server_total_entities", 10,
+					variable -> Integer.toString(getTotalEntities())));
+		}
 	}
 
 	// These are the variables that will be replaced once
@@ -143,16 +156,16 @@ public final class Variables {
 			return str;
 		}
 
-		if (player != null) {
-			str = setPlayerPlaceholders(player, str);
-		}
-
 		for (TimedVariable timedVariable : timedVariables) {
 			if (timedVariable.canReplace(str)) {
 				str = str.replace(timedVariable.fullName, timedVariable.keptValue(timedVariable.function.apply(timedVariable)));
 			} else if (timedVariable.getKeptValue() != null) {
 				str = str.replace(timedVariable.fullName, timedVariable.getKeptValue());
 			}
+		}
+
+		if (player != null) {
+			str = setPlayerPlaceholders(player, str);
 		}
 
 		if (ConfigValues.getTimeFormat() != null) {
@@ -167,8 +180,8 @@ public final class Variables {
 		str = Global.replace(str, "%server-ram-used%", () ->
 				Long.toString((runtime.totalMemory() - runtime.freeMemory()) / megaBytes));
 
-		for (final TicksPerSecond one : TicksPerSecond.VALUES) {
-			str = Global.replace(str, "%tps-overflow-" + one.dur + "%", () -> {
+		for (final TicksPerSecondType one : TicksPerSecondType.VALUES) {
+			str = Global.replace(str, "%tps-overflow-" + one.type + "%", () -> {
 				switch (one) {
 					case MINUTES_1:
 						return roundTpsDigits(TabListAPI.getTPS()[0]);
@@ -181,7 +194,7 @@ public final class Variables {
 				}
 			});
 
-			str = Global.replace(str, "%tps-" + one.dur + "%", () -> {
+			str = Global.replace(str, "%tps-" + one.type + "%", () -> {
 				switch (one) {
 					case MINUTES_1:
 						return tpsDigits(TabListAPI.getTPS()[0]);
@@ -195,47 +208,10 @@ public final class Variables {
 			});
 
 			if (plugin.isFoliaServer()) {
-				str = Global.replace(str, "%folia-current-region-average-tps-" + one.dur + "%", () -> {
-					io.papermc.paper.threadedregions.ThreadedRegionizer.ThreadedRegion<TickRegions.TickRegionData,
-							TickRegions.TickRegionSectionData> currentRegion = TickRegionScheduler.getCurrentRegion();
+				str = Global.replace(str, "%folia-current-region-average-tps-" + one.type + "%", () -> {
+					Pair<Double, String> tickReportData = FoliaPack.tickReportDataByType(one);
 
-					if (currentRegion == null) {
-						return "no current region";
-					}
-
-					if (currentRegion.getData() == null) {
-						return "no region data available";
-					}
-
-					TickRegionScheduler.RegionScheduleHandle scheduleHandle
-							= currentRegion.getData().getRegionSchedulingHandle();
-					io.papermc.paper.threadedregions.TickData.TickReportData tickReportData;
-
-					switch (one) {
-						case SECONDS_5:
-							tickReportData = scheduleHandle.getTickReport5s(System.nanoTime());
-							break;
-						case SECONDS_15:
-							tickReportData = scheduleHandle.getTickReport15s(System.nanoTime());
-							break;
-						case MINUTES_1:
-							tickReportData = scheduleHandle.getTickReport1m(System.nanoTime());
-							break;
-						case MINUTES_5:
-							tickReportData = scheduleHandle.getTickReport5m(System.nanoTime());
-							break;
-						case MINUTES_15:
-							tickReportData = scheduleHandle.getTickReport15m(System.nanoTime());
-							break;
-						default:
-							return "-1";
-					}
-
-					if (tickReportData == null) {
-						return "no tick report generated";
-					}
-
-					return tpsDigits(tickReportData.tpsData().segmentAll().average());
+					return tickReportData.key == -1.0 ? tickReportData.value : tpsDigits(tickReportData.key);
 				});
 			}
 		}
@@ -251,38 +227,6 @@ public final class Variables {
 
 	String setPlayerPlaceholders(Player player, String text) {
 		if (plugin.hasPapi()) {
-
-			// A temporal solution for non async-safe PAPI placeholders
-			int stc = text.indexOf("%server_total_chunks%");
-			int ste = text.indexOf("%server_total_entities%");
-			int stl = text.indexOf("%server_total_living_entities%");
-
-			if (stc != -1 || ste != -1 || stl != -1) {
-				final String str = text;
-
-				try {
-					text = plugin.getServer().getScheduler().callSyncMethod(plugin, () -> {
-						String st = str;
-
-						if (stc != -1) {
-							st = st.replace("%server_total_chunks%", Integer.toString(getChunks()));
-						}
-
-						if (stl != -1) {
-							st = st.replace("%server_total_living_entities%", Integer.toString(getLivingEntities()));
-						}
-
-						if (ste != -1) {
-							st = st.replace("%server_total_entities%", Integer.toString(getTotalEntities()));
-						}
-
-						return st;
-					}).get();
-				} catch (InterruptedException | java.util.concurrent.ExecutionException ex) {
-					ex.printStackTrace();
-				}
-			}
-
 			text = me.clip.placeholderapi.PlaceholderAPI.setPlaceholders(player, text);
 		}
 
@@ -291,26 +235,22 @@ public final class Variables {
 		text = Global.replace(text, "%player-gamemode%", () -> player.getGameMode().name());
 		text = Global.replace(text, "%player-displayname%", () -> plugin.getComplement().displayName(player));
 		text = Global.replace(text, "%player-health%", () -> Double.toString(player.getHealth()));
-
-		if (text.indexOf("%player-max-health%") != -1) {
-			if (entityAttributeSupported) {
-				org.bukkit.attribute.AttributeInstance attr = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-
-				if (attr != null) {
-					text = text.replace("%player-max-health%", Double.toString(attr.getDefaultValue()));
-				}
-			} else {
-				text = text.replace("%player-max-health%", Double.toString(player.getMaxHealth()));
-			}
-		}
-
 		text = Global.replace(text, "%ping%", () -> formatPing(TabListAPI.getPing(player)));
 		text = Global.replace(text, "%exp-to-level%", () -> Integer.toString(player.getExpToLevel()));
 		text = Global.replace(text, "%level%", () -> Integer.toString(player.getLevel()));
 		text = Global.replace(text, "%xp%", () -> Float.toString(player.getExp()));
 		text = Global.replace(text, "%light-level%", () -> Integer.toString(player.getLocation().getBlock().getLightLevel()));
 
-		if (text.indexOf("%ip-address%") != -1) {
+		text = Global.replace(text, "%player-max-health%", () -> {
+			if (entityAttributeSupported) {
+				org.bukkit.attribute.AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+				return attribute == null ? "" : Double.toString(attribute.getDefaultValue());
+			}
+
+			return Double.toString(player.getMaxHealth());
+		});
+
+		text = Global.replace(text, "%ip-address%", () -> {
 			java.net.InetSocketAddress address = player.getAddress();
 
 			if (address != null) {
@@ -320,11 +260,13 @@ public final class Variables {
 					String hostAddress = inetAddress.getHostAddress();
 
 					if (hostAddress != null) {
-						text = text.replace("%ip-address%", hostAddress);
+						return hostAddress;
 					}
 				}
 			}
-		}
+
+			return "";
+		});
 
 		return text;
 	}
@@ -355,46 +297,49 @@ public final class Variables {
 				.toZoneId())).format(formatterPattern);
 	}
 
-	private int getChunks() {
-		int loadedChunks = 0;
+	private int getWorldChunks() {
+		return callSyncMethod(() -> {
+			int loadedChunks = 0;
 
-		for (World world : plugin.getServer().getWorlds()) {
-			loadedChunks += world.getLoadedChunks().length;
-		}
+			for (World world : plugin.getServer().getWorlds()) {
+				loadedChunks += world.getLoadedChunks().length;
+			}
 
-		return loadedChunks;
+			return loadedChunks;
+		});
 	}
 
 	private int getLivingEntities() {
-		int livingEntities = 0;
+		return callSyncMethod(() -> {
+			int livingEntities = 0;
 
-		for (World world : plugin.getServer().getWorlds()) {
-			livingEntities += world.getLivingEntities().size();
-		}
+			for (World world : plugin.getServer().getWorlds()) {
+				livingEntities += world.getLivingEntities().size();
+			}
 
-		return livingEntities;
+			return livingEntities;
+		});
 	}
 
 	private int getTotalEntities() {
-		int allEntities = 0;
+		return callSyncMethod(() -> {
+			int allEntities = 0;
 
-		for (World world : plugin.getServer().getWorlds()) {
-			allEntities += world.getEntities().size();
-		}
+			for (World world : plugin.getServer().getWorlds()) {
+				allEntities += world.getEntities().size();
+			}
 
-		return allEntities;
+			return allEntities;
+		});
 	}
 
-	private enum TicksPerSecond {
-
-		SECONDS_5("5sec"), SECONDS_15("15sec"), MINUTES_1("1min"), MINUTES_5("5min"), MINUTES_15("15min");
-
-		public static final TicksPerSecond[] VALUES = values();
-
-		final String dur;
-
-		TicksPerSecond(String dur) {
-			this.dur = dur;
+	private <V> V callSyncMethod(java.util.function.Supplier<V> supplier) {
+		try {
+			return plugin.getServer().getScheduler().callSyncMethod(plugin, supplier::get).get();
+		} catch (InterruptedException | java.util.concurrent.ExecutionException ex) {
+			ex.printStackTrace();
 		}
+
+		return supplier.get();
 	}
 }

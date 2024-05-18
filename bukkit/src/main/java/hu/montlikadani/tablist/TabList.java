@@ -62,13 +62,17 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 	public void onEnable() {
 		long load = System.currentTimeMillis();
 
-		if (ServerVersion.getCurrent() == null) {
-			Util.logConsole(Level.SEVERE, "Your server version does not supported " + Util.legacyNmsVersion());
+		if (ServerVersion.current() == null) {
+			getLogger().log(Level.SEVERE, "Your server version does not supported " + getServer().getBukkitVersion());
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
 
 		verifyServerSoftware();
+
+		if (ConfigValues.isPlaceholderAPI()) {
+			papi = getServer().getPluginManager().getPlugin("PlaceholderAPI");
+		}
 
 		conf = new Configuration(this);
 		groups = new Groups(this);
@@ -87,8 +91,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		variables.load();
 		loadPacketListener();
 
-		if (ConfigValues.isPlaceholderAPI() && (papi = getServer().getPluginManager().getPlugin("PlaceholderAPI")) != null && papi.isEnabled()) {
-			Util.logConsole("Hooked " + papi.getName() + " version: " + papi.getDescription().getVersion());
+		if (hasPapi()) {
+			Util.consolePrint(Level.INFO, this, "Found {0} version: {1}", papi.getName(), papi.getDescription().getVersion());
 		}
 
 		hasPermissionService = isPluginEnabled("Vault") && (permissionService = new PermissionService()).getPermission() != null;
@@ -106,10 +110,8 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		UpdateDownloader.checkFromGithub(this);
 		beginDataCollection();
 
-		if (ConfigValues.isLogConsole()) {
-			Util.logConsole("v" + getDescription().getVersion() + " on " + ServerVersion.getCurrent().name()
-					+ " (" + (System.currentTimeMillis() - load) + "ms)");
-		}
+		Util.consolePrint(Level.INFO, this, "v{0} on {1} ({2}ms)", getDescription().getVersion(),
+				ServerVersion.current().name(), System.currentTimeMillis() - load);
 	}
 
 	@Override
@@ -457,7 +459,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		if (value != -1.0 && TabListAPI.getTPS()[0] <= value) {
 			if (!printed) {
-				getLogger().log(Level.INFO, "All {0} schedulers has been terminated. (Low tps)", getName());
+				Util.consolePrint(Level.INFO, this, "All {0} schedulers has been terminated. (Low tps)", getName());
 				printed = true;
 			}
 

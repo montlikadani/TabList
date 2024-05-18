@@ -181,7 +181,7 @@ public final class fakeplayers implements ICommand {
 						}
 
 						// The max request limitation is only for url-based requests
-						if (skinProperties == null && PlayerSkinProperties.cachedSize() > PlayerSkinProperties.MAX_REQUESTS) {
+						if (skinProperties == null && PlayerSkinProperties.cacheSize() > PlayerSkinProperties.MAX_REQUESTS) {
 							plugin.getComplement().sendMessage(sender, "You've reached the maximum requests, you can not make any more requests.");
 							return;
 						}

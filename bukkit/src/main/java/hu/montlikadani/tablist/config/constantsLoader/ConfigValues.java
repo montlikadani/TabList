@@ -61,13 +61,17 @@ public final class ConfigValues {
 
 		c.addComment("fake-players", "Fake players that can be added to the player list.");
 		c.addComment("fake-players.count-fake-players-to-online-players", "Count the added fake players to the %online-players% placeholder?");
-		c.addComment("remove-gray-color-from-tab-in-spectator", "If enabled, the gray color will not appear to other players when the player's game mode is spectator.",
+		c.addComment("remove-gray-color-from-tab-in-spectator",
+				"If enabled, the gray color will not appear to other players when the player's game mode is spectator.",
 				"The gray color will only show for the spectator player.");
-		c.addComment("ignore-vanished-players-in-online-players", "If enabled, vanished players in %online-players% placeholder won't be counted.",
+		c.addComment("ignore-vanished-players-in-online-players",
+				"If enabled, vanished players in %online-players% placeholder won't be counted.",
 				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin");
-		c.addComment("count-vanished-staffs", "If enabled, vanished players with \"tablist.onlinestaff\" permission added will be counted in %staff-online% placeholder",
+		c.addComment("count-vanished-staffs",
+				"If enabled, vanished players with \"tablist.onlinestaff\" permission added will be counted in %staff-online% placeholder",
 				"Requires Essentials, SuperVanish, PremiumVanish or CMI plugin");
-		c.addComment("hide-player-from-tab-when-afk", "Hide player from player list when a player is AFK?", "Requires Essentials or CMI plugin");
+		c.addComment("hide-player-from-tab-when-afk",
+				"Hide player from player list when a player is AFK?", "Requires Essentials or CMI plugin");
 
 		c.addComment("per-world-player-list", "Different player list in different world.");
 		c.addComment("per-world-player-list.world-groups", "You can specify worlds, which will share the same list of players");
@@ -131,7 +135,7 @@ public final class ConfigValues {
 				"Set to 0 to disable refreshing automatically");
 		c.addComment("tablist-object-type.custom-value", "Custom placeholder - accepts only number-ending placeholders, like %level%");
 
-		if (ServerVersion.getCurrent().isHigherOrEqual(ServerVersion.v1_20_4)) {
+		if (ServerVersion.current().isHigherOrEqual(ServerVersion.v1_20_4)) {
 			c.addComment("tablist-object-type.number-format", "The format of this objective number what to display");
 			c.addComment("tablist-object-type.number-format.type", "The format type of this objective to display",
 					"Can be NONE (default), FIXED, BLANK and STYLED");
@@ -262,7 +266,7 @@ public final class ConfigValues {
 				objectType = Objects.ObjectTypes.NONE;
 			}
 
-			if (objectType != Objects.ObjectTypes.HEALTH && ServerVersion.getCurrent().isHigherOrEqual(ServerVersion.v1_20_4)) {
+			if (objectType != Objects.ObjectTypes.HEALTH && ServerVersion.current().isHigherOrEqual(ServerVersion.v1_20_4)) {
 				try {
 					objectiveFormat = IPacketNM.ObjectiveFormat.valueOf(c.get("tablist-object-type.number-format.type",
 							"none").toUpperCase(Locale.ENGLISH));

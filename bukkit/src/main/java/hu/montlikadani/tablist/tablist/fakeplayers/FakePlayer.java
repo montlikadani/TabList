@@ -75,7 +75,8 @@ public final class FakePlayer implements IFakePlayer {
 	}
 
 	private Object displayNameComponent() {
-		return displayName.isEmpty() ? ComponentParser.EMPTY_COMPONENT : ComponentParser.asComponent(Util.applyTextFormat(Global.replaceToUnicodeSymbol(displayName)));
+		return displayName.isEmpty() ? ComponentParser.EMPTY_COMPONENT : ComponentParser.asComponent(Util
+				.applyTextFormat(Global.replaceToUnicodeSymbol(displayName)));
 	}
 
 	@Override
@@ -90,7 +91,8 @@ public final class FakePlayer implements IFakePlayer {
 			displayName = Util.applyTextFormat(Global.replaceToUnicodeSymbol(displayName));
 		}
 
-		Object packet = PacketNM.NMS_PACKET.updateDisplayNamePacket(fakeEntityPlayer, ComponentParser.asComponent(displayName), true);
+		Object packet = PacketNM.NMS_PACKET.updateDisplayNamePacket(fakeEntityPlayer,
+				ComponentParser.asComponent(displayName), true);
 
 		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
 			PacketNM.NMS_PACKET.sendPacket(player, packet);
@@ -100,7 +102,7 @@ public final class FakePlayer implements IFakePlayer {
 	@Override
 	public void show() {
 		if (fakeEntityPlayer == null) {
-			putTextureProperty(false);
+			putTextureProperty();
 			fakeEntityPlayer = PacketNM.NMS_PACKET.getNewEntityPlayer(profile);
 		}
 
@@ -149,15 +151,11 @@ public final class FakePlayer implements IFakePlayer {
 	@Override
 	public void setSkin(PlayerSkinProperties skinProperties) {
 		playerSkinProperties = skinProperties;
-		putTextureProperty(true);
+		putTextureProperty();
 	}
 
-	private void putTextureProperty(boolean debug) {
+	private void putTextureProperty() {
 		if (!Bukkit.getServer().getOnlineMode()) {
-			if (debug) {
-				Util.logConsole(java.util.logging.Level.WARNING, "Can't set skin for offline servers.");
-			}
-
 			return;
 		}
 

@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 
 public final class Util {
 
@@ -26,13 +27,9 @@ public final class Util {
 		MINIMESSAGE_SUPPORTED = supported;
 	}
 
-	public static void logConsole(String msg) {
-		logConsole(Level.INFO, msg);
-	}
-
-	public static void logConsole(Level level, String msg) {
+	public static void consolePrint(Level level, Plugin plugin, String text, Object... params) {
 		if (hu.montlikadani.tablist.config.constantsLoader.ConfigValues.isLogConsole()) {
-			Bukkit.getServer().getLogger().log(level, "[TabList] " + msg);
+			plugin.getLogger().log(level, text, params);
 		}
 	}
 

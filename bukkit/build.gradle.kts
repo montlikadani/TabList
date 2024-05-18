@@ -1,22 +1,18 @@
 plugins {
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("java-library")
-    id("io.papermc.paperweight.userdev") version "1.7.0"
-}
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-    disableAutoTargetJvm()
+    id("io.github.goooler.shadow") version "8.1.7"
 }
 
 repositories {
+    gradlePluginPortal()
     mavenCentral()
+
     maven("https://repo.codemc.org/repository/maven-public")
     maven("https://oss.sonatype.org/content/repositories/snapshots")
     maven("https://libraries.minecraft.net/")
+    maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.essentialsx.net/snapshots/")
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+
     maven {
 		url = uri("https://jitpack.io")
 		content {
@@ -26,14 +22,17 @@ repositories {
 			includeGroup("com.github.LeonMangler")
 		}
 	}
+
     maven("https://oss.sonatype.org/content/groups/public/") // Netty
 }
 
-val nmsProjects = setOf("1_8_8", "1_17_1", "1_18_2", "1_19_1", "1_19_2", "1_19_3", "1_19_4", "1_20_1", "1_20_2", "1_20_4")
+val nmsProjects = setOf("1_8_8", "1_17_1", "1_18_2", "1_19_1", "1_19_2", "1_19_3", "1_19_4", "1_20_1", "1_20_2",
+    "1_20_4", "1_20_6")
 
 dependencies {
     implementation(project(":global"))
     api(project(":api"))
+    api(project(":folia"))
 
     nmsProjects.forEach {
         api(project(":v$it"))
@@ -45,7 +44,7 @@ dependencies {
     compileOnly(libs.authlib)
     compileOnly("net.luckperms:api:5.4")
 
-    paperweight.foliaDevBundle("1.20.4-R0.1-SNAPSHOT") {
+    compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT") {
         exclude("com.mojang", "authlib")
     }
 
@@ -76,9 +75,11 @@ tasks {
     withType<JavaCompile> {
         options.encoding = "UTF-8"
     }
+
     jar {
         archiveClassifier.set("noshade")
     }
+
     shadowJar {
         archiveClassifier.set("")
         archiveFileName.set("TabList-bukkit-v${project.version}.jar")
@@ -95,9 +96,9 @@ tasks {
         }
 
         relocate("org.bstats", "${project.group}.lib.bstats")
-
         minimize()
     }
+
     build {
         dependsOn(shadowJar)
     }

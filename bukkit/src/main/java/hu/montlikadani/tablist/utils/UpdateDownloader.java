@@ -50,41 +50,42 @@ public abstract class UpdateDownloader {
 					return false;
 				}
 
-				tabList.getLogger().log(Level.INFO, "-------------");
-				tabList.getLogger().log(Level.INFO, "New update is available for TabList");
-				tabList.getLogger().log(Level.INFO,
-						"Your version: " + tabList.getDescription().getVersion() + ", New version " + versionString);
+				Util.consolePrint(Level.INFO, tabList, "-------------");
+				Util.consolePrint(Level.INFO, tabList, "New update is available for TabList");
+				Util.consolePrint(Level.INFO, tabList, "Your version: {0}, New version {1}",
+						tabList.getDescription().getVersion(), versionString);
 
 				boolean downloadUpdates = tabList.getConfig().getBoolean("download-updates", false);
 
 				if (!downloadUpdates) {
-					tabList.getLogger().log(Level.INFO, "Download: https://www.spigotmc.org/resources/46229/");
-					tabList.getLogger().log(Level.INFO, "");
-					tabList.getLogger().log(Level.INFO,
+					Util.consolePrint(Level.INFO, tabList, "Download: https://www.spigotmc.org/resources/46229/");
+					Util.consolePrint(Level.INFO, tabList, "");
+					Util.consolePrint(Level.INFO, tabList,
 							"Always consider upgrading to the latest version, which may include fixes.");
 				}
 
-				tabList.getLogger().log(Level.INFO, "");
-				tabList.getLogger().log(Level.INFO, "To disable update checking, go to the config file");
-				tabList.getLogger().log(Level.INFO, "-------------");
+				Util.consolePrint(Level.INFO, tabList, "");
+				Util.consolePrint(Level.INFO, tabList, "To disable update checking, go to the config file");
+				Util.consolePrint(Level.INFO, tabList, "-------------");
 
 				if (!downloadUpdates) {
 					return false;
 				}
 
 				File updateFolder = tabList.getServer().getUpdateFolderFile();
+
 				if (!updateFolder.exists() && !updateFolder.mkdir()) {
 					return false;
 				}
 
-				final String name = "TabList-bukkit-" + versionString + ".jar";
-				final File jar = new File(updateFolder, name);
+				String name = "TabList-bukkit-" + versionString + ".jar";
+				File jar = new File(updateFolder, name);
 
 				if (jar.exists()) {
 					return false; // Do not attempt to download the file again, when it is already downloaded
 				}
 
-				Util.logConsole("Downloading new version of TabList...");
+				Util.consolePrint(Level.INFO, tabList, "Downloading new version of TabList...");
 
 				try (java.io.InputStream in = new URL("https://github.com/montlikadani/TabList/releases/latest/download/" + name)
 						.openStream()) {
@@ -92,7 +93,7 @@ public abstract class UpdateDownloader {
 				}
 
 				return true;
-			} catch (FileNotFoundException | java.net.UnknownHostException f) {
+			} catch (FileNotFoundException | java.net.UnknownHostException ignore) {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -100,7 +101,8 @@ public abstract class UpdateDownloader {
 			return false;
 		}).thenAccept(success -> {
 			if (success) {
-				Util.logConsole("The new TabList has been downloaded to " + tabList.getServer().getUpdateFolder() + " folder.");
+				Util.consolePrint(Level.INFO, tabList, "The new TabList has been downloaded to {0} folder.",
+						tabList.getServer().getUpdateFolder());
 			}
 		});
 	}
@@ -119,14 +121,14 @@ public abstract class UpdateDownloader {
 			for (File file : files) {
 				try {
 					file.delete();
-				} catch (SecurityException e) {
+				} catch (SecurityException ignore) {
 				}
 			}
 		}
 
 		try {
 			releasesFolder.delete();
-		} catch (SecurityException e) {
+		} catch (SecurityException ignore) {
 		}
 	}
 }

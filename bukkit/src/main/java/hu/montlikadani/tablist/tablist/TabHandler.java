@@ -4,7 +4,7 @@ import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.packets.PacketNM;
 import hu.montlikadani.tablist.user.TabListUser;
-import hu.montlikadani.tablist.utils.Pair;
+import hu.montlikadani.api.Pair;
 import hu.montlikadani.tablist.utils.PluginUtils;
 import hu.montlikadani.tablist.utils.reflection.ComponentParser;
 import org.bukkit.entity.Player;

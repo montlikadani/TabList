@@ -31,9 +31,7 @@ public final class ComponentParser {
 	}
 
 	public static Object asComponent(TabText text) {
-		if (text.getJsonElements().isEmpty()) {
-			return asComponent(text.getPlainText());
-		}
+		java.util.List<TabText.JsonElementData> json = text.getJsonElements();
 
 		// JsonComponent#parseProperty takes a bit longer time than expected and in some
 		// circumstances it can cause ThreadDeath (deadlock) due to long operation.
@@ -43,41 +41,15 @@ public final class ComponentParser {
 
 		Object component;
 		try {
-			component = getJsonComponent().parseProperty(text.getPlainText(), text.getJsonElements());
+			component = getJsonComponent().parseProperty(text.getPlainText(), json.isEmpty() ? null : json);
 		} finally {
 			LOCK.unlock();
 		}
 
 		return component;
-
-		/*StringBuilder result = new StringBuilder("[");
-		int index = 0, jsonStartingIndex, beginIndex = 0;
-		String strJson = text.getJsonElements().get(0).plainJson;
-		String plainText = text.getPlainText();
-
-		while ((jsonStartingIndex = plainText.indexOf(strJson)) != -1) {
-			if (beginIndex + 1 != jsonStartingIndex) {
-				result.append("{\"text\":\"").append(plainText.substring(beginIndex, jsonStartingIndex)).append("\"},");
-			}
-
-			result.append(strJson.substring(4).replace("}]", "}"));
-			index++;
-
-			if (index >= text.getJsonElements().size()) {
-				break;
-			}
-
-			beginIndex = jsonStartingIndex + strJson.length();
-			strJson = text.getJsonElements().get(index).plainJson;
-			result.append(",");
-		}
-
-		result.append(",{\"text\":\"").append(plainText.substring(jsonStartingIndex + strJson.length())).append("\"}]");
-
-		return PacketNM.NMS_PACKET.fromJson(Util.applyTextFormat(result.toString()));*/
 	}
 
-	public static Object asComponent(final String text) {
+	public static Object asComponent(String text) {
 		LOCK.lock();
 
 		Object component;
@@ -88,7 +60,5 @@ public final class ComponentParser {
 		}
 
 		return component;
-
-		//return PacketNM.NMS_PACKET.fromJson("{\"text\":\"" + Util.applyTextFormat(text) + "\"}");
 	}
 }
