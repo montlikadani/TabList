@@ -70,9 +70,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		verifyServerSoftware();
 
-		if (ConfigValues.isPlaceholderAPI()) {
-			papi = getServer().getPluginManager().getPlugin("PlaceholderAPI");
-		}
+		papi = getServer().getPluginManager().getPlugin("PlaceholderAPI");
 
 		conf = new Configuration(this);
 		groups = new Groups(this);
@@ -199,7 +197,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 		Metrics metrics = new Metrics(this, 1479);
 
-		metrics.addCustomChart(new org.bstats.charts.SimplePie("using_placeholderapi", () -> Boolean.toString(ConfigValues.isPlaceholderAPI())));
+		metrics.addCustomChart(new org.bstats.charts.SimplePie("using_placeholderapi", () -> Boolean.toString(hasPapi())));
 
 		if (TabConfigValues.isEnabled()) {
 			metrics.addCustomChart(new org.bstats.charts.SimplePie("tab_interval", () -> Integer.toString(TabConfigValues.getUpdateInterval())));

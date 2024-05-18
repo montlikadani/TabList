@@ -14,7 +14,7 @@ import hu.montlikadani.tablist.config.CommentedConfig;
 
 public final class ConfigValues {
 
-	private static boolean logConsole, placeholderAPI, perWorldPlayerList, fakePlayers, countFakePlayersToOnlinePlayers, removeGrayColorFromTabInSpec, ignoreVanishedPlayers,
+	private static boolean logConsole, perWorldPlayerList, fakePlayers, countFakePlayersToOnlinePlayers, removeGrayColorFromTabInSpec, ignoreVanishedPlayers,
 			countVanishedStaff, hidePlayerFromTabAfk, afkStatusEnabled, afkStatusShowInRightLeftSide, afkStatusShowPlayerGroup, afkSortLast, pingFormatEnabled,
 			tpsFormatEnabled, prefixSuffixEnabled, useDisabledWorldsAsWhiteList, syncPluginsGroups, hideGroupInVanish, preferPrimaryVaultGroup, assignGlobalGroup,
 			followNameTagVisibility, useLPWeightToOrderGroupsFirst;
@@ -48,7 +48,6 @@ public final class ConfigValues {
 
 		PER_WORLD_LIST_NAMES.clear();
 
-		c.addComment("hook.placeholderapi", "Hook to PlaceholderAPI to use custom placeholders.");
 		c.addComment("tps-performance-observation-value",
 				"This option monitors server performance. If the server's TPS is less than the set value,",
 				"TabList will cancels all currently running schedulers to improve server performance.",
@@ -156,7 +155,6 @@ public final class ConfigValues {
 				"This only works if the \"check-update\" option is enabled.");
 		c.addComment("logconsole", "Plugin debug log messages");
 
-		placeholderAPI = c.get("hook.placeholderapi", true);
 		tpsObservationValue = c.get("tps-performance-observation-value", -1.0);
 
 		if (tpsObservationValue != -1.0 && (tpsObservationValue < 5.0 || tpsObservationValue > 18.0)) {
@@ -317,6 +315,7 @@ public final class ConfigValues {
 		logConsole = c.get("logconsole", true);
 
 		// Here comes the options that removed
+		c.set("hook", null);
 		c.set("change-prefix-suffix-in-tablist.hide-group-when-player-afk", null);
 		c.set("placeholder-format.memory-bar", null);
 		c.set("hide-players-from-tablist", null);
@@ -326,10 +325,6 @@ public final class ConfigValues {
 
 	public static boolean isLogConsole() {
 		return logConsole;
-	}
-
-	public static boolean isPlaceholderAPI() {
-		return placeholderAPI;
 	}
 
 	public static boolean isPerWorldPlayerList() {
