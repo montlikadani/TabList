@@ -323,9 +323,6 @@ public final class v1_20_4 implements hu.montlikadani.api.IPacketNM {
 
         if (objectiveFormat != null) {
             switch (objectiveFormat) {
-                case BLANK:
-                    numberFormat = new net.minecraft.network.chat.numbers.BlankFormat();
-                    break;
                 case FIXED:
                     numberFormat = new net.minecraft.network.chat.numbers.FixedFormat((IChatBaseComponent) formatComponent);
                     break;

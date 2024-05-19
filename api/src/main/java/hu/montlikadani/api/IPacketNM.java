@@ -7,7 +7,7 @@ public interface IPacketNM {
     String PACKET_INJECTOR_NAME = "TLPacketInjector";
 
     enum ObjectiveFormat {
-        NONE, FIXED, BLANK, STYLED
+        NONE, FIXED, STYLED
     }
 
     void sendPacket(Player player, Object packet);

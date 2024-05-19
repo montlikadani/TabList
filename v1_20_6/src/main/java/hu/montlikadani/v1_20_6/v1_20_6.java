@@ -18,7 +18,6 @@ import net.minecraft.network.NetworkManager;
 import net.minecraft.network.PacketListener;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.IChatBaseComponent;
-import net.minecraft.network.chat.numbers.BlankFormat;
 import net.minecraft.network.protocol.EnumProtocolDirection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientboundPlayerInfoRemovePacket;
@@ -314,9 +313,6 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
 
         if (objectiveFormat != null) {
             switch (objectiveFormat) {
-                case BLANK:
-                    numberFormat = new BlankFormat();
-                    break;
                 case FIXED:
                     numberFormat = new net.minecraft.network.chat.numbers.FixedFormat((IChatBaseComponent) formatComponent);
                     break;
@@ -334,6 +330,7 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
                             ChatModifier.a.a(enumChatFormats));
                     break;
                 default:
+                    // BLANK is like object should not be displayed, so just ignore
                     break;
             }
         }
@@ -375,7 +372,7 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
         ScoreboardObjective objective = scoreboardObjectives == null ? null : scoreboardObjectives.get(objectiveName);
 
         return new PacketPlayOutScoreboardScore(scoreName, objectiveName, score, Optional.of(CommonComponents.a),
-                objective == null ? Optional.empty() : Optional.of(objective.a(new BlankFormat())));
+                Optional.ofNullable(objective == null ? null : objective.f()));
     }
 
     @Override

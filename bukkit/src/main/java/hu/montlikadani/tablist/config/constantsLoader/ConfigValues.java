@@ -137,12 +137,11 @@ public final class ConfigValues {
 		if (ServerVersion.current().isHigherOrEqual(ServerVersion.v1_20_4)) {
 			c.addComment("tablist-object-type.number-format", "The format of this objective number what to display");
 			c.addComment("tablist-object-type.number-format.type", "The format type of this objective to display",
-					"Can be NONE (default), FIXED, BLANK and STYLED");
+					"Can be NONE (default), FIXED and STYLED");
 			c.addComment("tablist-object-type.number-format.format", "The format of this objective, each format type is different,",
 					"",
 					"none - shows as a yellow number (default)",
 					"fixed - a unique text displayed instead of number without styling",
-					"blank - no text/number displayed",
 					"styled - changes the coloration of the number (use full color/formatting names 'green;bold;italic' or hexadecimal '#123456')",
 					"",
 					"with 'styled' format you can specify only 1 color and each formatting names 1 time, separate with ';' character");
