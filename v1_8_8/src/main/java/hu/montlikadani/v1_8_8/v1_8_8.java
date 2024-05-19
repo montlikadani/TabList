@@ -278,7 +278,7 @@ public final class v1_8_8 implements IPacketNM {
 
 	@Override
 	public PacketPlayOutScoreboardTeam unregisterBoardTeamPacket(String teamName) {
-		java.util.Collection<ScoreboardTeam> teams = scoreboard.getTeams();
+		Collection<ScoreboardTeam> teams = scoreboard.getTeams();
 
 		synchronized (teams) {
 			for (ScoreboardTeam team : new ArrayList<>(teams)) {

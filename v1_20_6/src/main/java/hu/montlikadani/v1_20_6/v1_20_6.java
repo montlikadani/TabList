@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelMetadata;
 
 import java.net.SocketAddress;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -233,8 +234,9 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
     @Override
     public void createBoardTeam(String teamName, Player player, boolean followNameTagVisibility) {
         ScoreboardTeam playerTeam = scoreboard.c(teamName);
+        String playerName = player.getName();
 
-        scoreboard.a(player.getName(), playerTeam);
+        scoreboard.a(playerName, playerTeam);
 
         if (followNameTagVisibility) {
             ScoreboardTeam.EnumNameTagVisibility visibility = null;
@@ -269,7 +271,7 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
             }
         } else {
             for (TagTeam tagTeam : tagTeams) {
-                if (!tagTeam.playerName.equals(player.getName())) {
+                if (!tagTeam.playerName.equals(playerName)) {
                     continue;
                 }
 
@@ -290,7 +292,7 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public PacketPlayOutScoreboardTeam unregisterBoardTeamPacket(String teamName) {
-        java.util.Collection<ScoreboardTeam> teams = scoreboard.g();
+        Collection<ScoreboardTeam> teams = scoreboard.g();
 
         synchronized (teams) {
             for (ScoreboardTeam team : new ArrayList<>(teams)) {
@@ -370,15 +372,17 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public PacketPlayOutScoreboardScore changeScoreboardScorePacket(String objectiveName, String scoreName, int score) {
-        ScoreboardObjective objective = scoreboardObjectives.get(objectiveName);
+        ScoreboardObjective objective = scoreboardObjectives == null ? null : scoreboardObjectives.get(objectiveName);
 
         return new PacketPlayOutScoreboardScore(scoreName, objectiveName, score, Optional.of(CommonComponents.a),
-                objective == null ? Optional.of(new BlankFormat()) : Optional.of(objective.a(new BlankFormat())));
+                objective == null ? Optional.empty() : Optional.of(objective.a(new BlankFormat())));
     }
 
     @Override
     public PacketPlayOutScoreboardScore removeScoreboardScorePacket(String objectiveName, String scoreName, int score) {
-        scoreboardObjectives.remove(objectiveName);
+        if (scoreboardObjectives != null) {
+            scoreboardObjectives.remove(objectiveName);
+        }
 
         return new PacketPlayOutScoreboardScore(scoreName, objectiveName, score, Optional.of(CommonComponents.a), Optional.empty());
     }
@@ -406,7 +410,13 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
             if (classesToListen.contains(receivingClass)) {
                 if (receivingClass == PacketPlayOutScoreboardTeam.class) {
                     scoreboardTeamPacket((PacketPlayOutScoreboardTeam) msg);
-                } else if (receivingClass == ClientboundPlayerInfoUpdatePacket.class) {
+
+                    // super.write kicks out players with "Network protocol error"
+                    // Probably caused by Scoreboard#removePlayerFromTeam/b -> IllegalStateException
+                    return;
+                }
+
+                if (receivingClass == ClientboundPlayerInfoUpdatePacket.class) {
                     playerInfoUpdatePacket((ClientboundPlayerInfoUpdatePacket) msg);
                 }
             }
@@ -438,10 +448,11 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
         }
 
         private void scoreboardTeamPacket(PacketPlayOutScoreboardTeam packetScoreboardTeam) {
+            Collection<String> players = packetScoreboardTeam.g();
 
-            // Some plugins are using this packet in wrong way and the return value of this method "f" is null
+            // Some plugins are using this packet in wrong way and the return value of this method is null
             // which shouldn't be that way but ok, nothing I can do about this only to add an extra condition
-            if (packetScoreboardTeam.f() == null || packetScoreboardTeam.f().isEmpty()) {
+            if (players == null || players.isEmpty()) {
                 return;
             }
 
@@ -458,7 +469,7 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
                 IChatBaseComponent suffix = packetTeam.g();
 
                 if ((prefix != null && !prefix.getString().isEmpty()) || (suffix != null && !suffix.getString().isEmpty())) {
-                    String playerName = packetScoreboardTeam.g().iterator().next();
+                    String playerName = players.iterator().next();
 
                     for (TagTeam team : tagTeams) {
                         if (team.playerName.equals(playerName)) {

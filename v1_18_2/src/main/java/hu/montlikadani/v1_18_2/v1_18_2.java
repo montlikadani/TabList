@@ -3,6 +3,7 @@ package hu.montlikadani.v1_18_2;
 import com.mojang.authlib.GameProfile;
 import hu.montlikadani.api.IPacketNM;
 import io.netty.channel.ChannelHandlerContext;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -224,7 +225,7 @@ public final class v1_18_2 implements IPacketNM {
 
     @Override
     public PacketPlayOutScoreboardTeam unregisterBoardTeamPacket(String teamName) {
-        java.util.Collection<ScoreboardTeam> teams = scoreboard.g();
+        Collection<ScoreboardTeam> teams = scoreboard.g();
 
         synchronized (teams) {
             for (ScoreboardTeam team : new ArrayList<>(teams)) {
@@ -323,7 +324,9 @@ public final class v1_18_2 implements IPacketNM {
 
         // Temporal and disgusting solution to fix players name tag overwriting
         private void scoreboardTeamPacket(PacketPlayOutScoreboardTeam packetScoreboardTeam) {
-            if (packetScoreboardTeam.e() == null || packetScoreboardTeam.e().isEmpty()) {
+            Collection<String> players = packetScoreboardTeam.e();
+
+            if (players == null || players.isEmpty()) {
                 return;
             }
 
@@ -340,7 +343,7 @@ public final class v1_18_2 implements IPacketNM {
                 IChatBaseComponent suffix = packetTeam.g();
 
                 if ((prefix != null && !prefix.getString().isEmpty()) || (suffix != null && !suffix.getString().isEmpty())) {
-                    String playerName = packetScoreboardTeam.e().iterator().next();
+                    String playerName = players.iterator().next();
 
                     for (TagTeam team : tagTeams) {
                         if (team.playerName.equals(playerName)) {

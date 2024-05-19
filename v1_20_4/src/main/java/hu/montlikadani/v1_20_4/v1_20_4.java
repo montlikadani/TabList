@@ -10,6 +10,7 @@ import io.netty.channel.ChannelMetadata;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.SocketAddress;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -300,7 +301,7 @@ public final class v1_20_4 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public PacketPlayOutScoreboardTeam unregisterBoardTeamPacket(String teamName) {
-        java.util.Collection<ScoreboardTeam> teams = scoreboard.g();
+        Collection<ScoreboardTeam> teams = scoreboard.g();
 
         synchronized (teams) {
             for (ScoreboardTeam team : new ArrayList<>(teams)) {
@@ -439,10 +440,11 @@ public final class v1_20_4 implements hu.montlikadani.api.IPacketNM {
         }
 
         private void scoreboardTeamPacket(PacketPlayOutScoreboardTeam packetScoreboardTeam) {
+            Collection<String> players = packetScoreboardTeam.f();
 
-            // Some plugins are using this packet in wrong way and the return value of this method "f" is null
+            // Some plugins are using this packet in wrong way and the return value of this method is null
             // which shouldn't be that way but ok, nothing I can do about this only to add an extra condition
-            if (packetScoreboardTeam.f() == null || packetScoreboardTeam.f().isEmpty()) {
+            if (players == null || players.isEmpty()) {
                 return;
             }
 
@@ -459,7 +461,7 @@ public final class v1_20_4 implements hu.montlikadani.api.IPacketNM {
                 IChatBaseComponent suffix = packetTeam.g();
 
                 if ((prefix != null && !prefix.getString().isEmpty()) || (suffix != null && !suffix.getString().isEmpty())) {
-                    String playerName = packetScoreboardTeam.f().iterator().next();
+                    String playerName = players.iterator().next();
 
                     for (TagTeam team : tagTeams) {
                         if (team.playerName.equals(playerName)) {

@@ -1,5 +1,6 @@
 package hu.montlikadani.v1_17_1;
 
+import java.util.Collection;
 import net.minecraft.network.chat.IChatBaseComponent;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.PacketPlayOutPlayerInfo;
@@ -220,7 +221,7 @@ public final class v1_17_1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public PacketPlayOutScoreboardTeam unregisterBoardTeamPacket(String teamName) {
-        java.util.Collection<ScoreboardTeam> teams = scoreboard.getTeams();
+        Collection<ScoreboardTeam> teams = scoreboard.getTeams();
 
         synchronized (teams) {
             for (ScoreboardTeam team : new ArrayList<>(teams)) {
@@ -319,7 +320,9 @@ public final class v1_17_1 implements hu.montlikadani.api.IPacketNM {
 
         // Temporal and disgusting solution to fix players name tag overwriting
         private void scoreboardTeamPacket(PacketPlayOutScoreboardTeam packetScoreboardTeam) {
-            if (packetScoreboardTeam.e() == null || packetScoreboardTeam.e().isEmpty()) {
+            Collection<String> players = packetScoreboardTeam.e();
+
+            if (players == null || players.isEmpty()) {
                 return;
             }
 
@@ -336,7 +339,7 @@ public final class v1_17_1 implements hu.montlikadani.api.IPacketNM {
                 IChatBaseComponent suffix = packetTeam.g();
 
                 if ((prefix != null && !prefix.getString().isEmpty()) || (suffix != null && !suffix.getString().isEmpty())) {
-                    String playerName = packetScoreboardTeam.e().iterator().next();
+                    String playerName = players.iterator().next();
 
                     for (TagTeam team : tagTeams) {
                         if (team.playerName.equals(playerName)) {

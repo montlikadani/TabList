@@ -2,6 +2,7 @@ package hu.montlikadani.v1_20_1;
 
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Set;
@@ -259,7 +260,7 @@ public final class v1_20_1 implements hu.montlikadani.api.IPacketNM {
 
     @Override
     public PacketPlayOutScoreboardTeam unregisterBoardTeamPacket(String teamName) {
-        java.util.Collection<ScoreboardTeam> teams = scoreboard.g();
+        Collection<ScoreboardTeam> teams = scoreboard.g();
 
         synchronized (teams) {
             for (ScoreboardTeam team : new ArrayList<>(teams)) {
@@ -357,10 +358,11 @@ public final class v1_20_1 implements hu.montlikadani.api.IPacketNM {
         }
 
         private void scoreboardTeamPacket(PacketPlayOutScoreboardTeam packetScoreboardTeam) {
+            Collection<String> players = packetScoreboardTeam.e();
 
-            // Some plugins are using this packet in wrong way and the return value of this method "e" is null
+            // Some plugins are using this packet in wrong way and the return value of this method is null
             // which shouldn't be that way but ok, nothing I can do about this only to add an extra condition
-            if (packetScoreboardTeam.e() == null || packetScoreboardTeam.e().isEmpty()) {
+            if (players == null || players.isEmpty()) {
                 return;
             }
 
@@ -377,7 +379,7 @@ public final class v1_20_1 implements hu.montlikadani.api.IPacketNM {
                 IChatBaseComponent suffix = packetTeam.g();
 
                 if ((prefix != null && !prefix.getString().isEmpty()) || (suffix != null && !suffix.getString().isEmpty())) {
-                    String playerName = packetScoreboardTeam.e().iterator().next();
+                    String playerName = players.iterator().next();
 
                     for (TagTeam team : tagTeams) {
                         if (team.playerName.equals(playerName)) {
