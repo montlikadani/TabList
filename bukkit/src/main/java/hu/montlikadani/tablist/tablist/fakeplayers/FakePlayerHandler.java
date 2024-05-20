@@ -52,8 +52,8 @@ public final class FakePlayerHandler {
 				return;
 			}
 
-			FileConfiguration config = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(file);
-			ConfigurationSection section = config.getConfigurationSection("list");
+			ConfigurationSection section = org.bukkit.configuration.file.YamlConfiguration.loadConfiguration(file)
+					.getConfigurationSection("list");
 
 			if (section != null && section.getKeys(false).isEmpty() && !file.delete()) {
 				throw new RuntimeException("Failed to delete file " + file.getName());
@@ -95,28 +95,16 @@ public final class FakePlayerHandler {
 			name = name.substring(0, 16);
 		}
 
-		String path = "list." + name + ".";
-		FileConfiguration c = plugin.getConf().getFakeplayers();
-
-		c.set(path + "headuuid", headUUID);
-
 		if (ping < -1) {
 			ping = -1;
 		}
 
-		c.set(path + "ping", ping);
-		c.set(path + "displayname", displayName);
+		String path = "list." + name + ".";
+		setOptionsAndSave(path + "headuuid", headUUID, path + "ping", ping, path + "displayname", displayName);
 
-		try {
-			c.save(plugin.getConf().getFakeplayersFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return EditingResult.UNKNOWN;
-		}
-
-		IFakePlayer fp = new FakePlayer(name, displayName, headUUID, ping);
-		fp.show();
-		fakePlayers.add(fp);
+		IFakePlayer fakePlayer = new FakePlayer(name, displayName, headUUID, ping);
+		fakePlayer.show();
+		fakePlayers.add(fakePlayer);
 		return EditingResult.OK;
 	}
 
@@ -126,19 +114,20 @@ public final class FakePlayerHandler {
 	}
 
 	public EditingResult removePlayer(String name) {
-		Optional<IFakePlayer> fp = getFakePlayerByName(name);
+		Optional<IFakePlayer> optional = getFakePlayerByName(name);
 
-		if (!fp.isPresent()) {
+		if (!optional.isPresent()) {
 			return EditingResult.NOT_EXIST;
 		}
 
 		ConfigurationSection section = plugin.getConf().getFakeplayers().getConfigurationSection("list");
-		if (section == null) {
-			return EditingResult.NOT_EXIST;
-		}
 
-		for (String sName : section.getKeys(false)) {
-			if (sName.equalsIgnoreCase(name)) {
+		if (section != null) {
+			for (String sName : section.getKeys(false)) {
+				if (!sName.equalsIgnoreCase(name)) {
+					continue;
+				}
+
 				section.set(sName, null);
 
 				try {
@@ -152,23 +141,17 @@ public final class FakePlayerHandler {
 			}
 		}
 
-		IFakePlayer fpl = fp.get();
+		IFakePlayer fakePlayer = optional.get();
 
-		fpl.remove();
-		fakePlayers.remove(fpl);
+		fakePlayer.remove();
+		fakePlayers.remove(fakePlayer);
 		return EditingResult.OK;
 	}
 
 	public EditingResult renamePlayer(final String oldName, String newName) {
-		Optional<IFakePlayer> fp = getFakePlayerByName(oldName);
+		Optional<IFakePlayer> optional = getFakePlayerByName(oldName);
 
-		if (!fp.isPresent()) {
-			return EditingResult.NOT_EXIST;
-		}
-
-		FileConfiguration config = plugin.getConf().getFakeplayers();
-
-		if (!config.isConfigurationSection("list")) {
+		if (!optional.isPresent()) {
 			return EditingResult.NOT_EXIST;
 		}
 
@@ -176,37 +159,21 @@ public final class FakePlayerHandler {
 			newName = newName.substring(0, 16);
 		}
 
-		config.set("list." + newName, config.get("list." + oldName));
-		config.set("list." + oldName, null);
-
-		try {
-			config.save(plugin.getConf().getFakeplayersFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return EditingResult.UNKNOWN;
-		}
-
-		fp.get().setName(newName);
+		setOptionsAndSave("list." + newName, plugin.getConf().getFakeplayers().get("list." + oldName),
+				"list." + oldName, null);
+		optional.get().setName(newName);
 		return EditingResult.OK;
 	}
 
 	public EditingResult setSkin(String name, hu.montlikadani.tablist.utils.PlayerSkinProperties skinProperties) {
-		Optional<IFakePlayer> fp = getFakePlayerByName(name);
+		Optional<IFakePlayer> optional = getFakePlayerByName(name);
 
-		if (!fp.isPresent()) {
+		if (!optional.isPresent()) {
 			return EditingResult.NOT_EXIST;
 		}
 
-		plugin.getConf().getFakeplayers().set("list." + name + ".headuuid", skinProperties.playerId.toString());
-
-		try {
-			plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return EditingResult.UNKNOWN;
-		}
-
-		fp.get().setSkin(skinProperties);
+		setOptionsAndSave("list." + name + ".headuuid", skinProperties.playerId.toString());
+		optional.get().setSkin(skinProperties);
 		return EditingResult.OK;
 	}
 
@@ -215,43 +182,41 @@ public final class FakePlayerHandler {
 			return EditingResult.PING_AMOUNT;
 		}
 
-		Optional<IFakePlayer> fp = getFakePlayerByName(name);
+		Optional<IFakePlayer> optional = getFakePlayerByName(name);
 
-		if (!fp.isPresent()) {
+		if (!optional.isPresent()) {
 			return EditingResult.NOT_EXIST;
 		}
 
-		plugin.getConf().getFakeplayers().set("list." + name + ".ping", amount);
-
-		try {
-			plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return EditingResult.UNKNOWN;
-		}
-
-		fp.get().setPing(amount);
+		setOptionsAndSave("list." + name + ".ping", amount);
+		optional.get().setPing(amount);
 		return EditingResult.OK;
 	}
 
 	public EditingResult setDisplayName(String name, String displayName) {
-		Optional<IFakePlayer> fp = getFakePlayerByName(name);
+		Optional<IFakePlayer> optional = getFakePlayerByName(name);
 
-		if (!fp.isPresent()) {
+		if (!optional.isPresent()) {
 			return EditingResult.NOT_EXIST;
 		}
 
-		plugin.getConf().getFakeplayers().set("list." + name + ".displayname", displayName);
+		setOptionsAndSave("list." + name + ".displayname", displayName);
+		optional.get().setDisplayName(displayName);
+		return EditingResult.OK;
+	}
 
-		try {
-			plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return EditingResult.UNKNOWN;
+	private void setOptionsAndSave(Object... pathOption) {
+		FileConfiguration config = plugin.getConf().getFakeplayers();
+
+		for (int i = 0; i < pathOption.length; i += 2) {
+			config.set((String) pathOption[i], pathOption[i + 1]);
 		}
 
-		fp.get().setDisplayName(displayName);
-		return EditingResult.OK;
+		try {
+			config.save(plugin.getConf().getFakeplayersFile());
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 
 	public enum EditingResult {

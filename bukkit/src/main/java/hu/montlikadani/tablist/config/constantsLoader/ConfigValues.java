@@ -50,11 +50,11 @@ public final class ConfigValues {
 
 		c.addComment("tps-performance-observation-value",
 				"This option monitors server performance. If the server's TPS is less than the set value,",
-				"TabList will cancels all currently running schedulers to improve server performance.",
+				"TabList will cancels all currently running schedulers to improve server performance.", " ",
 				"TabList will not restart these schedulers (ie animations, group updates, etc.),",
-				"so you have to do it manually, by reconnecting to the server or by reloading the plugin.",
+				"so you have to do it manually, by reconnecting to the server or by reloading the plugin.", " ",
 				"At values below 8-5, TabList is almost unable to stop its own running processes,",
-				"as the server is already under a very heavy load.",
+				"as the server is already under a very heavy load.", " ",
 				"The values should be between 5-18", "If the value is below 5 or above 18, the default value will be 16.0",
 				"To disable this feature set to -1");
 
@@ -139,20 +139,20 @@ public final class ConfigValues {
 			c.addComment("tablist-object-type.number-format.type", "The format type of this objective to display",
 					"Can be NONE (default), FIXED and STYLED");
 			c.addComment("tablist-object-type.number-format.format", "The format of this objective, each format type is different,",
-					"",
+					" ",
 					"none - shows as a yellow number (default)",
 					"fixed - a unique text displayed instead of number without styling",
 					"styled - changes the coloration of the number (use full color/formatting names 'green;bold;italic' or hexadecimal '#123456')",
-					"",
+					" ",
 					"with 'styled' format you can specify only 1 color and each formatting names 1 time, separate with ';' character");
 		}
 
 		c.addComment("tablist-object-type.disabled-worlds", "In these worlds the objects will not be displayed");
 
 		c.addComment("check-update", "Checks for plugin updates after server start");
-		c.addComment("download-updates", "Download new releases if updates found?",
+		c.addComment("download-updates", "Download new updates to the updates folder and automatically apply when the server starts.",
 				"This only works if the \"check-update\" option is enabled.");
-		c.addComment("logconsole", "Plugin debug log messages");
+		c.addComment("logconsole", "Can the plugin log debug messages to console? Sometimes its useful");
 
 		tpsObservationValue = c.get("tps-performance-observation-value", -1.0);
 

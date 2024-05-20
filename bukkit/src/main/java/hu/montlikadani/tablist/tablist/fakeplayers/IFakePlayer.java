@@ -6,7 +6,7 @@ import com.mojang.authlib.GameProfile;
 import hu.montlikadani.tablist.utils.PlayerSkinProperties;
 
 /**
- * The interface for creating fake players
+ * The interface for changing fake player properties
  */
 public interface IFakePlayer {
 
@@ -15,30 +15,26 @@ public interface IFakePlayer {
 	}
 
 	/**
-	 * Gets the fake player name.
-	 * 
-	 * @return the name of the fake player
+	 * @return the name of this fake player
 	 */
 	String getName();
 
 	/**
-	 * Sets the name of this fake player.
+	 * Sets the new name of this fake player
 	 * 
 	 * @param name the new name
 	 */
 	void setName(String name);
 
 	/**
-	 * Gets the display name of this fake player.
-	 * 
-	 * @return display name of fake player
+	 * @return display name of this fake player
 	 */
 	String getDisplayName();
 
 	/**
-	 * Sets the display name of this fake player and re-sends.
+	 * Sets the display name of this fake player
 	 * 
-	 * @param displayName the new name to appear
+	 * @param displayName the new display name
 	 */
 	void setDisplayName(String displayName);
 
@@ -48,9 +44,8 @@ public interface IFakePlayer {
 	hu.montlikadani.tablist.utils.PlayerSkinProperties profileProperties();
 
 	/**
-	 * Gets the fake player' ping. This does not change each time, as this fake
-	 * player is not an existing player, it can change if it is changed by a
-	 * repeating thread.
+	 * Gets the fake player current set of ping (latency) value. This value will
+	 * remain unchanged until the {@link #setPing(int)} is not called.
 	 * 
 	 * @return the amount of ping latency
 	 */
@@ -62,29 +57,56 @@ public interface IFakePlayer {
 	GameProfile getProfile();
 
 	/**
-	 * Shows the fake player, if not exist it will creates a new one with the
+	 * Shows the fake player, if not exist it will create a new one with the
 	 * properties set (name, display name) and sends to the client.
 	 */
 	void show();
 
 	/**
-	 * Sets the ping value to a new one for this fake player and re-sends to appear
-	 * immediately in tablist. The fake player must exists, otherwise returns.
+	 * Sets the ping (latency) value for this fake player and updates the player
+	 * list to appear next to this fake player name.
 	 * 
 	 * @param ping the new value of ping
 	 */
 	void setPing(int ping);
 
 	/**
-	 * Sets a valid user skin for this fake player. You need to re-send
-	 * the fake player to apply the skin.
+	 * Sets a valid user skin for this fake player to append the head icon in player
+	 * list next to the name. To apply the skin execute {@link #show()} method
+	 * once.
+	 * <p>
+	 * The skin icon to appear your server needs to be online {@link org.bukkit.Bukkit#getOnlineMode()}
+	 * <p>
+	 * To create a {@link PlayerSkinProperties} instance you can use these 3 options:
+	 * <p>1. Using DataFetcher to retrieve a specified player's data from an online web service</p>
+	 * <blockquote><pre>
+	 *     hu.montlikadani.tablist.utils.datafetcher.URLDataFetcher.fetchProfile("exampleNameOrUUID")
+	 *        .thenAccept(properties -> {
+	 *     	    String raw = properties.textureRawValue;
+	 *     	    String decoded = properties.decodedTextureValue;
 	 *
-	 * @param skinProperties an instance of {@link PlayerSkinProperties} containing player's skin data
+	 *     	    // your code
+	 *       });
+	 * </blockquote></pre>
+	 *
+	 * <p>2. Using {@link PlayerSkinProperties} constructor to create texture data for specific player</p>
+	 * <blockquote><pre>
+	 *     PlayerSkinProperties properties = new PlayerSkinProperties(playerName, playerId, textureRawValue,
+	 *     	decodedTextureValue);
+	 * </pre></blockquote>
+	 *
+	 * <p>3. Retrieving from cache if it is stored by this plugin, {@code null} if no player found</p>
+	 * <blockquote><pre>
+	 *     PlayerSkinProperties properties = PlayerSkinProperties.findPlayerProperty(playerName, playerId);
+	 * </pre></blockquote>
+	 *
+	 * @param skinProperties an instance of {@link PlayerSkinProperties}
+	 *                       containing player skin data
 	 */
 	void setSkin(PlayerSkinProperties skinProperties);
 
 	/**
-	 * Removes this fake player from the tab if present.
+	 * Removes this fake player from the player list if present.
 	 */
 	void remove();
 
