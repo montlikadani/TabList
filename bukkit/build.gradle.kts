@@ -56,7 +56,7 @@ dependencies {
         exclude(group = "org.bukkit")
     }
 
-    compileOnly("me.clip:placeholderapi:2.11.5") {
+    compileOnly("me.clip:placeholderapi:2.11.6") {
         isTransitive = false
     }
 

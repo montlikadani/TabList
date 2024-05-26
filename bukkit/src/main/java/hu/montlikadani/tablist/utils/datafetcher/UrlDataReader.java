@@ -5,12 +5,11 @@ import com.google.gson.JsonParser;
 
 import java.io.InputStreamReader;
 
-@SuppressWarnings("deprecation")
 public final class UrlDataReader {
 
     public static JsonObject readJsonObject(String urlName) {
         try {
-            java.net.URLConnection urlConnection = new java.net.URL(urlName).openConnection();
+            java.net.URLConnection urlConnection = java.net.URI.create(urlName).toURL().openConnection();
 
             urlConnection.setConnectTimeout(3000);
             urlConnection.setReadTimeout(5000);
