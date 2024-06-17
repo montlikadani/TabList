@@ -407,13 +407,7 @@ public final class v1_20_6 implements hu.montlikadani.api.IPacketNM {
             if (classesToListen.contains(receivingClass)) {
                 if (receivingClass == PacketPlayOutScoreboardTeam.class) {
                     scoreboardTeamPacket((PacketPlayOutScoreboardTeam) msg);
-
-                    // super.write kicks out players with "Network protocol error"
-                    // Probably caused by Scoreboard#removePlayerFromTeam/b -> IllegalStateException
-                    return;
-                }
-
-                if (receivingClass == ClientboundPlayerInfoUpdatePacket.class) {
+                } else if (receivingClass == ClientboundPlayerInfoUpdatePacket.class) {
                     playerInfoUpdatePacket((ClientboundPlayerInfoUpdatePacket) msg);
                 }
             }
