@@ -75,22 +75,14 @@ public final class group implements ICommand {
 			config.set("groups." + target + ".sort-priority", priority);
 			break;
 		case "remove":
-			if (config.contains("groups." + target)) {
-				config.set("groups." + target, null);
-				plugin.getGroups().removeTeam(target);
-
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_REMOVED, "%team%", target));
-
-				try {
-					config.save(plugin.getConf().getGroupsFile());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
+			if (plugin.getGroups().removeTeam(target)) {
+				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_REMOVED,
+						"%team%", target));
 				return;
 			}
 
-			plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_NOT_FOUND, "%team%", target));
+			plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_NOT_FOUND,
+					"%team%", target));
 			return;
 		default:
 			return;
@@ -102,7 +94,8 @@ public final class group implements ICommand {
 			e.printStackTrace();
 		}
 
-		String prefix = config.getString("groups." + target + ".prefix", ""), suffix = config.getString("groups." + target + ".suffix", ""),
+		String prefix = config.getString("groups." + target + ".prefix", ""),
+				suffix = config.getString("groups." + target + ".suffix", ""),
 				tabName = config.getString("groups." + target + ".tabname", "");
 
 		TeamHandler team = null;

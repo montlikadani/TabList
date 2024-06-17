@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import hu.montlikadani.tablist.utils.scheduler.TLScheduler;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import hu.montlikadani.tablist.TabList;
@@ -92,7 +93,7 @@ public final class Groups {
 			return;
 		}
 
-		org.bukkit.configuration.file.FileConfiguration gr = plugin.getConf().getGroups();
+		FileConfiguration gr = plugin.getConf().getGroups();
 
 		String globPrefix = gr.getString("globalGroup.prefix", "");
 		String globSuffix = gr.getString("globalGroup.suffix", "");
@@ -252,8 +253,25 @@ public final class Groups {
 		groupPlayer.removeGroup();
 	}
 
-	public void removeTeam(String teamName) {
+	public boolean removeTeam(String teamName) {
 		getTeam(teamName).ifPresent(teams::remove);
+
+		FileConfiguration config = plugin.getConf().getGroups();
+		String path = "groups." + teamName;
+
+		if (!config.contains(path)) {
+			return false;
+		}
+
+		config.set(path, null);
+
+		try {
+			config.save(plugin.getConf().getGroupsFile());
+		} catch (java.io.IOException ex) {
+			ex.printStackTrace();
+		}
+
+		return true;
 	}
 
 	public void addTeam(TeamHandler team) {

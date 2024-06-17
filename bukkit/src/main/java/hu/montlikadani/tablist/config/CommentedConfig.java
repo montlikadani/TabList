@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.config;
 
+import hu.montlikadani.tablist.TabList;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -18,21 +19,22 @@ public class CommentedConfig extends YamlConfiguration {
 
 	private final File file;
 
-	public CommentedConfig(File file) {
+	public CommentedConfig(File file, TabList plugin) {
 		this.file = file;
-		loadFile();
+		loadFile(plugin);
 	}
 
 	public File getFile() {
 		return file;
 	}
 
-	private void loadFile() {
+	private void loadFile(TabList plugin) {
 		try (InputStreamReader reader = new InputStreamReader(new java.io.FileInputStream(file))) {
 			load(reader);
-		} catch (FileNotFoundException e) {
-		} catch (InvalidConfigurationException | IOException e) {
-			org.bukkit.Bukkit.getLogger().log(java.util.logging.Level.WARNING, e.getLocalizedMessage());
+		} catch (FileNotFoundException ignore) {
+		} catch (InvalidConfigurationException | IOException ex) {
+			hu.montlikadani.tablist.utils.Util.consolePrint(java.util.logging.Level.WARNING, plugin,
+					ex.getLocalizedMessage());
 		}
 	}
 

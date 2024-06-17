@@ -44,7 +44,7 @@ public class Configuration {
 			plugin.saveResource(configFile.getName(), false);
 		}
 
-		config = new CommentedConfig(configFile);
+		config = new CommentedConfig(configFile, plugin);
 		tablist = createFile(tablistFile, tablistFile.getName(), false);
 
 		ConfigValues.loadValues(config);

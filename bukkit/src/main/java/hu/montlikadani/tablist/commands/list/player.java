@@ -59,6 +59,7 @@ public final class player implements ICommand {
 			}
 
 			String result = builder.toString().replace("\"", "");
+
 			if (result.trim().isEmpty()) {
 				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_META_COULD_NOT_BE_EMPTY));
 				return;
@@ -77,23 +78,15 @@ public final class player implements ICommand {
 			config.set("groups." + target + ".sort-priority", priority);
 			break;
 		case "remove":
-			if (config.contains("groups." + target)) {
-				config.set("groups." + target, null);
+			if (plugin.getGroups().removeTeam(target)) {
 				plugin.getUser(plugin.getServer().getPlayer(target)).ifPresent(plugin.getGroups()::removePlayerGroup);
-				plugin.getGroups().removeTeam(target);
-
-				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_REMOVED, "%team%", target));
-
-				try {
-					config.save(plugin.getConf().getGroupsFile());
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-
+				plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_REMOVED,
+						"%team%", target));
 				return;
 			}
 
-			plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_NOT_FOUND, "%team%", target));
+			plugin.getComplement().sendMessage(sender, ConfigMessages.get(ConfigMessages.MessageKeys.SET_GROUP_NOT_FOUND,
+					"%team%", target));
 			return;
 		default:
 			return;

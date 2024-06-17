@@ -19,11 +19,11 @@ repositories {
 dependencies {
 	implementation(project(":global"))
 
-	compileOnly("net.md-5:bungeecord-api:1.20-R0.3-SNAPSHOT") {
+	compileOnly("net.md-5:bungeecord-api:1.21-R0.1-SNAPSHOT") {
 		exclude("com.mojang", "brigadier")
 	}
 
-	compileOnly("net.md-5:bungeecord-chat:1.20-R0.3-SNAPSHOT") {
+	compileOnly("net.md-5:bungeecord-chat:1.21-R0.1-SNAPSHOT") {
 		exclude("com.mojang", "brigadier")
 	}
 
