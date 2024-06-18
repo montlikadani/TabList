@@ -1,6 +1,7 @@
 package hu.montlikadani.tablist.packets;
 
 import hu.montlikadani.api.IPacketNM;
+import hu.montlikadani.tablist.utils.ServerVersion;
 
 public final class PacketNM {
 
@@ -8,22 +9,16 @@ public final class PacketNM {
 
 	static {
 		IPacketNM packetInstance;
-		String current = hu.montlikadani.tablist.utils.ServerVersion.current().name();
-		int length = current.length();
-		int count = 0;
+		ServerVersion serverVersion = ServerVersion.current();
+		String current = serverVersion.name();
 
-		for (int i = 0; i < length; i++) {
-			if (current.charAt(i) == '_') {
-				count++;
-			}
-		}
-
-		if (count == 1) {
-			current += "_1";
+		if (serverVersion == ServerVersion.v1_19) {
+			current += "_1"; // Just because I messed up
 		}
 
 		try {
-			packetInstance = (IPacketNM) Class.forName("hu.montlikadani." + current + "." + current).getConstructor().newInstance();
+			packetInstance = (IPacketNM) Class.forName("hu.montlikadani." + current + "." + current)
+					.getConstructor().newInstance();
 		} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
 				 java.lang.reflect.InvocationTargetException e) {
 			packetInstance = new LegacyVersion();
