@@ -1,5 +1,8 @@
 package hu.montlikadani.tablist.listeners.resources;
 
+import hu.montlikadani.tablist.utils.Util;
+import java.util.logging.Level;
+
 public final class PurpurAfkStatus extends AfkPlayers {
 
     public PurpurAfkStatus(final hu.montlikadani.tablist.TabList tl, Class<?> afkEvent) {
@@ -9,7 +12,7 @@ public final class PurpurAfkStatus extends AfkPlayers {
             playerMethod = afkEvent.getMethod("getPlayer");
             isGoingAfkMethod = afkEvent.getMethod("isGoingAfk");
         } catch (NoSuchMethodException ex) {
-            ex.printStackTrace();
+            Util.printTrace(Level.SEVERE, tl, ex.getMessage(), ex);
             return;
         }
 
@@ -18,7 +21,7 @@ public final class PurpurAfkStatus extends AfkPlayers {
             try {
                 goAfk(tl, (org.bukkit.entity.Player) playerMethod.invoke(e), (boolean) isGoingAfkMethod.invoke(e));
             } catch (IllegalAccessException | java.lang.reflect.InvocationTargetException ex) {
-                ex.printStackTrace();
+                Util.printTrace(Level.SEVERE, tl, ex.getMessage(), ex);
             }
         }, tl);
     }

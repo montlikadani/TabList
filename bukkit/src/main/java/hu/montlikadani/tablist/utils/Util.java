@@ -29,8 +29,12 @@ public final class Util {
 
 	public static void consolePrint(Level level, Plugin plugin, String text, Object... params) {
 		if (hu.montlikadani.tablist.config.constantsLoader.ConfigValues.isLogConsole()) {
-			plugin.getLogger().log(level, text, params);
+			printTrace(level, plugin, text, params);
 		}
+	}
+
+	public static void printTrace(Level loggingLevel, Plugin plugin, String text, Object... parameters) {
+		plugin.getLogger().log(loggingLevel, text, parameters);
 	}
 
 	public static String legacyNmsVersion() {

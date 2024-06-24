@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import hu.montlikadani.tablist.utils.Util;
+import java.util.logging.Level;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -34,15 +35,15 @@ public final class Commands implements CommandExecutor, TabCompleter {
 
 				try {
 					clazz = TabList.class.getClassLoader().loadClass("hu.montlikadani.tablist.commands.list." + s);
-				} catch (ClassNotFoundException e) {
-					e.printStackTrace();
+				} catch (ClassNotFoundException ex) {
+					Util.printTrace(Level.SEVERE, plugin, ex.getMessage(), ex);
 					continue;
 				}
 
 				commands[i] = (ICommand) clazz.getDeclaredConstructor().newInstance();
 				i++;
 			} catch (ReflectiveOperationException e) {
-				e.printStackTrace();
+				Util.printTrace(Level.SEVERE, plugin, e.getMessage(), e);
 			}
 		}
 	}

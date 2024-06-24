@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.config;
 
+import hu.montlikadani.tablist.utils.Util;
 import java.io.File;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -69,8 +70,8 @@ public class Configuration {
 					if (!file.createNewFile()) {
 						throw new RuntimeException("Failed to create " + name + " file");
 					}
-				} catch (java.io.IOException e) {
-					e.printStackTrace();
+				} catch (java.io.IOException ex) {
+					Util.printTrace(java.util.logging.Level.SEVERE, plugin, ex.getMessage(), ex);
 				}
 			} else {
 				plugin.saveResource(name, false);

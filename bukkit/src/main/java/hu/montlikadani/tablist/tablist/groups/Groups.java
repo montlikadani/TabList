@@ -1,5 +1,6 @@
 package hu.montlikadani.tablist.tablist.groups;
 
+import hu.montlikadani.tablist.utils.Util;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Set;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import hu.montlikadani.tablist.utils.scheduler.TLScheduler;
@@ -159,8 +161,8 @@ public final class Groups {
 			if (saveRequired) {
 				try {
 					gr.save(plugin.getConf().getGroupsFile());
-				} catch (java.io.IOException e) {
-					e.printStackTrace();
+				} catch (java.io.IOException ex) {
+					Util.printTrace(Level.SEVERE, plugin, ex.getMessage(), ex);
 				}
 			}
 		}
@@ -268,7 +270,7 @@ public final class Groups {
 		try {
 			config.save(plugin.getConf().getGroupsFile());
 		} catch (java.io.IOException ex) {
-			ex.printStackTrace();
+			Util.printTrace(Level.SEVERE, plugin, ex.getMessage(), ex);
 		}
 
 		return true;
@@ -389,8 +391,9 @@ public final class Groups {
 			int size = playerGroups.size();
 
 			for (GroupPlayer afk : afkPlayersCache) {
-				setPlayerTeam(afk, (afk.getGroup() == null || afk.getGroup().getAfkSortPriority() == -1) ? size++
-						: afk.getGroup().getAfkSortPriority());
+				int afkSortPriority = afk.getGroup().getAfkSortPriority();
+
+				setPlayerTeam(afk, (afk.getGroup() == null || afkSortPriority == -1) ? size++ : afkSortPriority);
 			}
 		}
 

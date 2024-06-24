@@ -24,7 +24,7 @@ public abstract class UpdateDownloader {
 				return fetch(tabList);
 			} catch (java.io.FileNotFoundException | java.net.UnknownHostException ignore) {
 			} catch (IOException ex) { // catch Exception in case if it fails
-				ex.printStackTrace();
+				Util.printTrace(Level.SEVERE, tabList, ex.getMessage(), ex);
 			}
 
 			return -1;

@@ -94,8 +94,8 @@ public final class player implements ICommand {
 
 		try {
 			config.save(plugin.getConf().getGroupsFile());
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (IOException ex) {
+			Util.printTrace(java.util.logging.Level.SEVERE, plugin, ex.getMessage(), ex);
 		}
 
 		String prefix = config.getString("groups." + target + ".prefix", ""),

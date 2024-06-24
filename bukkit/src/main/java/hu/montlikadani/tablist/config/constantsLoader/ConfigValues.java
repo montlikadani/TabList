@@ -281,8 +281,6 @@ public final class ConfigValues {
 			}
 		}
 
-		c.set("tablist-object-type.enable", null);
-
 		tpsColorFormats = c.get("placeholder-format.tps.formats", Arrays.asList("&a%tps% > 18.0", "&6%tps% == 16.0", "&c%tps% < 16.0"));
 		pingColorFormats = c.get("placeholder-format.ping.formats", Arrays.asList("&a%ping% <= 200", "&6%ping% >= 200", "&c%ping% > 500"));
 
@@ -315,9 +313,13 @@ public final class ConfigValues {
 
 		// Here comes the options that removed
 		c.set("hook", null);
+		c.set("tablist-object-type.enable", null);
 		c.set("change-prefix-suffix-in-tablist.hide-group-when-player-afk", null);
 		c.set("placeholder-format.memory-bar", null);
 		c.set("hide-players-from-tablist", null);
+		if (healthObjectRestricted.isEmpty()) {
+			c.set("tablist-object-type.object-settings.health.restricted-players", null);
+		}
 
 		c.save();
 	}

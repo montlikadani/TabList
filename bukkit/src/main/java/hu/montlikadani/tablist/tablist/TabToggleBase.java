@@ -3,6 +3,8 @@ package hu.montlikadani.tablist.tablist;
 import hu.montlikadani.tablist.TabList;
 import hu.montlikadani.tablist.config.constantsLoader.TabConfigValues;
 import hu.montlikadani.tablist.user.TabListUser;
+import hu.montlikadani.tablist.utils.Util;
+import java.util.logging.Level;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -77,8 +79,8 @@ public final class TabToggleBase {
 
         try {
             config.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            Util.printTrace(Level.SEVERE, tl, ex.getMessage(), ex);
         }
     }
 
@@ -99,7 +101,7 @@ public final class TabToggleBase {
                     throw new RuntimeException("Failed to create toggledtablists.yml file");
                 }
             } catch (IOException ex) {
-                ex.printStackTrace();
+                Util.printTrace(Level.SEVERE, tl, ex.getMessage(), ex);
             }
         }
 
@@ -126,8 +128,8 @@ public final class TabToggleBase {
 
         try {
             config.save(file);
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException ex) {
+            Util.printTrace(Level.SEVERE, tl, ex.getMessage(), ex);
         }
     }
 }

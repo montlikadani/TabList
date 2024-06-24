@@ -337,7 +337,7 @@ public final class Variables {
 		try {
 			return plugin.getServer().getScheduler().callSyncMethod(plugin, supplier::get).get();
 		} catch (InterruptedException | java.util.concurrent.ExecutionException ex) {
-			ex.printStackTrace();
+			Util.printTrace(java.util.logging.Level.SEVERE, plugin, ex.getMessage(), ex);
 		}
 
 		return supplier.get();

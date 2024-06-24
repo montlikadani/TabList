@@ -33,8 +33,7 @@ public class CommentedConfig extends YamlConfiguration {
 			load(reader);
 		} catch (FileNotFoundException ignore) {
 		} catch (InvalidConfigurationException | IOException ex) {
-			hu.montlikadani.tablist.utils.Util.consolePrint(java.util.logging.Level.WARNING, plugin,
-					ex.getLocalizedMessage());
+			hu.montlikadani.tablist.utils.Util.printTrace(java.util.logging.Level.WARNING, plugin, ex.getMessage(), ex);
 		}
 	}
 

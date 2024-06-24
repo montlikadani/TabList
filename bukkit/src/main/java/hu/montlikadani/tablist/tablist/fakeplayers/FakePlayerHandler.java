@@ -1,9 +1,11 @@
 package hu.montlikadani.tablist.tablist.fakeplayers;
 
+import hu.montlikadani.tablist.utils.Util;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 
+import java.util.logging.Level;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -132,8 +134,8 @@ public final class FakePlayerHandler {
 
 				try {
 					plugin.getConf().getFakeplayers().save(plugin.getConf().getFakeplayersFile());
-				} catch (IOException e) {
-					e.printStackTrace();
+				} catch (IOException ex) {
+					Util.printTrace(Level.SEVERE, plugin, ex.getMessage(), ex);
 					return EditingResult.UNKNOWN;
 				}
 
@@ -215,7 +217,7 @@ public final class FakePlayerHandler {
 		try {
 			config.save(plugin.getConf().getFakeplayersFile());
 		} catch (IOException ex) {
-			ex.printStackTrace();
+			Util.printTrace(Level.SEVERE, plugin, ex.getMessage(), ex);
 		}
 	}
 
