@@ -10,6 +10,7 @@ dependencyResolutionManagement {
 		create("libs") {
 			library("netty-core", "io.netty:netty-all:4.1.111.Final")
 			library("authlib", "com.mojang:authlib:6.0.54")
+			plugin("shadow", "io.github.goooler.shadow").version("8.1.8")
 		}
 	}
 }
