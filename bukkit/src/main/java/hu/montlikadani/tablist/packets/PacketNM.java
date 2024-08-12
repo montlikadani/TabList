@@ -10,7 +10,7 @@ public final class PacketNM {
 	static {
 		IPacketNM packetInstance;
 		ServerVersion serverVersion = ServerVersion.current();
-		String current = serverVersion.name();
+		String current = serverVersion.toString();
 
 		if (serverVersion == ServerVersion.v1_19) {
 			current += "_1"; // Just because I messed up
@@ -21,7 +21,12 @@ public final class PacketNM {
 					.getConstructor().newInstance();
 		} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
 				 java.lang.reflect.InvocationTargetException e) {
-			packetInstance = new LegacyVersion();
+			try {
+				hu.montlikadani.tablist.utils.Util.legacyNmsVersion(); // Since we can not catch exception from class init
+				packetInstance = new LegacyVersion();
+			} catch (ArrayIndexOutOfBoundsException ex) {
+				packetInstance = null;
+			}
 		}
 
 		NMS_PACKET = packetInstance;

@@ -8,13 +8,13 @@ repositories {
 dependencies {
     api(project(":api"))
 
-    compileOnly("org.spigotmc:spigot:1.21-R0.1-SNAPSHOT") {
+    compileOnly("org.spigotmc:spigot:1.21.1-R0.1-SNAPSHOT") {
         exclude("org.yaml", "snakeyaml")
     }
 
     compileOnly(libs.authlib)
 
-    compileOnly("org.spigotmc:spigot-api:1.21-R0.1-SNAPSHOT") {
+    compileOnly("org.spigotmc:spigot-api:1.21.1-R0.1-SNAPSHOT") {
         exclude("junit", "junit")
         exclude("org.yaml", "snakeyaml")
         exclude("com.mojang", "authlib")

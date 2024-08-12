@@ -82,7 +82,12 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		// Load static references
 		try {
 			Class.forName("hu.montlikadani.tablist.packets.PacketNM");
-		} catch (ClassNotFoundException ignored) {
+		} catch (ClassNotFoundException ignore) {
+		}
+		if (PacketNM.NMS_PACKET == null) {
+			getLogger().log(Level.SEVERE, "Future versions does not supported at the moment " + getServer().getBukkitVersion());
+			getServer().getPluginManager().disablePlugin(this);
+			return;
 		}
 		TabListAPI.getTPS();
 
@@ -115,6 +120,10 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		if (fakePlayerHandler == null) {
+			return; // Just to avoid errors sent by dumb users
+		}
+
 		groups.cancelUpdate();
 		tabManager.cancelTask();
 
