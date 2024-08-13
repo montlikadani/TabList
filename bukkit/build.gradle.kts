@@ -44,7 +44,7 @@ dependencies {
     compileOnly(libs.authlib)
     compileOnly("net.luckperms:api:5.4")
 
-    compileOnly("io.papermc.paper:paper-api:1.21-R0.1-SNAPSHOT") {
+    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT") {
         exclude("com.mojang", "authlib")
     }
 
