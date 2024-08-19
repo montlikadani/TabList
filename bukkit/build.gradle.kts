@@ -38,7 +38,7 @@ dependencies {
         api(project(":v$it"))
     }
 
-    implementation("org.bstats:bstats-bukkit:3.0.2")
+    implementation("org.bstats:bstats-bukkit:3.0.3")
 
     compileOnly("com.github.xtomyserrax:StaffFacilities:5.0.8")
     compileOnly(libs.authlib)
