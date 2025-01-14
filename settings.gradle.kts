@@ -18,6 +18,7 @@ dependencyResolutionManagement {
 rootProject.name = "TabList"
 
 include("api", "global",
+	"v1_21_4",
 	"v1_21",
 	"v1_20_6", "v1_20_4", "v1_20_2", "v1_20_1",
 	"v1_19_4", "v1_19_3", "v1_19_2", "v1_19_1",
