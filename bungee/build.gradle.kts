@@ -19,11 +19,11 @@ repositories {
 dependencies {
 	implementation(project(":global"))
 
-	compileOnly("net.md-5:bungeecord-api:1.21-R0.1-SNAPSHOT") {
+	compileOnly("net.md-5:bungeecord-api:1.21-R0.3-SNAPSHOT") {
 		exclude("com.mojang", "brigadier")
 	}
 
-	compileOnly("net.md-5:bungeecord-chat:1.21-R0.1-SNAPSHOT") {
+	compileOnly("net.md-5:bungeecord-chat:1.21-R0.3-SNAPSHOT") {
 		exclude("com.mojang", "brigadier")
 	}
 
@@ -32,7 +32,7 @@ dependencies {
 	}
 }
 
-version = "2.3.5"
+version = "2.3.6-jatc251"
 
 tasks {
 	withType<JavaCompile> {

@@ -33,7 +33,7 @@ public final class Variables {
 
 		boolean att;
 		try {
-			Attribute.GENERIC_MAX_HEALTH.name();
+			Attribute.MAX_HEALTH.name();
 			att = true;
 		} catch (Error err) {
 			att = false;
@@ -243,7 +243,7 @@ public final class Variables {
 
 		text = Global.replace(text, "%player-max-health%", () -> {
 			if (entityAttributeSupported) {
-				org.bukkit.attribute.AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+				org.bukkit.attribute.AttributeInstance attribute = player.getAttribute(Attribute.MAX_HEALTH);
 				return attribute == null ? "" : Double.toString(attribute.getDefaultValue());
 			}
 

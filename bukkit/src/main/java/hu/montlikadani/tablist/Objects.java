@@ -119,7 +119,7 @@ public final class Objects {
 	@SuppressWarnings("deprecation")
 	private void adjustMaxHealth(Player player, double value) {
 		try {
-			org.bukkit.attribute.AttributeInstance maxHealth = player.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MAX_HEALTH);
+			org.bukkit.attribute.AttributeInstance maxHealth = player.getAttribute(org.bukkit.attribute.Attribute.MAX_HEALTH);
 
 			if (maxHealth != null) {
 				maxHealth.setBaseValue(maxHealth.getBaseValue() + value);

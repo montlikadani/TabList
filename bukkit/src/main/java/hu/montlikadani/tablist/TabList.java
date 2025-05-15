@@ -64,7 +64,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		ServerVersion currentVersion = ServerVersion.current();
 
 		if (currentVersion == null) {
-			getLogger().log(Level.SEVERE, "Your server version does not supported " + getServer().getBukkitVersion());
+			getLogger().log(Level.SEVERE, "Your server version is not supported: " + getServer().getBukkitVersion() + " | TabListServerVersion: " + ServerVersion.current().toString());
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
@@ -85,7 +85,7 @@ public final class TabList extends org.bukkit.plugin.java.JavaPlugin {
 		} catch (ClassNotFoundException ignore) {
 		}
 		if (PacketNM.NMS_PACKET == null) {
-			getLogger().log(Level.SEVERE, "Future versions does not supported at the moment " + getServer().getBukkitVersion());
+			getLogger().log(Level.SEVERE, "Future versions is not supported at the moment: " + getServer().getBukkitVersion());
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}

@@ -27,7 +27,7 @@ repositories {
 }
 
 val nmsProjects = setOf("1_8_8", "1_17_1", "1_18_2", "1_19_1", "1_19_2", "1_19_3", "1_19_4", "1_20_1", "1_20_2",
-    "1_20_4", "1_20_6", "1_21")
+    "1_20_4", "1_20_6", "1_21", "1_21_3", "1_21_4", "1_21_5")
 
 dependencies {
     implementation(project(":global"))
@@ -44,7 +44,7 @@ dependencies {
     compileOnly(libs.authlib)
     compileOnly("net.luckperms:api:5.4")
 
-    compileOnly("io.papermc.paper:paper-api:1.21.1-R0.1-SNAPSHOT") {
+    compileOnly("io.papermc.paper:paper-api:1.21.5-R0.1-SNAPSHOT") {
         exclude("com.mojang", "authlib")
     }
 
@@ -63,13 +63,15 @@ dependencies {
     compileOnly("com.github.LeonMangler:SuperVanish:6.2.19") {
         isTransitive = false
     }
-
-    compileOnly(files("lib/CMI9.0.0.0API.jar", "lib/PermissionsEx-1.23.4.jar"))
+    compileOnly(files("libs/CMI9.0.0.0API.jar"))
+    compileOnly(files("libs/PermissionsEx-1.23.4.jar"))
     compileOnly(libs.netty.core)
+
+    
 }
 
 group = "hu.montlikadani.tablist"
-version = "5.7.7"
+version = "5.7.8-jatc251"
 
 tasks {
     withType<JavaCompile> {
